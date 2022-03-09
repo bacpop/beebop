@@ -10,8 +10,6 @@ const router = app => {
 }
 
 
-
-
 const version_info = {
     "status":"success",
     "errors":[],
@@ -20,4 +18,4 @@ const version_info = {
 }
 
 // Export the router
-module.exports = router;
+module.exports = {router, version_info};
