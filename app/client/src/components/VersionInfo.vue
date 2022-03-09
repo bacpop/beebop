@@ -4,7 +4,7 @@
       Version info:
     </p>
     <p v-for="component in versions.data" :key="component.name" class="version-info">
-      {{component.name}}{{component.version}}
+      {{component.name}} {{component.version}}
     </p>
   </div>
 </template>

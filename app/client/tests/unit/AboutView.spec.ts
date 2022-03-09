@@ -1,27 +1,52 @@
-import Vuex from "vuex";
-import { mount, shallowMount } from "@vue/test-utils";
-import Vue from "vue";
+import { mount } from "@vue/test-utils";
 import AboutView from "@/views/AboutView.vue";
-import VersionInfo from '@/components/VersionInfo.vue';
+import { createStore } from 'vuex'
 
 describe("About", () => {
+    const getVersions = jest.fn();
+
+    const store = createStore({
+        state() {
+          return{ versions: {
+                "status":"success",
+                "errors":[],
+                "data":[
+                    {"name":"beebop","version":"0.1.0"},
+                    {"name":"poppunk","version":"2.4.0"}
+                ]
+            }
+          }
+        },
+        actions: {
+            getVersions: getVersions
+        }
+    });
+
+    beforeEach(() => {
+        jest.resetAllMocks();
+    });
+
     it("renders VersionInfo", () => {
-        const store = new Vuex.Store({
-            state: {
-                versions: {
-                    "status":"success",
-                    "errors":[],
-                    "data":[
-                        {"name":"beebop","version":"0.1.0"},
-                        {"name":"poppunk","version":"2.4.0"}
-                    ]
-                }
+        const wrapper = mount(AboutView, {
+            global: {
+              plugins: [store]
             }
         });
-
-        const wrapper = mount(AboutView, {
-            store
-        });
         expect(wrapper.find("h2").text()).toMatch('About');
+        const versions = wrapper.findAll(".version-info");
+        expect(versions.length).toBe(2);
+        expect(versions[0].text()).toBe("beebop 0.1.0");
+        expect(versions[1].text()).toBe("poppunk 2.4.0");
     });
+
+
+    it("calls getVersion", () => {
+        const wrapper = mount(AboutView, {
+            global: {
+              plugins: [store]
+            }
+        });
+        expect(getVersions).toHaveBeenCalled()
+    });
+
 });
