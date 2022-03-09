@@ -16,3 +16,10 @@ In a second terminal, go to `app/client/` and start the vue App:
 npm install
 npm run serve
 ```
+## Testing
+
+You can run unit tests for the vue app with
+```
+npm run test:unit
+```
+inside `app/client/`.
