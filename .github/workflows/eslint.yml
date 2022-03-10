@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  lint:
+  lint_frontend:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -27,4 +27,4 @@ jobs:
         cache-dependency-path: ./app/client/package-lock.json
     - run: npm ci
     - name: linting
-      run: eslint . --ext .js,.jsx,.ts,.tsx
+      run: npm run lint
