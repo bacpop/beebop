@@ -1,20 +1,21 @@
-import actions from "@/store/actions";
+import actions from '@/store/actions';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import versionInfo from '@/resources/versionInfo.json';
 import config from '../../src/resources/config.json';
-const { version_info } = require('../../../server/routes/routes');
 
-describe("Actions", () => {
-    const mock = new MockAdapter(axios);
+describe('Actions', () => {
+  const mock = new MockAdapter(axios);
 
-    mock.onGet(`${config.app_url}/version`).reply(200, version_info);
+  mock.onGet(`${config.app_url}/version`).reply(200, versionInfo);
 
-    it("getVersions", async () => {
-        const commit = jest.fn()
-        await actions.getVersions({ commit })
+  it('getVersions', async () => {
+    const commit = jest.fn();
+    await actions.getVersions({ commit });
 
-        expect(commit).toHaveBeenCalledWith(
-            "setVersions",
-            version_info)
-    })
-})
+    expect(commit).toHaveBeenCalledWith(
+      'setVersions',
+      versionInfo,
+    );
+  });
+});
