@@ -28,3 +28,24 @@ jobs:
     - run: npm ci
     - name: linting
       run: npm run lint
+  lint_backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./app/server
+        
+    strategy:
+      matrix:
+        node-version: [12.x, 14.x, 16.x]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: ./app/server/package-lock.json
+    - run: npm ci
+    - name: linting
+      run: npm run eslint
