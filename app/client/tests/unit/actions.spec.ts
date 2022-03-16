@@ -9,7 +9,7 @@ describe('Actions', () => {
 
   mock.onGet(`${config.app_url}/version`).reply(200, versionInfo);
 
-  it('getVersions', async () => {
+  it('getVersions fetches and commits version info', async () => {
     const commit = jest.fn();
     await actions.getVersions({ commit });
 
