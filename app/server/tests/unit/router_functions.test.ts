@@ -1,7 +1,7 @@
 import { getVersionInfo } from '../../src/routes/routes';
 import * as versionInfo from '../../../server/resources/versionInfo.json';
 
-const mockRequest: any = { }; // eslint-disable-line @typescript-eslint/no-empty-function
+const mockRequest: any = { };
 
 const mockResponse = () => {
     const res: any = {};
