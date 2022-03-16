@@ -1,5 +1,6 @@
 import { createStore } from 'vuex';
 import actions from '@/store/actions';
+import mutations from '@/store/mutations';
 
 export default createStore({
   state: {
@@ -7,11 +8,7 @@ export default createStore({
   },
   getters: {
   },
-  mutations: {
-    setVersions(state, versioninfo) {
-      state.versions = versioninfo;
-    },
-  },
+  mutations,
   actions,
   modules: {
   },
