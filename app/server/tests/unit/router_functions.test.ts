@@ -1,4 +1,4 @@
-import { getVersionInfo } from '../../../server/routes/routes';
+import { getVersionInfo } from '../../src/routes/routes';
 import * as versionInfo from '../../../server/resources/versionInfo.json';
 
 const mockRequest = () => { }; // eslint-disable-line @typescript-eslint/no-empty-function

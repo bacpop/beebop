@@ -1,6 +1,6 @@
 import request from 'supertest';
 import express from "express";
-import { router } from '../../../server/routes/routes';
+import { router } from '../../src/routes/routes';
 import * as versionInfo from '../../../server/resources/versionInfo.json';
 
 const app = express();

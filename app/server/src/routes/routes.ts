@@ -1,4 +1,4 @@
-import * as versionInfo from '../resources/versionInfo.json';
+import * as versionInfo from '../../resources/versionInfo.json';
 
 export const router = (app => {
     app.get('/', (request, response) => {
