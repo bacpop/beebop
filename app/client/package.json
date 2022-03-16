@@ -12,6 +12,7 @@
     "axios": "^0.26.0",
     "axios-mock-adapter": "^1.20.0",
     "core-js": "^3.8.3",
+    "ts-node": "^10.7.0",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3",
     "vuex": "^4.0.2"
