@@ -41,7 +41,7 @@ describe('About', () => {
   });
 
   it('calls getVersion', () => {
-    const wrapper = mount(AboutView, { // eslint-disable-line @typescript-eslint/no-unused-vars
+    mount(AboutView, {
       global: {
         plugins: [store],
       },
