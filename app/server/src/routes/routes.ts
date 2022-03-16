@@ -12,6 +12,3 @@ export const router = (app => {
 export async function getVersionInfo (request, response){
     response.send(versionInfo);
 }
-
-// Export 
-// module.exports = {router, getVersionInfo, versionInfo};
