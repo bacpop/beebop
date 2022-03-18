@@ -1,10 +1,9 @@
 FROM node:16
 
-WORKDIR /
-COPY ./package.json ./
+COPY ./package.json /app/package.json
+WORKDIR /app
 RUN npm install
 
-
-COPY . ./
+COPY . /app
 EXPOSE 8080
 CMD npm run serve
