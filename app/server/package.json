@@ -18,7 +18,8 @@
     "body-parser": "^1.19.2",
     "cors": "^2.8.5",
     "express": "^4.17.3",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "ts-node": "^10.7.0"
   },
   "devDependencies": {
     "@types/jest": "^27.4.1",
