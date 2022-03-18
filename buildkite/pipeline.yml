@@ -1,0 +1,14 @@
+steps:
+  - label: ":whale::vue: Build Server"
+    command: app/server/docker/build
+
+  - label: ":whale::vue: Build Client"
+    command: app/client/docker/build
+
+  - wait
+
+  - label: ":shipit: Push Server images"
+    command: app/server/docker/push
+
+  - label: ":shipit: Push Client images"
+    command: app/server/docker/push
