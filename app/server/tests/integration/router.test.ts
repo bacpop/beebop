@@ -12,7 +12,7 @@ router(app)
 
 describe("testing-server-routes", () => {
     const mock = new MockAdapter(axios);
-    mock.onGet(`${config.flask_url}/version`).reply(200, versionInfo);
+    mock.onGet(`${config.api_url}/version`).reply(200, versionInfo);
 
     it("GET /version", async () => {
         const response= await request(app).get("/version");

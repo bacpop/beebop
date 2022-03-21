@@ -14,7 +14,7 @@ const mockResponse = () => {
 
 describe("test routes", () => {
     const mock = new MockAdapter(axios);
-    mock.onGet(`${config.flask_url}/version`).reply(200, versionInfo);
+    mock.onGet(`${config.api_url}/version`).reply(200, versionInfo);
 
     it("get version info", async () => {
         const req = mockRequest;

@@ -11,6 +11,6 @@ export const router = (app => {
 })
 
 export async function getVersionInfo (request, response){
-    await axios.get(`${config.flask_url}/version`)
+    await axios.get(`${config.api_url}/version`)
         .then(res => response.send(res.data));
 }
