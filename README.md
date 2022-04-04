@@ -21,6 +21,7 @@ The website can be viewed at http://localhost:8080/ . You can stop the applicati
 
 
 ## Testing
+### Frontend tests
 
 You can run unit tests for the vue app with
 ```
@@ -28,8 +29,17 @@ npm run test:unit
 ```
 inside `app/client/`.
 
+### Backend tests
+
 The backend can be tested with 
 ```
 npm run test
 ```
 insinde `app/server`.
+
+### End-to-end tests
+To run end-to-end test, the app must be started with `./scripts/run` as explained above. In a new terminal, these test can be launched with
+```
+npx playwright test
+```
+from `app/client/`.
