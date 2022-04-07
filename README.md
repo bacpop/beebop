@@ -5,22 +5,23 @@ Clone the repository to your computer with
 git clone git@github.com:bacpop/beebop.git
 ```
 
-To start the Express server, go into the `app/server/` directory and run
+
+Make sure you have [Node Package Manager](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) and [Docker](https://docs.docker.com/get-docker/) installed:
 ```
-npm install
-npm run express
+npm --version
+docker --version
 ```
 
-In a second terminal, go to `app/client/` and start the vue App:
+To start the application, run:
 ```
-npm install
-npm run serve
+./scripts/run
 ```
 
-The website can be viewed at http://localhost:8080/ .
+The website can be viewed at http://localhost:8080/ . You can stop the application with `Ctrl+C`.
 
 
 ## Testing
+### Frontend tests
 
 You can run unit tests for the vue app with
 ```
@@ -28,8 +29,17 @@ npm run test:unit
 ```
 inside `app/client/`.
 
+### Backend tests
+
 The backend can be tested with 
 ```
 npm run test
 ```
 insinde `app/server`.
+
+### End-to-end tests
+To run end-to-end test, the app must be started with `./scripts/run` as explained above. In a new terminal, these test can be launched with
+```
+npx playwright test
+```
+from `app/client/`.

@@ -1,4 +1,5 @@
-import * as versionInfo from '../../resources/versionInfo.json';
+import axios from 'axios';
+import config from '../resources/config.json';
 
 export const router = (app => {
     app.get('/', (request, response) => {
@@ -10,5 +11,6 @@ export const router = (app => {
 })
 
 export async function getVersionInfo (request, response){
-    response.send(versionInfo);
+    await axios.get(`${config.api_url}/version`)
+        .then(res => response.send(res.data));
 }

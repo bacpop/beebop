@@ -1,5 +1,8 @@
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
 import { getVersionInfo } from '../../src/routes/routes';
-import * as versionInfo from '../../../server/resources/versionInfo.json';
+import versionInfo from '../../../server/resources/versionInfo.json';
+import config from '../../src/resources/config.json';
 
 const mockRequest: any = { };
 
@@ -10,6 +13,9 @@ const mockResponse = () => {
 };
 
 describe("test routes", () => {
+    const mock = new MockAdapter(axios);
+    mock.onGet(`${config.api_url}/version`).reply(200, versionInfo);
+
     it("get version info", async () => {
         const req = mockRequest;
         const res = mockResponse();
