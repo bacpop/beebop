@@ -5,6 +5,7 @@ import mutations from '@/store/mutations';
 export default createStore({
   state: {
     versions: [],
+    user: false,
   },
   getters: {
   },
