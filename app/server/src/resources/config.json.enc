@@ -1,0 +1,10 @@
+{
+    "server_port": 4000,
+    "api_url": "http://localhost:5000",
+    "client_url": "http://localhost:8080",
+    "GOOGLE_CLIENT_ID": "${GOOGLE_ID}",
+    "GOOGLE_CLIENT_SECRET": "$GOOGLE_SECRET",
+    "SESSION_SECRET": "$EXPRESS_SESSION_SECRET",
+    "GITHUB_CLIENT_ID":"$GITHUB_ID",
+    "GITHUB_CLIENT_SECRET":"$GITHUB_SECRET"
+}
