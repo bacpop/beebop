@@ -1,13 +1,64 @@
-import express from "express"
+import express from "express";
 import cors from "cors";
 import morgan from "morgan";
+import passport from 'passport';
+import session from 'express-session';
+import PassportGoogle from 'passport-google-oauth20';
+import PassportGithub from 'passport-github';
 
+import config from './resources/config.json';
 import { router } from './routes/routes';
 
 const app = express();
 
+//set up passport
+passport.use(
+  new PassportGoogle.Strategy(
+    {
+      clientID: config.GOOGLE_CLIENT_ID,
+      clientSecret: config.GOOGLE_CLIENT_SECRET,
+      callbackURL: '/return/google'
+    },
+    (accessToken, refreshToken, profile, cb) => {
+      return cb(null, profile);
+    }
+  )
+);
+
+passport.use(
+  new PassportGithub.Strategy({
+      clientID: config.GITHUB_CLIENT_ID,
+      clientSecret: config.GITHUB_CLIENT_SECRET,
+      callbackURL: '/return/github'
+    },
+    (accessToken, refreshToken, profile, cb) => {
+      return cb(null, profile);
+    }
+  )
+);
+
+
+passport.serializeUser((user, cb) => {
+  cb(null, user);
+});
+
+passport.deserializeUser((obj, cb) => {
+  cb(null, obj);
+});
+
+app.use(session({ secret: config.SESSION_SECRET, cookie: { secure: false }, resave: false, saveUninitialized: false }));
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use(morgan('tiny'));
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      config.client_url
+    ],
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({
   extended: true
@@ -15,7 +66,7 @@ app.use(express.urlencoded({
 
 router(app)
 
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || config.server_port;
 app.listen(port, () => {
-    console.log(`listening on ${port}`);
+  console.log(`listening on ${port}`);
 });
