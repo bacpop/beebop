@@ -11,7 +11,11 @@ Make sure you have [Node Package Manager](https://docs.npmjs.com/downloading-and
 npm --version
 docker --version
 ```
-
+If you run the application for the first time, you need to decrypt the config file in `app/server/src/resources` first. 
+When having access to the vault, this can be done with 
+```
+./scripts/decrypt_config
+```
 To start the application, run:
 ```
 ./scripts/run
