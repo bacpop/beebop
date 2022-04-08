@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-FILE_ENC=app/server/src/resources/config.enc.json
+FILE_ENC=app/server/src/resources/config.json.enc
 FILE_CLEAR=app/server/src/resources/config.json
 
 export GITHUB_ID=$(vault read -field=clientid secret/beebop/auth/github)

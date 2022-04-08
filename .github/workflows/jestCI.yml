@@ -50,5 +50,7 @@ jobs:
         cache: 'npm'
         cache-dependency-path: ./app/client/package-lock.json
     - run: npm ci
+    - name: get config file
+      run: cp ./app/server/src/resources/config.json.enc ./app/server/src/resources/config.json
     - name: Run unit tests
       run: npm run test
