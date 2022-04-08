@@ -2,7 +2,7 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { getVersionInfo } from '../../src/routes/routes';
 import versionInfo from '../../../server/resources/versionInfo.json';
-import config from '../../src/resources/config.json';
+import config from '../../src/resources/config.enc.json';
 
 const mockRequest: any = { };
 
