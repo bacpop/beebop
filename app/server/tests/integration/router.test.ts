@@ -19,7 +19,6 @@ describe("testing-server-routes", () => {
 
     it("GET /version", async () => {
         const response= await request(app).get("/version");
-        console.log(versionInfo)
         expect(response.body).toMatchObject(versionInfo);
     });
     it("GET /", async () => {
@@ -28,7 +27,7 @@ describe("testing-server-routes", () => {
     });
     it("GET /user", async () => {
         const { body } = await request(app).get("/user");
-        expect(body).toEqual(false);
+        expect(body.status).toEqual('failure');
     });
 });
 
@@ -46,7 +45,6 @@ describe("testing-server-routes as logged in user", () => {
         Agent.agent
         await agent.get('/login/mock');
         const { body } = await agent.get("/user");
-        console.log(body)
-        expect(body).toEqual({id:'1234', provider:'mock', name:'Foo'});
+        expect(body.data).toEqual({id:'1234', provider:'mock', name:'Foo'});
     });
 });
