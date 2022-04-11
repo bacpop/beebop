@@ -2,14 +2,6 @@ import axios from 'axios';
 import passport from 'passport';
 import config from '../resources/config.json';
 
-const authCheck = (req, res, next) => {
-    if (!req.user) {
-        res.json(false);
-    } else {
-        next();
-    }
-}
-
 export const router = (app => {
     app.get('/',
         (request, response) => {
@@ -27,6 +19,10 @@ export const router = (app => {
 
     app.get('/login/github',
         passport.authenticate('github', { scope: ['profile'] }));
+
+    app.get('/login/mock', passport.authenticate('mock'), (req, res) => {
+        res.send({ status: 'ok' });
+        });
 
     app.get('/user',
         authCheck,
@@ -72,4 +68,12 @@ export const router = (app => {
 export async function getVersionInfo(request, response) {
     await axios.get(`${config.api_url}/version`)
         .then(res => response.send(res.data));
+}
+
+const authCheck = (req, res, next) => {
+    if (!req.user) {
+        res.json(false);
+    } else {
+        next();
+    }
 }
