@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p>Nice to see you, {{user.name}}!</p>
+    <p>Nice to see you, {{user.data.name}}!</p>
     <a href=http://localhost:4000/logout class="btn-logout">Logout</a>
   </div>
 </template>

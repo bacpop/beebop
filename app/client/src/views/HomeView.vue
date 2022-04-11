@@ -1,8 +1,8 @@
 <template>
   <div class='home'>
     <h1>Welcome to beebop!</h1>
-    <LoginPrompt v-if='!user' />
-    <GreetingAndLogout v-if='user' />
+    <LoginPrompt v-if='user.status=="failure"' />
+    <GreetingAndLogout v-if='user.status=="success"' />
   </div>
 </template>
 

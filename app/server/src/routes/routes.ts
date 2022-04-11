@@ -29,15 +29,24 @@ export const router = (app => {
         (request, response) => {
             if (request.user.provider == 'github') {
                 response.json({
-                    id: request.user.id,
-                    provider: request.user.provider,
-                    name: request.user.username
+                    status: 'success',
+                    errors: [],
+                    data: {
+                        id: request.user.id,
+                        provider: request.user.provider,
+                        name: request.user.username
+                    }
+                    
                 });
             } else {
                 response.json({
-                    id: request.user.id,
-                    provider: request.user.provider,
-                    name: request.user.name.givenName
+                    status: 'success',
+                    errors: [],
+                    data: {
+                        id: request.user.id,
+                        provider: request.user.provider,
+                        name: request.user.name.givenName
+                    }    
                 });
             }
         }
@@ -72,7 +81,13 @@ export async function getVersionInfo(request, response) {
 
 const authCheck = (req, res, next) => {
     if (!req.user) {
-        res.json(false);
+        res.json(
+            {
+                status:"failure",
+                errors:["not authenticated"],
+                data: null
+            }
+        );
     } else {
         next();
     }
