@@ -1,6 +1,6 @@
 import express from "express";
 
-import { configureApp } from './configApp';
+import { configureApp } from './configureApp';
 import { router } from './routes/routes';
 import config from './resources/config.json';
 
