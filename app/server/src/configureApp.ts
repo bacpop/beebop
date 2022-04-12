@@ -9,7 +9,7 @@ import MockStrategy from 'passport-mock-strategy';
 
 import config from './resources/config.json';
 
-export const configApp = (app => {
+export const configureApp = (app => {
     //set up passport
     passport.use(
         new PassportGoogle.Strategy(
