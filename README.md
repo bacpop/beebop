@@ -11,11 +11,20 @@ Make sure you have [Node Package Manager](https://docs.npmjs.com/downloading-and
 npm --version
 docker --version
 ```
-If you run the application for the first time, you need to decrypt the config file in `app/server/src/resources` first. 
-When having access to the vault, this can be done with 
+
+
+If you run the application for the first time, you need to replace the secrets in the config file in `app/server/src/resources` first. 
+Login to the vault:
+```
+export VAULT_ADDR=https://vault.dide.ic.ac.uk:8200
+vault login -method=github
+```
+Then run:
 ```
 ./scripts/decrypt_config
 ```
+
+
 To start the application, run:
 ```
 ./scripts/run
