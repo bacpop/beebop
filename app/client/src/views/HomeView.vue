@@ -1,8 +1,8 @@
 <template>
   <div class='home'>
     <h1>Welcome to beebop!</h1>
-    <LoginPrompt v-if='user.status=="failure"' />
-    <GreetingAndLogout v-if='user.status=="success"' />
+    <LoginPrompt v-if='!loggedIn' />
+    <GreetingAndLogout v-if='loggedIn' />
   </div>
 </template>
 
@@ -24,6 +24,11 @@ export default defineComponent({
   methods: {
     ...mapActions(['getUser']),
   },
-  computed: mapState(['user']),
+  computed: {
+    loggedIn() {
+      return this.user.status === 'success';
+    },
+    ...mapState(['user']),
+  },
 });
 </script>
