@@ -20,10 +20,6 @@ export const router = (app => {
     app.get('/login/github',
         passport.authenticate('github', { scope: ['profile'] }));
 
-    app.get('/login/mock', passport.authenticate('mock'), (req, res) => {
-        res.send({ status: 'ok' });
-        });
-
     app.get('/user',
         authCheck,
         (request, response) => {

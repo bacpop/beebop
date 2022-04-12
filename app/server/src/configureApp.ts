@@ -5,7 +5,6 @@ import passport from 'passport';
 import session from 'express-session';
 import PassportGoogle from 'passport-google-oauth20';
 import PassportGithub from 'passport-github';
-import MockStrategy from 'passport-mock-strategy';
 
 import config from './resources/config.json';
 
@@ -35,8 +34,6 @@ export const configureApp = (app => {
             }
         )
     );
-
-    passport.use(new MockStrategy());
 
     passport.serializeUser((user, cb) => {
         cb(null, user);

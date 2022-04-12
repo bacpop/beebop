@@ -2,16 +2,23 @@ import request from 'supertest';
 import Agent from'supertest';
 import express from "express";
 import axios from 'axios';
+import passport from 'passport';
 import MockAdapter from 'axios-mock-adapter';
 import { router } from '../../src/routes/routes';
-import { configApp } from '../../src/configApp';
+import { configureApp } from '../../src/configureApp';
 import versionInfo from '../../../server/resources/versionInfo.json';
 import config from '../../src/resources/config.json';
-
+import MockStrategy from 'passport-mock-strategy';
 
 const app = express();
-configApp(app)
+configureApp(app);
 router(app)
+
+// adding passport mock strategy and route for tests
+passport.use(new MockStrategy());
+app.get('/login/mock', passport.authenticate('mock'), (req, res) => {
+    res.send({ status: 'ok' });
+    });
 
 describe("testing-server-routes", () => {
     const mock = new MockAdapter(axios);
