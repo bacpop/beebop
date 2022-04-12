@@ -53,6 +53,6 @@ jobs:
     - name: get config file
       run: |
         pwd
-        cp ./src/resources/config.json.enc ./src/resources/config.json
+        cp ./src/resources/config.json.in ./src/resources/config.json
     - name: Run unit tests
       run: npm run test
