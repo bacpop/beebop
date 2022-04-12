@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-FILE_ENC=app/server/src/resources/config.json.enc
+FILE_IN=app/server/src/resources/config.json.in
 FILE_CLEAR=app/server/src/resources/config.json
 
 export GITHUB_ID=$(vault read -field=clientid secret/beebop/auth/github)
@@ -10,4 +10,4 @@ export GOOGLE_ID=$(vault read -field=clientid secret/beebop/auth/google)
 export GOOGLE_SECRET=$(vault read -field=secret secret/beebop/auth/google)
 export EXPRESS_SESSION_SECRET=$(vault read -field=secret secret/beebop/express-session)
 
-envsubst < $FILE_ENC > $FILE_CLEAR
+envsubst < $FILE_IN > $FILE_CLEAR
