@@ -5,5 +5,5 @@ import {
 
 export interface RootState {
   versions: Versions | []
-  user: User | Record<string, never>
+  user: User | null
 }

@@ -1,8 +1,10 @@
 <template>
   <div class='home'>
     <h1>Welcome to beebop!</h1>
-    <LoginPrompt v-if='!loggedIn' />
-    <GreetingAndLogout v-if='loggedIn' />
+    <div v-if='user'>
+      <LoginPrompt v-if='!loggedIn' />
+      <GreetingAndLogout v-if='loggedIn' />
+    </div>
   </div>
 </template>
 
