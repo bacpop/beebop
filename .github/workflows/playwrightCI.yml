@@ -31,8 +31,6 @@ jobs:
     - name: Run all components
       working-directory: .
       run: ./scripts/run_test 
-    #- name: Setup tmate session
-    #  uses: mxschmitt/action-tmate@v3
     - name: Install playwright and dependencies
       working-directory: ./app/client
       run: |
