@@ -51,7 +51,7 @@ npm run test
 insinde `app/server`.
 
 ### End-to-end tests
-To run end-to-end test, the app must be started with `./scripts/run` as explained above. In a new terminal, these test can be launched with
+To run end-to-end test, the app must be started with `./scripts/run_test` as explained above. In a new terminal, these test can be launched with
 ```
 npx playwright test
 ```

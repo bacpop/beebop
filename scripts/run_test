@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -e
+
+CONTAINER_NAME=beebop_py
+PORT=5000
+docker pull mrcide/beebop-py
+docker run --rm -d --name=$CONTAINER_NAME -p $PORT:8080 mrcide/beebop-py
+npm --prefix app/server install
+npm --prefix app/client install
+
+# From now on, if the user presses Ctrl+C we should teardown
+function cleanup() {
+    docker stop $CONTAINER_NAME
+}
+trap cleanup INT
+trap cleanup ERR
+
+BEEBOP_TEST="true" npm run --prefix app/server express & npm run --prefix app/client serve
