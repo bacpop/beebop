@@ -10,7 +10,7 @@ jobs:
   e2e:
 
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
         
     strategy:
       matrix:
@@ -29,12 +29,16 @@ jobs:
         pwd
         cp ./app/server/src/resources/config.json.in ./app/server/src/resources/config.json
     - name: Run all components
+      working-directory: .
       run: ./scripts/run_test 
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
+    #- name: Setup tmate session
+    #  uses: mxschmitt/action-tmate@v3
+    - name: Install playwright dependencies
+      working-directory: ./app/client
+      run: npx playwright install-deps
     - name: Run e2e tests
-      run: |
-        cd ./app/client
-        npx playwright test
+      working-directory: ./app/client
+      run: npx playwright test
     - name: Stop all components
+      working-directory: .
       run: ./scripts/stop_test
