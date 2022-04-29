@@ -30,7 +30,9 @@ jobs:
         cd ../server
         npm ci
     - name: get config file
-      run: cp ./src/resources/config.json.in ./src/resources/config.json
+      run: |
+        pwd
+        cp ./app/server/src/resources/config.json.in ./app/server/src/resources/config.json
     - name: Run all components
       run: ./scripts/run_test 
     - name: Run e2e tests
