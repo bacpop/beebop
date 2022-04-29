@@ -31,11 +31,13 @@ jobs:
     - name: Run all components
       working-directory: .
       run: ./scripts/run_test 
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
-    - name: Install playwright dependencies
+    #- name: Setup tmate session
+    #  uses: mxschmitt/action-tmate@v3
+    - name: Install playwright and dependencies
       working-directory: ./app/client
-      run: npx playwright install-deps
+      run: |
+        npx playwright install
+        npx playwright install-deps
     - name: Run e2e tests
       working-directory: ./app/client
       run: npx playwright test
