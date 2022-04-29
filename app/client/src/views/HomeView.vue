@@ -1,7 +1,7 @@
 <template>
   <div class='home'>
     <h1>Welcome to beebop!</h1>
-    <div v-if='user'>
+    <div v-if='user' class='auth'>
       <LoginPrompt v-if='!loggedIn' />
       <GreetingAndLogout v-if='loggedIn' />
     </div>
