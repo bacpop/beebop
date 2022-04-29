@@ -30,6 +30,8 @@ jobs:
         cp ./app/server/src/resources/config.json.in ./app/server/src/resources/config.json
     - name: Run all components
       run: ./scripts/run_test 
+    - name: Install Playwright
+      run: npx playwright install --with-deps
     - name: Setup tmate session
       uses: mxschmitt/action-tmate@v3
     - name: Run e2e tests
