@@ -1,4 +1,4 @@
-name: jest CI
+name: playwright CI
 
 on:
   push:
@@ -10,6 +10,7 @@ jobs:
   e2e:
 
     runs-on: ubuntu-latest
+    timeout-minutes: 15
         
     strategy:
       matrix:
@@ -28,7 +29,8 @@ jobs:
         npm ci
         cd ../server
         npm ci
-        cd ../..
+    - name: get config file
+      run: cp ./src/resources/config.json.in ./src/resources/config.json
     - name: Run all components
       run: ./scripts/run_test 
     - name: Run e2e tests
