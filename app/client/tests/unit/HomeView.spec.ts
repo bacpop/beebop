@@ -41,6 +41,9 @@ describe('Home', () => {
           data: null,
         },
       }),
+      actions: {
+        getUser,
+      },
     });
     const wrapper = mount(HomeView, {
       global: {
@@ -67,6 +70,9 @@ describe('Home', () => {
           },
         },
       }),
+      actions: {
+        getUser,
+      },
     });
     const wrapper = mount(HomeView, {
       global: {
@@ -93,6 +99,9 @@ describe('Home', () => {
         },
         uploadedFiles: 3,
       }),
+      actions: {
+        getUser,
+      },
     });
     const wrapper = mount(HomeView, {
       global: {
@@ -119,6 +128,9 @@ describe('Home', () => {
         uploadedFiles: 3,
         analysisStatus: 'started',
       }),
+      actions: {
+        getUser,
+      },
     });
     const wrapper = mount(HomeView, {
       global: {
