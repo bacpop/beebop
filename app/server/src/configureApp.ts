@@ -56,7 +56,8 @@ export const configureApp = (app => {
             credentials: true,
         })
     );
-    app.use(express.json());
+    // increase body size limit to 1GB
+    app.use(express.json({ limit: 1000000000 }));
     app.use(express.urlencoded({
         extended: true
     }));
