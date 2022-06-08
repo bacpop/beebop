@@ -1,7 +1,7 @@
 /// <reference lib="dom"/>
 
 import { test, expect } from '@playwright/test';
-import { readFileSync } from 'node:fs';
+import { readFileSync } from 'fs';
 import config from '../../src/resources/config.json';
 
 test.describe('Logged in Tests', () => {
