@@ -1,10 +1,12 @@
-import { createStore } from 'vuex';
+import Vuex from 'vuex';
 import actions from '@/store/actions';
 import mutations from '@/store/mutations';
+import { RootState } from '@/store/state';
 
-export default createStore({
+export default new Vuex.Store<RootState>({
   state: {
     versions: [],
+    user: null,
   },
   getters: {
   },

@@ -1,0 +1,44 @@
+name: playwright CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  e2e:
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+        
+    strategy:
+      matrix:
+        node-version: [12.x, 14.x, 16.x]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: ./app/client/package-lock.json
+    - name: get config file
+      run: |
+        pwd
+        cp ./app/server/src/resources/config.json.in ./app/server/src/resources/config.json
+    - name: Run all components
+      working-directory: .
+      run: ./scripts/run_test 
+    - name: Install playwright and dependencies
+      working-directory: ./app/client
+      run: |
+        npx playwright install
+        npx playwright install-deps
+    - name: Run e2e tests
+      working-directory: ./app/client
+      run: npx playwright test
+    - name: Stop all components
+      working-directory: .
+      run: ./scripts/stop_test

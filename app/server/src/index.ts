@@ -1,21 +1,25 @@
-import express from "express"
-import cors from "cors";
-import morgan from "morgan";
+import express from "express";
+import MockStrategy from 'passport-mock-strategy';
+import passport from 'passport';
 
+import { configureApp } from './configureApp';
 import { router } from './routes/routes';
+import config from './resources/config.json';
 
 const app = express();
 
-app.use(morgan('tiny'));
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({
-  extended: true
-}));
+configureApp(app)
 
 router(app)
 
-const port = process.env.PORT || 4000;
+if (process.env.BEEBOP_TEST == "true"){
+  passport.use(new MockStrategy());
+  app.get('/login/mock', passport.authenticate('mock'), (req, res) => {
+      res.send({ status: 'ok' });
+      });
+}
+  
+const port = process.env.PORT || config.server_port;
 app.listen(port, () => {
-    console.log(`listening on ${port}`);
+  console.log(`listening on ${port}`);
 });

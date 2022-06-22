@@ -1,0 +1,5 @@
+set -e
+
+docker stop beebop_py
+node ./node_modules/pm2/bin/pm2 delete beebop_client
+node ./node_modules/pm2/bin/pm2 delete beebop_server
