@@ -5,6 +5,8 @@
       <LoginPrompt v-if='!loggedIn' />
       <GreetingAndLogout v-if='loggedIn' />
     </div>
+    <DropZone v-if='user && loggedIn' />
+    <StartButton v-if='user && loggedIn && filesUploaded' />
   </div>
 </template>
 
@@ -13,12 +15,16 @@ import { defineComponent } from 'vue';
 import { mapState, mapActions } from 'vuex';
 import LoginPrompt from '@/components/LoginPrompt.vue';
 import GreetingAndLogout from '@/components/GreetingAndLogout.vue';
+import DropZone from '@/components/DropZone.vue';
+import StartButton from '@/components/StartButton.vue';
 
 export default defineComponent({
   name: 'HomeView',
   components: {
     LoginPrompt,
     GreetingAndLogout,
+    DropZone,
+    StartButton,
   },
   mounted() {
     this.getUser();
@@ -30,7 +36,10 @@ export default defineComponent({
     loggedIn() {
       return this.user.status === 'success';
     },
-    ...mapState(['user']),
+    filesUploaded() {
+      return this.uploadedFiles > 0;
+    },
+    ...mapState(['user', 'uploadedFiles']),
   },
 });
 </script>

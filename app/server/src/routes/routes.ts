@@ -13,6 +13,18 @@ export const router = (app => {
 
     app.get('/version',
         getVersionInfo);
+    
+    app.post('/poppunk',
+        authCheck,
+        runPoppunk);
+
+    app.post('/status',
+        authCheck,
+        getStatus);
+
+    app.post('/result',
+        authCheck,
+        getResult);
 
     app.get('/login/google',
         passport.authenticate('google', { scope: ['profile'] }));
@@ -72,7 +84,41 @@ export const router = (app => {
 
 export async function getVersionInfo(request, response) {
     await axios.get(`${config.api_url}/version`)
-        .then(res => response.send(res.data));
+        .then(res => response.send(res.data))
+        .catch(function (error) {
+            console.log(error);
+          });
+}
+
+export async function getStatus(request, response) {
+    await axios.get(`${config.api_url}/status/${request.body.hash}`)
+        .then(res => response.send(res.data))
+        .catch(function (error) {
+            console.log(error);
+        });
+}
+
+export async function getResult(request, response) {
+    await axios.get(`${config.api_url}/result/${request.body.hash}`)
+        .then(res => response.send(res.data))
+        .catch(function (error) {
+            console.log(error);
+        });
+}
+
+export async function runPoppunk(request, response) {
+    await axios.post(`${config.api_url}/poppunk`,
+        request.body,
+        {
+            headers: {
+              'Content-Type': 'application/json'
+            }
+        },
+    )
+        .then(res => response.send(res.data))
+        .catch(function (error) {
+            console.log(error);
+        });
 }
 
 const authCheck = (req, res, next) => {

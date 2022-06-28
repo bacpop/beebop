@@ -1,7 +1,7 @@
 <template>
   <div>
     <p>Nice to see you, {{user.data.name}}!</p>
-    <a :href="generateLogout" class="btn btn-block btn-logout">Logout</a>
+    <a :href="generateLogout" class="btn btn-block btn-standard">Logout</a>
   </div>
 </template>
 

@@ -7,6 +7,14 @@ export default new Vuex.Store<RootState>({
   state: {
     versions: [],
     user: null,
+    uploadedFiles: 0,
+    projectHash: null,
+    analysisStatus: null,
+    statusInterval: null,
+    results: {
+      perIsolate: {},
+      perCluster: null,
+    },
   },
   getters: {
   },
