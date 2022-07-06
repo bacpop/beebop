@@ -90,5 +90,4 @@ describe('Home', () => {
     expect(wrapper.find('.dropzone').exists());
     expect(wrapper.find('.count').text()).toMatch('0');
   });
-
 });
