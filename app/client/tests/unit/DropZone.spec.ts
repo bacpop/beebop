@@ -38,10 +38,13 @@ describe('Dropzone', () => {
   });
 
   it('processes dropped files', () => {
+    const file = {
+      name: 'sample.fa',
+      text: () => Promise.resolve('ACGTGTAGTCTGACGTAAC'),
+    };
     // call onDrop function
-    // ???
+    wrapper.vm.onDrop([file]);
     // should have called processFiles()
-    // expect(processFiles).toHaveBeenCalledTimes(1);
-
+    expect(processFiles).toHaveBeenCalledTimes(1);
   });
 });

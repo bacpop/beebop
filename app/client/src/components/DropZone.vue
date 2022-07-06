@@ -30,6 +30,7 @@ export default {
     return {
       getRootProps,
       getInputProps,
+      onDrop,
       results,
       uploadedFiles,
       ...rest,
