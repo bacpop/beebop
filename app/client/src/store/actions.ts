@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { Commit } from 'vuex';
 import config from '@/resources/config.json';
+import { Md5 } from 'ts-md5/dist/md5';
 
 axios.defaults.withCredentials = true;
 
@@ -19,5 +20,17 @@ export default {
   },
   async logoutUser() {
     await axios.get(`${config.server_url}/logout`);
+  },
+  async processFiles({ commit } : { commit: Commit }, acceptFiles: Array<File>) {
+    function readContent(file: File) {
+      return file.text();
+    }
+    acceptFiles.forEach((file: File) => {
+      readContent(file)
+        .then((content: string) => {
+          const fileHash = Md5.hashStr(content);
+          commit('addFile', { hash: fileHash, name: file.name });
+        });
+    });
   },
 };
