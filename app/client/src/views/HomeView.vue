@@ -5,6 +5,7 @@
       <LoginPrompt v-if='!loggedIn' />
       <GreetingAndLogout v-if='loggedIn' />
     </div>
+    <DropZone v-if='user && loggedIn' />
   </div>
 </template>
 
@@ -13,12 +14,14 @@ import { defineComponent } from 'vue';
 import { mapState, mapActions } from 'vuex';
 import LoginPrompt from '@/components/LoginPrompt.vue';
 import GreetingAndLogout from '@/components/GreetingAndLogout.vue';
+import DropZone from '@/components/DropZone.vue';
 
 export default defineComponent({
   name: 'HomeView',
   components: {
     LoginPrompt,
     GreetingAndLogout,
+    DropZone,
   },
   mounted() {
     this.getUser();
