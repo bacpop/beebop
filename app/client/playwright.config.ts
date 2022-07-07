@@ -49,13 +49,6 @@ const config: PlaywrightTestConfig = {
         ...devices['Desktop Firefox'],
       },
     },
-
-    // { // DataTransfer (required for Drag & Drop file transfer) can only be created in Firefox and Chromium
-    //   name: 'webkit',
-    //   use: {
-    //     ...devices['Desktop Safari'],
-    //   },
-    // },
   ],
 };
 
