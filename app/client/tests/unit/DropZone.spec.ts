@@ -67,7 +67,6 @@ describe('Dropzone', () => {
   });
 
   it('displays text for !isDragActive', () => {
-    expect(wrapper.find('.dropzone').text()).toBe("Drag and drop your fasta files here, or click to select files");
+    expect(wrapper.find('.dropzone').text()).toBe('Drag and drop your fasta files here, or click to select files');
   });
-
 });

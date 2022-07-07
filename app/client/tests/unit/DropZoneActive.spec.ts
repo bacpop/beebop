@@ -17,7 +17,7 @@ import Vuex from 'vuex';
 import { mockRootState } from '../mocks';
 
 describe('Dropzone', () => {
-const store = new Vuex.Store<RootState>({
+  const store = new Vuex.Store<RootState>({
     state: mockRootState({
       user: {
         status: 'success',
@@ -41,7 +41,6 @@ const store = new Vuex.Store<RootState>({
   });
 
   it('displays text for isDragActive', () => {
-    expect(wrapper.find('.dropzone').text()).toBe("Drop the files here ...");
+    expect(wrapper.find('.dropzone').text()).toBe('Drop the files here ...');
   });
-
 });

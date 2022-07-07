@@ -26,7 +26,9 @@ export default {
     function onDrop(acceptFiles) {
       processFiles(acceptFiles);
     }
-    const { getRootProps, getInputProps, isDragActive, ...rest } = useDropzone({ onDrop, accept: ['.fa', '.fasta'] });
+    const {
+      getRootProps, getInputProps, isDragActive, ...rest
+    } = useDropzone({ onDrop, accept: ['.fa', '.fasta'] });
     return {
       getRootProps,
       getInputProps,
