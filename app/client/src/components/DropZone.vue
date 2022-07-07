@@ -3,7 +3,7 @@
     <div v-bind='getRootProps()' class=dropzone>
       <input v-bind='getInputProps()' />
       <p v-if='isDragActive'>Drop the files here ...</p>
-      <p v-else>Drag 'n' drop your fasta files here, or click to select files</p>
+      <p v-else>Drag and drop your fasta files here, or click to select files</p>
     </div>
     <p> Uploaded files:</p>
     <!--only adding this temporarily to have something testable for e2e tests-->
@@ -26,10 +26,11 @@ export default {
     function onDrop(acceptFiles) {
       processFiles(acceptFiles);
     }
-    const { getRootProps, getInputProps, ...rest } = useDropzone({ onDrop, accept: ['.fa', '.fasta'] });
+    const { getRootProps, getInputProps, isDragActive, ...rest } = useDropzone({ onDrop, accept: ['.fa', '.fasta'] });
     return {
       getRootProps,
       getInputProps,
+      isDragActive,
       onDrop,
       results,
       uploadedFiles,
