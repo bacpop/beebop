@@ -1,6 +1,4 @@
-export interface MyObject {
-    [key: string]: string;
-}
+type Dict<T> = Record<string, T>
 
 export interface Isolate {
     hash?: string,
@@ -10,22 +8,18 @@ export interface Isolate {
     sketch?: string
 }
 
-export interface IsolateObject {
-    [key: string]: Isolate;
-}
-
 export interface Versions {
-    data: Array<MyObject> | null
+    data: Array<Dict<string>> | null
     errors: Array<string>
     status: string
 }
 
 export interface User {
-    data: MyObject | null
+    data: Dict<string> | null
     errors: Array<string>
     status: string
 }
 
 export interface Results {
-    perIsolate: IsolateObject
+    perIsolate: Dict<Isolate>
 }
