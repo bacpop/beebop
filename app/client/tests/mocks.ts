@@ -8,7 +8,6 @@ export function mockRootState(state: Partial<RootState> = {}): RootState {
   return {
     versions: [],
     user: null,
-    uploadedFiles: 0,
     results: { perIsolate: {} },
     ...state,
   };

@@ -7,6 +7,5 @@ import {
 export interface RootState {
   versions: Versions | []
   user: User | null
-  uploadedFiles: number
   results: Results
 }

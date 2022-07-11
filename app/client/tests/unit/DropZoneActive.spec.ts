@@ -31,7 +31,6 @@ describe('Dropzone', () => {
       results: {
         perIsolate: {},
       },
-      uploadedFiles: 0,
     }),
   });
   const wrapper = mount(DropZone, {

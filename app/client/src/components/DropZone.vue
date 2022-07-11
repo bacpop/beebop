@@ -10,7 +10,7 @@
     <p v-for="file in results.perIsolate" :key="file.hash" class="uploaded-info">
       {{file.filename}} {{file.hash}}
     </p>
-    <p class="count">{{uploadedFiles}}</p>
+    <p class="count">{{ Object.keys(results.perIsolate).length }}</p>
   </div>
 </template>
 
@@ -22,7 +22,7 @@ export default {
   name: 'DropZone',
   setup() {
     const { processFiles } = useActions(['processFiles']);
-    const { results, uploadedFiles } = useState(['results', 'uploadedFiles']);
+    const { results } = useState(['results']);
     function onDrop(acceptFiles) {
       processFiles(acceptFiles);
     }
@@ -35,7 +35,6 @@ export default {
       isDragActive,
       onDrop,
       results,
-      uploadedFiles,
       ...rest,
     };
   },

@@ -72,7 +72,6 @@ describe('Home', () => {
         results: {
           perIsolate: {},
         },
-        uploadedFiles: 0,
       }),
       actions: {
         getUser,

@@ -33,7 +33,6 @@ describe('Dropzone', () => {
       results: {
         perIsolate: {},
       },
-      uploadedFiles: 0,
     }),
     actions: {
       processFiles,
