@@ -7,6 +7,9 @@ export default new Vuex.Store<RootState>({
   state: {
     versions: [],
     user: null,
+    results: {
+      perIsolate: {},
+    },
   },
   getters: {
   },

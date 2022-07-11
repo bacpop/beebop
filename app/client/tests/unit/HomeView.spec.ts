@@ -1,61 +1,53 @@
 import { mount } from '@vue/test-utils';
 import HomeView from '@/views/HomeView.vue';
-import { createStore } from 'vuex';
+import Vuex from 'vuex';
+import { RootState } from '@/store/state';
+import { mockRootState } from '../mocks';
 
 describe('Home', () => {
   const getUser = jest.fn();
-
-  const storeLoggedIn = createStore({
-    state() {
-      return {
-        user: {
-          status: 'success',
-          errors: [],
-          data: {
-            name: 'Jane',
-            id: '543653d45',
-            provider: 'google',
-          },
-        },
-      };
-    },
-    actions: {
-      getUser,
-    },
-  });
-
-  const storeLoggedOut = createStore({
-    state() {
-      return {
-        user: {
-          status: 'failure',
-          errors: [],
-          data: null,
-        },
-      };
-    },
-    actions: {
-      getUser,
-    },
-  });
 
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
   it('calls getUser', () => {
+    const store = new Vuex.Store<RootState>({
+      state: mockRootState({
+        user: {
+          status: 'failure',
+          errors: [],
+          data: null,
+        },
+      }),
+      actions: {
+        getUser,
+      },
+    });
     mount(HomeView, {
       global: {
-        plugins: [storeLoggedOut],
+        plugins: [store],
       },
     });
     expect(getUser).toHaveBeenCalled();
   });
 
   it('shows login buttons when not logged in', () => {
+    const store = new Vuex.Store<RootState>({
+      state: mockRootState({
+        user: {
+          status: 'failure',
+          errors: [],
+          data: null,
+        },
+      }),
+      actions: {
+        getUser,
+      },
+    });
     const wrapper = mount(HomeView, {
       global: {
-        plugins: [storeLoggedOut],
+        plugins: [store],
       },
     });
     expect(wrapper.find('h1').text()).toMatch('Welcome to beebop!');
@@ -65,15 +57,36 @@ describe('Home', () => {
     expect(socialButtons[1].text()).toBe('Login with Github');
   });
 
-  it('shows logout button when logged in', () => {
+  it('shows logout button and dropzone when logged in', () => {
+    const store = new Vuex.Store<RootState>({
+      state: mockRootState({
+        user: {
+          status: 'success',
+          errors: [],
+          data: {
+            name: 'Jane',
+            id: '543653d45',
+            provider: 'google',
+          },
+        },
+        results: {
+          perIsolate: {},
+        },
+      }),
+      actions: {
+        getUser,
+      },
+    });
     const wrapper = mount(HomeView, {
       global: {
-        plugins: [storeLoggedIn],
+        plugins: [store],
       },
     });
     expect(wrapper.find('h1').text()).toMatch('Welcome to beebop!');
-    const versions = wrapper.findAll('.btn-logout');
-    expect(versions.length).toBe(1);
-    expect(versions[0].text()).toBe('Logout');
+    const buttons = wrapper.findAll('.btn-logout');
+    expect(buttons.length).toBe(1);
+    expect(buttons[0].text()).toBe('Logout');
+    expect(wrapper.find('.dropzone').exists());
+    expect(wrapper.find('.count').text()).toMatch('0');
   });
 });

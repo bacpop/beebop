@@ -17,10 +17,13 @@
     "core-js": "^3.8.3",
     "node-sass": "^7.0.1",
     "sass-loader": "^12.6.0",
+    "ts-md5": "^1.2.11",
     "ts-node": "^10.7.0",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3",
-    "vuex": "^4.0.2"
+    "vue3-dropzone": "^0.0.7",
+    "vuex": "^4.0.2",
+    "vuex-composition-helpers": "^2.0.3"
   },
   "devDependencies": {
     "@playwright/test": "^1.20.2",
@@ -66,10 +69,14 @@
       {
         "files": [
           "**/__tests__/*.{j,t}s?(x)",
-          "**/tests/unit/**/*.spec.{j,t}s?(x)"
+          "**/tests/unit/**/*.spec.{j,t}s?(x)",
+          "**/tests/**/*.{j,t}s"
         ],
         "env": {
           "jest": true
+        },
+        "rules": {
+          "@typescript-eslint/no-explicit-any": "off"
         }
       }
     ]
