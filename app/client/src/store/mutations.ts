@@ -1,22 +1,19 @@
+import { RootState } from '@/store/state';
+import { Versions, User } from '@/types';
+
 export default {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  setVersions(state: any, versioninfo: object) {
+  setVersions(state: RootState, versioninfo: Versions) {
     state.versions = versioninfo;
   },
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  setUser(state: any, userinfo: object) {
+  setUser(state: RootState, userinfo: User) {
     state.user = userinfo;
   },
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  addFile(state: any, input: Record<string, string>) {
+  addFile(state: RootState, input: Record<string, string>) {
     if (!state.results.perIsolate[input.hash]) {
       state.results.perIsolate[input.hash] = {
         hash: input.hash,
         filename: input.name,
-        sketch: {},
-        amr: {},
       };
-      state.uploadedFiles += 1;
     }
   },
 };
