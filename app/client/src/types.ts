@@ -2,10 +2,7 @@ type Dict<T> = Record<string, T>
 
 export interface Isolate {
     hash?: string,
-    filename?: string,
-    amr?: string,
-    cluster?: string,
-    sketch?: string
+    filename?: string
 }
 
 export interface Versions {
