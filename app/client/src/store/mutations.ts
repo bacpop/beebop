@@ -16,4 +16,11 @@ export default {
       };
     }
   },
+  setWebworkerResult(state: RootState, input: Record<string, string>) {
+    if (input.type === 'amr') {
+      state.results.perIsolate[input.hash].amr = input.result;
+    } else if (input.type === 'sketch') {
+      state.results.perIsolate[input.hash].sketch = input.result;
+    }
+  },
 };
