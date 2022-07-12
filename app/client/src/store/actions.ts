@@ -30,6 +30,11 @@ export default {
         .then((content: string) => {
           const fileHash = Md5.hashStr(content);
           commit('addFile', { hash: fileHash, name: file.name });
+          const worker = new Worker('./worker.js');
+          worker.onmessage = (event) => {
+            commit('setWebworkerResult', event.data);
+          };
+          worker.postMessage({ hash: fileHash, fileObject: file });
         });
     });
   },
