@@ -1,5 +1,5 @@
 import { RootState } from '@/store/state';
-import { Versions, User } from '@/types';
+import { Versions, User, IsolateValue } from '@/types';
 
 export default {
   setVersions(state: RootState, versioninfo: Versions) {
@@ -16,11 +16,7 @@ export default {
       };
     }
   },
-  setWebworkerResult(state: RootState, input: Record<string, string>) {
-    if (input.type === 'amr') {
-      state.results.perIsolate[input.hash].amr = input.result;
-    } else if (input.type === 'sketch') {
-      state.results.perIsolate[input.hash].sketch = input.result;
-    }
+  setIsolateValue(state: RootState, input: IsolateValue) {
+    state.results.perIsolate[input.hash][input.type] = input.result;
   },
 };
