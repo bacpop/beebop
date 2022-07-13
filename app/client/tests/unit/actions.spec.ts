@@ -53,7 +53,7 @@ describe('Actions', () => {
     );
   });
 
-  it('processFiles calculates filehash, adds hash & filename to store and calls setWebworkerResult', async () => {
+  it('processFiles calculates filehash, adds hash & filename to store and calls setIsolateValue', async () => {
     const commit = jest.fn();
     const file = {
       name: 'sample.fa',
@@ -64,7 +64,7 @@ describe('Actions', () => {
       'addFile',
       { hash: '97f83117a2679651d4044b5ffdc5fd00', name: 'sample.fa' }]);
     expect(commit.mock.calls[1]).toEqual([
-      'setWebworkerResult',
+      'setIsolateValue',
       { hash: '97f83117a2679651d4044b5ffdc5fd00', fileObject: file }]);
   });
 });
