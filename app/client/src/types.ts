@@ -22,3 +22,14 @@ export interface User {
 export interface Results {
     perIsolate: Dict<Isolate>
 }
+
+export enum ValueTypes {
+    AMR = 'amr',
+    SKETCH = 'sketch'
+}
+
+export interface IsolateValue {
+    hash: string
+    type: ValueTypes
+    result: string
+}
