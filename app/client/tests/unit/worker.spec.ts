@@ -1,8 +1,7 @@
 import fs from 'fs';
+import vm from 'vm';
 
-const vm = require('vm');
-
-const data = fs.readFileSync('./public/worker.js');
+const data = fs.readFileSync('./public/worker.js', { encoding: 'utf8' });
 const script = new vm.Script(data);
 const worker: Partial<Worker> = {
   onmessage: () => {},
