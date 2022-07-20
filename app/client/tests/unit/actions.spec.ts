@@ -12,6 +12,23 @@ function responseSuccess(data : any) {
   };
 }
 
+class MockWorker implements Partial<Worker> {
+  url: string
+
+  onmessage: (msg: any) => any
+
+  constructor(stringUrl: any) {
+    this.url = stringUrl;
+    this.onmessage = () => {};
+  }
+
+  postMessage(msg: any) {
+    this.onmessage({ data: msg });
+  }
+}
+
+(window as any).Worker = MockWorker;
+
 describe('Actions', () => {
   mockAxios.onGet(`${config.server_url}/version`).reply(200, versionInfo);
   mockAxios.onGet(`${config.server_url}/user`).reply(200, responseSuccess({ id: '12345', name: 'Beebop', provider: 'google' }));
@@ -36,16 +53,18 @@ describe('Actions', () => {
     );
   });
 
-  it('processFiles calculates filehash and adds hash & filename to store', async () => {
+  it('processFiles calculates filehash, adds hash & filename to store and calls setIsolateValue', async () => {
     const commit = jest.fn();
     const file = {
       name: 'sample.fa',
       text: () => Promise.resolve('ACGTGTAGTCTGACGTAAC'),
     };
     await actions.processFiles({ commit }, [file as any]);
-    expect(commit).toHaveBeenCalledWith(
+    expect(commit.mock.calls[0]).toEqual([
       'addFile',
-      { hash: '97f83117a2679651d4044b5ffdc5fd00', name: 'sample.fa' },
-    );
+      { hash: '97f83117a2679651d4044b5ffdc5fd00', name: 'sample.fa' }]);
+    expect(commit.mock.calls[1]).toEqual([
+      'setIsolateValue',
+      { hash: '97f83117a2679651d4044b5ffdc5fd00', fileObject: file }]);
   });
 });

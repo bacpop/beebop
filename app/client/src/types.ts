@@ -1,8 +1,10 @@
 type Dict<T> = Record<string, T>
 
 export interface Isolate {
-    hash?: string,
+    hash?: string
     filename?: string
+    amr?: string
+    sketch?: string
 }
 
 export interface Versions {
@@ -19,4 +21,15 @@ export interface User {
 
 export interface Results {
     perIsolate: Dict<Isolate>
+}
+
+export enum ValueTypes {
+    AMR = 'amr',
+    SKETCH = 'sketch'
+}
+
+export interface IsolateValue {
+    hash: string
+    type: ValueTypes
+    result: string
 }

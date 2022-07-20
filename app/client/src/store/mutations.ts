@@ -1,5 +1,5 @@
 import { RootState } from '@/store/state';
-import { Versions, User } from '@/types';
+import { Versions, User, IsolateValue } from '@/types';
 
 export default {
   setVersions(state: RootState, versioninfo: Versions) {
@@ -15,5 +15,8 @@ export default {
         filename: input.name,
       };
     }
+  },
+  setIsolateValue(state: RootState, input: IsolateValue) {
+    state.results.perIsolate[input.hash][input.type] = input.result;
   },
 };

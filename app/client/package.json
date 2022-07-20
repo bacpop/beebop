@@ -49,7 +49,8 @@
     "jest": "^27.0.5",
     "lint-staged": "^11.1.2",
     "ts-jest": "^27.0.4",
-    "typescript": "~4.5.5"
+    "typescript": "~4.5.5",
+    "vm": "^0.1.0"
   },
   "eslintConfig": {
     "root": true,
@@ -64,7 +65,10 @@
     "parserOptions": {
       "ecmaVersion": 2020
     },
-    "rules": {},
+    "rules": {
+      "no-shadow": "off",
+      "@typescript-eslint/no-shadow": ["error"]
+    },
     "overrides": [
       {
         "files": [
@@ -76,7 +80,8 @@
           "jest": true
         },
         "rules": {
-          "@typescript-eslint/no-explicit-any": "off"
+          "@typescript-eslint/no-explicit-any": "off",
+          "@typescript-eslint/no-empty-function": "off"
         }
       }
     ]
