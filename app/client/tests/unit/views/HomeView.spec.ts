@@ -2,7 +2,7 @@ import { mount } from '@vue/test-utils';
 import HomeView from '@/views/HomeView.vue';
 import Vuex from 'vuex';
 import { RootState } from '@/store/state';
-import { mockRootState } from '../mocks';
+import { mockRootState } from '../../mocks';
 
 describe('Home', () => {
   const getUser = jest.fn();

@@ -1,7 +1,7 @@
 import actions from '@/store/actions';
 import versionInfo from '@/resources/versionInfo.json';
-import config from '../../src/resources/config.json';
-import { mockAxios } from '../mocks';
+import config from '../../../src/resources/config.json';
+import { mockAxios } from '../../mocks';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function responseSuccess(data : any) {
@@ -30,10 +30,12 @@ class MockWorker implements Partial<Worker> {
 (window as any).Worker = MockWorker;
 
 describe('Actions', () => {
-  mockAxios.onGet(`${config.server_url}/version`).reply(200, versionInfo);
-  mockAxios.onGet(`${config.server_url}/user`).reply(200, responseSuccess({ id: '12345', name: 'Beebop', provider: 'google' }));
+  afterEach(() => {
+    mockAxios.reset();
+  });
 
   it('getVersions fetches and commits version info', async () => {
+    mockAxios.onGet(`${config.server_url}/version`).reply(200, versionInfo);
     const commit = jest.fn();
     await actions.getVersions({ commit });
 
@@ -44,6 +46,7 @@ describe('Actions', () => {
   });
 
   it('getUser fetches and commits user info', async () => {
+    mockAxios.onGet(`${config.server_url}/user`).reply(200, responseSuccess({ id: '12345', name: 'Beebop', provider: 'google' }));
     const commit = jest.fn();
     await actions.getUser({ commit });
 
@@ -51,6 +54,12 @@ describe('Actions', () => {
       'setUser',
       responseSuccess({ id: '12345', name: 'Beebop', provider: 'google' }),
     );
+  });
+
+  it('logoutUser makes axios call', async () => {
+    mockAxios.onGet(`${config.server_url}/logout`).reply(200);
+    await actions.logoutUser();
+    expect(mockAxios.history.get[0].url).toEqual(`${config.server_url}/logout`);
   });
 
   it('processFiles calculates filehash, adds hash & filename to store and calls setIsolateValue', async () => {
