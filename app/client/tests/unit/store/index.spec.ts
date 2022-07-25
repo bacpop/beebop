@@ -1,4 +1,6 @@
+import actions from '@/store/actions';
 import index from '@/store/index';
+import mutations from '@/store/mutations';
 
 describe('store index', () => {
   it('creates a root state', () => {
@@ -6,14 +8,10 @@ describe('store index', () => {
   });
 
   it('has mutations', () => {
-    expect(index).toHaveProperty('_modules.root._rawModule.mutations.addFile');
-    expect(index).toHaveProperty('_modules.root._rawModule.mutations.setVersions');
-    expect(index).toHaveProperty('_modules.root._rawModule.mutations.setUser');
+    expect((index as any)._modules.root._rawModule.mutations).toMatchObject(mutations);
   });
 
   it('has actions', () => {
-    expect(index).toHaveProperty('_modules.root._rawModule.actions.processFiles');
-    expect(index).toHaveProperty('_modules.root._rawModule.actions.getVersions');
-    expect(index).toHaveProperty('_modules.root._rawModule.actions.getUser');
+    expect((index as any)._modules.root._rawModule.actions).toMatchObject(actions);
   });
 });
