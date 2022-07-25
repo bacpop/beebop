@@ -16,15 +16,9 @@ describe('router', () => {
     expect(routes[0].components.default.name).toBe('HomeView');
   });
 
-  it('About route loads About component', (done) => {
-    // Component is lazy loaded so need to invoke the import
-    const componentPromise = (routes[1].components.default as () => Promise<any>)();
-    componentPromise.then(
-      (component: any) => {
-        expect(component.default.name).toBe('AboutView');
-        expect(component.default.components).toHaveProperty('VersionInfo');
-        done();
-      },
-    );
+  it('About route loads About component', async () => {
+    const component = await (routes[1].components.default as () => Promise<any>)();
+    expect(component.default.name).toBe('AboutView');
+    expect(component.default.components).toHaveProperty('VersionInfo');
   });
 });
