@@ -14,7 +14,7 @@ import DropZone from '@/components/DropZone.vue';
 import { mount } from '@vue/test-utils';
 import { RootState } from '@/store/state';
 import Vuex from 'vuex';
-import { mockRootState } from '../mocks';
+import { mockRootState } from '../../mocks';
 
 describe('Dropzone', () => {
   const store = new Vuex.Store<RootState>({

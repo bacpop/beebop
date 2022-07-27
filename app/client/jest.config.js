@@ -3,4 +3,9 @@ module.exports = {
   transformIgnorePatterns: [
     '/node_modules/(?!vuex-composition-helpers).+\\.js$',
   ],
+  collectCoverage: true,
+  collectCoverageFrom: [
+    'src/**/*.{ts,vue}',
+    '!src/main.ts',
+  ],
 };

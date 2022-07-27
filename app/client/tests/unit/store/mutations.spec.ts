@@ -1,6 +1,6 @@
 import mutations from '@/store/mutations';
 import { ValueTypes } from '@/types';
-import { mockRootState } from '../mocks';
+import { mockRootState } from '../../mocks';
 
 describe('mutations', () => {
   it('sets versioninfo', () => {

@@ -47,7 +47,7 @@ test.describe('Logged in Tests', () => {
     // Expect count of files to be 2
     await expect(page.locator('.count')).toContainText('2');
     // Expect files, hashes, AMR and Sketch appearing in file list
-    await expect(page.locator('.uploaded-info')).toContainText('6930_8_13.fa e868c76fec83ee1f69a95bd27b8d5e76 AMR Sketch');
-    await expect(page.locator('.uploaded-info')).toContainText('6930_8_11.fa f3d9b387e311d5ab59a8c08eb3545dbb AMR Sketch');
+    await expect(page.locator('.uploaded-info')).toContainText('6930_8_13.fa e868c76fec83ee1f69a95bd27b8d5e76 filename 14');
+    await expect(page.locator('.uploaded-info')).toContainText('6930_8_11.fa f3d9b387e311d5ab59a8c08eb3545dbb filename 14');
   });
 });
