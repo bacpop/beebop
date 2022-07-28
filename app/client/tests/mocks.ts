@@ -9,6 +9,8 @@ export function mockRootState(state: Partial<RootState> = {}): RootState {
     versions: [],
     user: null,
     results: { perIsolate: {} },
+    analysisStatus: { submitted: null },
+    projectHash: null,
     ...state,
   };
 }

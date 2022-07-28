@@ -23,7 +23,7 @@ test.describe('Logged in Tests', () => {
     await expect(page.locator('.dropzone')).toBeVisible();
   });
 
-  test('should update file list when files are dropped and process them in WebWorker', async ({ page }) => {
+  test('should update file list when files are dropped, process them in WebWorker and submit on click to backend', async ({ page }) => {
     // Read files into a buffer
     const buffer = readFileSync('./tests/files/6930_8_13.fa', { encoding: 'utf8', flag: 'r' });
     const buffer2 = readFileSync('./tests/files/6930_8_11.fa', { encoding: 'utf8', flag: 'r' });
@@ -49,5 +49,10 @@ test.describe('Logged in Tests', () => {
     // Expect files, hashes, AMR and Sketch appearing in file list
     await expect(page.locator('.uploaded-info')).toContainText('6930_8_13.fa e868c76fec83ee1f69a95bd27b8d5e76 filename 14');
     await expect(page.locator('.uploaded-info')).toContainText('6930_8_11.fa f3d9b387e311d5ab59a8c08eb3545dbb filename 14');
+    //expect to have a 'start analysis' button after submitting files
+    await expect(page.locator('.start-analysis')).toContainText('Start Analysis');
+    // Expect to see 'submitted' status once button was pressed
+    await page.click('text=Start Analysis');
+    await expect(page.locator('.status')).toContainText('{ "submitted": "submitted", "assign": "submitted", "microreact": "submitted", "network": "submitted" }');
   });
 });

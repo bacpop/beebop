@@ -1,5 +1,5 @@
 import mutations from '@/store/mutations';
-import { ValueTypes } from '@/types';
+import { ValueTypes, AnalysisStatus } from '@/types';
 import { mockRootState } from '../../mocks';
 
 describe('mutations', () => {
@@ -52,5 +52,20 @@ describe('mutations', () => {
       filename: 'sampleName.fa',
       amr: 'amr_result',
     });
+  });
+  it('sets status', () => {
+    const state = mockRootState();
+    const statusUpdate = {
+      task: 'microreact',
+      data: 'submitted',
+    };
+    mutations.setStatus(state, statusUpdate);
+    expect(state.analysisStatus[statusUpdate.task as keyof AnalysisStatus]).toBe(statusUpdate.data);
+  });
+  it('sets projectHash', () => {
+    const state = mockRootState();
+    const phash = 'mock-hash';
+    mutations.setProjectHash(state, phash);
+    expect(state.projectHash).toBe(phash);
   });
 });

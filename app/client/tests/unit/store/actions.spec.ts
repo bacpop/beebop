@@ -1,7 +1,8 @@
 import actions from '@/store/actions';
 import versionInfo from '@/resources/versionInfo.json';
 import config from '../../../src/resources/config.json';
-import { mockAxios } from '../../mocks';
+import { mockAxios, mockRootState } from '../../mocks';
+import { Md5 } from 'ts-md5/dist/md5';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function responseSuccess(data : any) {
@@ -75,5 +76,31 @@ describe('Actions', () => {
     expect(commit.mock.calls[1]).toEqual([
       'setIsolateValue',
       { hash: '97f83117a2679651d4044b5ffdc5fd00', fileObject: file }]);
+  });
+
+  it('runPoppunk makes axios call', async () => {
+    const commit = jest.fn();
+    const state = mockRootState({
+      results: {
+        perIsolate: {
+          someFileHash: {
+            sketch: '{"14":"12345"}',
+          },
+          someFileHash2: {
+            sketch: '{"14":"12345"}',
+          },
+        },
+      },
+    });
+    const expectedHash = Md5.hashStr(Object.keys(state.results.perIsolate).sort().join());
+    mockAxios.onPost(`${config.server_url}/poppunk`).reply(200);
+    await actions.runPoppunk({ commit, state });
+    expect(mockAxios.history.post[0].url).toEqual(`${config.server_url}/poppunk`);
+    expect(commit.mock.calls[0]).toEqual([
+      'setProjectHash',
+      expectedHash]);
+    expect(commit.mock.calls[1]).toEqual([
+      'setStatus',
+      { task: 'assign', data: 'submitted' }]);
   });
 });
