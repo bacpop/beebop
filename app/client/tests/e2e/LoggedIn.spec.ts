@@ -53,6 +53,9 @@ test.describe('Logged in Tests', () => {
     await expect(page.locator('.start-analysis')).toContainText('Start Analysis');
     // Expect to see 'submitted' status once button was pressed
     await page.click('text=Start Analysis');
-    await expect(page.locator('.status')).toContainText('{ "submitted": "submitted", "assign": "submitted", "microreact": "submitted", "network": "submitted" }');
+    await expect(page.locator('.status')).toContainText('"submitted": "submitted"');
+    await expect(page.locator('.status')).toContainText('"assign": "submitted"');
+    await expect(page.locator('.status')).toContainText('"microreact": "submitted"');
+    await expect(page.locator('.status')).toContainText('"network": "submitted"');
   });
 });
