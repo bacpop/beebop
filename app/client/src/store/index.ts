@@ -10,6 +10,10 @@ export default new Vuex.Store<RootState>({
     results: {
       perIsolate: {},
     },
+    projectHash: null,
+    analysisStatus: {
+      submitted: null,
+    },
   },
   getters: {
   },

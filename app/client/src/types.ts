@@ -33,3 +33,7 @@ export interface IsolateValue {
     type: ValueTypes
     result: string
 }
+
+export interface AnalysisStatus{
+    submitted: string | null
+}
