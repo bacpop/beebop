@@ -36,8 +36,8 @@ jobs:
       run: |
         npx playwright install
         npx playwright install-deps
-#    - name: tmate session
-#      uses: mxschmitt/action-tmate@v3
+    - name: tmate session
+      uses: mxschmitt/action-tmate@v3
     - name: Run e2e tests
       working-directory: ./app/client
       run: npx playwright test
