@@ -36,4 +36,7 @@ export interface IsolateValue {
 
 export interface AnalysisStatus{
     submitted: string | null
+    assign: string | null
+    microreact: string | null
+    network: string | null
 }

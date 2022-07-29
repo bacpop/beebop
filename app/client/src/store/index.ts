@@ -13,6 +13,9 @@ export default new Vuex.Store<RootState>({
     projectHash: null,
     analysisStatus: {
       submitted: null,
+      assign: null,
+      microreact: null,
+      network: null,
     },
   },
   getters: {
