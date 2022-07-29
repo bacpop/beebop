@@ -33,3 +33,10 @@ export interface IsolateValue {
     type: ValueTypes
     result: string
 }
+
+export interface AnalysisStatus{
+    submitted: string | null
+    assign: string | null
+    microreact: string | null
+    network: string | null
+}

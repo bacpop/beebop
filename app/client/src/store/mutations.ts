@@ -1,5 +1,7 @@
 import { RootState } from '@/store/state';
-import { Versions, User, IsolateValue } from '@/types';
+import {
+  Versions, User, AnalysisStatus, IsolateValue,
+} from '@/types';
 
 export default {
   setVersions(state: RootState, versioninfo: Versions) {
@@ -18,5 +20,11 @@ export default {
   },
   setIsolateValue(state: RootState, input: IsolateValue) {
     state.results.perIsolate[input.hash][input.type] = input.result;
+  },
+  setStatus(state: RootState, status: Record<string, string>) {
+    state.analysisStatus[status.task as keyof AnalysisStatus] = status.data;
+  },
+  setProjectHash(state: RootState, phash: string) {
+    state.projectHash = phash;
   },
 };

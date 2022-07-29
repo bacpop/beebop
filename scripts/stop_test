@@ -1,5 +1,9 @@
 set -e
 
-docker stop beebop_py
+NAME_REDIS=beebop-redis
+NAME_API=beebop-py-api
+NAME_WORKER=beebop-py-worker
+
+docker stop $NAME_REDIS $NAME_WORKER $NAME_API
 node ./node_modules/pm2/bin/pm2 delete beebop_client
 node ./node_modules/pm2/bin/pm2 delete beebop_server

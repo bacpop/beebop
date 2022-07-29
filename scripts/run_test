@@ -1,17 +1,37 @@
 set -e
 
-CONTAINER_NAME=beebop_py
-BEEBOP_PY_BRANCH=bacpop-18
+NETWORK=beebop_nw
+VOLUME=beebop-storage
+NAME_REDIS=beebop-redis
+NAME_API=beebop-py-api
+NAME_WORKER=beebop-py-worker
 PORT=5000
-docker pull mrcide/beebop-py:$BEEBOP_PY_BRANCH
-docker run --rm -d --name=$CONTAINER_NAME -p $PORT:8080 mrcide/beebop-py:$BEEBOP_PY_BRANCH
+
+docker volume create $VOLUME
+docker run --rm -v $VOLUME:/beebop/storage mrcide/beebop-py \
+       ./scripts/download_db --small storage
+docker network create $NETWORK > /dev/null || /bin/true
+
+docker run -d --rm --name $NAME_REDIS --network=$NETWORK redis:5.0
+docker run -d --rm --name $NAME_WORKER --network=$NETWORK \
+       --env=REDIS_HOST="$NAME_REDIS" \
+       -v $VOLUME:/beebop/storage \
+       mrcide/beebop-py rqworker
+docker run -d --rm --name $NAME_API --network=$NETWORK \
+       --env=REDIS_HOST="$NAME_REDIS" \
+       --env=STORAGE_LOCATION="./storage" \
+       --env=DB_LOCATION="./storage/GPS_v4_references" \
+       -v $VOLUME:/beebop/storage \
+       -p $PORT:5000 \
+       mrcide/beebop-py
+
 npm --prefix app/server install
 npm --prefix app/client install
 npm install pm2
 
 # From now on, if the user presses Ctrl+C we should teardown
 function cleanup() {
-    docker stop $CONTAINER_NAME
+    docker stop $NAME_REDIS $NAME_WORKER $NAME_API
     pm2 delete beebop_client
     pm2 delete beebop_server
 
