@@ -34,9 +34,18 @@ export interface IsolateValue {
     result: string
 }
 
-export interface AnalysisStatus{
-    submitted: string | null
-    assign: string | null
-    microreact: string | null
-    network: string | null
+export enum AnalysisType {
+    SUBMITTED = 'submitted',
+    ASSIGN = 'assign',
+    MICROREACT = 'microreact',
+    NETWORK = 'network'
+}
+
+export type AnalysisStatus = {
+    [key in AnalysisType]: string | null
+}
+
+export type Status = {
+    task: AnalysisType
+    data: string
 }

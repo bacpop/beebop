@@ -1,5 +1,5 @@
 import mutations from '@/store/mutations';
-import { ValueTypes, AnalysisStatus } from '@/types';
+import { ValueTypes, Status, AnalysisType } from '@/types';
 import { mockRootState } from '../../mocks';
 
 describe('mutations', () => {
@@ -55,12 +55,12 @@ describe('mutations', () => {
   });
   it('sets status', () => {
     const state = mockRootState();
-    const statusUpdate = {
-      task: 'microreact',
+    const statusUpdate: Status = {
+      task: AnalysisType.MICROREACT,
       data: 'submitted',
     };
     mutations.setStatus(state, statusUpdate);
-    expect(state.analysisStatus[statusUpdate.task as keyof AnalysisStatus]).toBe(statusUpdate.data);
+    expect(state.analysisStatus[statusUpdate.task]).toBe(statusUpdate.data);
   });
   it('sets projectHash', () => {
     const state = mockRootState();
