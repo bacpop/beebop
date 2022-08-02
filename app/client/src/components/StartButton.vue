@@ -1,9 +1,8 @@
 <template>
   <div class="start-analysis">
-    <button v-if='!analysisStatus.submitted && allSketched' class="btn btn-block btn-standard"
-    @click='runPoppunk();setStatus({ task: "submitted", data: "submitted"})'>
-      Start Analysis</button>
-    <button v-else class="btn btn-block btn-disabled">
+    <button :class="(!analysisStatus.submitted && allSketched) ? '' : 'disabled'"
+    class="btn btn-block btn-standard"
+    @click='onClick'>
       Start Analysis</button>
     <!--only adding this temporarily to have something testable for e2e tests-->
     <p class="status" v-if='analysisStatus.submitted'>{{analysisStatus}}</p>
@@ -19,6 +18,10 @@ export default defineComponent({
   methods: {
     ...mapMutations(['setStatus']),
     ...mapActions(['runPoppunk']),
+    onClick() {
+      this.runPoppunk();
+      this.setStatus({ task: 'submitted', data: 'submitted' });
+    },
   },
   computed: {
     allSketched() {
