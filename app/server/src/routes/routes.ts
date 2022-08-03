@@ -14,6 +14,10 @@ export const router = (app => {
     app.get('/version',
         getVersionInfo);
 
+    app.post('/poppunk',
+        authCheck,
+        runPoppunk);
+
     app.get('/login/google',
         passport.authenticate('google', { scope: ['profile'] }));
 
@@ -73,6 +77,21 @@ export const router = (app => {
 export async function getVersionInfo(request, response) {
     await axios.get(`${config.api_url}/version`)
         .then(res => response.send(res.data));
+}
+
+export async function runPoppunk(request, response) {
+    await axios.post(`${config.api_url}/poppunk`,
+        request.body,
+        {
+            headers: {
+              'Content-Type': 'application/json'
+            }
+        },
+    )
+        .then(res => response.send(res.data))
+        .catch(function (error) {
+            console.log(error);
+        });
 }
 
 const authCheck = (req, res, next) => {

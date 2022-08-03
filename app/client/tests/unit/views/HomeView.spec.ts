@@ -83,10 +83,46 @@ describe('Home', () => {
       },
     });
     expect(wrapper.find('h1').text()).toMatch('Welcome to beebop!');
-    const buttons = wrapper.findAll('.btn-logout');
+    const buttons = wrapper.findAll('.btn-standard');
     expect(buttons.length).toBe(1);
     expect(buttons[0].text()).toBe('Logout');
     expect(wrapper.find('.dropzone').exists());
     expect(wrapper.find('.count').text()).toMatch('0');
+  });
+
+  it('shows start Analysis button when files are uploaded', () => {
+    const store = new Vuex.Store<RootState>({
+      state: mockRootState({
+        user: {
+          status: 'success',
+          errors: [],
+          data: {
+            name: 'Jane',
+            id: '543653d45',
+            provider: 'google',
+          },
+        },
+        results: {
+          perIsolate: {
+            someFileHash: {},
+            someFileHash2: {},
+          },
+        },
+        analysisStatus: {
+          submitted: null, assign: null, microreact: null, network: null,
+        },
+      }),
+      actions: {
+        getUser,
+      },
+    });
+    const wrapper = mount(HomeView, {
+      global: {
+        plugins: [store],
+      },
+    });
+    const buttons = wrapper.findAll('.btn');
+    expect(buttons.length).toBe(2);
+    expect(buttons[1].text()).toBe('Start Analysis');
   });
 });
