@@ -9,7 +9,7 @@
   </div>
 </template>
 
-<script>
+<script lang='ts'>
 import { defineComponent } from 'vue';
 import config from '@/resources/config.json';
 
