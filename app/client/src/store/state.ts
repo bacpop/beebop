@@ -11,4 +11,5 @@ export interface RootState {
   results: Results
   analysisStatus: AnalysisStatus
   projectHash: string | null
+  statusInterval: number | null
 }

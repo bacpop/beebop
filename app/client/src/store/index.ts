@@ -17,6 +17,7 @@ export default new Vuex.Store<RootState>({
       microreact: null,
       network: null,
     },
+    statusInterval: null,
   },
   getters: {
   },

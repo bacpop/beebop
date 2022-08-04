@@ -5,6 +5,7 @@ export interface Isolate {
     filename?: string
     amr?: string
     sketch?: string
+    cluster?: string
 }
 
 export interface Versions {
@@ -48,4 +49,8 @@ export type AnalysisStatus = {
 export type Status = {
     task: AnalysisType
     data: string
+}
+
+export interface ClusterInfo {
+    data: Dict<Dict<string>>
 }
