@@ -16,11 +16,19 @@ import { mapActions, mapMutations, mapState } from 'vuex';
 export default defineComponent({
   name: 'StartButton',
   methods: {
-    ...mapMutations(['setStatus']),
-    ...mapActions(['runPoppunk']),
+    updateStatus() {
+      const inter = setInterval(this.getStatus, 1000);
+      this.setStatusInterval(inter);
+    },
+    stopUpdateStatus() {
+      clearInterval(this.statusInterval);
+    },
+    ...mapMutations(['setStatus', 'setStatusInterval']),
+    ...mapActions(['runPoppunk', 'getStatus', 'getAssignResult']),
     onClick() {
       this.runPoppunk();
       this.setStatus({ task: 'submitted', data: 'submitted' });
+      this.updateStatus();
     },
   },
   computed: {
@@ -33,7 +41,20 @@ export default defineComponent({
       });
       return all;
     },
-    ...mapState(['analysisStatus', 'results']),
+    ...mapState(['analysisStatus', 'results', 'statusInterval']),
+  },
+  watch: {
+    analysisStatus: {
+      handler(newVal) {
+        if (newVal.assign === 'finished') {
+          this.getAssignResult();
+        }
+        if ((newVal.network === 'finished' || newVal.network === 'failed') && (newVal.microreact === 'finished' || newVal.microreact === 'failed')) {
+          this.stopUpdateStatus();
+        }
+      },
+      deep: true,
+    },
   },
 });
 </script>

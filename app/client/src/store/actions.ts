@@ -61,4 +61,40 @@ export default {
       commit('setStatus', { task: 'network', data: 'submitted' });
     });
   },
+  async getStatus({ commit, state }: { commit: Commit, state: RootState }) {
+    await axios.post(
+      `${config.server_url}/status`,
+      { hash: state.projectHash },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    ).then((response) => {
+      const prev = { ...state.analysisStatus };
+      if (response.data.data.microreact !== prev.microreact) {
+        commit('setStatus', { task: 'microreact', data: response.data.data.microreact });
+      }
+      if (response.data.data.network !== prev.network) {
+        commit('setStatus', { task: 'network', data: response.data.data.network });
+      }
+      if (response.data.data.assign !== prev.assign) {
+        commit('setStatus', { task: 'assign', data: response.data.data.assign });
+      }
+    });
+  },
+  async getAssignResult({ commit, state }: { commit: Commit, state: RootState }) {
+    await axios.post(
+      `${config.server_url}/assignResult`,
+      { projectHash: state.projectHash },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    )
+      .then((response) => {
+        commit('setClusters', response.data);
+      });
+  },
 };
