@@ -18,6 +18,14 @@ export const router = (app => {
         authCheck,
         runPoppunk);
 
+    app.post('/status',
+        authCheck,
+        getStatus);
+
+    app.post('/assignResult',
+        authCheck,
+        getAssignResult);
+
     app.get('/login/google',
         passport.authenticate('google', { scope: ['profile'] }));
 
@@ -88,6 +96,28 @@ export async function runPoppunk(request, response) {
             }
         },
     )
+        .then(res => response.send(res.data))
+        .catch(function (error) {
+            console.log(error);
+        });
+}
+
+export async function getStatus(request, response) {
+    await axios.get(`${config.api_url}/status/${request.body.hash}`)
+        .then(res => response.send(res.data))
+        .catch(function (error) {
+            console.log(error);
+        });
+}
+
+export async function getAssignResult(request, response) {
+    await axios.post(`${config.api_url}/results/assign`,
+    request.body,
+    {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
         .then(res => response.send(res.data))
         .catch(function (error) {
             console.log(error);
