@@ -74,7 +74,6 @@ describe('StartButton', () => {
   });
 
   it('watcher stops updating status when all results are finished', () => {
-    expect(getAssignResult).toHaveBeenCalledTimes(1);
     const finishedAnalysisStatus = {
       submitted: 'submitted',
       assign: 'finished',
