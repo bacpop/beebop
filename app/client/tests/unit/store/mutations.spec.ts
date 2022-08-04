@@ -68,4 +68,26 @@ describe('mutations', () => {
     mutations.setProjectHash(state, phash);
     expect(state.projectHash).toBe(phash);
   });
+  it('sets statusInterval', () => {
+    const state = mockRootState();
+    const interval = 122;
+    mutations.setStatusInterval(state, interval);
+    expect(state.statusInterval).toBe(interval);
+  });
+  it('sets cluster', () => {
+    const state = mockRootState({
+      results: {
+        perIsolate: {
+          someFileHash: {
+            hash: 'someFileHash',
+          },
+          someFileHash2: {
+            hash: 'someFileHash2',
+          },
+        },
+      },
+    });
+    mutations.setClusters(state, { data: { 0: { hash: 'someFileHash', cluster: '12' }, 1: { hash: 'someFileHash2', cluster: '2' } } });
+    expect(state.results.perIsolate.someFileHash.cluster).toBe('12');
+  });
 });

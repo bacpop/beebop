@@ -54,8 +54,16 @@ test.describe('Logged in Tests', () => {
     // Expect to see 'submitted' status once button was pressed
     await page.click('text=Start Analysis');
     await expect(page.locator('.status')).toContainText('"submitted": "submitted"');
-    await expect(page.locator('.status')).toContainText('"assign": "submitted"');
-    await expect(page.locator('.status')).toContainText('"microreact": "submitted"');
-    await expect(page.locator('.status')).toContainText('"network": "submitted"');
+    await expect(page.locator('.status')).toContainText('"assign"');
+    await expect(page.locator('.status')).toContainText('"microreact"');
+    await expect(page.locator('.status')).toContainText('"network"');
+    // Expect clusters appearing in file list
+    await expect(page.locator('.uploaded-info')).toContainText('6930_8_13.fa e868c76fec83ee1f69a95bd27b8d5e76 filename 14 7');
+    await expect(page.locator('.uploaded-info')).toContainText('6930_8_11.fa f3d9b387e311d5ab59a8c08eb3545dbb filename 14 24');
+    // Expect all statuses to be updated to finished
+    await page.waitForTimeout(20000);
+    await expect(page.locator('.status')).toContainText('"assign": "finished"');
+    await expect(page.locator('.status')).toContainText('"microreact": "finished"');
+    await expect(page.locator('.status')).toContainText('"network": "finished"');
   });
 });
