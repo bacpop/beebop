@@ -1,5 +1,5 @@
 import mutations from '@/store/mutations';
-import { ValueTypes, Status, AnalysisType } from '@/types';
+import { ValueTypes } from '@/types';
 import { mockRootState } from '../../mocks';
 
 describe('mutations', () => {
@@ -53,14 +53,20 @@ describe('mutations', () => {
       amr: 'amr_result',
     });
   });
-  it('sets status', () => {
+  it('sets submitStatus', () => {
     const state = mockRootState();
-    const statusUpdate: Status = {
-      task: AnalysisType.MICROREACT,
-      data: 'submitted',
+    mutations.setSubmitStatus(state, 'submitted');
+    expect(state.submitStatus).toBe('submitted');
+  });
+  it('sets analysisStatus', () => {
+    const state = mockRootState();
+    const statusUpdate = {
+      assign: 'finished',
+      microreact: 'started',
+      network: 'queued',
     };
-    mutations.setStatus(state, statusUpdate);
-    expect(state.analysisStatus[statusUpdate.task]).toBe(statusUpdate.data);
+    mutations.setAnalysisStatus(state, statusUpdate);
+    expect(state.analysisStatus).toBe(statusUpdate);
   });
   it('sets projectHash', () => {
     const state = mockRootState();

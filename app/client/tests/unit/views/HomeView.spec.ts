@@ -108,8 +108,9 @@ describe('Home', () => {
             someFileHash2: {},
           },
         },
+        submitStatus: null,
         analysisStatus: {
-          submitted: null, assign: null, microreact: null, network: null,
+          assign: null, microreact: null, network: null,
         },
       }),
       actions: {

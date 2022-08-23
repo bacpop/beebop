@@ -8,9 +8,9 @@ describe('StartButton', () => {
   const runPoppunk = jest.fn();
   const getStatus = jest.fn();
   const getAssignResult = jest.fn();
-  const setStatus = jest.fn();
+  const setSubmitStatus = jest.fn();
   const setStatusInterval = jest.fn();
-  const stopUpdateStatus = jest.fn();
+  const startStatusPolling = jest.fn();
 
   const store = new Vuex.Store<RootState>({
     state: mockRootState({
@@ -37,9 +37,10 @@ describe('StartButton', () => {
       runPoppunk,
       getStatus,
       getAssignResult,
+      startStatusPolling,
     },
     mutations: {
-      setStatus,
+      setSubmitStatus,
       setStatusInterval,
     },
   });
@@ -57,35 +58,12 @@ describe('StartButton', () => {
   it('onClick triggers actions', () => {
     wrapper.vm.onClick();
     expect(runPoppunk).toHaveBeenCalledTimes(1);
-    expect(setStatus.mock.calls[0][1]).toStrictEqual({ task: 'submitted', data: 'submitted' });
-    expect(setStatusInterval).toHaveBeenCalledTimes(1);
-    expect(setStatusInterval).toHaveBeenCalledWith(store.state, expect.any(Number));
-  });
-
-  it('watcher requests results when assign results are finished', () => {
-    const updatedAnalysisStatus = {
-      submitted: 'submitted',
-      assign: 'finished',
-      microreact: 'started',
-      network: 'queued',
-    };
-      // wrapper.vm.$options.watch?.analysisStatus.handler.call(wrapper.vm, updatedAnalysisStatus);
-      // expect(getAssignResult).toHaveBeenCalledTimes(1);
-  });
-
-  it('watcher stops updating status when all results are finished', () => {
-    const finishedAnalysisStatus = {
-      submitted: 'submitted',
-      assign: 'finished',
-      microreact: 'finished',
-      network: 'finished',
-    };
-      // wrapper.vm.$options.watch?.analysisStatus.handler.call(wrapper.vm, finishedAnalysisStatus);
-      // expect(stopUpdateStatus).toHaveBeenCalledTimes(1);
+    expect(setSubmitStatus.mock.calls[0][1]).toStrictEqual('submitted');
+    expect(startStatusPolling).toHaveBeenCalledTimes(1);
   });
 });
 
-describe('Dropzone', () => {
+describe('StartButton disabled', () => {
   const runPoppunk = jest.fn();
   const getStatus = jest.fn();
   const getAssignResult = jest.fn();

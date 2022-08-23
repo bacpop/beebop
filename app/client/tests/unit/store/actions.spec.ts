@@ -33,6 +33,7 @@ class MockWorker implements Partial<Worker> {
 describe('Actions', () => {
   afterEach(() => {
     mockAxios.reset();
+    jest.clearAllMocks();
   });
 
   it('getVersions fetches and commits version info', async () => {
@@ -100,40 +101,99 @@ describe('Actions', () => {
       'setProjectHash',
       expectedHash]);
     expect(commit.mock.calls[1]).toEqual([
-      'setStatus',
-      { task: 'assign', data: 'submitted' }]);
+      'setAnalysisStatus',
+      {
+        assign: 'submitted',
+        microreact: 'submitted',
+        network: 'submitted',
+      }]);
   });
 
-  it('getStatus makes axios call and updates analysisStatus', async () => {
+  it('getStatus makes axios call and updates analysisStatus, triggers getAssignResult', async () => {
     const commit = jest.fn();
+    const dispatch = jest.fn();
     const state = mockRootState({
       projectHash: 'randomHash',
+      submitStatus: 'submitted',
       analysisStatus: {
-        submitted: 'submitted',
         assign: 'started',
         microreact: 'waiting',
         network: 'waiting',
       },
     });
     mockAxios.onPost(`${config.server_url}/status`).reply(200, responseSuccess({
-      submitted: 'submitted', assign: 'finished', microreact: 'started', network: 'queued',
+      assign: 'finished', microreact: 'started', network: 'queued',
     }));
-    await actions.getStatus({ commit, state });
+    await actions.getStatus({ commit, state, dispatch } as any);
     expect(mockAxios.history.post[0].url).toEqual(`${config.server_url}/status`);
     expect(commit.mock.calls[0]).toEqual([
-      'setStatus',
+      'setAnalysisStatus',
       {
-        task: 'microreact',
-        data: 'started',
+        microreact: 'started',
+        network: 'queued',
+        assign: 'finished',
       },
     ]);
-    expect(commit.mock.calls[1]).toEqual([
-      'setStatus',
-      {
-        task: 'network',
-        data: 'queued',
+    expect(dispatch).toHaveBeenCalledTimes(1);
+    expect(dispatch).toHaveBeenCalledWith('getAssignResult');
+  });
+
+  it('getStatus stops updating analysisStatus once all jobs finished', async () => {
+    jest.useFakeTimers();
+    jest.spyOn(global, 'clearInterval');
+    const commit = jest.fn();
+    const dispatch = jest.fn();
+    const state = mockRootState({
+      projectHash: 'randomHash',
+      submitStatus: 'submitted',
+      analysisStatus: {
+        assign: 'finished',
+        microreact: 'started',
+        network: 'queued',
       },
-    ]);
+      statusInterval: 202,
+    });
+    mockAxios.onPost(`${config.server_url}/status`).reply(200, responseSuccess({
+      assign: 'finished', microreact: 'finished', network: 'finished',
+    }));
+    await actions.getStatus({ commit, state, dispatch } as any);
+    expect(clearInterval).toHaveBeenCalledTimes(1);
+    expect(clearInterval).toHaveBeenLastCalledWith(202);
+    jest.runOnlyPendingTimers();
+    jest.useRealTimers();
+  });
+
+  it('getStatus stops updating analysisStatus when jobs fail', async () => {
+    jest.useFakeTimers();
+    jest.spyOn(global, 'clearInterval');
+    const commit = jest.fn();
+    const dispatch = jest.fn();
+    const state = mockRootState({
+      projectHash: 'randomHash',
+      submitStatus: 'submitted',
+      analysisStatus: {
+        assign: 'finished',
+        microreact: 'started',
+        network: 'queued',
+      },
+      statusInterval: 202,
+    });
+    mockAxios.onPost(`${config.server_url}/status`).reply(200, responseSuccess({
+      assign: 'finished', microreact: 'failed', network: 'failed',
+    }));
+    await actions.getStatus({ commit, state, dispatch } as any);
+    expect(clearInterval).toHaveBeenCalledTimes(1);
+    expect(clearInterval).toHaveBeenLastCalledWith(202);
+    jest.runOnlyPendingTimers();
+    jest.useRealTimers();
+  });
+
+  it('startStatusPolling sets statusInterval', async () => {
+    const commit = jest.fn();
+    const dispatch = jest.fn();
+    await actions.startStatusPolling({ commit, dispatch } as any);
+    expect(commit.mock.calls[0][0]).toEqual('setStatusInterval');
+    expect(commit.mock.calls[0][1]).toEqual(expect.any(Number));
   });
 
   it('getAssignResult makes axios call and updates clusters', async () => {
