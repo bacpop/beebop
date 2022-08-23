@@ -1,6 +1,6 @@
 import { RootState } from '@/store/state';
 import {
-  Versions, User, IsolateValue, Status, ClusterInfo,
+  Versions, User, IsolateValue, AnalysisStatus, ClusterInfo,
 } from '@/types';
 
 export default {
@@ -24,8 +24,11 @@ export default {
   setProjectHash(state: RootState, phash: string) {
     state.projectHash = phash;
   },
-  setStatus(state: RootState, status: Status) {
-    state.analysisStatus[status.task] = status.data;
+  setSubmitStatus(state: RootState, data: string) {
+    state.submitStatus = data;
+  },
+  setAnalysisStatus(state: RootState, data: AnalysisStatus) {
+    state.analysisStatus = data;
   },
   setStatusInterval(state: RootState, interval: number) {
     state.statusInterval = interval;

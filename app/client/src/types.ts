@@ -36,7 +36,6 @@ export interface IsolateValue {
 }
 
 export enum AnalysisType {
-    SUBMITTED = 'submitted',
     ASSIGN = 'assign',
     MICROREACT = 'microreact',
     NETWORK = 'network'
@@ -44,11 +43,6 @@ export enum AnalysisType {
 
 export type AnalysisStatus = {
     [key in AnalysisType]: string | null
-}
-
-export type Status = {
-    task: AnalysisType
-    data: string
 }
 
 export interface ClusterInfo {
