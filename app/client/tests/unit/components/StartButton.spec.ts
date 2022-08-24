@@ -11,6 +11,7 @@ describe('StartButton', () => {
   const setSubmitStatus = jest.fn();
   const setStatusInterval = jest.fn();
   const startStatusPolling = jest.fn();
+  const submitData = jest.fn();
 
   const store = new Vuex.Store<RootState>({
     state: mockRootState({
@@ -38,6 +39,7 @@ describe('StartButton', () => {
       getStatus,
       getAssignResult,
       startStatusPolling,
+      submitData,
     },
     mutations: {
       setSubmitStatus,
@@ -57,9 +59,7 @@ describe('StartButton', () => {
 
   it('onClick triggers actions', () => {
     wrapper.vm.onClick();
-    expect(runPoppunk).toHaveBeenCalledTimes(1);
-    expect(setSubmitStatus.mock.calls[0][1]).toStrictEqual('submitted');
-    expect(startStatusPolling).toHaveBeenCalledTimes(1);
+    expect(submitData).toHaveBeenCalledTimes(1);
   });
 });
 

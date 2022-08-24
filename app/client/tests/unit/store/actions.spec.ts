@@ -220,4 +220,14 @@ describe('Actions', () => {
       expResponse,
     ]);
   });
+
+  it('submitData triggers runPoppunk, startStatusPolling and sets submitStatus', async () => {
+    const commit = jest.fn();
+    const dispatch = jest.fn();
+    await actions.submitData({ commit, dispatch } as any);
+    expect(commit.mock.calls[0][0]).toEqual('setSubmitStatus');
+    expect(commit.mock.calls[0][1]).toEqual('submitted');
+    expect(dispatch.mock.calls[0][0]).toEqual('runPoppunk');
+    expect(dispatch.mock.calls[1][0]).toEqual('startStatusPolling');
+  });
 });
