@@ -11,13 +11,12 @@
 
 <script lang='ts'>
 import { defineComponent } from 'vue';
-import { mapActions, mapMutations, mapState } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 
 export default defineComponent({
   name: 'StartButton',
   methods: {
-    ...mapMutations(['setSubmitStatus']),
-    ...mapActions(['runPoppunk', 'startStatusPolling', 'submitData']),
+    ...mapActions(['submitData']),
     onClick() {
       this.submitData();
     },
@@ -32,7 +31,7 @@ export default defineComponent({
       });
       return all;
     },
-    ...mapState(['submitStatus', 'analysisStatus', 'results', 'statusInterval']),
+    ...mapState(['submitStatus', 'analysisStatus', 'results']),
   },
 });
 </script>
