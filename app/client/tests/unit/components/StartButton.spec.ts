@@ -64,12 +64,6 @@ describe('StartButton', () => {
 });
 
 describe('StartButton disabled', () => {
-  const runPoppunk = jest.fn();
-  const getStatus = jest.fn();
-  const getAssignResult = jest.fn();
-  const setStatus = jest.fn();
-  const setStatusInterval = jest.fn();
-
   const store = new Vuex.Store<RootState>({
     state: mockRootState({
       user: {
@@ -95,15 +89,47 @@ describe('StartButton disabled', () => {
         },
       },
     }),
-    actions: {
-      runPoppunk,
-      getStatus,
-      getAssignResult,
+  });
+  const wrapper = mount(StartButton, {
+    global: {
+      plugins: [store],
     },
-    mutations: {
-      setStatus,
-      setStatusInterval,
-    },
+  });
+  
+  it('disables Button when not all sketches are ready', () => {
+    expect(wrapper.find('button').attributes('class')).toContain('disabled');
+  });
+});
+
+describe('StartButton disabled after submit', () => {
+
+  const store = new Vuex.Store<RootState>({
+    state: mockRootState({
+      submitStatus: 'submitted',
+      user: {
+        status: 'success',
+        errors: [],
+        data: {
+          name: 'Jane',
+          id: '543653d45',
+          provider: 'google',
+        },
+      },
+      results: {
+        perIsolate: {
+          someHash: {
+            hash: 'someHash',
+            filename: 'example.fa',
+            sketch: 'sketch',
+          },
+          someHash2: {
+            hash: 'someHash2',
+            filename: 'example2.fa',
+            sketch: 'sketch',
+          },
+        },
+      },
+    }),
   });
   const wrapper = mount(StartButton, {
     global: {
