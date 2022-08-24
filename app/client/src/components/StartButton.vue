@@ -1,6 +1,6 @@
 <template>
   <div class="start-analysis">
-    <button :class="(!analysisStatus.submitted && allSketched) ? '' : 'disabled'"
+    <button :class="(!submitStatus && allSketched) ? '' : 'disabled'"
     class="btn btn-block btn-standard"
     @click='onClick'>
       Start Analysis</button>
@@ -17,11 +17,9 @@ export default defineComponent({
   name: 'StartButton',
   methods: {
     ...mapMutations(['setSubmitStatus']),
-    ...mapActions(['runPoppunk', 'getStatus', 'startStatusPolling']),
+    ...mapActions(['runPoppunk', 'startStatusPolling', 'submitData']),
     onClick() {
-      this.runPoppunk();
-      this.setSubmitStatus('submitted');
-      this.startStatusPolling();
+      this.submitData();
     },
   },
   computed: {

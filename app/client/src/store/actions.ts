@@ -89,4 +89,10 @@ export default {
     const inter = setInterval(() => { dispatch('getStatus'); }, 1000);
     commit('setStatusInterval', inter);
   },
+  async submitData(context: ActionContext<RootState, RootState>) {
+    const { dispatch, commit } = context;
+    dispatch('runPoppunk');
+    commit('setSubmitStatus', 'submitted');
+    dispatch('startStatusPolling');
+  },
 };
