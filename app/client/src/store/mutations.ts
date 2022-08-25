@@ -1,9 +1,12 @@
 import { RootState } from '@/store/state';
 import {
-  Versions, User, IsolateValue, AnalysisStatus, ClusterInfo,
+  Versions, User, IsolateValue, AnalysisStatus, ClusterInfo, BeebopError,
 } from '@/types';
 
 export default {
+  addError(state: RootState, payload: BeebopError) {
+    state.errors.push(payload);
+  },
   setVersions(state: RootState, versioninfo: Versions) {
     state.versions = versioninfo;
   },
@@ -34,9 +37,9 @@ export default {
     state.statusInterval = interval;
   },
   setClusters(state: RootState, clusterInfo: ClusterInfo) {
-    Object.keys(clusterInfo.data).forEach((element) => {
-      state.results.perIsolate[clusterInfo.data[element].hash]
-        .cluster = clusterInfo.data[element].cluster;
+    Object.keys(clusterInfo).forEach((element) => {
+      state.results.perIsolate[clusterInfo[element].hash]
+        .cluster = clusterInfo[element].cluster;
     });
   },
 };
