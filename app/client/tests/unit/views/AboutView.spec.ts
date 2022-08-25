@@ -8,14 +8,10 @@ describe('About', () => {
   const store = createStore({
     state() {
       return {
-        versions: {
-          status: 'success',
-          errors: [],
-          data: [
-            { name: 'beebop', version: '0.1.0' },
-            { name: 'poppunk', version: '2.4.0' },
-          ],
-        },
+        versions: [
+          { name: 'beebop', version: '0.1.0' },
+          { name: 'poppunk', version: '2.4.0' },
+        ],
       };
     },
     actions: {
