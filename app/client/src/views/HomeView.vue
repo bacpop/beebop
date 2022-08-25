@@ -1,12 +1,12 @@
 <template>
   <div class='home'>
     <h1>Welcome to beebop!</h1>
-    <div v-if='user' class='auth'>
-      <LoginPrompt v-if='!loggedIn' />
-      <GreetingAndLogout v-if='loggedIn' />
+    <div class='auth'>
+      <LoginPrompt v-if='!user' />
+      <GreetingAndLogout v-if='user' />
     </div>
-    <DropZone v-if='user && loggedIn' />
-    <StartButton v-if='user && loggedIn && filesUploaded' />
+    <DropZone v-if='user' />
+    <StartButton v-if='user && filesUploaded' />
   </div>
 </template>
 
@@ -33,9 +33,6 @@ export default defineComponent({
     ...mapActions(['getUser']),
   },
   computed: {
-    loggedIn() {
-      return this.user.status === 'success';
-    },
     filesUploaded() {
       return Object.keys(this.results.perIsolate).length > 0;
     },
