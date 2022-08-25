@@ -1,26 +1,24 @@
 <template>
   <div class="start-analysis">
-    <button :class="(!analysisStatus.submitted && allSketched) ? '' : 'disabled'"
+    <button :class="(!submitStatus && allSketched) ? '' : 'disabled'"
     class="btn btn-block btn-standard"
     @click='onClick'>
       Start Analysis</button>
     <!--only adding this temporarily to have something testable for e2e tests-->
-    <p class="status" v-if='analysisStatus.submitted'>{{analysisStatus}}</p>
+    <p class="status" v-if='submitStatus'>{{analysisStatus}}</p>
   </div>
 </template>
 
 <script lang='ts'>
 import { defineComponent } from 'vue';
-import { mapActions, mapMutations, mapState } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 
 export default defineComponent({
   name: 'StartButton',
   methods: {
-    ...mapMutations(['setStatus']),
-    ...mapActions(['runPoppunk']),
+    ...mapActions(['submitData']),
     onClick() {
-      this.runPoppunk();
-      this.setStatus({ task: 'submitted', data: 'submitted' });
+      this.submitData();
     },
   },
   computed: {
@@ -33,7 +31,7 @@ export default defineComponent({
       });
       return all;
     },
-    ...mapState(['analysisStatus', 'results']),
+    ...mapState(['submitStatus', 'analysisStatus', 'results']),
   },
 });
 </script>

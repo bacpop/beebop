@@ -25,12 +25,12 @@ Then run:
 ```
 
 
-To start the application, run:
+To start all required components, run:
 ```
-./scripts/run
+./scripts/run_test
 ```
 
-The website can be viewed at http://localhost:8080/ . You can stop the application with `Ctrl+C`.
+The website can be viewed at http://localhost:8080/ . You can stop the application with `./scripts/stop_test`.
 
 
 ## Testing

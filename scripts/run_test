@@ -4,11 +4,12 @@ NETWORK=beebop_nw
 VOLUME=beebop-storage
 NAME_REDIS=beebop-redis
 NAME_API=beebop-py-api
+API_BRANCH=bacpop-39
 NAME_WORKER=beebop-py-worker
 PORT=5000
 
 docker volume create $VOLUME
-docker run --rm -v $VOLUME:/beebop/storage mrcide/beebop-py \
+docker run --rm -v $VOLUME:/beebop/storage mrcide/beebop-py:$API_BRANCH \
        ./scripts/download_db --small storage
 docker network create $NETWORK > /dev/null || /bin/true
 
@@ -16,14 +17,14 @@ docker run -d --rm --name $NAME_REDIS --network=$NETWORK redis:5.0
 docker run -d --rm --name $NAME_WORKER --network=$NETWORK \
        --env=REDIS_HOST="$NAME_REDIS" \
        -v $VOLUME:/beebop/storage \
-       mrcide/beebop-py rqworker
+       mrcide/beebop-py:$API_BRANCH rqworker
 docker run -d --rm --name $NAME_API --network=$NETWORK \
        --env=REDIS_HOST="$NAME_REDIS" \
        --env=STORAGE_LOCATION="./storage" \
        --env=DB_LOCATION="./storage/GPS_v4_references" \
        -v $VOLUME:/beebop/storage \
        -p $PORT:5000 \
-       mrcide/beebop-py
+       mrcide/beebop-py:$API_BRANCH
 
 npm --prefix app/server install
 npm --prefix app/client install

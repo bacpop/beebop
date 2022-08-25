@@ -1,10 +1,23 @@
 import axios from 'axios';
-import { Commit } from 'vuex';
+import { Commit, ActionContext } from 'vuex';
 import config from '@/resources/config.json';
 import { Md5 } from 'ts-md5/dist/md5';
 import { RootState } from '@/store/state';
 
 axios.defaults.withCredentials = true;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function axiosJsonPost(endpoint: string, body: Record<string, any>) {
+  return axios.post(
+    `${config.server_url}/${endpoint}`,
+    body,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    },
+  );
+}
 
 export default {
   async getVersions({ commit }: { commit: Commit }) {
@@ -47,18 +60,39 @@ export default {
     Object.keys(state.results.perIsolate).forEach((element) => {
       jsonSketches[element] = JSON.parse(state.results.perIsolate[element].sketch as string);
     });
-    await axios.post(
-      `${config.server_url}/poppunk`,
-      { projectHash: phash, sketches: jsonSketches },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      },
-    ).then(() => {
-      commit('setStatus', { task: 'assign', data: 'submitted' });
-      commit('setStatus', { task: 'microreact', data: 'submitted' });
-      commit('setStatus', { task: 'network', data: 'submitted' });
-    });
+    await axiosJsonPost('poppunk', { projectHash: phash, sketches: jsonSketches })
+      .then(() => {
+        commit('setAnalysisStatus', { assign: 'submitted', microreact: 'submitted', network: 'submitted' });
+      });
+  },
+  async getStatus(context: ActionContext<RootState, RootState>) {
+    const { state, dispatch, commit } = context;
+    await axiosJsonPost('status', { hash: state.projectHash })
+      .then((response) => {
+        if (response.data.data.assign === 'finished' && state.analysisStatus.assign !== 'finished') {
+          dispatch('getAssignResult');
+        }
+        commit('setAnalysisStatus', response.data.data);
+        if ((response.data.data.network === 'finished' || response.data.data.network === 'failed') && (response.data.data.microreact === 'finished' || response.data.data.microreact === 'failed')) {
+          clearInterval(state.statusInterval);
+        }
+      });
+  },
+  async getAssignResult({ commit, state }: { commit: Commit, state: RootState }) {
+    await axiosJsonPost('assignResult', { projectHash: state.projectHash })
+      .then((response) => {
+        commit('setClusters', response.data);
+      });
+  },
+  async startStatusPolling(context: ActionContext<RootState, RootState>) {
+    const { dispatch, commit } = context;
+    const inter = setInterval(() => { dispatch('getStatus'); }, 1000);
+    commit('setStatusInterval', inter);
+  },
+  async submitData(context: ActionContext<RootState, RootState>) {
+    const { dispatch, commit } = context;
+    dispatch('runPoppunk');
+    commit('setSubmitStatus', 'submitted');
+    dispatch('startStatusPolling');
   },
 };

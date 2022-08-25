@@ -1,6 +1,6 @@
 import { RootState } from '@/store/state';
 import {
-  Versions, User, IsolateValue, Status,
+  Versions, User, IsolateValue, AnalysisStatus, ClusterInfo,
 } from '@/types';
 
 export default {
@@ -21,10 +21,22 @@ export default {
   setIsolateValue(state: RootState, input: IsolateValue) {
     state.results.perIsolate[input.hash][input.type] = input.result;
   },
-  setStatus(state: RootState, status: Status) {
-    state.analysisStatus[status.task] = status.data;
-  },
   setProjectHash(state: RootState, phash: string) {
     state.projectHash = phash;
+  },
+  setSubmitStatus(state: RootState, data: string) {
+    state.submitStatus = data;
+  },
+  setAnalysisStatus(state: RootState, data: AnalysisStatus) {
+    state.analysisStatus = data;
+  },
+  setStatusInterval(state: RootState, interval: number) {
+    state.statusInterval = interval;
+  },
+  setClusters(state: RootState, clusterInfo: ClusterInfo) {
+    Object.keys(clusterInfo.data).forEach((element) => {
+      state.results.perIsolate[clusterInfo.data[element].hash]
+        .cluster = clusterInfo.data[element].cluster;
+    });
   },
 };

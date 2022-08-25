@@ -11,6 +11,7 @@
       {{file.filename}} {{file.hash}}
       {{file.amr ? file.amr.slice(2, 10): ""}}
       {{file.sketch ? file.sketch.slice(2, 4): ""}}
+      {{file.cluster ? file.cluster: ""}}
     </p></div>
     <p class="count">{{ Object.keys(results.perIsolate).length }}</p>
   </div>
