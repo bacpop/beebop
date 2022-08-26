@@ -11,7 +11,7 @@ export interface ResponseWithType<T> extends ResponseSuccess {
 }
 
 export function isAPIError(object: any): object is BeebopError {
-  return typeof object.error === 'string'
+  return object && typeof object.error === 'string'
         && (object.detail === undefined || typeof object.detail === 'string');
 }
 
