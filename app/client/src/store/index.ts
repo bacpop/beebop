@@ -5,6 +5,7 @@ import { RootState } from '@/store/state';
 
 export default new Vuex.Store<RootState>({
   state: {
+    errors: [],
     versions: [],
     user: null,
     results: {

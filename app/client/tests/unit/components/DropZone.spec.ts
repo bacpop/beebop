@@ -22,13 +22,9 @@ describe('Dropzone', () => {
   const store = new Vuex.Store<RootState>({
     state: mockRootState({
       user: {
-        status: 'success',
-        errors: [],
-        data: {
-          name: 'Jane',
-          id: '543653d45',
-          provider: 'google',
-        },
+        name: 'Jane',
+        id: '543653d45',
+        provider: 'google',
       },
       results: {
         perIsolate: {},

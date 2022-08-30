@@ -1,4 +1,5 @@
 import {
+  BeebopError,
   Versions,
   User,
   Results,
@@ -6,6 +7,7 @@ import {
 } from '@/types';
 
 export interface RootState {
+  errors: BeebopError[]
   versions: Versions | []
   user: User | null
   results: Results

@@ -14,11 +14,7 @@ describe('Home', () => {
   it('calls getUser', () => {
     const store = new Vuex.Store<RootState>({
       state: mockRootState({
-        user: {
-          status: 'failure',
-          errors: [],
-          data: null,
-        },
+        user: null,
       }),
       actions: {
         getUser,
@@ -35,11 +31,7 @@ describe('Home', () => {
   it('shows login buttons when not logged in', () => {
     const store = new Vuex.Store<RootState>({
       state: mockRootState({
-        user: {
-          status: 'failure',
-          errors: [],
-          data: null,
-        },
+        user: null,
       }),
       actions: {
         getUser,
@@ -61,13 +53,9 @@ describe('Home', () => {
     const store = new Vuex.Store<RootState>({
       state: mockRootState({
         user: {
-          status: 'success',
-          errors: [],
-          data: {
-            name: 'Jane',
-            id: '543653d45',
-            provider: 'google',
-          },
+          name: 'Jane',
+          id: '543653d45',
+          provider: 'google',
         },
         results: {
           perIsolate: {},
@@ -94,13 +82,9 @@ describe('Home', () => {
     const store = new Vuex.Store<RootState>({
       state: mockRootState({
         user: {
-          status: 'success',
-          errors: [],
-          data: {
-            name: 'Jane',
-            id: '543653d45',
-            provider: 'google',
-          },
+          name: 'Jane',
+          id: '543653d45',
+          provider: 'google',
         },
         results: {
           perIsolate: {

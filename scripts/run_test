@@ -4,7 +4,7 @@ NETWORK=beebop_nw
 VOLUME=beebop-storage
 NAME_REDIS=beebop-redis
 NAME_API=beebop-py-api
-API_BRANCH=bacpop-39
+API_BRANCH=main
 NAME_WORKER=beebop-py-worker
 PORT=5000
 

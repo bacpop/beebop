@@ -16,13 +16,9 @@ describe('StartButton', () => {
   const store = new Vuex.Store<RootState>({
     state: mockRootState({
       user: {
-        status: 'success',
-        errors: [],
-        data: {
-          name: 'Jane',
-          id: '543653d45',
-          provider: 'google',
-        },
+        name: 'Jane',
+        id: '543653d45',
+        provider: 'google',
       },
       results: {
         perIsolate: {
@@ -67,13 +63,9 @@ describe('StartButton disabled', () => {
   const store = new Vuex.Store<RootState>({
     state: mockRootState({
       user: {
-        status: 'success',
-        errors: [],
-        data: {
-          name: 'Jane',
-          id: '543653d45',
-          provider: 'google',
-        },
+        name: 'Jane',
+        id: '543653d45',
+        provider: 'google',
       },
       results: {
         perIsolate: {
@@ -95,25 +87,20 @@ describe('StartButton disabled', () => {
       plugins: [store],
     },
   });
-  
+
   it('disables Button when not all sketches are ready', () => {
     expect(wrapper.find('button').attributes('class')).toContain('disabled');
   });
 });
 
 describe('StartButton disabled after submit', () => {
-
   const store = new Vuex.Store<RootState>({
     state: mockRootState({
       submitStatus: 'submitted',
       user: {
-        status: 'success',
-        errors: [],
-        data: {
-          name: 'Jane',
-          id: '543653d45',
-          provider: 'google',
-        },
+        name: 'Jane',
+        id: '543653d45',
+        provider: 'google',
       },
       results: {
         perIsolate: {
@@ -135,10 +122,6 @@ describe('StartButton disabled after submit', () => {
     global: {
       plugins: [store],
     },
-  });
-
-  test('does a wrapper exist', () => {
-    expect(wrapper.exists()).toBe(true);
   });
 
   it('disables Button when not all sketches are ready', () => {

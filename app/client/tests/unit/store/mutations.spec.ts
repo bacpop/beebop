@@ -3,6 +3,15 @@ import { ValueTypes } from '@/types';
 import { mockRootState } from '../../mocks';
 
 describe('mutations', () => {
+  it('adds Errors', () => {
+    const state = mockRootState();
+    const mockError = {
+      error: 'Error',
+      detail: 'Detail',
+    };
+    mutations.addError(state, mockError);
+    expect(state.errors).toStrictEqual([mockError]);
+  });
   it('sets versioninfo', () => {
     const state = mockRootState();
     const mockVersioninfo = {
@@ -15,11 +24,7 @@ describe('mutations', () => {
   });
   it('sets user', () => {
     const state = mockRootState();
-    const mockUser = {
-      data: { id: '12345', provider: 'google', name: 'Jane' },
-      errors: [],
-      status: 'success',
-    };
+    const mockUser = { id: '12345', provider: 'google', name: 'Jane' };
     mutations.setUser(state, mockUser);
     expect(state.user).toBe(mockUser);
   });
@@ -93,7 +98,7 @@ describe('mutations', () => {
         },
       },
     });
-    mutations.setClusters(state, { data: { 0: { hash: 'someFileHash', cluster: '12' }, 1: { hash: 'someFileHash2', cluster: '2' } } });
+    mutations.setClusters(state, { 0: { hash: 'someFileHash', cluster: '12' }, 1: { hash: 'someFileHash2', cluster: '2' } });
     expect(state.results.perIsolate.someFileHash.cluster).toBe('12');
   });
 });
