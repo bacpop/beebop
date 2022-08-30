@@ -54,6 +54,7 @@ export default {
     });
     const response = await api(context)
       .withError('addError')
+      .ignoreSuccess()
       .post<AnalysisStatus>(`${config.server_url}/poppunk`, { projectHash: phash, sketches: jsonSketches });
     if (response) {
       commit('setAnalysisStatus', { assign: 'submitted', microreact: 'submitted', network: 'submitted' });

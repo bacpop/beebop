@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-console */
 import axios, { AxiosError, AxiosResponse } from 'axios';
@@ -26,13 +25,12 @@ export interface API<S, E> {
     withError: (type: E) => API<S, E>
     withSuccess: (type: S) => API<S, E>
     ignoreErrors: () => API<S, E>
+    ignoreSuccess: () => API<S, E>
 
     get<T>(url: string): Promise<void | ResponseWithType<T>>
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type OnError = (failure: ResponseFailure) => void;
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type OnSuccess = (success: ResponseSuccess) => void;
 
 export class APIService<S extends string, E extends string> implements API<S, E> {
@@ -43,6 +41,8 @@ export class APIService<S extends string, E extends string> implements API<S, E>
     }
 
     private _ignoreErrors = false;
+
+    private _ignoreSuccess = false;
 
     static getFirstErrorFromFailure = (failure: ResponseFailure) => {
       if (failure.errors.length === 0) {
@@ -72,6 +72,11 @@ export class APIService<S extends string, E extends string> implements API<S, E>
 
     ignoreErrors = () => {
       this._ignoreErrors = true;
+      return this;
+    };
+
+    ignoreSuccess = () => {
+      this._ignoreSuccess = true;
       return this;
     };
 
@@ -118,7 +123,7 @@ export class APIService<S extends string, E extends string> implements API<S, E>
       if (this._onError == null && !this._ignoreErrors) {
         console.warn(`No error handler registered for request ${url}.`);
       }
-      if (this._onSuccess == null) {
+      if (this._onSuccess == null && !this._ignoreSuccess) {
         console.warn(`No success handler registered for request ${url}.`);
       }
     }
