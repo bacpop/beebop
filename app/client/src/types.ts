@@ -54,8 +54,8 @@ export interface ResponseFailure {
     errors: BeebopError[];
 }
 
-export interface ResponseSuccess<T=unknown> {
+export interface ResponseSuccess {
     status: 'success';
-    data: T;
+    data: unknown;
     errors: null;
 }
