@@ -1,15 +1,26 @@
 import { AnalysisType } from '@/types';
+import { Getter, GetterTree } from 'vuex';
 import { RootState } from '@/store/state';
 
-export default {
-  analysisProgress(state: RootState) {
-    let progress = 0;
+export enum BeebopGetter {
+  analysisProgress = 'analysisProgress'
+}
+
+export interface BeebopGetters {
+  [BeebopGetter.analysisProgress]: Getter<RootState, RootState>
+}
+
+export const getters: BeebopGetters & GetterTree<RootState, RootState> = {
+  [BeebopGetter.analysisProgress]: (
+    state: RootState,
+  ): Record<string, number> => {
+    let finished = 0;
     const total = Object.keys(state.analysisStatus).length;
     Object.keys(state.analysisStatus).forEach((element: string) => {
       if (state.analysisStatus[element as AnalysisType] === 'finished') {
-        progress += 1;
+        finished += 1;
       }
     });
-    return progress / total;
+    return { total, finished, progress: (finished / total) };
   },
 };
