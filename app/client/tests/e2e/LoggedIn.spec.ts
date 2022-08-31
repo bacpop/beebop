@@ -51,7 +51,7 @@ test.describe('Logged in Tests', () => {
     await expect(page.locator('.uploaded-info')).toContainText('6930_8_11.fa f3d9b387e311d5ab59a8c08eb3545dbb filename 14');
     // expect to have a 'start analysis' button after submitting files
     await expect(page.locator('.start-analysis')).toContainText('Start Analysis');
-    // Expect to see ProgressBar status once button was pressed
+    // Expect to see ProgressBar once button was pressed
     await page.click('text=Start Analysis');
     await expect(page.locator('.progress-bar')).toHaveCount(1);
     // Expect clusters appearing in file list

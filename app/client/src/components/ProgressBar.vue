@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts">
-import { mapGetters, mapState } from 'vuex';
+import { mapGetters} from 'vuex';
 import { BProgress, BProgressBar } from 'bootstrap-vue-3';
 
 export default {
@@ -18,7 +18,6 @@ export default {
     ...mapGetters([
       'analysisProgress',
     ]),
-    ...mapState(['analysisStatus']),
     animated() {
       return this.analysisProgress as unknown as number !== 1;
     },

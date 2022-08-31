@@ -7,7 +7,7 @@
     </div>
     <DropZone v-if='user' />
     <StartButton v-if='user && filesUploaded' />
-        <ProgressBar v-if='user && filesUploaded && submitStatus'/>
+    <ProgressBar v-if='user && filesUploaded && submitStatus' />
   </div>
 </template>
 
