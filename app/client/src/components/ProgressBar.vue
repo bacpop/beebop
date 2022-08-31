@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts">
-import { mapGetters} from 'vuex';
+import { mapGetters } from 'vuex';
 import { BProgress, BProgressBar } from 'bootstrap-vue-3';
 
 export default {
