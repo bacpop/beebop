@@ -110,4 +110,42 @@ describe('Home', () => {
     expect(buttons.length).toBe(2);
     expect(buttons[1].text()).toBe('Start Analysis');
   });
+
+  it('shows status bar when data was submitted to backend', () => {
+    const analysisProgress = jest.fn().mockReturnValue(1 / 3);
+    const store = new Vuex.Store<RootState>({
+      state: mockRootState({
+        user: {
+          name: 'Jane',
+          id: '543653d45',
+          provider: 'google',
+        },
+        results: {
+          perIsolate: {
+            someFileHash: {},
+            someFileHash2: {},
+          },
+        },
+        submitStatus: 'submitted',
+        analysisStatus: {
+          assign: 'finished', microreact: 'started', network: 'queued',
+        },
+      }),
+      actions: {
+        getUser,
+      },
+      getters: {
+        analysisProgress,
+      },
+    });
+    const wrapper = mount(HomeView, {
+      global: {
+        plugins: [store],
+      },
+    });
+    const statusBar = wrapper.findAll('.progress');
+    expect(analysisProgress).toHaveBeenCalled();
+    expect(statusBar.length).toBe(1);
+    expect(statusBar[0].text()).toBe('33.33%');
+  });
 });
