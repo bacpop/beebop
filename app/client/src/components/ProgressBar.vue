@@ -1,10 +1,14 @@
 <template>
   <div>
-    <b-progress :value="analysisProgress" :max="1" show-progress class="progress">
-        <b-progress-bar :value="analysisProgress" class="progress-bar" :animated="animated">
-        {{ (analysisProgress*100).toFixed(2) }}%
+    <b-progress :value="analysisProgress.progress" :max="1" show-progress class="progress">
+        <b-progress-bar
+        :value="analysisProgress.progress"
+        class="progress-bar"
+        :animated="animated">
+          {{ (analysisProgress.progress*100).toFixed(2) }}%
         </b-progress-bar>
     </b-progress>
+    Completed {{ analysisProgress.finished }} of {{ analysisProgress.total }} jobs.
   </div>
 </template>
 
@@ -18,8 +22,8 @@ export default {
     ...mapGetters([
       'analysisProgress',
     ]),
-    animated() {
-      return this.analysisProgress as unknown as number !== 1;
+    animated(): boolean {
+      return (this.analysisProgress as unknown as Record<string, number>).progress !== 1;
     },
   },
   components: {
