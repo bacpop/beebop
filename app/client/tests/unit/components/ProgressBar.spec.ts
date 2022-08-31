@@ -5,7 +5,11 @@ import Vuex from 'vuex';
 import { mockRootState } from '../../mocks';
 
 describe('Progress bar', () => {
-  const analysisProgress = jest.fn().mockReturnValue(1 / 3);
+  const analysisProgress = jest.fn().mockReturnValue({
+    finished: 1,
+    progress: 0.3333333333333333,
+    total: 3,
+  });
 
   const store = new Vuex.Store<RootState>({
     state: mockRootState({
@@ -38,7 +42,11 @@ describe('Progress bar', () => {
 });
 
 describe('Progress bar finished', () => {
-  const analysisProgress = jest.fn().mockReturnValue(1);
+  const analysisProgress = jest.fn().mockReturnValue({
+    finished: 3,
+    progress: 1,
+    total: 3,
+  });
 
   const store = new Vuex.Store<RootState>({
     state: mockRootState({

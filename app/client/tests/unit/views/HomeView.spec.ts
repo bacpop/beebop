@@ -112,7 +112,11 @@ describe('Home', () => {
   });
 
   it('shows status bar when data was submitted to backend', () => {
-    const analysisProgress = jest.fn().mockReturnValue(1 / 3);
+    const analysisProgress = jest.fn().mockReturnValue({
+      finished: 1,
+      progress: 0.3333333333333333,
+      total: 3,
+    });
     const store = new Vuex.Store<RootState>({
       state: mockRootState({
         user: {
@@ -146,6 +150,6 @@ describe('Home', () => {
     const statusBar = wrapper.findAll('.progress');
     expect(analysisProgress).toHaveBeenCalled();
     expect(statusBar.length).toBe(1);
-    expect(statusBar[0].text()).toBe('33.33%');
+    expect(statusBar[0].text()).toBe('33.33%'); // Nan
   });
 });
