@@ -24,7 +24,7 @@ export default defineComponent({
       'analysisProgress',
     ]),
     animated(): boolean {
-      return (this.analysisProgress as Record<string, number>).progress !== 1;
+      return this.analysisProgress.progress !== 1;
     },
   },
   components: {
