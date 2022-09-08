@@ -8,6 +8,7 @@
     <DropZone v-if='user' />
     <StartButton v-if='user && filesUploaded' />
     <ProgressBar v-if='user && filesUploaded && submitStatus' />
+    <ResultsTable v-if='user && filesUploaded' class='table'/>
   </div>
 </template>
 
@@ -19,6 +20,7 @@ import GreetingAndLogout from '@/components/GreetingAndLogout.vue';
 import DropZone from '@/components/DropZone.vue';
 import StartButton from '@/components/StartButton.vue';
 import ProgressBar from '@/components/ProgressBar.vue';
+import ResultsTable from '@/components/ResultsTable.vue';
 
 export default defineComponent({
   name: 'HomeView',
@@ -28,6 +30,7 @@ export default defineComponent({
     DropZone,
     StartButton,
     ProgressBar,
+    ResultsTable,
   },
   mounted() {
     this.getUser();
