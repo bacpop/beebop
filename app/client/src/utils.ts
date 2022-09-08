@@ -104,3 +104,7 @@ export function verbalProb(prob: number, antibiotic: string) {
   }
   return word;
 }
+
+export function tooltipLine(name: string, num: number) {
+  return `${name}: ${verbalProb(num, name)} <small>(${num})</small>`;
+}
