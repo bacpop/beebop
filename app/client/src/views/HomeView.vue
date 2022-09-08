@@ -5,7 +5,7 @@
       <LoginPrompt v-if='!user' />
       <GreetingAndLogout v-if='user' />
     </div>
-    <DropZone v-if='user' />
+    <DropZone v-if='user && !submitStatus' />
     <StartButton v-if='user && filesUploaded' />
     <ProgressBar v-if='user && filesUploaded && submitStatus' />
     <ResultsTable v-if='user && filesUploaded' class='table'/>
