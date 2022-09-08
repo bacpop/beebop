@@ -51,28 +51,25 @@
 import { defineComponent } from 'vue';
 import { mapState } from 'vuex';
 import { VBTooltip } from 'bootstrap-vue-3';
-import { addRowspan, getRGB, verbalProb } from '../utils';
+import {
+  addRowspan, getRGB, tooltipLine,
+} from '../utils';
 
 export default defineComponent({
   name: 'ResultsTable',
   directives: {
     'b-tooltip': VBTooltip,
   },
-  data() {
-    return {
-      tableData: this.generateTableData(),
-    };
-  },
   methods: {
     getRGB,
-    verbalProb,
+    tooltipLine,
     getTooltipText(data: Record<string, number>) {
       const firstLine = 'Probability of resistance to:';
-      const pen = ['Penicillin: ', this.verbalProb(data.Penicillin, 'Penicillin'), ' <small>(', data.Penicillin, ')</small>'].join('');
-      const chlor = ['Chloramphenicol: ', this.verbalProb(data.Chloramphenicol, 'Chloramphenicol'), ' <small>(', data.Chloramphenicol, ')</small>'].join('');
-      const ery = ['Erythromycin: ', this.verbalProb(data.Erythromycin, 'Erythromycin'), ' <small>(', data.Erythromycin, ')</small>'].join('');
-      const tetra = ['Tetracycline: ', this.verbalProb(data.Tetracycline, 'Tetracycline'), ' <small>(', data.Tetracycline, ')</small>'].join('');
-      const cotrim = ['Cotrim: ', this.verbalProb(data.Trim_sulfa, 'Cotrim'), ' <small>(', data.Trim_sulfa, ')</small>'].join('');
+      const pen = this.tooltipLine('Penicillin', data.Penicillin);
+      const chlor = this.tooltipLine('Chloramphenicol', data.Chloramphenicol);
+      const ery = this.tooltipLine('Erythromycin', data.Erythromycin);
+      const tetra = this.tooltipLine('Tetracycline', data.Tetracycline);
+      const cotrim = this.tooltipLine('Cotrim', data.Trim_sulfa);
       return [firstLine, pen, chlor, ery, tetra, cotrim].join('<br/>');
     },
     getCluster(sample: string) {
@@ -85,49 +82,30 @@ export default defineComponent({
     getNetwork() {
       return (this.analysisStatus.network === 'finished') ? '\u2714' : this.analysisStatus.network;
     },
-    generateTableData() {
-      if (this.results) {
-        const samples = this.results.perIsolate;
-        const items: Array<Record<string, string>> = [];
-        Object.keys(samples).forEach((sample) => {
-          items.push({
-            Hash: samples[sample].hash,
-            Filename: samples[sample].filename,
-            Sketch: (samples[sample].sketch) ? '\u2714' : 'processing',
-            AMR: samples[sample].amr ? samples[sample].amr : 'processing',
-            Cluster: this.submitStatus === 'submitted' ? this.getCluster(sample) : '',
-            Microreact: this.submitStatus === 'submitted' ? this.getMicroreact() : '',
-            Network: this.submitStatus === 'submitted' ? this.getNetwork() : '',
-          });
-        });
-        const tableSorted = items.sort((a, b) => Number(a.Cluster) - Number(b.Cluster));
-        if (this.analysisStatus.assign === 'finished') {
-          // adding a rowspan property to merge microreact/ network cells from same cluster
-          const tableRowspan = addRowspan(tableSorted);
-          return tableRowspan;
-        }
-        return tableSorted;
-      }
-      return null;
-    },
   },
   computed: {
     ...mapState(['results', 'submitStatus', 'analysisStatus']),
-  },
-  mounted() {
-    this.tableData = this.generateTableData();
-  },
-  watch: {
-    results: {
-      handler() {
-        this.tableData = this.generateTableData();
-      },
-      deep: true,
-    },
-    analysisStatus: {
-      handler() {
-        this.tableData = this.generateTableData();
-      },
+    tableData() {
+      const samples = this.results.perIsolate;
+      const items: Array<Record<string, string>> = [];
+      Object.keys(samples).forEach((sample) => {
+        items.push({
+          Hash: samples[sample].hash,
+          Filename: samples[sample].filename,
+          Sketch: (samples[sample].sketch) ? '\u2714' : 'processing',
+          AMR: samples[sample].amr ? samples[sample].amr : 'processing',
+          Cluster: this.submitStatus === 'submitted' ? this.getCluster(sample) : '',
+          Microreact: this.submitStatus === 'submitted' ? this.getMicroreact() : '',
+          Network: this.submitStatus === 'submitted' ? this.getNetwork() : '',
+        });
+      });
+      const tableSorted = items.sort((a, b) => Number(a.Cluster) - Number(b.Cluster));
+      if (this.analysisStatus.assign === 'finished') {
+        // adding a rowspan property to merge microreact/ network cells from same cluster
+        const tableRowspan = addRowspan(tableSorted);
+        return tableRowspan;
+      }
+      return tableSorted;
     },
   },
 });
