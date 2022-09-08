@@ -22,7 +22,13 @@ export default {
     }
   },
   setIsolateValue(state: RootState, input: IsolateValue) {
-    state.results.perIsolate[input.hash][input.type] = input.result;
+    let results = null;
+    if (input.type === 'amr') {
+      results = JSON.parse(input.result);
+    } else {
+      results = input.result;
+    }
+    state.results.perIsolate[input.hash][input.type] = results;
   },
   setProjectHash(state: RootState, phash: string) {
     state.projectHash = phash;
