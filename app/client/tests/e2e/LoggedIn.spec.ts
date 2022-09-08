@@ -50,7 +50,7 @@ test.describe('Logged in Tests', () => {
     // Expect table to appear
     await expect(page.locator('table')).toHaveCount(1);
     // Expect files, hashes, AMR and Sketch appearing in table
-    await page.waitForTimeout(5000);
+    await page.waitForTimeout(10000);
     await expect(await page.locator('tr:has-text("6930_8_13.fa")').innerText()).toBe('6930_8_13.fa	✔	PCETE SXT			');
     await expect(await page.locator('tr:has-text("6930_8_11.fa")').innerText()).toBe('6930_8_11.fa	✔	PCETE SXT			');
     // expect to have a 'start analysis' button after submitting files
