@@ -78,7 +78,7 @@ describe('ResultsTable complete', () => {
     expect(wrapper.exists()).toBe(true);
   });
 
-  test('generateTableData returns table data', () => {
+  test('tableData generates table data', () => {
     const expectedTable = [
       {
         Hash: 'hash2',
@@ -132,7 +132,7 @@ describe('ResultsTable complete', () => {
         Rowspan: 0,
       },
     ];
-    expect(wrapper.vm.generateTableData()).toEqual(expectedTable);
+    expect(wrapper.vm.tableData).toEqual(expectedTable);
   });
 
   test('getTooltipText generates tooltip text', () => {
@@ -248,68 +248,5 @@ describe('ResultsTable incomplete', () => {
     expect(cells[3].text()).toBe('started');
     expect(cells[4].text()).toBe('waiting');
     expect(cells[5].text()).toBe('waiting');
-  });
-
-  it('watcher update tableData', () => {
-    const updatedResults = {
-      perIsolate: {
-        hash1: {
-          hash: 'hash1',
-          filename: 'example1.fa',
-          sketch: 'sketch',
-          cluster: 7,
-          amr: {
-            filename: 'example1.fa',
-            Penicillin: 0.892,
-            Chloramphenicol: 0.39,
-            Erythromycin: 0.151,
-            Tetracycline: 0.453,
-            Trim_sulfa: 0.974,
-          },
-        },
-        hash2: {
-          hash: 'hash2',
-          filename: 'example2.fa',
-          sketch: 'sketch',
-          cluster: 3,
-          amr: {
-            filename: 'example2.fa',
-            Penicillin: 0.892,
-            Chloramphenicol: 0.39,
-            Erythromycin: 0.151,
-            Tetracycline: 0.453,
-            Trim_sulfa: 0.974,
-          },
-        },
-        hash3: {
-          hash: 'hash3',
-          filename: 'example3.fa',
-          sketch: 'sketch',
-          cluster: 7,
-          amr: {
-            filename: 'example3.fa',
-            Penicillin: 0.892,
-            Chloramphenicol: 0.39,
-            Erythromycin: 0.151,
-            Tetracycline: 0.453,
-            Trim_sulfa: 0.974,
-          },
-        },
-      },
-    };
-    const updatedAnalysisStatus = {
-      assign: 'finished',
-      microreact: 'started',
-      network: 'queueing',
-    };
-    const updatedResultsSpy = jest.spyOn(wrapper.vm, 'generateTableData');
-    expect(updatedResultsSpy).toHaveBeenCalledTimes(0);
-    (wrapper.vm.$options.watch?.results as any).handler.call(wrapper.vm, updatedResults);
-    expect(updatedResultsSpy).toHaveBeenCalledTimes(1);
-    (wrapper.vm.$options.watch?.analysisStatus as any).handler.call(
-      wrapper.vm,
-      updatedAnalysisStatus,
-    );
-    expect(updatedResultsSpy).toHaveBeenCalledTimes(2);
   });
 });
