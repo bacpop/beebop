@@ -55,3 +55,34 @@
 .progress-bar {
     background-color: #42b983;
 }
+
+.checkmark {
+    color: green;
+}
+
+.processing {
+    color:#a1abb3;
+}
+
+b {
+    font-size: larger;
+    font-weight: 900;
+    text-shadow: 0px 1px, 1px 0px, 1px 1px;
+}
+
+b+b {
+    margin-left: 5px;
+}
+
+.tooltip-inner {
+    max-width: 400px;
+}
+
+small {
+    font-size: x-small;
+}
+
+.table {
+    width: 90%;
+    margin: 24px auto;
+}
