@@ -64,7 +64,7 @@ describe('Actions', () => {
     expect(mockAxios.history.get[0].url).toEqual(`${config.server_url}/logout`);
   });
 
-  it('processFiles calculates filehash, adds hash & filename to store and calls setIsolateValue', async () => {
+  it('processFiles calculates filehash, adds hash & filename to store and calls setSketch', async () => {
     const commit = jest.fn();
     const file = {
       name: 'sample.fa',
