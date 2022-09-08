@@ -4,8 +4,6 @@
     class="btn btn-block btn-standard"
     @click='onClick'>
       Start Analysis</button>
-    <!--only adding this temporarily to have something testable for e2e tests-->
-    <p class="status" v-if='submitStatus'>{{analysisStatus}}</p>
   </div>
 </template>
 

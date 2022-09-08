@@ -44,3 +44,14 @@
     cursor:default;
     text-decoration: none;
 }
+
+.progress {
+    max-width: 500px;
+    height: 2rem;
+    margin: 18px auto;
+    border: 1px solid black;
+}
+
+.progress-bar {
+    background-color: #42b983;
+}
