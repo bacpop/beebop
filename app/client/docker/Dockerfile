@@ -5,5 +5,7 @@ WORKDIR /app
 RUN npm install
 
 COPY . /app
+RUN npm install && npm run build && npm install serve
+
 EXPOSE 8080
-CMD npm run serve
+CMD npx run serve -p 8080 -s dist
