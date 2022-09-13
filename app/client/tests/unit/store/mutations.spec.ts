@@ -34,7 +34,31 @@ describe('mutations', () => {
     mutations.addFile(state, mockFileMetadata);
     expect(state.results.perIsolate.someFileHash).toStrictEqual({ hash: 'someFileHash', filename: 'sampleName.fa' });
   });
-  it('sets perIsolate values', () => {
+  it('sets sketch values', () => {
+    const state = mockRootState({
+      results: {
+        perIsolate: {
+          someFileHash: {
+            hash: 'someFileHash',
+            filename: 'sampleName.fa',
+          },
+        },
+      },
+    });
+    const { SKETCH } = ValueTypes;
+    const mockIsolateValues = {
+      hash: 'someFileHash',
+      type: SKETCH,
+      result: 'sketch_result',
+    };
+    mutations.setIsolateValue(state, mockIsolateValues);
+    expect(state.results.perIsolate.someFileHash).toStrictEqual({
+      hash: 'someFileHash',
+      filename: 'sampleName.fa',
+      sketch: 'sketch_result',
+    });
+  });
+  it('sets AMR values', () => {
     const state = mockRootState({
       results: {
         perIsolate: {
@@ -46,16 +70,16 @@ describe('mutations', () => {
       },
     });
     const { AMR } = ValueTypes;
-    const mockIsolateValues = {
+    const mockAMR = {
       hash: 'someFileHash',
       type: AMR,
-      result: 'amr_result',
+      result: '{ "Penicillin": 0.5, "Chloramphenicol": 0.2 }',
     };
-    mutations.setIsolateValue(state, mockIsolateValues);
+    mutations.setIsolateValue(state, mockAMR);
     expect(state.results.perIsolate.someFileHash).toStrictEqual({
       hash: 'someFileHash',
       filename: 'sampleName.fa',
-      amr: 'amr_result',
+      amr: { Penicillin: 0.5, Chloramphenicol: 0.2 },
     });
   });
   it('sets submitStatus', () => {

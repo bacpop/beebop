@@ -1,11 +1,13 @@
 type Dict<T> = Record<string, T>
 
+export type AMR = Dict<number | string | boolean>
+
 export interface Isolate {
     hash?: string
     filename?: string
-    amr?: string
+    amr?: AMR
     sketch?: string
-    cluster?: string
+    cluster?: number | string
 }
 
 export interface Versions {

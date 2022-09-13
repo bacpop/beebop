@@ -5,15 +5,7 @@
       <p v-if='isDragActive'>Drop the files here ...</p>
       <p v-else>Drag and drop your fasta files here, or click to select files</p>
     </div>
-    <p> Uploaded files:</p>
-    <!--only adding this temporarily to have something testable for e2e tests-->
-    <div class="uploaded-info"><p v-for="file in results.perIsolate" :key="file.hash">
-      {{file.filename}} {{file.hash}}
-      {{file.amr ? file.amr.slice(2, 10): ""}}
-      {{file.sketch ? file.sketch.slice(2, 4): ""}}
-      {{file.cluster ? file.cluster: ""}}
-    </p></div>
-    <p class="count">{{ Object.keys(results.perIsolate).length }}</p>
+    <p class="count"> Uploaded files: {{ Object.keys(results.perIsolate).length }}</p>
   </div>
 </template>
 
