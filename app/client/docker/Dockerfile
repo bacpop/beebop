@@ -8,4 +8,4 @@ COPY . /app
 RUN npm install && npm run build && npm install serve
 
 EXPOSE 8080
-CMD npx run serve -p 8080 -s dist
+CMD npx serve -n -p 8080 -s dist
