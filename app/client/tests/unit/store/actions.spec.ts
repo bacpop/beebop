@@ -91,6 +91,7 @@ describe('Actions', () => {
             sketch: '{"14":"12345"}',
           },
         },
+        perCluster: {},
       },
     });
     const expectedHash = Md5.hashStr(Object.keys(state.results.perIsolate).sort().join());
@@ -234,6 +235,7 @@ describe('Actions', () => {
             hash: 'someFileHash2',
           },
         },
+        perCluster: {},
       },
     });
     const expResponse = responseSuccess({ 0: { hash: 'someFileHash', cluster: '12' }, 1: { hash: 'someFileHash2', cluster: '2' } });
@@ -254,5 +256,37 @@ describe('Actions', () => {
     expect(commit.mock.calls[0][1]).toEqual('submitted');
     expect(dispatch.mock.calls[0][0]).toEqual('runPoppunk');
     expect(dispatch.mock.calls[1][0]).toEqual('startStatusPolling');
+  });
+
+  it('getZip makes api call and creates download link', async () => {
+    const createElementSpy = jest.spyOn(document, 'createElement');
+    global.URL.createObjectURL = jest.fn();
+    const state = mockRootState({
+      projectHash: 'randomHash',
+    });
+    const data = {
+      type: 'network',
+      cluster: 7,
+    };
+    mockAxios.onPost(`${config.server_url}/downloadZip`).reply(200, { data: 'zipData' });
+    await actions.getZip({ state } as any, data);
+    expect(createElementSpy).toHaveBeenCalledTimes(1);
+    expect(createElementSpy).toHaveBeenCalledWith('a');
+    expect(global.URL.createObjectURL).toHaveBeenCalledTimes(1);
+  });
+
+  it('getMicroreactURL makes axios call and updates results', async () => {
+    const commit = jest.fn();
+    const state = mockRootState({
+      projectHash: 'randomHash',
+    });
+    const expResponse = responseSuccess({ cluster: 7, url: 'microreact.org/mock' });
+    mockAxios.onPost(`${config.server_url}/microreactURL`).reply(200, expResponse);
+    await actions.getMicroreactURL({ commit, state } as any, 7);
+    expect(mockAxios.history.post[0].url).toEqual(`${config.server_url}/microreactURL`);
+    expect(commit.mock.calls[0]).toEqual([
+      'addMicroreactURL',
+      expResponse.data,
+    ]);
   });
 });

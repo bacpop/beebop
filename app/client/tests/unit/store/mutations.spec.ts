@@ -43,6 +43,7 @@ describe('mutations', () => {
             filename: 'sampleName.fa',
           },
         },
+        perCluster: {},
       },
     });
     const { SKETCH } = ValueTypes;
@@ -67,6 +68,7 @@ describe('mutations', () => {
             filename: 'sampleName.fa',
           },
         },
+        perCluster: {},
       },
     });
     const { AMR } = ValueTypes;
@@ -120,9 +122,24 @@ describe('mutations', () => {
             hash: 'someFileHash2',
           },
         },
+        perCluster: {},
       },
     });
     mutations.setClusters(state, { 0: { hash: 'someFileHash', cluster: '12' }, 1: { hash: 'someFileHash2', cluster: '2' } });
     expect(state.results.perIsolate.someFileHash.cluster).toBe('12');
+  });
+  it('sets MicroreactURL', () => {
+    const state = mockRootState();
+    const mockURLInfo = {
+      cluster: '7',
+      url: 'microreact.org/mock',
+    };
+    mutations.addMicroreactURL(state, mockURLInfo);
+    expect(state.results.perCluster[mockURLInfo.cluster]).toStrictEqual({ cluster: '7', microreactURL: 'microreact.org/mock' });
+  });
+  it('sets Microreact Token', () => {
+    const state = mockRootState();
+    mutations.setToken(state, 'mock_microreact_token');
+    expect(state.microreactToken).toBe('mock_microreact_token');
   });
 });
