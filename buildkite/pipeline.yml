@@ -5,10 +5,16 @@ steps:
   - label: ":whale::vue: Build Client"
     command: app/client/docker/build
 
+  - label: ":whale::nginx: Build Proxy"
+    command: proxy/docker/build
+
   - wait
 
   - label: ":shipit: Push Server images"
     command: app/server/docker/push
 
   - label: ":shipit: Push Client images"
-    command: app/client/docker/push
+    command:  app/client/docker/push
+
+  - label: ":shipit: Push Proxy images"
+    command:  proxy/docker/push

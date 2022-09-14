@@ -1,0 +1,8 @@
+steps:
+  - label: ":whale::nginx: Build"
+    command: scripts/build
+
+  - wait
+
+  - label: ":shipit: Push images"
+    command: scripts/push

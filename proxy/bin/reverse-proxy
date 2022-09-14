@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -eu
+
+# These paths must match the paths as used in the nginx.conf
+PATH_CONFIG=/run/proxy
+PATH_CERT="$PATH_CONFIG/certificate.pem"
+PATH_KEY="$PATH_CONFIG/key.pem"
+
+# Wait for the ssl certificates to be copied in or generated
+echo "Waiting for certificates at $PATH_CERT and $PATH_KEY"
+while [ ! -e $PATH_CERT ] || [ ! -e $PATH_KEY ]; do
+  sleep 1
+done
+
+echo "Certificate files detected. Running nginx"
+exec nginx -g "daemon off;"
