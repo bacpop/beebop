@@ -20,6 +20,7 @@ export type User = Dict<string> | null
 
 export interface Results {
     perIsolate: Dict<Isolate>
+    perCluster: Dict<Dict<string>>
 }
 
 export enum ValueTypes {
