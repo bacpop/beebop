@@ -10,15 +10,15 @@
       </button>
 
       <button
-        v-if='microreactToken && !results.perCluster[cluster]?.microreactURL'
-        @click='getMicroreactURL(cluster)'
+        v-if='tokenAvailable'
+        @click='buildMicroreactURL(cluster)'
         class='btn btn-block btn-standard btn-download'
       >
         Generate Microreact URL
       </button>
 
       <a
-        v-if='microreactToken && results.perCluster[cluster]?.microreactURL'
+        v-if= 'URLgenerated'
         :href='results.perCluster[cluster]?.microreactURL'
         class='btn btn-block btn-standard btn-download'
         target='_blank'
@@ -80,9 +80,9 @@
 
 <script lang='ts'>
 import { defineComponent } from 'vue';
-import { mapState, mapActions, mapMutations } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 import Modal from '@/components/Modal.vue';
-import { BeebopError } from '../types';
+import { BeebopError, Errors } from '../types';
 
 export default defineComponent({
   name: 'GenerateMicroreactURL',
@@ -97,8 +97,7 @@ export default defineComponent({
     };
   },
   methods: {
-    ...mapActions(['getMicroreactURL']),
-    ...mapMutations(['setToken']),
+    ...mapActions(['buildMicroreactURL']),
     showModal() {
       this.isModalVisible = true;
     },
@@ -106,17 +105,19 @@ export default defineComponent({
       this.isModalVisible = false;
     },
     saveToken() {
-      this.setToken(this.token);
-      this.getMicroreactURL(this.cluster);
+      this.buildMicroreactURL({ cluster: this.cluster, token: this.token });
     },
   },
   computed: {
     ...mapState(['results', 'microreactToken', 'errors']),
     tokenWasWrong() {
-      if (this.errors.some((e: BeebopError) => e.error === 'Wrong Token')) {
-        return true;
-      }
-      return false;
+      return this.errors.some((e: BeebopError) => e.error === Errors.WRONG_TOKEN);
+    },
+    tokenAvailable() {
+      return this.microreactToken && !this.results.perCluster[this.cluster]?.microreactURL;
+    },
+    URLgenerated() {
+      return this.microreactToken && this.results.perCluster[this.cluster]?.microreactURL;
     },
   },
 });
