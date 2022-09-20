@@ -62,3 +62,7 @@ export interface ResponseSuccess {
     data: unknown;
     errors: null;
 }
+
+export enum Errors {
+    WRONG_TOKEN='Wrong Token',
+}
