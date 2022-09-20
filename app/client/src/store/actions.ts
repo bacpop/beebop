@@ -125,16 +125,17 @@ export default {
         link.click();
       });
   },
-  async getMicroreactURL(
+  async buildMicroreactURL(
     context: ActionContext<RootState, RootState>,
-    cluster: string | number,
+    data: Record<string, string | number>,
   ) {
-    const { state } = context;
+    const { state, commit } = context;
+    commit('setToken', data.token);
     await api(context)
       .withSuccess('addMicroreactURL')
       .withError('addError')
       .post<ClusterInfo>(`${config.server_url}/microreactURL`, {
-        cluster,
+        cluster: data.cluster,
         projectHash: state.projectHash,
         apiToken: state.microreactToken,
       });
