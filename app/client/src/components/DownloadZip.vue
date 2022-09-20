@@ -2,7 +2,7 @@
   <button
   @click='onClick()'
   class="btn btn-block btn-standard btn-download">
-    Download files as .zip
+    Download zip file
   </button>
 </template>
 
@@ -11,7 +11,7 @@ import { defineComponent } from 'vue';
 import { mapGetters, mapState, mapActions } from 'vuex';
 
 export default defineComponent({
-  name: 'DownloadMicroreactZip',
+  name: 'DownloadZip',
   props: ['type', 'cluster'],
   methods: {
     ...mapActions(['getZip']),
