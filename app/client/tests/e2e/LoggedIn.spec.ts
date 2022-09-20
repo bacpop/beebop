@@ -70,11 +70,11 @@ test.describe('Logged in Tests', () => {
     await expect(page.locator('tr:has-text("6930_8_13.fa") .btn').nth(2)).toContainText('Download zip file');
     // on clicking Generate Microreact URL button, modal appears
     await page.click('text=Generate Microreact URL');
-    await expect(page.locator('.modalFlex')).toContainText('No Token submitted yet');
-    await expect(page.locator('.modalFlex .btn')).toContainText('Save Token');
+    await expect(page.locator('.modalFlex')).toContainText('No token submitted yet');
+    await expect(page.locator('.modalFlex .btn')).toContainText('Save token');
     // after submittink microreact token, button turns into link to microreact.org
     await page.locator('input').fill(process.env.MICROREACT_TOKEN as string);
-    await page.click('text=Save Token');
+    await page.click('text=Save token');
     await expect(page.locator('tr:has-text("6930_8_13.fa") a')).toContainText('Visit Microreact URL');
     await expect(page.locator('tr:has-text("6930_8_13.fa") a')).toHaveAttribute('href', /https:\/\/microreact.org\/project\/.*-poppunk.*/);
   });
