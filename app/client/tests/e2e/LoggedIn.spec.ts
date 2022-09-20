@@ -65,9 +65,9 @@ test.describe('Logged in Tests', () => {
     await expect(page.locator('tr:has-text("6930_8_13.fa")')).toContainText(['6930_8_13.fa', '✔', 'PCETE SXT', '7']);
     await expect(page.locator('tr:has-text("6930_8_11.fa")')).toContainText(['6930_8_11.fa', '✔', 'PCETE SXT', '24']);
     // Expect download buttons and button to generate microreact URL to appear
-    await expect(page.locator('tr:has-text("6930_8_13.fa") .btn').nth(0)).toContainText('Download files as .zip');
+    await expect(page.locator('tr:has-text("6930_8_13.fa") .btn').nth(0)).toContainText('Download zip file');
     await expect(page.locator('tr:has-text("6930_8_13.fa") .btn').nth(1)).toContainText('Generate Microreact URL');
-    await expect(page.locator('tr:has-text("6930_8_13.fa") .btn').nth(2)).toContainText('Download files as .zip');
+    await expect(page.locator('tr:has-text("6930_8_13.fa") .btn').nth(2)).toContainText('Download zip file');
     // on clicking Generate Microreact URL button, modal appears
     await page.click('text=Generate Microreact URL');
     await expect(page.locator('.modalFlex')).toContainText('No Token submitted yet');
