@@ -87,7 +87,24 @@ export const router = (app => {
     app.post('/microreactURL',
         microreactURL);
 
+    app.post('/downloadGraphml',
+        downloadGraphml);
+
 })
+
+export async function downloadGraphml(request, response) {
+    await axios.post(`${config.api_url}/downloadGraphml`,
+        request.body,
+        {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(res => response.send(res.data))
+        .catch(function (error) {
+            sendError(response, error);
+          });
+    }
 
 export async function downloadZip(request, response) {
     await axios.post(`${config.api_url}/results/zip`,
