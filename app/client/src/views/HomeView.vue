@@ -9,6 +9,7 @@
     <StartButton v-if='user && filesUploaded' />
     <ProgressBar v-if='user && filesUploaded && submitStatus' />
     <ResultsTable v-if='user && filesUploaded' class='table'/>
+    <NetworkVisualisation v-if='user && (analysisStatus.network ==="finished")'/>
   </div>
 </template>
 
@@ -21,6 +22,7 @@ import DropZone from '@/components/DropZone.vue';
 import StartButton from '@/components/StartButton.vue';
 import ProgressBar from '@/components/ProgressBar.vue';
 import ResultsTable from '@/components/ResultsTable.vue';
+import NetworkVisualisation from '@/components/NetworkVisualisation.vue';
 
 export default defineComponent({
   name: 'HomeView',
@@ -31,6 +33,7 @@ export default defineComponent({
     StartButton,
     ProgressBar,
     ResultsTable,
+    NetworkVisualisation,
   },
   mounted() {
     this.getUser();
@@ -42,7 +45,7 @@ export default defineComponent({
     filesUploaded() {
       return Object.keys(this.results.perIsolate).length > 0;
     },
-    ...mapState(['user', 'results', 'submitStatus']),
+    ...mapState(['user', 'results', 'submitStatus', 'analysisStatus']),
   },
 });
 </script>
