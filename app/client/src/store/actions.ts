@@ -139,4 +139,17 @@ export default {
         apiToken: state.microreactToken,
       });
   },
+  async getGraphml(
+    context: ActionContext<RootState, RootState>,
+    cluster: string | number,
+  ) {
+    const { state } = context;
+    await api(context)
+      .withSuccess('addGraphml')
+      .withError('addError')
+      .post<ClusterInfo>(`${config.server_url}/downloadGraphml`, {
+        cluster,
+        projectHash: state.projectHash,
+      });
+  },
 };

@@ -57,4 +57,10 @@ export default {
   setToken(state: RootState, token: string | null) {
     state.microreactToken = token;
   },
+  addGraphml(state: RootState, GraphInfo: Record<string, string>) {
+    state.results.perCluster[GraphInfo.cluster] = {
+      cluster: GraphInfo.cluster,
+      graph: GraphInfo.graph,
+    };
+  },
 };
