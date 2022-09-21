@@ -48,4 +48,13 @@ export default {
         .cluster = clusterInfo[element].cluster;
     });
   },
+  addMicroreactURL(state: RootState, URLinfo: Record<string, string>) {
+    state.results.perCluster[URLinfo.cluster] = {
+      cluster: URLinfo.cluster,
+      microreactURL: URLinfo.url,
+    };
+  },
+  setToken(state: RootState, token: string | null) {
+    state.microreactToken = token;
+  },
 };

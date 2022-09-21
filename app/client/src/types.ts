@@ -20,6 +20,7 @@ export type User = Dict<string> | null
 
 export interface Results {
     perIsolate: Dict<Isolate>
+    perCluster: Dict<Dict<string>>
 }
 
 export enum ValueTypes {
@@ -60,4 +61,8 @@ export interface ResponseSuccess {
     status: 'success';
     data: unknown;
     errors: null;
+}
+
+export enum Errors {
+    WRONG_TOKEN='Wrong Token',
 }

@@ -65,6 +65,9 @@ export class APIService<S extends string, E extends string> implements API<S, E>
 
     withError = (type: E) => {
       this._onError = (failure: ResponseFailure) => {
+        if (APIService.getFirstErrorFromFailure(failure).error === 'Wrong Token') {
+          this._commit('setToken', null);
+        }
         this._commit(type, APIService.getFirstErrorFromFailure(failure));
       };
       return this;

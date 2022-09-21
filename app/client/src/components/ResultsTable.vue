@@ -32,14 +32,25 @@
           <td v-if="sample.Rowspan !== 0"
           style="vertical-align : middle;"
           :rowspan="sample.Rowspan"
-          :class="(sample.Microreact === '\u2714')? 'checkmark' : 'processing'">
-            {{sample.Microreact}}
+          :class="(sample.Microreact === 'showButton')? '' : 'processing'">
+            <p v-if="(sample.Microreact !== 'showButton')">{{sample.Microreact}}</p>
+            <DownloadZip
+            v-if="(sample.Microreact === 'showButton')"
+            :type="'microreact'"
+            :cluster="sample.Cluster"/>
+            <GenerateMicroreactURL
+            v-if="(sample.Microreact === 'showButton')"
+            :cluster="sample.Cluster"/>
           </td>
           <td v-if="sample.Rowspan !== 0"
           style="vertical-align : middle;"
           :rowspan="sample.Rowspan"
-          :class="(sample.Network === '\u2714') ? 'checkmark' : 'processing'">
-            {{sample.Network}}
+          :class="(sample.Network === 'showButton') ? '' : 'processing'">
+            <p v-if="(sample.Network !== 'showButton')">{{sample.Network}}</p>
+            <DownloadZip
+            v-if="(sample.Network === 'showButton')"
+            :type="'network'"
+            :cluster="sample.Cluster"/>
           </td>
         </tr>
       </tbody>
@@ -54,11 +65,17 @@ import { VBTooltip } from 'bootstrap-vue-3';
 import {
   addRowspan, getRGB, tooltipLine,
 } from '../utils';
+import DownloadZip from './DownloadZip.vue';
+import GenerateMicroreactURL from './GenerateMicroreactURL.vue';
 
 export default defineComponent({
   name: 'ResultsTable',
   directives: {
     'b-tooltip': VBTooltip,
+  },
+  components: {
+    DownloadZip,
+    GenerateMicroreactURL,
   },
   methods: {
     getRGB,
@@ -77,17 +94,17 @@ export default defineComponent({
         ? this.results.perIsolate[sample].cluster : this.analysisStatus.assign);
     },
     getMicroreact() {
-      return (this.analysisStatus.microreact === 'finished') ? '\u2714' : this.analysisStatus.microreact;
+      return (this.analysisStatus.microreact === 'finished') ? 'showButton' : this.analysisStatus.microreact;
     },
     getNetwork() {
-      return (this.analysisStatus.network === 'finished') ? '\u2714' : this.analysisStatus.network;
+      return (this.analysisStatus.network === 'finished') ? 'showButton' : this.analysisStatus.network;
     },
   },
   computed: {
     ...mapState(['results', 'submitStatus', 'analysisStatus']),
     tableData() {
       const samples = this.results.perIsolate;
-      const items: Array<Record<string, string>> = [];
+      const items: Record<string, string | number>[] = [];
       Object.keys(samples).forEach((sample) => {
         items.push({
           Hash: samples[sample].hash,

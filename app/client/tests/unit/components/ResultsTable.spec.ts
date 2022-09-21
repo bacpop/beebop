@@ -64,6 +64,7 @@ describe('ResultsTable complete', () => {
             },
           },
         },
+        perCluster: {},
       },
     }),
   });
@@ -93,8 +94,8 @@ describe('ResultsTable complete', () => {
           Trim_sulfa: 0.974,
         },
         Cluster: 3,
-        Microreact: '\u2714',
-        Network: '\u2714',
+        Microreact: 'showButton',
+        Network: 'showButton',
         Rowspan: 1,
       },
       {
@@ -110,8 +111,8 @@ describe('ResultsTable complete', () => {
           Trim_sulfa: 0.974,
         },
         Cluster: 7,
-        Microreact: '\u2714',
-        Network: '\u2714',
+        Microreact: 'showButton',
+        Network: 'showButton',
         Rowspan: 2,
       },
       {
@@ -127,8 +128,8 @@ describe('ResultsTable complete', () => {
           Trim_sulfa: 0.974,
         },
         Cluster: 7,
-        Microreact: '\u2714',
-        Network: '\u2714',
+        Microreact: 'showButton',
+        Network: 'showButton',
         Rowspan: 0,
       },
     ];
@@ -226,6 +227,7 @@ describe('ResultsTable incomplete', () => {
             },
           },
         },
+        perCluster: {},
       },
     }),
   });

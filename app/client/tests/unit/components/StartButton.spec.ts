@@ -28,6 +28,7 @@ describe('StartButton', () => {
             sketch: 'sketch',
           },
         },
+        perCluster: {},
       },
     }),
     actions: {
@@ -79,6 +80,7 @@ describe('StartButton disabled', () => {
             filename: 'example2.fa',
           },
         },
+        perCluster: {},
       },
     }),
   });
@@ -115,6 +117,7 @@ describe('StartButton disabled after submit', () => {
             sketch: 'sketch',
           },
         },
+        perCluster: {},
       },
     }),
   });

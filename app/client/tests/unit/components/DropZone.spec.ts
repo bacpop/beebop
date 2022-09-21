@@ -28,6 +28,7 @@ describe('Dropzone', () => {
       },
       results: {
         perIsolate: {},
+        perCluster: {},
       },
     }),
     actions: {
