@@ -93,7 +93,7 @@ export const router = (app => {
 })
 
 export async function downloadGraphml(request, response) {
-    await axios.post(`${config.api_url}/downloadGraphml`,
+    await axios.post(`${config.api_url}/results/graphml`,
         request.body,
         {
             headers: {
@@ -146,7 +146,9 @@ export async function runPoppunk(request, response) {
         {
             headers: {
               'Content-Type': 'application/json'
-            }
+            },
+            maxContentLength: 1000000000,
+            maxBodyLength: 1000000000
         },
     )
         .then(res => response.send(res.data))
