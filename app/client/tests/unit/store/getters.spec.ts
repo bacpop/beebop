@@ -24,31 +24,31 @@ describe('getters', () => {
         perCluster: {},
         perIsolate: {
           hash1: {
-            cluster: 4
+            cluster: 4,
           },
           hash2: {
-            cluster: 2
+            cluster: 2,
           },
           hash3: {
-            cluster: 7
+            cluster: 7,
           },
           hash4: {
-            cluster: 4
+            cluster: 4,
           },
           hash5: {
-            cluster: 31
+            cluster: 31,
           },
           hash6: {
-            cluster: 2
-          }
-        }
-      }
+            cluster: 2,
+          },
+        },
+      },
     });
     expect(getters.uniqueClusters(
       state,
       'uniqueClusters',
       state,
-      'uniqueClusters'
-    )).toStrictEqual([2,4,7,31]);
+      'uniqueClusters',
+    )).toStrictEqual([2, 4, 7, 31]);
   });
 });
