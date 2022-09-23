@@ -13,12 +13,8 @@ import jquery from 'jquery';
 import { mapState, mapActions } from 'vuex';
 
 export default defineComponent({
-  name: 'NetworkVisualisation',
-  data() {
-    return {
-      cluster: 24,
-    };
-  },
+  name: 'CytoscapeGraph',
+  props: ['cluster'],
   mounted() {
     graphml(cytoscape, jquery);
     this.drawGraph();
@@ -32,8 +28,6 @@ export default defineComponent({
       if (!this.results.perCluster[this.cluster] || !this.results.perCluster[this.cluster].graph) {
         await this.getGraphml(this.cluster);
       }
-      // const graphmlFile = await fetch('./network.graphml');
-      // const graph = await graphmlFile.text();
       const { graph } = this.results.perCluster[this.cluster];
       const cy = cytoscape({
         container: document.getElementById('cy'),
@@ -71,11 +65,3 @@ export default defineComponent({
   },
 });
 </script>
-<style lang='scss'>
-#cy {
-  height: 600px;
-  width: 960px;
-  border: solid black;
-  text-align: start;
-}
-</style>
