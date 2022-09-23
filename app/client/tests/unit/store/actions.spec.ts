@@ -275,16 +275,20 @@ describe('Actions', () => {
     expect(global.URL.createObjectURL).toHaveBeenCalledTimes(1);
   });
 
-  it('getMicroreactURL makes axios call and updates results', async () => {
+  it('buildMicroreactURL makes axios call and updates results', async () => {
     const commit = jest.fn();
     const state = mockRootState({
       projectHash: 'randomHash',
     });
     const expResponse = responseSuccess({ cluster: 7, url: 'microreact.org/mock' });
     mockAxios.onPost(`${config.server_url}/microreactURL`).reply(200, expResponse);
-    await actions.getMicroreactURL({ commit, state } as any, 7);
+    await actions.buildMicroreactURL({ commit, state } as any, { cluster: 7, token: 'some_token' });
     expect(mockAxios.history.post[0].url).toEqual(`${config.server_url}/microreactURL`);
     expect(commit.mock.calls[0]).toEqual([
+      'setToken',
+      'some_token',
+    ]);
+    expect(commit.mock.calls[1]).toEqual([
       'addMicroreactURL',
       expResponse.data,
     ]);

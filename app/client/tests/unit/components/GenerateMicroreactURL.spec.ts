@@ -5,8 +5,7 @@ import Vuex from 'vuex';
 import { mockRootState } from '../../mocks';
 
 describe('Generate Microreact URL button with no token submitted', () => {
-  const getMicroreactURL = jest.fn();
-  const setToken = jest.fn();
+  const buildMicroreactURL = jest.fn();
 
   const store = new Vuex.Store<RootState>({
     state: mockRootState({
@@ -18,10 +17,7 @@ describe('Generate Microreact URL button with no token submitted', () => {
       errors: [],
     }),
     actions: {
-      getMicroreactURL,
-    },
-    mutations: {
-      setToken,
+      buildMicroreactURL,
     },
   });
   const wrapper = mount(GenerateMicroreactURL, {
@@ -67,7 +63,7 @@ describe('Modal is visible on isModalVisible: true', () => {
   });
   test('Modal appears on isModalVisible: true', () => {
     expect(wrapper.findAll('.modalFlex')).toHaveLength(1);
-    expect(wrapper.findAll('.modalFlex')[0].text()).toContain('No Token submitted yet');
+    expect(wrapper.findAll('.modalFlex')[0].text()).toContain('No token submitted yet');
   });
 });
 
@@ -96,13 +92,12 @@ describe('Modal shows different text when creating URL already returned wrong to
   });
   test('Modal appears on isModalVisible: true', () => {
     expect(wrapper.findAll('.modalFlex')).toHaveLength(1);
-    expect(wrapper.findAll('.modalFlex')[0].text()).toContain('Your submitted token seems to be wrong');
+    expect(wrapper.findAll('.modalFlex')[0].text()).toContain('Your submitted token is invalid');
   });
 });
 
 describe('Submitting token closes modal and saves token', () => {
-  const getMicroreactURL = jest.fn();
-  const setToken = jest.fn();
+  const buildMicroreactURL = jest.fn();
 
   const store = new Vuex.Store<RootState>({
     state: mockRootState({
@@ -114,10 +109,7 @@ describe('Submitting token closes modal and saves token', () => {
       errors: [],
     }),
     actions: {
-      getMicroreactURL,
-    },
-    mutations: {
-      setToken,
+      buildMicroreactURL,
     },
   });
   const wrapper = mount(GenerateMicroreactURL, {
@@ -136,13 +128,12 @@ describe('Submitting token closes modal and saves token', () => {
     const submitButton = wrapper.findAll('.modalFlex .btn-standard')[0];
     submitButton.trigger('click');
     expect(wrapper.vm.isModalVisible).toBe(false);
-    expect(setToken).toHaveBeenCalledTimes(1);
-    expect(getMicroreactURL).toHaveBeenCalledTimes(1);
+    expect(buildMicroreactURL).toHaveBeenCalledTimes(1);
   });
 });
 
 describe('Generates URL when token is available', () => {
-  const getMicroreactURL = jest.fn();
+  const buildMicroreactURL = jest.fn();
 
   const store = new Vuex.Store<RootState>({
     state: mockRootState({
@@ -154,7 +145,7 @@ describe('Generates URL when token is available', () => {
       errors: [],
     }),
     actions: {
-      getMicroreactURL,
+      buildMicroreactURL,
     },
   });
   const wrapper = mount(GenerateMicroreactURL, {
@@ -171,7 +162,7 @@ describe('Generates URL when token is available', () => {
     expect(wrapper.findAll('button')).toHaveLength(1);
     const button = wrapper.findAll('button')[0];
     button.trigger('click');
-    expect(getMicroreactURL).toHaveBeenCalledTimes(1);
+    expect(buildMicroreactURL).toHaveBeenCalledTimes(1);
   });
 });
 
