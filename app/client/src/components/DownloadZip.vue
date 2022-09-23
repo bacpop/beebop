@@ -8,7 +8,7 @@
 
 <script lang='ts'>
 import { defineComponent } from 'vue';
-import { mapGetters, mapState, mapActions } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 
 export default defineComponent({
   name: 'DownloadMicroreactZip',
@@ -20,9 +20,6 @@ export default defineComponent({
     },
   },
   computed: {
-    ...mapGetters([
-      'uniqueClusters',
-    ]),
     ...mapState(['projectHash']),
   },
 });
