@@ -50,6 +50,7 @@ export default {
   },
   addMicroreactURL(state: RootState, URLinfo: Record<string, string>) {
     state.results.perCluster[URLinfo.cluster] = {
+      ...state.results.perCluster[URLinfo.cluster],
       cluster: URLinfo.cluster,
       microreactURL: URLinfo.url,
     };
@@ -59,6 +60,7 @@ export default {
   },
   addGraphml(state: RootState, GraphInfo: Record<string, string>) {
     state.results.perCluster[GraphInfo.cluster] = {
+      ...state.results.perCluster[GraphInfo.cluster],
       cluster: GraphInfo.cluster,
       graph: GraphInfo.graph,
     };

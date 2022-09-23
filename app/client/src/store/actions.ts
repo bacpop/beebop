@@ -94,7 +94,7 @@ export default {
   },
   async submitData(context: ActionContext<RootState, RootState>) {
     const { dispatch, commit } = context;
-    dispatch('runPoppunk');
+    await dispatch('runPoppunk');
     commit('setSubmitStatus', 'submitted');
     dispatch('startStatusPolling');
   },
