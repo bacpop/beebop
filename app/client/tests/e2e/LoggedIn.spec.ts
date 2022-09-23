@@ -72,10 +72,14 @@ test.describe('Logged in Tests', () => {
     await page.click('text=Generate Microreact URL');
     await expect(page.locator('.modalFlex')).toContainText('No Token submitted yet');
     await expect(page.locator('.modalFlex .btn')).toContainText('Save Token');
-    // after submittink microreact token, button turns into link to microreact.org
+    // after submitting microreact token, button turns into link to microreact.org
     await page.locator('input').fill(process.env.MICROREACT_TOKEN as string);
     await page.click('text=Save Token');
     await expect(page.locator('tr:has-text("6930_8_13.fa") a')).toContainText('Visit Microreact URL');
     await expect(page.locator('tr:has-text("6930_8_13.fa") a')).toHaveAttribute('href', /https:\/\/microreact.org\/project\/.*-poppunk.*/);
+    // nework visualisation component has 1 button for each cluster (=2) and renders cytoscape canvases
+    await expect(page.locator('.column10 button')).toHaveCount(2);
+    await expect(page.locator('#cy')).toHaveCount(1);
+    await expect(page.locator('#cy canvas')).toHaveCount(3);
   });
 });
