@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div id='cy'></div>
+      <div id='cy' ref="cy"></div>
   </div>
 </template>
 
@@ -30,7 +30,7 @@ export default defineComponent({
       }
       const { graph } = this.results.perCluster[this.cluster];
       const cy = cytoscape({
-        container: document.getElementById('cy'),
+        container: this.$refs.cy,
         style: [
           {
             selector: 'node',
