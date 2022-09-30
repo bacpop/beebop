@@ -11,7 +11,7 @@
 
       <button
         v-if='tokenAvailable'
-        @click='buildMicroreactURL(cluster)'
+        @click='buildMicroreactURL({cluster, token: microreactToken})'
         class='btn btn-block btn-standard btn-download'
       >
         Generate Microreact URL
