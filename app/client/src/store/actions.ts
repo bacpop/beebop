@@ -52,10 +52,18 @@ export default {
     Object.keys(state.results.perIsolate).forEach((element) => {
       jsonSketches[element] = JSON.parse(state.results.perIsolate[element].sketch as string);
     });
+    const filenameMapping = {} as { [key: string]: string | undefined };
+    Object.keys(state.results.perIsolate).forEach((element) => {
+      filenameMapping[element] = state.results.perIsolate[element].filename;
+    });
     const response = await api(context)
       .withError('addError')
       .ignoreSuccess()
-      .post<AnalysisStatus>(`${config.server_url}/poppunk`, { projectHash: phash, sketches: jsonSketches });
+      .post<AnalysisStatus>(`${config.server_url}/poppunk`, {
+        projectHash: phash,
+        sketches: jsonSketches,
+        names: filenameMapping,
+      });
     if (response) {
       commit('setAnalysisStatus', { assign: 'submitted', microreact: 'submitted', network: 'submitted' });
     }
