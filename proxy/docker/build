@@ -4,9 +4,12 @@ set -ex
 HERE=$(dirname $0)
 . $HERE/common
 
+npm run --prefix $HERE/../../app/client build
+
 docker build --pull \
        --tag $TAG_SHA \
-       $PACKAGE_ROOT
+       -f proxy/Dockerfile \
+       .
 
 # We always push the SHA tagged versions, for debugging if the tests
 # after this step fail

@@ -12,11 +12,11 @@ configureApp(app)
 
 router(app)
 
-if (process.env.BEEBOP_TEST == "true"){
+if (process.env.BEEBOP_TEST == "true") {
   passport.use(new MockStrategy());
   app.get('/login/mock', passport.authenticate('mock'), (req, res) => {
       res.send({ status: 'ok' });
-      });
+  });
 }
   
 const port = process.env.PORT || config.server_port;

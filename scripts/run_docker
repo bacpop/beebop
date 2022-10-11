@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -e
+
+export GIT_SHA=$(git -C . rev-parse --short=7 HEAD)
+
+if [ "$#" -eq 1 ]; then
+  HOST=$1
+else
+  HOST="localhost"
+fi
+export HOST
+docker-compose up -d
+docker cp app/server/src/resources/config.json beebop_beebop-server_1:/app/src/resources/config.json
+docker cp proxy/ssl/dhparam.pem beebop_proxy_1:/run/proxy/
+docker cp proxy/ssl/certificate.pem beebop_proxy_1:/run/proxy/
+docker cp proxy/ssl/key.pem beebop_proxy_1:/run/proxy/

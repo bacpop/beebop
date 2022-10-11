@@ -32,6 +32,25 @@ To start all required components, run:
 
 The website can be viewed at http://localhost:8080/ . You can stop the application with `./scripts/stop_test`.
 
+## Deploying with docker
+
+Make sure that all docker images exist (`./proxy/docker/build`,
+`./app/client/docker/build`, `./app/server/docker/build`).
+
+Generate the correct server config file with
+```
+    ./scripts/decrypt_config docker
+```
+
+Then run the dockerised app with
+
+```
+    ./scripts/run_docker
+```
+
+Auth will not work at this point because the oauth app is configured for the local dev addresses. 
+In general the approach to getting secrets into the config could use some iteration and we should probably have a way to skip auth 
+based on a config flag.
 
 ## Testing
 ### Frontend tests
@@ -56,4 +75,4 @@ To run end-to-end test, the app must be started with `./scripts/run_test`. In a 
 npx playwright test
 ```
 from `app/client/`.
-To close all compenents once ready, run `./scripts/stop_test` from root.
+To close all components once ready, run `./scripts/stop_test` from root.

@@ -1,0 +1,11 @@
+{
+    "server_port": 4000,
+    "api_url": "http://beebop-py-api:5000",
+    "client_url": "http://localhost",
+    "GOOGLE_CLIENT_ID": "1234",
+    "GOOGLE_CLIENT_SECRET": "1234",
+    "SESSION_SECRET": "1234",
+    "GITHUB_CLIENT_ID": "1234",
+    "GITHUB_CLIENT_SECRET": "1234",
+    "skip_auth": true
+}
