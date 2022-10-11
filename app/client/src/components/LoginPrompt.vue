@@ -11,7 +11,7 @@
 
 <script lang='ts'>
 import { defineComponent } from 'vue';
-import config from '@/resources/config.json';
+import config from '@env/config.json';
 
 export default defineComponent({
   computed: {

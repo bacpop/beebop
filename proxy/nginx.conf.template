@@ -34,7 +34,7 @@ http {
     # Main server configuration. See below for redirects.
     server {
         listen       443 ssl;
-        server_name  localhost  beebop.dide.ic.ac.uk;
+        server_name  localhost ${HTTP_HOST};
 
         # Enable HTTP Strict Transport Security (HSTS)
         add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
@@ -75,17 +75,16 @@ http {
         root /usr/share/nginx/html;
 
         # this is the backend
-        location /api {
+        location /api/ {
             proxy_pass http://beebop-server:4000/;
-            # Ba
             # proxy_redirect default;
         }
 
-        # If we've captured all the api traffic, then I think this
-        # will work by forwarding everything else to the frontend?
-        location / {
-            proxy_pass http://beebop-frontend:8080/;
-        }
+#         # If we've captured all the api traffic, then I think this
+#         # will work by forwarding everything else to the frontend?
+#         location / {
+#             proxy_pass http://beebop-frontend:8080/;
+#         }
     }
 
     # Redirect all http requests to the SSL endpoint and the correct domain name
@@ -95,7 +94,7 @@ http {
         server_name _;
 
         location / {
-            return 301 https://beebop.dide.ic.ac.uk:443$request_uri;
+            return 301 https://${HTTP_HOST}:443$request_uri;
         }
     }
 }

@@ -13,8 +13,5 @@ steps:
   - label: ":shipit: Push Server images"
     command: app/server/docker/push
 
-  - label: ":shipit: Push Client images"
-    command:  app/client/docker/push
-
   - label: ":shipit: Push Proxy images"
     command:  proxy/docker/push

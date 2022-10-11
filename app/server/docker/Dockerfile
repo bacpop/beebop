@@ -6,4 +6,5 @@ RUN npm install
 
 COPY . /app
 EXPOSE 4000
-CMD npm run express
+
+ENTRYPOINT ["docker/entrypoint.sh"]

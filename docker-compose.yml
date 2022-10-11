@@ -1,0 +1,39 @@
+version: "3"
+services:
+  proxy:
+    image: mrcide/beebop-proxy:${GIT_SHA}
+    depends_on:
+      - beebop-server
+    ports:
+      - 80:80
+      - 443:443
+    command:
+      $HOST
+  beebop-server:
+    image: mrcide/beebop-server:${GIT_SHA}
+    depends_on:
+      - beebop-py-api
+  beebop-py-api:
+    image: mrcide/beebop-py:main
+    depends_on:
+      - beebop-redis
+    volumes:
+      - beebop-storage:/beebop/storage
+    environment:
+      - REDIS_HOST=beebop-redis
+      - STORAGE_LOCATION=./storage
+      - DB_LOCATION=./storage/GPS_v4_references
+  beebop-redis:
+    image: redis:5.0
+  beebop-py-worker:
+    image: mrcide/beebop-py:main
+    depends_on:
+      - beebop-redis
+    command:
+      rqworker
+    volumes:
+      - beebop-storage:/beebop/storage
+    environment:
+      - REDIS_HOST=beebop-redis
+volumes:
+  beebop-storage:
