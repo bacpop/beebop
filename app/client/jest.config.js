@@ -8,4 +8,7 @@ module.exports = {
     'src/**/*.{ts,vue}',
     '!src/main.ts',
   ],
+  moduleNameMapper: {
+    '^@env(.*)$': '<rootDir>/src/resources/development$1',
+  },
 };

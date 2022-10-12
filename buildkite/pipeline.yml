@@ -2,9 +2,6 @@ steps:
   - label: ":whale::vue: Build Server"
     command: app/server/docker/build
 
-  - label: ":whale::vue: Build Client"
-    command: app/client/docker/build
-
   - label: ":whale::nginx: Build Proxy"
     command: proxy/docker/build
 
