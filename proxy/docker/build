@@ -4,8 +4,6 @@ set -ex
 HERE=$(dirname $0)
 . $HERE/common
 
-npm run --prefix $HERE/../../app/client build
-
 docker build --pull \
        --tag $TAG_SHA \
        -f proxy/Dockerfile \

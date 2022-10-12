@@ -1,3 +1,12 @@
+FROM node:16
+
+COPY app/client/package.json /app/package.json
+WORKDIR /app
+RUN npm install
+
+COPY app/client /app
+RUN npm install && npm run build
+
 FROM nginx:stable
 
 # Clear out existing configuration
@@ -10,6 +19,6 @@ VOLUME /run/proxy
 COPY proxy/nginx.conf.template /etc/nginx/nginx.conf.template
 COPY proxy/bin /usr/local/bin
 
-COPY app/client/dist /usr/share/nginx/html
+COPY --from=0 /app/dist /usr/share/nginx/html
 
 ENTRYPOINT ["/usr/local/bin/reverse-proxy"]
