@@ -26,7 +26,7 @@ jobs:
     - name: get config file
       run: |
         pwd
-        cp ./app/server/src/resources/config.json.in ./app/server/src/resources/config.json
+        cp ./app/server/src/resources/config.json.in.development ./app/server/src/resources/config.json
     - name: Run all components
       working-directory: .
       run: ./scripts/run_test 
