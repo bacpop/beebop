@@ -5,6 +5,4 @@ declare module '*.vue' {
   export default component
 }
 
-declare module "cytoscape"
 declare module "cytoscape-graphml"
-declare module "jquery"
