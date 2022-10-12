@@ -7,6 +7,6 @@ module.exports = {
   collectCoverageFrom: [
     'src/**/*.{ts,vue}',
     '!src/main.ts',
-    '!src/components/CytoscapeGraph.vue'
+    '!src/components/CytoscapeGraph.vue',
   ],
 };
