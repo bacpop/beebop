@@ -1,22 +1,39 @@
 <template>
-  <div class="row">
-    <div class="column10">
-      <button v-for="item in uniqueClusters"
-      class="btn btn-block btn-standard columnButtons"
-      :class="item == selectedCluster ? 'selected' : ''"
-      :key="item"
-      @click="changeCluster(item)"
-      >
-        Cluster {{item}}
-      </button>
+  <div>
+    <div class="tabs d-flex">
+      <div class ="nav-col">
+        <ul class="nav flex-column nav-tabs">
+          <li
+          v-for="item in uniqueClusters" :key="item"
+          class="nav-item">
+            <button class="nav-link no-transition"
+            :class="item == selectedCluster ? 'active' : ''"
+            :aria-selected="item == selectedCluster"
+            @click="onInput(item)">
+              Cluster {{item}}
+            </button>
+          </li>
+          <li class="fill-container"> </li>
+        </ul>
+      </div>
+      <div class="tab-content">
+        <div
+        class="tab-pane fade m-3"
+        :class="item == selectedCluster ? 'active show' : ''"
+        v-for="item in uniqueClusters" :key="item">
+            <CytoscapeGraph
+            class="cytoscape-graph"
+            v-if="visitedTabs.includes(item)" :key="item"
+            :cluster="item"/>
+        </div>
+      </div>
     </div>
-    <CytoscapeGraph class="column90" :key="selectedCluster" :cluster="selectedCluster"/>
   </div>
 </template>
 
 <script lang='ts'>
 import { defineComponent } from 'vue';
-import { mapState, mapGetters } from 'vuex';
+import { mapGetters } from 'vuex';
 import CytoscapeGraph from '@/components/CytoscapeGraph.vue';
 
 export default defineComponent({
@@ -24,21 +41,26 @@ export default defineComponent({
   props: ['firstCluster'],
   data() {
     return {
+      visitedTabs: [this.firstCluster],
       selectedCluster: this.firstCluster,
     };
   },
   components: {
     CytoscapeGraph,
+    // BTabs,
+    // BTab,
   },
   computed: {
     ...mapGetters([
       'uniqueClusters',
     ]),
-    ...mapState(['results']),
   },
   methods: {
-    changeCluster(cluster: number) {
-      this.selectedCluster = cluster;
+    onInput(value: number) {
+      this.selectedCluster = value;
+      if (!this.visitedTabs.includes(value)) {
+        this.visitedTabs.push(value);
+      }
     },
   },
 });
