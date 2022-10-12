@@ -5,12 +5,12 @@
 </template>
 
 <script lang='ts'>
-/* eslint-disable no-multi-spaces */
 import { defineComponent } from 'vue';
 import cytoscape from 'cytoscape';
 import graphml from 'cytoscape-graphml';
 import jquery from 'jquery';
 import { mapState, mapActions } from 'vuex';
+import { CyGraphml } from '../types';
 
 export default defineComponent({
   name: 'CytoscapeGraph',
@@ -28,9 +28,9 @@ export default defineComponent({
       if (!this.results.perCluster[this.cluster] || !this.results.perCluster[this.cluster].graph) {
         await this.getGraphml(this.cluster);
       }
-      const { graph } = this.results.perCluster[this.cluster];
+      const { graph } : {graph : string} = this.results.perCluster[this.cluster];
       const cy = cytoscape({
-        container: this.$refs.cy,
+        container: this.$refs.cy as HTMLElement,
         style: [
           {
             selector: 'node',
@@ -58,8 +58,8 @@ export default defineComponent({
         },
       });
       cy.ready(() => {
-        (cy as any).graphml({ layoutBy: 'cose' }); // eslint-disable-line @typescript-eslint/no-explicit-any
-        (cy as any).graphml(graph); // eslint-disable-line @typescript-eslint/no-explicit-any
+        (cy as CyGraphml).graphml({ layoutBy: 'cose' });
+        (cy as CyGraphml).graphml(graph);
       });
     },
   },
