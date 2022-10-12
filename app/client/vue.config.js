@@ -1,4 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { defineConfig } = require('@vue/cli-service');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const path = require('path');
 
 module.exports = defineConfig({
@@ -16,14 +18,4 @@ module.exports = defineConfig({
         process.env.NODE_ENV || 'development',
       ));
   },
-  // configureWebpack: {
-  //   resolve: {
-  //     alias: {
-  //       env: path.resolve(
-  //         __dirname,
-  //         'src/resources/settings',
-  //         process.env.PROFILE || 'dev',
-  //       ),
-  //       extensions: ['.json'],
-  //     },
 });
