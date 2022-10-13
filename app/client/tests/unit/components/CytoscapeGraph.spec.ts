@@ -17,14 +17,14 @@ jest.mock('cytoscape-graphml', () => mockCytoscapeGraphMl);
 
 import { mount } from '@vue/test-utils';
 import { RootState } from '@/store/state';
-import Vuex from 'vuex';
+import Vuex, { Store } from 'vuex';
 import CytoscapeGraph from '@/components/CytoscapeGraph.vue';
 import { mockRootState } from '../../mocks';
 
-describe('Component calls getGraph when graph data not yet stored', () => {
+describe('CytoscapeGraph', () => {
   const getGraphml = jest.fn();
 
-  const store = new Vuex.Store<RootState>({
+  const storeNoGraph = new Vuex.Store<RootState>({
     state: mockRootState({
       results: {
         perIsolate: {},
@@ -39,28 +39,8 @@ describe('Component calls getGraph when graph data not yet stored', () => {
       getGraphml,
     },
   });
-  const wrapper = mount(CytoscapeGraph, {
-    propsData: {
-      cluster: 2,
-    },
-    global: {
-      plugins: [store],
-    },
-  } as any);
 
-  test('does a wrapper exist', () => {
-    expect(wrapper.exists()).toBe(true);
-  });
-
-  test('drawGraph() and getGraph() are called', () => {
-    expect(getGraphml).toHaveBeenCalledTimes(1);
-  });
-});
-
-describe('Component calls cytoscape.ready()', () => {
-  const getGraphml = jest.fn();
-
-  const store = new Vuex.Store<RootState>({
+  const storeWithGraph = new Vuex.Store<RootState>({
     state: mockRootState({
       results: {
         perIsolate: {},
@@ -77,7 +57,7 @@ describe('Component calls cytoscape.ready()', () => {
     },
   });
 
-  const getWrapper = () => mount(CytoscapeGraph, {
+  const getWrapper = (store: Store<RootState>) => mount(CytoscapeGraph, {
     propsData: {
       cluster: 2,
     },
@@ -91,12 +71,17 @@ describe('Component calls cytoscape.ready()', () => {
   });
 
   test('does a wrapper exist', () => {
-    const wrapper = getWrapper();
+    const wrapper = getWrapper(storeNoGraph);
     expect(wrapper.exists()).toBe(true);
   });
 
+  test('getGraph() is called when no graph available', () => {
+    getWrapper(storeNoGraph);
+    expect(getGraphml).toHaveBeenCalledTimes(1);
+  });
+
   test('cytoscape methods called as expected', () => {
-    const wrapper = getWrapper();
+    const wrapper = getWrapper(storeWithGraph);
 
     expect(mockCytoscape).toHaveBeenCalledTimes(1);
     const cyElement = wrapper.find('#cy').element;
