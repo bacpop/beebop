@@ -80,11 +80,10 @@ http {
             # proxy_redirect default;
         }
 
-#         # If we've captured all the api traffic, then I think this
-#         # will work by forwarding everything else to the frontend?
-#         location / {
-#             proxy_pass http://beebop-frontend:8080/;
-#         }
+        # just pass this through to the front-end vue app
+        location /about {
+            try_files /index.html =404;
+        }
     }
 
     # Redirect all http requests to the SSL endpoint and the correct domain name

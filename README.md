@@ -34,8 +34,7 @@ The website can be viewed at http://localhost:8080/ . You can stop the applicati
 
 ## Deploying with docker
 
-Make sure that all docker images exist (`./proxy/docker/build`,
-`./app/client/docker/build`, `./app/server/docker/build`).
+Make sure that all docker images exist (`./proxy/docker/build`, `./app/server/docker/build`).
 
 Generate the correct server config file with
 ```
@@ -46,6 +45,13 @@ Then run the dockerised app with
 
 ```
     ./scripts/run_docker
+```
+
+By default this will configure the nginx proxy for host `localhost`. To deploy with a different hostname, pass
+it as an argument, e.g. 
+
+```
+    ./scripts/run_docker bacpop.dide.ic.ac.uk
 ```
 
 Auth will not work at this point because the oauth app is configured for the local dev addresses. 
