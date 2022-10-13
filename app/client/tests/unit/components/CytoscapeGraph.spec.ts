@@ -1,15 +1,19 @@
 // Mock the import of cytoscape
-import cytoscape from "cytoscape";
+/* eslint-disable import/first */
 
 const mockReady = jest.fn();
 const mockGraphMl = jest.fn();
 const mockCytoscape = jest.fn().mockReturnValue({
   ready: mockReady,
-  graphml: mockGraphMl
+  graphml: mockGraphMl,
 });
 
 jest.mock('cytoscape', () => mockCytoscape);
-
+const mockCytoscapeGraphMlFunction = jest.fn();
+const mockCytoscapeGraphMl = jest.fn().mockReturnValue({
+  graphml: mockCytoscapeGraphMlFunction,
+});
+jest.mock('cytoscape-graphml', () => mockCytoscapeGraphMl);
 
 import { mount } from '@vue/test-utils';
 import { RootState } from '@/store/state';
@@ -73,17 +77,18 @@ describe('Component calls cytoscape.ready()', () => {
     },
   });
 
-  const getWrapper = () => {
-    return mount(CytoscapeGraph, {
-      propsData: {
-        cluster: 2,
-      },
-      global: {
-        plugins: [store],
-      },
-    } as any);
-  }
+  const getWrapper = () => mount(CytoscapeGraph, {
+    propsData: {
+      cluster: 2,
+    },
+    global: {
+      plugins: [store],
+    },
+  } as any);
 
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
   test('does a wrapper exist', () => {
     const wrapper = getWrapper();
@@ -91,12 +96,12 @@ describe('Component calls cytoscape.ready()', () => {
   });
 
   test('cytoscape methods called as expected', () => {
-    jest.resetAllMocks();
-    getWrapper();
+    const wrapper = getWrapper();
 
     expect(mockCytoscape).toHaveBeenCalledTimes(1);
+    const cyElement = wrapper.find('#cy').element;
     expect(mockCytoscape.mock.calls[0][0]).toStrictEqual({
-      container: this.$refs.cy as HTMLElement,
+      container: cyElement,
       style: [
         {
           selector: 'node',
@@ -130,11 +135,6 @@ describe('Component calls cytoscape.ready()', () => {
     readyParam();
     expect(mockGraphMl).toHaveBeenCalledTimes(2);
     expect(mockGraphMl.mock.calls[0][0]).toStrictEqual({ layoutBy: 'cose' });
-    expect(mockGraphMl.mock.calls[0][0]).toStrictEqual({
-      graph: {
-        cluster: '2',
-        graph: '<graph></graph>',
-      }
-    });
+    expect(mockGraphMl.mock.calls[1][0]).toBe('<graph></graph>');
   });
 });
