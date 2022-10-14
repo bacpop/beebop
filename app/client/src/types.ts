@@ -1,3 +1,5 @@
+import cytoscape from 'cytoscape';
+
 type Dict<T> = Record<string, T>
 
 export type AMR = Dict<number | string | boolean>
@@ -66,3 +68,9 @@ export interface ResponseSuccess {
 export enum Errors {
     WRONG_TOKEN='Wrong Token',
 }
+
+interface GraphmlExtension {
+    graphml: (arg: Dict<string> | string) => void,
+}
+
+export type CyGraphml = cytoscape.Core & GraphmlExtension
