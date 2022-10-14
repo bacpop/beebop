@@ -45,16 +45,24 @@ export default {
   },
   async runPoppunk(context: ActionContext<RootState, RootState>) {
     const { state, commit } = context;
-    const jsonSketches = {} as { [key: string]: Record<string, never> };
-    // join all file hashes to create a project hash
-    const phash = Md5.hashStr(Object.keys(state.results.perIsolate).sort().join());
+    // generate filenameMapping that the backend can use to replace
+    // filehashes with filenames in results.
+    // Also generate a string of ordered hashes and corresponding filenames
+    // to be used to generate a projecthash that is unique to this combination
+    // of file contents and filenames
+    const filenameMapping = {} as { [key: string]: string | undefined };
+    let mappingOrdered = '';
+    Object.keys(state.results.perIsolate).sort().forEach((filehash) => {
+      filenameMapping[filehash] = state.results.perIsolate[filehash].filename;
+      mappingOrdered += filehash;
+      mappingOrdered += state.results.perIsolate[filehash].filename;
+    });
+    const phash = Md5.hashStr(mappingOrdered);
     commit('setProjectHash', phash);
+    // add all sketches to object
+    const jsonSketches = {} as { [key: string]: Record<string, never> };
     Object.keys(state.results.perIsolate).forEach((element) => {
       jsonSketches[element] = JSON.parse(state.results.perIsolate[element].sketch as string);
-    });
-    const filenameMapping = {} as { [key: string]: string | undefined };
-    Object.keys(state.results.perIsolate).forEach((element) => {
-      filenameMapping[element] = state.results.perIsolate[element].filename;
     });
     const response = await api(context)
       .withError('addError')
