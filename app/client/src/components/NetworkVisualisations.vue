@@ -47,8 +47,6 @@ export default defineComponent({
   },
   components: {
     CytoscapeGraph,
-    // BTabs,
-    // BTab,
   },
   computed: {
     ...mapGetters([
