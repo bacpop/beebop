@@ -36,14 +36,14 @@ describe('Component displays one button per unique cluster and one network graph
     expect(wrapper.exists()).toBe(true);
   });
 
-  test('has all buttons and a graph element with class cytoscape-graph', () => {
+  test('has all 4 tabs and a graph element for first cluster', () => {
     expect(wrapper.findAll('.nav-link')).toHaveLength(4);
     expect(wrapper.findAll('.cytoscape-graph')).toHaveLength(1);
     const graphComponent = wrapper.findAllComponents('.cytoscape-graph')[0];
     expect(graphComponent.attributes('cluster')).toBe('2');
   });
 
-  test('clicking buttons changes the selected cluster', () => {
+  test('clicking on tabs changes the selected cluster', () => {
     const secondTabControl = wrapper.findAll('.nav-link')[1];
     expect(secondTabControl.text()).toBe('Cluster 4');
     expect(wrapper.vm.selectedCluster).toBe(2);
