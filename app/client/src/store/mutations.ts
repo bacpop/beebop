@@ -50,11 +50,19 @@ export default {
   },
   addMicroreactURL(state: RootState, URLinfo: Record<string, string>) {
     state.results.perCluster[URLinfo.cluster] = {
+      ...state.results.perCluster[URLinfo.cluster],
       cluster: URLinfo.cluster,
       microreactURL: URLinfo.url,
     };
   },
   setToken(state: RootState, token: string | null) {
     state.microreactToken = token;
+  },
+  addGraphml(state: RootState, graphInfo: Record<string, string>) {
+    state.results.perCluster[graphInfo.cluster] = {
+      ...state.results.perCluster[graphInfo.cluster],
+      cluster: graphInfo.cluster,
+      graph: graphInfo.graph,
+    };
   },
 };

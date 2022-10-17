@@ -6,7 +6,6 @@ import { mockRootState } from '../../mocks';
 
 describe('DownloadZip button', () => {
   const getZip = jest.fn();
-  const uniqueClusters = jest.fn();
 
   const store = new Vuex.Store<RootState>({
     state: mockRootState({
@@ -28,9 +27,6 @@ describe('DownloadZip button', () => {
     }),
     actions: {
       getZip,
-    },
-    getters: {
-      uniqueClusters,
     },
   });
   const wrapper = mount(DownloadZip, {

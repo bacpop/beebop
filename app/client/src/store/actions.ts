@@ -94,7 +94,7 @@ export default {
   },
   async submitData(context: ActionContext<RootState, RootState>) {
     const { dispatch, commit } = context;
-    dispatch('runPoppunk');
+    await dispatch('runPoppunk');
     commit('setSubmitStatus', 'submitted');
     dispatch('startStatusPolling');
   },
@@ -138,6 +138,19 @@ export default {
         cluster: data.cluster,
         projectHash: state.projectHash,
         apiToken: state.microreactToken,
+      });
+  },
+  async getGraphml(
+    context: ActionContext<RootState, RootState>,
+    cluster: string | number,
+  ) {
+    const { state } = context;
+    await api(context)
+      .withSuccess('addGraphml')
+      .withError('addError')
+      .post<ClusterInfo>(`${config.server_url}/downloadGraphml`, {
+        cluster,
+        projectHash: state.projectHash,
       });
   },
 };

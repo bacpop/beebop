@@ -142,4 +142,13 @@ describe('mutations', () => {
     mutations.setToken(state, 'mock_microreact_token');
     expect(state.microreactToken).toBe('mock_microreact_token');
   });
+  it('sets graph', () => {
+    const state = mockRootState();
+    const mockGraphInfo = {
+      cluster: '7',
+      graph: '<graph></graph>',
+    };
+    mutations.addGraphml(state, mockGraphInfo);
+    expect(state.results.perCluster[mockGraphInfo.cluster]).toStrictEqual({ cluster: '7', graph: '<graph></graph>' });
+  });
 });

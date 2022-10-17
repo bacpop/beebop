@@ -293,4 +293,19 @@ describe('Actions', () => {
       expResponse.data,
     ]);
   });
+
+  it('getGraphml makes axios call and updates results', async () => {
+    const commit = jest.fn();
+    const state = mockRootState({
+      projectHash: 'randomHash',
+    });
+    const expResponse = responseSuccess({ cluster: 7, graph: '<graph></graph>' });
+    mockAxios.onPost(`${config.server_url}/downloadGraphml`).reply(200, expResponse);
+    await actions.getGraphml({ commit, state } as any, 7);
+    expect(mockAxios.history.post[0].url).toEqual(`${config.server_url}/downloadGraphml`);
+    expect(commit.mock.calls[0]).toEqual([
+      'addGraphml',
+      expResponse.data,
+    ]);
+  });
 });
