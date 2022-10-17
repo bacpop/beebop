@@ -4,7 +4,7 @@ import config from '@/resources/config.json';
 import { Md5 } from 'ts-md5/dist/md5';
 import { RootState } from '@/store/state';
 import {
-  Versions, User, AnalysisStatus, ClusterInfo,
+  Versions, User, AnalysisStatus, ClusterInfo, Dict,
 } from '@/types';
 import { api } from '../apiService';
 
@@ -50,7 +50,7 @@ export default {
     // Also generate a string of ordered hashes and corresponding filenames
     // to be used to generate a projecthash that is unique to this combination
     // of file contents and filenames
-    const filenameMapping = {} as { [key: string]: string | undefined };
+    const filenameMapping = {} as Dict<string | undefined>;
     let mappingOrdered = '';
     Object.keys(state.results.perIsolate).sort().forEach((filehash) => {
       filenameMapping[filehash] = state.results.perIsolate[filehash].filename;
@@ -60,7 +60,7 @@ export default {
     const phash = Md5.hashStr(mappingOrdered);
     commit('setProjectHash', phash);
     // add all sketches to object
-    const jsonSketches = {} as { [key: string]: Record<string, never> };
+    const jsonSketches = {} as Dict<Dict<string>>;
     Object.keys(state.results.perIsolate).forEach((element) => {
       jsonSketches[element] = JSON.parse(state.results.perIsolate[element].sketch as string);
     });
