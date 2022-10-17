@@ -1,3 +1,4 @@
 node_modules
 app/server/src/resources/config.json
 .idea
+proxy/ssl/production

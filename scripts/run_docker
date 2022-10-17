@@ -5,12 +5,16 @@ export GIT_SHA=$(git -C . rev-parse --short=7 HEAD)
 
 if [ "$#" -eq 1 ]; then
   HOST=$1
+  SSL_PATH=ssl/production
 else
   HOST="localhost"
+  SSL_PATH=ssl
 fi
 export HOST
 docker-compose up -d
 docker cp app/server/src/resources/config.json beebop_beebop-server_1:/app/src/resources/config.json
 docker cp proxy/ssl/dhparam.pem beebop_proxy_1:/run/proxy/
-docker cp proxy/ssl/certificate.pem beebop_proxy_1:/run/proxy/
-docker cp proxy/ssl/key.pem beebop_proxy_1:/run/proxy/
+docker cp proxy/$SSL_PATH/certificate.pem beebop_proxy_1:/run/proxy/
+docker cp proxy/$SSL_PATH/key.pem beebop_proxy_1:/run/proxy/
+docker run --rm -v beebop_beebop-storage:/beebop/storage mrcide/beebop-py:main \
+       ./scripts/download_db --small storage

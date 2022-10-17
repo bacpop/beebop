@@ -8,4 +8,5 @@ while [ ! -e $PATH_CONFIG ]; do
 done
 
 sleep 1
-npm run express
+npm run build
+node dist/index.js

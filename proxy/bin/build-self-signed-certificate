@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+set -eu
+
+# This first usage is odd, but used as suggested in the README to copy
+# the pregenerated certificates into the container
+if [ "$#" -eq 1 ]; then
+    DEST="$1"
+    cp /usr/local/share/ssl/key.pem $DEST
+    cp /usr/local/share/ssl/certificate.pem $DEST
+    exit 0
+elif [ "$#" -eq 6 ]; then
+    DEST="$1"
+    COUNTRY="$2"
+    LOCATION="$3"
+    ORG="$4"
+    ORG_UNIT="$5"
+    COMMON="$6"
+else
+    echo "Usage:"
+    echo "  self-signed-certificate DEST"
+    echo "  self-signed-certificate DEST COUNTRY LOCATION ORG ORG_UNIT COMMON"
+    exit 1
+fi
+
+SUBJ="/C=$COUNTRY/L=$LOCATION/O=$ORG/OU=$ORG_UNIT/CN=$COMMON"
+
+mkdir -p $DEST
+openssl req -x509 \
+        -newkey rsa:4096 \
+        -sha256 \
+        -subj "$SUBJ" \
+        -days 365 \
+        -nodes \
+        -keyout $DEST/key.pem \
+        -out $DEST/certificate.pem
