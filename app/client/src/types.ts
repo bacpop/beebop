@@ -1,6 +1,6 @@
 import cytoscape from 'cytoscape';
 
-type Dict<T> = Record<string, T>
+export type Dict<T> = Record<string, T>
 
 export type AMR = Dict<number | string | boolean>
 
