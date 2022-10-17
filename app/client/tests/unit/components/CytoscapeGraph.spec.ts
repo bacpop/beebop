@@ -97,6 +97,18 @@ describe('CytoscapeGraph', () => {
             'font-size': '7px',
             'background-color': 'darkblue',
             'border-style': 'solid',
+          },
+        },
+        {
+          selector: 'node[ref_query = "query"]',
+          style: {
+            'border-color': 'red',
+            'border-width': '2px',
+          },
+        },
+        {
+          selector: 'node[ref_query = "ref"]',
+          style: {
             'border-color': 'black',
             'border-width': '1px',
           },
