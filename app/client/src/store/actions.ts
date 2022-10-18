@@ -4,7 +4,7 @@ import config from '@/resources/config.json';
 import { Md5 } from 'ts-md5/dist/md5';
 import { RootState } from '@/store/state';
 import {
-  Versions, User, AnalysisStatus, ClusterInfo,
+  Versions, User, AnalysisStatus, ClusterInfo, Dict,
 } from '@/types';
 import { api } from '../apiService';
 
@@ -45,17 +45,36 @@ export default {
   },
   async runPoppunk(context: ActionContext<RootState, RootState>) {
     const { state, commit } = context;
-    const jsonSketches = {} as { [key: string]: Record<string, never> };
-    // join all file hashes to create a project hash
-    const phash = Md5.hashStr(Object.keys(state.results.perIsolate).sort().join());
+    // generate filenameMapping that the backend can use to replace
+    // filehashes with filenames in results.
+    // Also generate a string of ordered hashes and corresponding filenames
+    // to be used to generate a projecthash that is unique to this combination
+    // of file contents and filenames
+    const filenameMapping = {} as Dict<string>;
+    let mappingOrdered = '';
+    Object.keys(state.results.perIsolate).sort().forEach((filehash) => {
+      // disabling this rule here since this should always have a value
+      // since the action can only be triggered when files have been uploaded:
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      filenameMapping[filehash] = state.results.perIsolate[filehash].filename!;
+      mappingOrdered += filehash;
+      mappingOrdered += state.results.perIsolate[filehash].filename;
+    });
+    const phash = Md5.hashStr(mappingOrdered);
     commit('setProjectHash', phash);
+    // add all sketches to object
+    const jsonSketches = {} as Dict<Dict<string>>;
     Object.keys(state.results.perIsolate).forEach((element) => {
       jsonSketches[element] = JSON.parse(state.results.perIsolate[element].sketch as string);
     });
     const response = await api(context)
       .withError('addError')
       .ignoreSuccess()
-      .post<AnalysisStatus>(`${config.server_url}/poppunk`, { projectHash: phash, sketches: jsonSketches });
+      .post<AnalysisStatus>(`${config.server_url}/poppunk`, {
+        projectHash: phash,
+        sketches: jsonSketches,
+        names: filenameMapping,
+      });
     if (response) {
       commit('setAnalysisStatus', { assign: 'submitted', microreact: 'submitted', network: 'submitted' });
     }

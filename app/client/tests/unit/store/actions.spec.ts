@@ -85,16 +85,18 @@ describe('Actions', () => {
       results: {
         perIsolate: {
           someFileHash: {
+            filename: 'someFilename',
             sketch: '{"14":"12345"}',
           },
           someFileHash2: {
+            filename: 'someFilename2',
             sketch: '{"14":"12345"}',
           },
         },
         perCluster: {},
       },
     });
-    const expectedHash = Md5.hashStr(Object.keys(state.results.perIsolate).sort().join());
+    const expectedHash = Md5.hashStr('someFileHashsomeFilenamesomeFileHash2someFilename2');
     mockAxios.onPost(`${config.server_url}/poppunk`).reply(200, responseSuccess({
       assign: 'job-id', microreact: 'job-id', network: 'job-id',
     }));
