@@ -50,10 +50,13 @@ export default {
     // Also generate a string of ordered hashes and corresponding filenames
     // to be used to generate a projecthash that is unique to this combination
     // of file contents and filenames
-    const filenameMapping = {} as Dict<string | undefined>;
+    const filenameMapping = {} as Dict<string>;
     let mappingOrdered = '';
     Object.keys(state.results.perIsolate).sort().forEach((filehash) => {
-      filenameMapping[filehash] = state.results.perIsolate[filehash].filename;
+      // disabling this rule here since this should always have a value
+      // since the action can only be triggered when files have been uploaded:
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      filenameMapping[filehash] = state.results.perIsolate[filehash].filename!;
       mappingOrdered += filehash;
       mappingOrdered += state.results.perIsolate[filehash].filename;
     });
