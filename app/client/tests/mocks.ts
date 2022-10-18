@@ -12,7 +12,11 @@ export function mockRootState(state: Partial<RootState> = {}): RootState {
     errors: [],
     versions: [],
     user: null,
-    results: { perIsolate: {} },
+    microreactToken: null,
+    results: {
+      perIsolate: {},
+      perCluster: {},
+    },
     submitStatus: null,
     analysisStatus: {
       assign: null, microreact: null, network: null,

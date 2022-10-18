@@ -34,7 +34,7 @@ describe('mutations', () => {
     mutations.addFile(state, mockFileMetadata);
     expect(state.results.perIsolate.someFileHash).toStrictEqual({ hash: 'someFileHash', filename: 'sampleName.fa' });
   });
-  it('sets perIsolate values', () => {
+  it('sets sketch values', () => {
     const state = mockRootState({
       results: {
         perIsolate: {
@@ -43,19 +43,45 @@ describe('mutations', () => {
             filename: 'sampleName.fa',
           },
         },
+        perCluster: {},
       },
     });
-    const { AMR } = ValueTypes;
+    const { SKETCH } = ValueTypes;
     const mockIsolateValues = {
       hash: 'someFileHash',
-      type: AMR,
-      result: 'amr_result',
+      type: SKETCH,
+      result: 'sketch_result',
     };
     mutations.setIsolateValue(state, mockIsolateValues);
     expect(state.results.perIsolate.someFileHash).toStrictEqual({
       hash: 'someFileHash',
       filename: 'sampleName.fa',
-      amr: 'amr_result',
+      sketch: 'sketch_result',
+    });
+  });
+  it('sets AMR values', () => {
+    const state = mockRootState({
+      results: {
+        perIsolate: {
+          someFileHash: {
+            hash: 'someFileHash',
+            filename: 'sampleName.fa',
+          },
+        },
+        perCluster: {},
+      },
+    });
+    const { AMR } = ValueTypes;
+    const mockAMR = {
+      hash: 'someFileHash',
+      type: AMR,
+      result: '{ "Penicillin": 0.5, "Chloramphenicol": 0.2 }',
+    };
+    mutations.setIsolateValue(state, mockAMR);
+    expect(state.results.perIsolate.someFileHash).toStrictEqual({
+      hash: 'someFileHash',
+      filename: 'sampleName.fa',
+      amr: { Penicillin: 0.5, Chloramphenicol: 0.2 },
     });
   });
   it('sets submitStatus', () => {
@@ -96,9 +122,33 @@ describe('mutations', () => {
             hash: 'someFileHash2',
           },
         },
+        perCluster: {},
       },
     });
     mutations.setClusters(state, { 0: { hash: 'someFileHash', cluster: '12' }, 1: { hash: 'someFileHash2', cluster: '2' } });
     expect(state.results.perIsolate.someFileHash.cluster).toBe('12');
+  });
+  it('sets MicroreactURL', () => {
+    const state = mockRootState();
+    const mockURLInfo = {
+      cluster: '7',
+      url: 'microreact.org/mock',
+    };
+    mutations.addMicroreactURL(state, mockURLInfo);
+    expect(state.results.perCluster[mockURLInfo.cluster]).toStrictEqual({ cluster: '7', microreactURL: 'microreact.org/mock' });
+  });
+  it('sets Microreact Token', () => {
+    const state = mockRootState();
+    mutations.setToken(state, 'mock_microreact_token');
+    expect(state.microreactToken).toBe('mock_microreact_token');
+  });
+  it('sets graph', () => {
+    const state = mockRootState();
+    const mockGraphInfo = {
+      cluster: '7',
+      graph: '<graph></graph>',
+    };
+    mutations.addGraphml(state, mockGraphInfo);
+    expect(state.results.perCluster[mockGraphInfo.cluster]).toStrictEqual({ cluster: '7', graph: '<graph></graph>' });
   });
 });

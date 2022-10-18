@@ -1,4 +1,5 @@
 /// <reference lib="dom"/>
+/* eslint-disable no-tabs */
 
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'fs';
@@ -46,19 +47,39 @@ test.describe('Logged in Tests', () => {
     await page.dispatchEvent('.dropzone', 'drop', { dataTransfer });
     // Expect count of files to be 2
     await expect(page.locator('.count')).toContainText('2');
-    // Expect files, hashes, AMR and Sketch appearing in file list
-    await expect(page.locator('.uploaded-info')).toContainText('6930_8_13.fa e868c76fec83ee1f69a95bd27b8d5e76 filename 14');
-    await expect(page.locator('.uploaded-info')).toContainText('6930_8_11.fa f3d9b387e311d5ab59a8c08eb3545dbb filename 14');
+    // Expect table to appear
+    await expect(page.locator('table')).toHaveCount(1);
+    // Expect files, hashes, AMR and Sketch appearing in table
+    await page.waitForTimeout(10000);
+    await expect(page.locator('tr:has-text("6930_8_13.fa")')).toContainText(['6930_8_13.fa', '✔', 'PCETE SXT']);
+    await expect(page.locator('tr:has-text("6930_8_11.fa")')).toContainText(['6930_8_11.fa', '✔', 'PCETE SXT']);
     // expect to have a 'start analysis' button after submitting files
     await expect(page.locator('.start-analysis')).toContainText('Start Analysis');
     // Expect to see ProgressBar once button was pressed
     await page.click('text=Start Analysis');
     await expect(page.locator('.progress-bar')).toHaveCount(1);
-    // Expect clusters appearing in file list
-    await expect(page.locator('.uploaded-info')).toContainText('6930_8_13.fa e868c76fec83ee1f69a95bd27b8d5e76 filename 14 7');
-    await expect(page.locator('.uploaded-info')).toContainText('6930_8_11.fa f3d9b387e311d5ab59a8c08eb3545dbb filename 14 24');
-    // Expect all statuses to be updated to finished
+    // Expect all jobs to finish
     await page.waitForTimeout(20000);
     await expect(page.locator('.progress-bar')).toContainText('100.00%');
+    // Expect clusters appearing in table
+    await expect(page.locator('tr:has-text("6930_8_13.fa")')).toContainText(['6930_8_13.fa', '✔', 'PCETE SXT', '7']);
+    await expect(page.locator('tr:has-text("6930_8_11.fa")')).toContainText(['6930_8_11.fa', '✔', 'PCETE SXT', '24']);
+    // Expect download buttons and button to generate microreact URL to appear
+    await expect(page.locator('tr:has-text("6930_8_13.fa") .btn').nth(0)).toContainText('Download zip file');
+    await expect(page.locator('tr:has-text("6930_8_13.fa") .btn').nth(1)).toContainText('Generate Microreact URL');
+    await expect(page.locator('tr:has-text("6930_8_13.fa") .btn').nth(2)).toContainText('Download zip file');
+    // on clicking Generate Microreact URL button, modal appears
+    await page.click('text=Generate Microreact URL');
+    await expect(page.locator('.modalFlex')).toContainText('No token submitted yet');
+    await expect(page.locator('.modalFlex .btn')).toContainText('Save token');
+    // after submitting microreact token, button turns into link to microreact.org
+    await page.locator('input').fill(process.env.MICROREACT_TOKEN as string);
+    await page.click('text=Save token');
+    await expect(page.locator('tr:has-text("6930_8_13.fa") a')).toContainText('Visit Microreact URL');
+    await expect(page.locator('tr:has-text("6930_8_13.fa") a')).toHaveAttribute('href', /https:\/\/microreact.org\/project\/.*-poppunk.*/);
+    // nework visualisation component has 1 button for each cluster (=2) and renders canvases
+    await expect(page.locator('.nav-link')).toHaveCount(2);
+    await expect(page.locator('#cy')).toHaveCount(1);
+    await expect(page.locator('#cy canvas')).toHaveCount(3);
   });
 });

@@ -38,6 +38,8 @@ jobs:
 #    - name: tmate session
 #      uses: mxschmitt/action-tmate@v3
     - name: Run e2e tests
+      env:
+        MICROREACT_TOKEN: ${{ secrets.MICROREACT_TOKEN }}
       working-directory: ./app/client
       run: npx playwright test
     - name: Stop all components

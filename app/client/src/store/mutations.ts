@@ -22,7 +22,13 @@ export default {
     }
   },
   setIsolateValue(state: RootState, input: IsolateValue) {
-    state.results.perIsolate[input.hash][input.type] = input.result;
+    let results = null;
+    if (input.type === 'amr') {
+      results = JSON.parse(input.result);
+    } else {
+      results = input.result;
+    }
+    state.results.perIsolate[input.hash][input.type] = results;
   },
   setProjectHash(state: RootState, phash: string) {
     state.projectHash = phash;
@@ -41,5 +47,22 @@ export default {
       state.results.perIsolate[clusterInfo[element].hash]
         .cluster = clusterInfo[element].cluster;
     });
+  },
+  addMicroreactURL(state: RootState, URLinfo: Record<string, string>) {
+    state.results.perCluster[URLinfo.cluster] = {
+      ...state.results.perCluster[URLinfo.cluster],
+      cluster: URLinfo.cluster,
+      microreactURL: URLinfo.url,
+    };
+  },
+  setToken(state: RootState, token: string | null) {
+    state.microreactToken = token;
+  },
+  addGraphml(state: RootState, graphInfo: Record<string, string>) {
+    state.results.perCluster[graphInfo.cluster] = {
+      ...state.results.perCluster[graphInfo.cluster],
+      cluster: graphInfo.cluster,
+      graph: graphInfo.graph,
+    };
   },
 };

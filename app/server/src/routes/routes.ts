@@ -80,7 +80,60 @@ export const router = (app => {
             res.redirect(config.client_url);
         }
     );
+
+    app.post('/downloadZip',
+        downloadZip);
+
+    app.post('/microreactURL',
+        microreactURL);
+
+    app.post('/downloadGraphml',
+        downloadGraphml);
+
 })
+
+export async function downloadGraphml(request, response) {
+    await axios.post(`${config.api_url}/results/graphml`,
+        request.body,
+        {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(res => response.send(res.data))
+        .catch(function (error) {
+            sendError(response, error);
+          });
+    }
+
+export async function downloadZip(request, response) {
+    await axios.post(`${config.api_url}/results/zip`,
+        request.body,
+        {
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            responseType: 'arraybuffer',
+        })
+        .then(res => response.send(res.data))
+        .catch(function (error) {
+            sendError(response, error);
+          });
+}
+
+export async function microreactURL(request, response) {
+    await axios.post(`${config.api_url}/results/microreact`,
+        request.body,
+        {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(res => {response.send(res.data)})
+        .catch(function (error) {
+            sendError(response, error);
+          });
+}
 
 export async function getVersionInfo(request, response) {
     await axios.get(`${config.api_url}/version`)
@@ -93,12 +146,14 @@ export async function runPoppunk(request, response) {
         {
             headers: {
               'Content-Type': 'application/json'
-            }
+            },
+            maxContentLength: 1000000000,
+            maxBodyLength: 1000000000
         },
     )
         .then(res => response.send(res.data))
         .catch(function (error) {
-            console.log(error);
+            sendError(response, error);
         });
 }
 
@@ -106,7 +161,7 @@ export async function getStatus(request, response) {
     await axios.get(`${config.api_url}/status/${request.body.hash}`)
         .then(res => response.send(res.data))
         .catch(function (error) {
-            console.log(error);
+            sendError(response, error);
         });
 }
 
@@ -120,7 +175,7 @@ export async function getAssignResult(request, response) {
     })
         .then(res => response.send(res.data))
         .catch(function (error) {
-            console.log(error);
+            sendError(response, error);
         });
 }
 
@@ -136,4 +191,23 @@ const authCheck = (req, res, next) => {
     } else {
         next();
     }
+}
+
+function sendError(response, error) {
+    if (error.response) {
+        response.status(500).send(
+            {
+                status:"failure",
+                errors:[{error: error.response.data.error.errors[0].error, detail: error.response.data.error.errors[0].detail}],
+                data: null
+            })  
+    } else {
+      response.status(500).send(
+        {
+            status:"failure",
+            errors:[{error: 'Could not connect to API', detail: error}],
+            data: null
+        })  
+    }
+    
 }

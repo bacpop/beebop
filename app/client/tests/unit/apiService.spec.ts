@@ -203,6 +203,27 @@ describe('ApiService', () => {
     expect(commit.mock.calls[0][1]).toStrictEqual({ error: 'OTHER_ERROR' });
   });
 
+  it('resets microreact Token if receiving "Wrong Token" Error', async () => {
+    const mockFailureNoDetail = {
+      data: null,
+      status: 'failure',
+      errors: [{ error: 'Wrong Token' }],
+    };
+
+    mockAxios.onPost(TEST_ROUTE, TEST_BODY)
+      .reply(500, mockFailureNoDetail);
+
+    const commit = jest.fn();
+    await api({ commit, rootState } as any)
+      .withError('TEST_TYPE')
+      .post(TEST_ROUTE, TEST_BODY);
+
+    expect(commit.mock.calls[0][0]).toBe('setToken');
+    expect(commit.mock.calls[0][1]).toStrictEqual(null);
+    expect(commit.mock.calls[1][0]).toBe('TEST_TYPE');
+    expect(commit.mock.calls[1][1]).toStrictEqual({ error: 'Wrong Token' });
+  });
+
   it('commits the success response with the specified type on get', async () => {
     mockAxios.onGet(TEST_ROUTE)
       .reply(200, mockSuccess('test data'));

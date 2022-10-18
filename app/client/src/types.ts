@@ -1,11 +1,15 @@
+import cytoscape from 'cytoscape';
+
 type Dict<T> = Record<string, T>
+
+export type AMR = Dict<number | string | boolean>
 
 export interface Isolate {
     hash?: string
     filename?: string
-    amr?: string
+    amr?: AMR
     sketch?: string
-    cluster?: string
+    cluster?: number | string
 }
 
 export interface Versions {
@@ -18,6 +22,7 @@ export type User = Dict<string> | null
 
 export interface Results {
     perIsolate: Dict<Isolate>
+    perCluster: Dict<Dict<string>>
 }
 
 export enum ValueTypes {
@@ -59,3 +64,13 @@ export interface ResponseSuccess {
     data: unknown;
     errors: null;
 }
+
+export enum Errors {
+    WRONG_TOKEN='Wrong Token',
+}
+
+interface GraphmlExtension {
+    graphml: (arg: Dict<string> | string) => void,
+}
+
+export type CyGraphml = cytoscape.Core & GraphmlExtension

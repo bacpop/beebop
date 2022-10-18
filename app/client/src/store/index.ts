@@ -9,8 +9,10 @@ export default new Vuex.Store<RootState>({
     errors: [],
     versions: [],
     user: null,
+    microreactToken: null,
     results: {
       perIsolate: {},
+      perCluster: {},
     },
     projectHash: null,
     submitStatus: null,

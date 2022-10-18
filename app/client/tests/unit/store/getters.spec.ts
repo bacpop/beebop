@@ -18,4 +18,37 @@ describe('getters', () => {
       total: 3,
     });
   });
+  it('gets unique clusters', () => {
+    const state = mockRootState({
+      results: {
+        perCluster: {},
+        perIsolate: {
+          hash1: {
+            cluster: 4,
+          },
+          hash2: {
+            cluster: 2,
+          },
+          hash3: {
+            cluster: 7,
+          },
+          hash4: {
+            cluster: 4,
+          },
+          hash5: {
+            cluster: 31,
+          },
+          hash6: {
+            cluster: 2,
+          },
+        },
+      },
+    });
+    expect(getters.uniqueClusters(
+      state,
+      'uniqueClusters',
+      state,
+      'uniqueClusters',
+    )).toStrictEqual([2, 4, 7, 31]);
+  });
 });

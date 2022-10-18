@@ -10,6 +10,7 @@ export interface RootState {
   errors: BeebopError[]
   versions: Versions | []
   user: User | null
+  microreactToken: string | null
   results: Results
   submitStatus: string | null
   analysisStatus: AnalysisStatus

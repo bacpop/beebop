@@ -59,6 +59,7 @@ describe('Home', () => {
         },
         results: {
           perIsolate: {},
+          perCluster: {},
         },
       }),
       actions: {
@@ -91,6 +92,7 @@ describe('Home', () => {
             someFileHash: {},
             someFileHash2: {},
           },
+          perCluster: {},
         },
         submitStatus: null,
         analysisStatus: {
@@ -129,6 +131,7 @@ describe('Home', () => {
             someFileHash: {},
             someFileHash2: {},
           },
+          perCluster: {},
         },
         submitStatus: 'submitted',
         analysisStatus: {

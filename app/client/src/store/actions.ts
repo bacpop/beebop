@@ -94,8 +94,63 @@ export default {
   },
   async submitData(context: ActionContext<RootState, RootState>) {
     const { dispatch, commit } = context;
-    dispatch('runPoppunk');
+    await dispatch('runPoppunk');
     commit('setSubmitStatus', 'submitted');
     dispatch('startStatusPolling');
+  },
+  async getZip(
+    context: ActionContext<RootState, RootState>,
+    data: Record<string, string | number>,
+  ) {
+    const { state } = context;
+    await axios.post(
+      `${config.server_url}/downloadZip`,
+      {
+        type: data.type,
+        cluster: data.cluster,
+        projectHash: state.projectHash,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        responseType: 'arraybuffer',
+      },
+    )
+      .then((response) => {
+        const blob = new Blob([response.data], { type: 'application/zip' });
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = `${data.type}_cluster${data.cluster}.zip`;
+        link.click();
+      });
+  },
+  async buildMicroreactURL(
+    context: ActionContext<RootState, RootState>,
+    data: Record<string, string | number>,
+  ) {
+    const { state, commit } = context;
+    commit('setToken', data.token);
+    await api(context)
+      .withSuccess('addMicroreactURL')
+      .withError('addError')
+      .post<ClusterInfo>(`${config.server_url}/microreactURL`, {
+        cluster: data.cluster,
+        projectHash: state.projectHash,
+        apiToken: state.microreactToken,
+      });
+  },
+  async getGraphml(
+    context: ActionContext<RootState, RootState>,
+    cluster: string | number,
+  ) {
+    const { state } = context;
+    await api(context)
+      .withSuccess('addGraphml')
+      .withError('addError')
+      .post<ClusterInfo>(`${config.server_url}/downloadGraphml`, {
+        cluster,
+        projectHash: state.projectHash,
+      });
   },
 };

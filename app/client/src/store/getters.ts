@@ -3,7 +3,8 @@ import { Getter, GetterTree } from 'vuex';
 import { RootState } from '@/store/state';
 
 export enum BeebopGetter {
-  analysisProgress = 'analysisProgress'
+  analysisProgress = 'analysisProgress',
+  uniqueClusters = 'uniqueClusters'
 }
 
 export interface BeebopGetters {
@@ -22,5 +23,15 @@ export const getters: BeebopGetters & GetterTree<RootState, RootState> = {
       }
     });
     return { total, finished, progress: (finished / total) };
+  },
+
+  [BeebopGetter.uniqueClusters]: (
+    state: RootState,
+  ): number[] => {
+    const clusters: number[] = [];
+    Object.keys(state.results.perIsolate).forEach((element: string) => {
+      clusters.push(state.results.perIsolate[element].cluster as number);
+    });
+    return [...new Set(clusters)].sort((a, b) => a - b);
   },
 };
