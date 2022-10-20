@@ -8,7 +8,7 @@
 <script lang='ts'>
 import { defineComponent } from 'vue';
 import { mapState, mapActions } from 'vuex';
-import config from '@/resources/config.json';
+import config from '@env/config.json';
 
 export default defineComponent({
   name: 'GreetingAndLogout',

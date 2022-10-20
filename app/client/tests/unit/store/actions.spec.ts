@@ -1,7 +1,7 @@
 import actions from '@/store/actions';
 import versionInfo from '@/resources/versionInfo.json';
 import { Md5 } from 'ts-md5/dist/md5';
-import config from '../../../src/resources/config.json';
+import config from '../../../src/resources/development/config.json';
 import { mockAxios, mockRootState } from '../../mocks';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

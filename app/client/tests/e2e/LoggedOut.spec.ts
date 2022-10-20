@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import config from '../../src/resources/config.json';
+import config from '../../src/resources/development/config.json';
 
 test.describe('Logged out Tests', () => {
   test.beforeEach(async ({ page }) => {

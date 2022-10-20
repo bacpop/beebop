@@ -2,7 +2,7 @@
 set -e
 
 PACKAGE_ROOT=$(realpath $HERE/..)
-PACKAGE_NAME=beebop-client
+PACKAGE_NAME=beebop-proxy
 PACKAGE_ORG=mrcide
 
 # Buildkite doesn't check out a full history from the remote (just the

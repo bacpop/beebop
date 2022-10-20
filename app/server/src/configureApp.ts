@@ -15,7 +15,7 @@ export const configureApp = (app => {
             {
                 clientID: config.GOOGLE_CLIENT_ID,
                 clientSecret: config.GOOGLE_CLIENT_SECRET,
-                callbackURL: '/return/google'
+                callbackURL: config.server_url + '/return/google'
             },
             (accessToken, refreshToken, profile, cb) => {
                 return cb(null, profile);
@@ -27,7 +27,7 @@ export const configureApp = (app => {
         new PassportGithub.Strategy({
             clientID: config.GITHUB_CLIENT_ID,
             clientSecret: config.GITHUB_CLIENT_SECRET,
-            callbackURL: '/return/github'
+            callbackURL: config.server_url + '/return/github'
         },
             (accessToken, refreshToken, profile, cb) => {
                 return cb(null, profile);

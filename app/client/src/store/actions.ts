@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Commit, ActionContext } from 'vuex';
-import config from '@/resources/config.json';
+import config from '@env/config.json';
 import { Md5 } from 'ts-md5/dist/md5';
 import { RootState } from '@/store/state';
 import {

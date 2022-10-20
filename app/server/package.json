@@ -6,7 +6,8 @@
   "scripts": {
     "express": "ts-node src/index.ts",
     "test": "jest",
-    "eslint": "eslint . --ext .js,.jsx,.ts,.tsx"
+    "eslint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",

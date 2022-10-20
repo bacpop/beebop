@@ -3,7 +3,7 @@
 
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'fs';
-import config from '../../src/resources/config.json';
+import config from '../../src/resources/development/config.json';
 
 test.describe('Logged in Tests', () => {
   test.beforeEach(async ({ page }) => {

@@ -6,9 +6,9 @@ HERE=$(dirname $0)
 
 docker build --pull \
        --tag $TAG_SHA \
-       -f "$PACKAGE_ROOT/docker/Dockerfile" \
-       $PACKAGE_ROOT
+       -f proxy/Dockerfile \
+       .
 
 # We always push the SHA tagged versions, for debugging if the tests
 # after this step fail
-docker push $TAG_SHA 
+docker push $TAG_SHA
