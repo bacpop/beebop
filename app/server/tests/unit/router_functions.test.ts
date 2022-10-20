@@ -1,6 +1,6 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { getVersionInfo } from '../../src/routes/routes';
+import {apiEndpoints} from '../../src/routes/routes';
 import versionInfo from '../../../server/resources/versionInfo.json';
 import config from '../../src/resources/config.json';
 
@@ -19,7 +19,7 @@ describe("test routes", () => {
     it("get version info", async () => {
         const req = mockRequest;
         const res = mockResponse();
-        await getVersionInfo(req, res);
+        await apiEndpoints(config).getVersionInfo(req, res);
         expect(res.send).toHaveBeenCalledWith(versionInfo)
     });
 });

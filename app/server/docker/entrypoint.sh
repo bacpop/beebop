@@ -7,6 +7,4 @@ while [ ! -e $PATH_CONFIG ]; do
   sleep 1
 done
 
-sleep 1
-npm run build
-node dist/index.js
+node dist/index.js --config /app/src/resources
