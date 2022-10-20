@@ -5,6 +5,7 @@ WORKDIR /app
 RUN npm install
 
 COPY app/client /app
+ENV BUILD_TARGET docker
 RUN npm install && npm run build
 
 FROM nginx:stable

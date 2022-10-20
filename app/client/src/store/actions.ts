@@ -1,30 +1,31 @@
 import axios from 'axios';
 import { Commit, ActionContext } from 'vuex';
-import config from '@env/config.json';
+import config from '@settings/config';
 import { Md5 } from 'ts-md5/dist/md5';
 import { RootState } from '@/store/state';
 import {
   Versions, User, AnalysisStatus, ClusterInfo, Dict,
 } from '@/types';
-import { api } from '../apiService';
+import { api } from '@/apiService';
 
 axios.defaults.withCredentials = true;
+const serverUrl = config.serverUrl();
 
 export default {
   async getVersions(context: ActionContext<RootState, RootState>) {
     await api(context)
       .withSuccess('setVersions')
       .withError('addError')
-      .get<Versions>(`${config.server_url}/version`);
+      .get<Versions>(`${serverUrl}/version`);
   },
   async getUser(context: ActionContext<RootState, RootState>) {
     await api(context)
       .withSuccess('setUser')
       .withError('addError')
-      .get<User>(`${config.server_url}/user`);
+      .get<User>(`${serverUrl}/user`);
   },
   async logoutUser() {
-    await axios.get(`${config.server_url}/logout`);
+    await axios.get(`${serverUrl}/logout`);
   },
   async processFiles({ commit } : { commit: Commit }, acceptFiles: Array<File>) {
     function readContent(file: File) {
@@ -70,7 +71,7 @@ export default {
     const response = await api(context)
       .withError('addError')
       .ignoreSuccess()
-      .post<AnalysisStatus>(`${config.server_url}/poppunk`, {
+      .post<AnalysisStatus>(`${serverUrl}/poppunk`, {
         projectHash: phash,
         sketches: jsonSketches,
         names: filenameMapping,
@@ -85,7 +86,7 @@ export default {
     const response = await api(context)
       .withSuccess('setAnalysisStatus')
       .withError('addError')
-      .post<AnalysisStatus>(`${config.server_url}/status`, { hash: state.projectHash });
+      .post<AnalysisStatus>(`${serverUrl}/status`, { hash: state.projectHash });
     if (response) {
       if (response.data.assign === 'finished' && prevAssign !== 'finished') {
         dispatch('getAssignResult');
@@ -104,7 +105,7 @@ export default {
     await api(context)
       .withSuccess('setClusters')
       .withError('addError')
-      .post<ClusterInfo>(`${config.server_url}/assignResult`, { projectHash: state.projectHash });
+      .post<ClusterInfo>(`${serverUrl}/assignResult`, { projectHash: state.projectHash });
   },
   async startStatusPolling(context: ActionContext<RootState, RootState>) {
     const { dispatch, commit } = context;
@@ -123,7 +124,7 @@ export default {
   ) {
     const { state } = context;
     await axios.post(
-      `${config.server_url}/downloadZip`,
+      `${serverUrl}/downloadZip`,
       {
         type: data.type,
         cluster: data.cluster,
@@ -153,7 +154,7 @@ export default {
     await api(context)
       .withSuccess('addMicroreactURL')
       .withError('addError')
-      .post<ClusterInfo>(`${config.server_url}/microreactURL`, {
+      .post<ClusterInfo>(`${serverUrl}/microreactURL`, {
         cluster: data.cluster,
         projectHash: state.projectHash,
         apiToken: state.microreactToken,
@@ -167,7 +168,7 @@ export default {
     await api(context)
       .withSuccess('addGraphml')
       .withError('addError')
-      .post<ClusterInfo>(`${config.server_url}/downloadGraphml`, {
+      .post<ClusterInfo>(`${serverUrl}/downloadGraphml`, {
         cluster,
         projectHash: state.projectHash,
       });

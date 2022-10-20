@@ -12,10 +12,10 @@ module.exports = defineConfig({
     config
       .resolve
       .alias
-      .set('@env', path.resolve(
+      .set('@settings', path.resolve(
         __dirname,
-        'src/resources/',
-        process.env.NODE_ENV || 'development',
+        'src/settings/',
+        process.env.BUILD_TARGET || 'development',
       ));
   },
 });

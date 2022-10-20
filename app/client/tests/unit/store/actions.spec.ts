@@ -1,7 +1,7 @@
 import actions from '@/store/actions';
 import versionInfo from '@/resources/versionInfo.json';
 import { Md5 } from 'ts-md5/dist/md5';
-import config from '../../../src/resources/development/config.json';
+import config from '../../../src/settings/development/config';
 import { mockAxios, mockRootState } from '../../mocks';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -36,8 +36,9 @@ describe('Actions', () => {
     jest.clearAllMocks();
   });
 
+  const serverUrl = config.serverUrl();
   it('getVersions fetches and commits version info', async () => {
-    mockAxios.onGet(`${config.server_url}/version`).reply(200, versionInfo);
+    mockAxios.onGet(`${serverUrl}/version`).reply(200, versionInfo);
     const commit = jest.fn();
     await actions.getVersions({ commit } as any);
 
@@ -48,7 +49,7 @@ describe('Actions', () => {
   });
 
   it('getUser fetches and commits user info', async () => {
-    mockAxios.onGet(`${config.server_url}/user`).reply(200, responseSuccess({ id: '12345', name: 'Beebop', provider: 'google' }));
+    mockAxios.onGet(`${serverUrl}/user`).reply(200, responseSuccess({ id: '12345', name: 'Beebop', provider: 'google' }));
     const commit = jest.fn();
     await actions.getUser({ commit } as any);
 
@@ -59,9 +60,9 @@ describe('Actions', () => {
   });
 
   it('logoutUser makes axios call', async () => {
-    mockAxios.onGet(`${config.server_url}/logout`).reply(200);
+    mockAxios.onGet(`${serverUrl}/logout`).reply(200);
     await actions.logoutUser();
-    expect(mockAxios.history.get[0].url).toEqual(`${config.server_url}/logout`);
+    expect(mockAxios.history.get[0].url).toEqual(`${serverUrl}/logout`);
   });
 
   it('processFiles calculates filehash, adds hash & filename to store and calls setSketch', async () => {
@@ -97,11 +98,11 @@ describe('Actions', () => {
       },
     });
     const expectedHash = Md5.hashStr('someFileHashsomeFilenamesomeFileHash2someFilename2');
-    mockAxios.onPost(`${config.server_url}/poppunk`).reply(200, responseSuccess({
+    mockAxios.onPost(`${serverUrl}/poppunk`).reply(200, responseSuccess({
       assign: 'job-id', microreact: 'job-id', network: 'job-id',
     }));
     await actions.runPoppunk({ commit, state } as any);
-    expect(mockAxios.history.post[0].url).toEqual(`${config.server_url}/poppunk`);
+    expect(mockAxios.history.post[0].url).toEqual(`${serverUrl}/poppunk`);
     expect(commit.mock.calls[0]).toEqual([
       'setProjectHash',
       expectedHash]);
@@ -126,11 +127,11 @@ describe('Actions', () => {
         network: 'waiting',
       },
     });
-    mockAxios.onPost(`${config.server_url}/status`).reply(200, responseSuccess({
+    mockAxios.onPost(`${serverUrl}/status`).reply(200, responseSuccess({
       assign: 'finished', microreact: 'started', network: 'queued',
     }));
     await actions.getStatus({ commit, state, dispatch } as any);
-    expect(mockAxios.history.post[0].url).toEqual(`${config.server_url}/status`);
+    expect(mockAxios.history.post[0].url).toEqual(`${serverUrl}/status`);
     expect(commit.mock.calls[0]).toEqual([
       'setAnalysisStatus',
       {
@@ -158,7 +159,7 @@ describe('Actions', () => {
       },
       statusInterval: 202,
     });
-    mockAxios.onPost(`${config.server_url}/status`).reply(200, responseSuccess({
+    mockAxios.onPost(`${serverUrl}/status`).reply(200, responseSuccess({
       assign: 'finished', microreact: 'finished', network: 'finished',
     }));
     await actions.getStatus({ commit, state, dispatch } as any);
@@ -183,7 +184,7 @@ describe('Actions', () => {
       },
       statusInterval: 202,
     });
-    mockAxios.onPost(`${config.server_url}/status`).reply(200, responseSuccess({
+    mockAxios.onPost(`${serverUrl}/status`).reply(200, responseSuccess({
       assign: 'finished', microreact: 'failed', network: 'failed',
     }));
     await actions.getStatus({ commit, state, dispatch } as any);
@@ -208,7 +209,7 @@ describe('Actions', () => {
       },
       statusInterval: 202,
     });
-    mockAxios.onPost(`${config.server_url}/status`).reply(400);
+    mockAxios.onPost(`${serverUrl}/status`).reply(400);
     await actions.getStatus({ commit, state, dispatch } as any);
     expect(clearInterval).toHaveBeenCalledTimes(1);
     expect(clearInterval).toHaveBeenLastCalledWith(202);
@@ -241,9 +242,9 @@ describe('Actions', () => {
       },
     });
     const expResponse = responseSuccess({ 0: { hash: 'someFileHash', cluster: '12' }, 1: { hash: 'someFileHash2', cluster: '2' } });
-    mockAxios.onPost(`${config.server_url}/assignResult`).reply(200, expResponse);
+    mockAxios.onPost(`${serverUrl}/assignResult`).reply(200, expResponse);
     await actions.getAssignResult({ commit, state } as any);
-    expect(mockAxios.history.post[0].url).toEqual(`${config.server_url}/assignResult`);
+    expect(mockAxios.history.post[0].url).toEqual(`${serverUrl}/assignResult`);
     expect(commit.mock.calls[0]).toEqual([
       'setClusters',
       expResponse.data,
@@ -270,7 +271,7 @@ describe('Actions', () => {
       type: 'network',
       cluster: 7,
     };
-    mockAxios.onPost(`${config.server_url}/downloadZip`).reply(200, { data: 'zipData' });
+    mockAxios.onPost(`${serverUrl}/downloadZip`).reply(200, { data: 'zipData' });
     await actions.getZip({ state } as any, data);
     expect(createElementSpy).toHaveBeenCalledTimes(1);
     expect(createElementSpy).toHaveBeenCalledWith('a');
@@ -283,9 +284,9 @@ describe('Actions', () => {
       projectHash: 'randomHash',
     });
     const expResponse = responseSuccess({ cluster: 7, url: 'microreact.org/mock' });
-    mockAxios.onPost(`${config.server_url}/microreactURL`).reply(200, expResponse);
+    mockAxios.onPost(`${serverUrl}/microreactURL`).reply(200, expResponse);
     await actions.buildMicroreactURL({ commit, state } as any, { cluster: 7, token: 'some_token' });
-    expect(mockAxios.history.post[0].url).toEqual(`${config.server_url}/microreactURL`);
+    expect(mockAxios.history.post[0].url).toEqual(`${serverUrl}/microreactURL`);
     expect(commit.mock.calls[0]).toEqual([
       'setToken',
       'some_token',
@@ -302,9 +303,9 @@ describe('Actions', () => {
       projectHash: 'randomHash',
     });
     const expResponse = responseSuccess({ cluster: 7, graph: '<graph></graph>' });
-    mockAxios.onPost(`${config.server_url}/downloadGraphml`).reply(200, expResponse);
+    mockAxios.onPost(`${serverUrl}/downloadGraphml`).reply(200, expResponse);
     await actions.getGraphml({ commit, state } as any, 7);
-    expect(mockAxios.history.post[0].url).toEqual(`${config.server_url}/downloadGraphml`);
+    expect(mockAxios.history.post[0].url).toEqual(`${serverUrl}/downloadGraphml`);
     expect(commit.mock.calls[0]).toEqual([
       'addGraphml',
       expResponse.data,

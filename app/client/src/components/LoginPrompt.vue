@@ -11,15 +11,15 @@
 
 <script lang='ts'>
 import { defineComponent } from 'vue';
-import config from '@env/config.json';
+import config from '@settings/config';
 
 export default defineComponent({
   computed: {
     generateLoginGoogle() {
-      return `${config.server_url}/login/google`;
+      return `${config.serverUrl()}/login/google`;
     },
     generateLoginGithub() {
-      return `${config.server_url}/login/github`;
+      return `${config.serverUrl()}/login/github`;
     },
   },
 });
