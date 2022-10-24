@@ -1,7 +1,6 @@
 import yargs from "yargs/yargs";
 import path from "path";
 import {hideBin} from "yargs/helpers";
-import fs from "fs";
 
 const {argv} = yargs(hideBin(process.argv));
 const configPathGiven = argv.config as string;
