@@ -32,6 +32,13 @@ To start all required components, run:
 
 The website can be viewed at http://localhost:8080/ . You can stop the application with `./scripts/stop_test`.
 
+## Config
+Config for the front-end lives in `./app/client/src/settings` and by default webpack (via the vue-cli) will use the config 
+defined in `./app/client/src/settings/development`; this gets overriden by setting an env var called `BUILD_TARGET` - see `./proxy/Dockerfile`.
+
+Config for the back-end lives in `./app/server/src/resources`. When deploying using a docker image this file has to be 
+copied into the running container before the app will start - see `./app/server/docker/entrypoint.sh`.
+
 ## Deploying with docker
 
 Docker images are built on CI using `./proxy/docker/build`, `./app/server/docker/build`. If you want 
