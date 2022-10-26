@@ -8,7 +8,7 @@
 <script lang='ts'>
 import { defineComponent } from 'vue';
 import { mapState, mapActions } from 'vuex';
-import config from '@env/config.json';
+import config from '@settings/config';
 
 export default defineComponent({
   name: 'GreetingAndLogout',
@@ -20,7 +20,7 @@ export default defineComponent({
   },
   computed: {
     generateLogout() {
-      return `${config.server_url}/logout`;
+      return `${config.serverUrl()}/logout`;
     },
     ...mapState(['user']),
   },

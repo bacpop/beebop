@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "express": "ts-node src/index.ts",
+    "express": "ts-node src/index.ts --config src/resources",
     "test": "jest",
     "eslint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "build": "tsc"

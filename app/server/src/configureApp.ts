@@ -6,9 +6,7 @@ import session from 'express-session';
 import PassportGoogle from 'passport-google-oauth20';
 import PassportGithub from 'passport-github';
 
-import config from './resources/config.json';
-
-export const configureApp = (app => {
+export const configureApp = ((app, config) => {
     //set up passport
     passport.use(
         new PassportGoogle.Strategy(

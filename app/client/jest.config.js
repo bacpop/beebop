@@ -9,6 +9,6 @@ module.exports = {
     '!src/main.ts',
   ],
   moduleNameMapper: {
-    '^@env(.*)$': '<rootDir>/src/resources/development/$1',
+    '^@settings(.*)$': '<rootDir>/src/settings/development/$1',
   },
 };

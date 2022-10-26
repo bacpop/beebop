@@ -1,9 +1,9 @@
 import { test, expect } from '@playwright/test';
-import config from '../../src/resources/development/config.json';
+import config from '../../src/settings/development/config';
 
 test.describe('Logged out Tests', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto(config.client_url);
+    await page.goto(config.clientUrl());
   });
 
   test('should display greeting on start page', async ({ page }) => {

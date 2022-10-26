@@ -1,8 +1,7 @@
 import axios from 'axios';
 import passport from 'passport';
-import config from '../resources/config.json';
 
-export const router = (app => {
+export const router = ((app, config) => {
     app.get('/',
         (request, response) => {
             response.json({
@@ -11,20 +10,22 @@ export const router = (app => {
         }
     );
 
+    const api = apiEndpoints(config);
+
     app.get('/version',
-        getVersionInfo);
+        api.getVersionInfo);
 
     app.post('/poppunk',
         authCheck,
-        runPoppunk);
+        api.runPoppunk);
 
     app.post('/status',
         authCheck,
-        getStatus);
+        api.getStatus);
 
     app.post('/assignResult',
         authCheck,
-        getAssignResult);
+        api.getAssignResult);
 
     app.get('/login/google',
         passport.authenticate('google', { scope: ['profile'] }));
@@ -82,102 +83,107 @@ export const router = (app => {
     );
 
     app.post('/downloadZip',
-        downloadZip);
+        api.downloadZip);
 
     app.post('/microreactURL',
-        microreactURL);
+        api.microreactURL);
 
     app.post('/downloadGraphml',
-        downloadGraphml);
+        api.downloadGraphml);
 
 })
 
-export async function downloadGraphml(request, response) {
-    await axios.post(`${config.api_url}/results/graphml`,
-        request.body,
-        {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(res => response.send(res.data))
-        .catch(function (error) {
-            sendError(response, error);
-          });
+export const apiEndpoints = (config => ({
+
+    async downloadGraphml (request, response) {
+        await axios.post(`${config.api_url}/results/graphml`,
+            request.body,
+            {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(res => response.send(res.data))
+            .catch(function (error) {
+                sendError(response, error);
+            });
+    },
+
+    async downloadZip(request, response) {
+        await axios.post(`${config.api_url}/results/zip`,
+            request.body,
+            {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                responseType: 'arraybuffer',
+            })
+            .then(res => response.send(res.data))
+            .catch(function (error) {
+                sendError(response, error);
+            });
+    },
+
+    async microreactURL(request, response) {
+        await axios.post(`${config.api_url}/results/microreact`,
+            request.body,
+            {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(res => {
+                response.send(res.data)
+            })
+            .catch(function (error) {
+                sendError(response, error);
+            });
+    },
+
+    async getVersionInfo(request, response) {
+        await axios.get(`${config.api_url}/version`)
+            .then(res => response.send(res.data));
+    },
+
+    async runPoppunk(request, response) {
+        await axios.post(`${config.api_url}/poppunk`,
+            request.body,
+            {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                maxContentLength: 1000000000,
+                maxBodyLength: 1000000000
+            },
+        )
+            .then(res => response.send(res.data))
+            .catch(function (error) {
+                sendError(response, error);
+            });
+    },
+
+    async getStatus(request, response) {
+        await axios.get(`${config.api_url}/status/${request.body.hash}`)
+            .then(res => response.send(res.data))
+            .catch(function (error) {
+                sendError(response, error);
+            });
+    },
+
+    async getAssignResult(request, response) {
+        await axios.post(`${config.api_url}/results/assign`,
+            request.body,
+            {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(res => response.send(res.data))
+            .catch(function (error) {
+                sendError(response, error);
+            });
     }
-
-export async function downloadZip(request, response) {
-    await axios.post(`${config.api_url}/results/zip`,
-        request.body,
-        {
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            responseType: 'arraybuffer',
-        })
-        .then(res => response.send(res.data))
-        .catch(function (error) {
-            sendError(response, error);
-          });
-}
-
-export async function microreactURL(request, response) {
-    await axios.post(`${config.api_url}/results/microreact`,
-        request.body,
-        {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(res => {response.send(res.data)})
-        .catch(function (error) {
-            sendError(response, error);
-          });
-}
-
-export async function getVersionInfo(request, response) {
-    await axios.get(`${config.api_url}/version`)
-        .then(res => response.send(res.data));
-}
-
-export async function runPoppunk(request, response) {
-    await axios.post(`${config.api_url}/poppunk`,
-        request.body,
-        {
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            maxContentLength: 1000000000,
-            maxBodyLength: 1000000000
-        },
-    )
-        .then(res => response.send(res.data))
-        .catch(function (error) {
-            sendError(response, error);
-        });
-}
-
-export async function getStatus(request, response) {
-    await axios.get(`${config.api_url}/status/${request.body.hash}`)
-        .then(res => response.send(res.data))
-        .catch(function (error) {
-            sendError(response, error);
-        });
-}
-
-export async function getAssignResult(request, response) {
-    await axios.post(`${config.api_url}/results/assign`,
-    request.body,
-    {
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-        .then(res => response.send(res.data))
-        .catch(function (error) {
-            sendError(response, error);
-        });
-}
+}));
 
 const authCheck = (req, res, next) => {
     if (!req.user) {
@@ -209,5 +215,4 @@ function sendError(response, error) {
             data: null
         })  
     }
-    
 }

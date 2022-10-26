@@ -21,9 +21,9 @@
       "@/*": [
         "src/*"
       ],
-      "@env/*": [
-        "src/resources/development/*",
-        "src/resources/production/*"
+      "@settings/*": [
+        "src/settings/development/*",
+        "src/settings/production/*"
       ]
     },
     "lib": [

@@ -6,5 +6,5 @@ RUN npm install
 
 COPY . /app
 EXPOSE 4000
-
+RUN npm run build
 ENTRYPOINT ["docker/entrypoint.sh"]

@@ -11,8 +11,8 @@ import config from '../../src/resources/config.json';
 import MockStrategy from 'passport-mock-strategy';
 
 const app = express();
-configureApp(app);
-router(app)
+configureApp(app, config);
+router(app, config)
 
 // adding passport mock strategy and route for tests
 passport.use(new MockStrategy());
