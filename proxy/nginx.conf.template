@@ -76,7 +76,7 @@ http {
 
         # this is the backend
         location /api/ {
-            proxy_pass http://beebop-server:4000/;
+            proxy_pass http://${SERVER_NAME}:4000/;
             # proxy_redirect default;
         }
 

@@ -1,25 +1,25 @@
 #!/usr/bin/env bash
 set -eu
 
-if [ "$#" -eq 1 ]; then
+if [ "$#" -eq 2 ]; then
     export HTTP_HOST=$1
+    export SERVER_NAME=$2
 else
-    echo "Usage: <hostname>"
-    echo "e.g. docker run ... mrcide/beebop-proxy:master localhost"
+    echo "Usage: <hostname> <servername>"
+    echo "e.g. docker run ... mrcide/beebop-proxy:master localhost beebop-server"
     exit 1
 fi
 
 echo "We will listen on ports 80 (http) and 443 (https)"
-echo "with hostname $HTTP_HOST"
+echo "with hostname $HTTP_HOST and servername $SERVER_NAME"
 
-envsubst '$HTTP_HOST' \
+envsubst '$HTTP_HOST,$SERVER_NAME' \
          < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
 
 # These paths must match the paths as used in the nginx.conf
 PATH_CONFIG=/run/proxy
 PATH_CERT="$PATH_CONFIG/certificate.pem"
 PATH_KEY="$PATH_CONFIG/key.pem"
-PATH_DHPARAM="$PATH_CONFIG/dhparam.pem"
 
 mkdir -p $PATH_CONFIG
 

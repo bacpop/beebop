@@ -19,6 +19,7 @@ VOLUME /run/proxy
 
 COPY proxy/nginx.conf.template /etc/nginx/nginx.conf.template
 COPY proxy/bin /usr/local/bin
+COPY proxy/ssl/dhparam.pem /run/proxy/dhparam.pem
 
 COPY --from=0 /app/dist /usr/share/nginx/html
 
