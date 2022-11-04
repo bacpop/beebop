@@ -14,7 +14,7 @@ export const moduleMock = {
       WORKERFS: 'fs',
     },
   },
-  make_prediction(path: string) {
+  make_prediction_json(path: string) {
     return path;
   },
   sketch(
