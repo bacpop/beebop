@@ -19,7 +19,7 @@ onmessage = function (message) {
     //create working directory and mount file
     createFS(module, f);
     // make prediction
-    const amr_result = module.make_prediction(workdir + "/" + f.name);
+    const amr_result = module.make_prediction_json(workdir + "/" + f.name);
     // return result
     postMessage({ hash: message.data.hash, type: 'amr', result: amr_result });
   });
