@@ -96,7 +96,7 @@ describe('Home', () => {
         },
         submitStatus: null,
         analysisStatus: {
-          assign: null, microreact: null, network: null,
+          assignClusters: null, assignLineages: null, microreact: null, network: null,
         },
       }),
       actions: {
@@ -116,8 +116,8 @@ describe('Home', () => {
   it('shows status bar when data was submitted to backend', () => {
     const analysisProgress = jest.fn().mockReturnValue({
       finished: 1,
-      progress: 0.3333333333333333,
-      total: 3,
+      progress: 0.25,
+      total: 4,
     });
     const store = new Vuex.Store<RootState>({
       state: mockRootState({
@@ -135,7 +135,7 @@ describe('Home', () => {
         },
         submitStatus: 'submitted',
         analysisStatus: {
-          assign: 'finished', microreact: 'started', network: 'queued',
+          assignClusters: 'finished', assignLineages: 'queued', microreact: 'started', network: 'queued',
         },
       }),
       actions: {
@@ -153,6 +153,6 @@ describe('Home', () => {
     const statusBar = wrapper.findAll('.progress');
     expect(analysisProgress).toHaveBeenCalled();
     expect(statusBar.length).toBe(1);
-    expect(statusBar[0].text()).toBe('33.33%'); // Nan
+    expect(statusBar[0].text()).toBe('25.00%'); // Nan
   });
 });

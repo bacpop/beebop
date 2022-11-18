@@ -7,15 +7,16 @@ describe('getters', () => {
       projectHash: 'randomHash',
       submitStatus: 'submitted',
       analysisStatus: {
-        assign: 'finished',
+        assignClusters: 'finished',
+        assignLineages: 'finished',
         microreact: 'started',
         network: 'queued',
       },
     });
     expect(getters.analysisProgress(state, 'analysisProgress', state, 'analysisProgress')).toStrictEqual({
-      finished: 1,
-      progress: 0.3333333333333333,
-      total: 3,
+      finished: 2,
+      progress: 0.5,
+      total: 4,
     });
   });
   it('gets unique clusters', () => {

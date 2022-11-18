@@ -23,9 +23,13 @@ export const router = ((app, config) => {
         authCheck,
         api.getStatus);
 
-    app.post('/assignResult',
+    app.post('/assignClustersResult',
         authCheck,
-        api.getAssignResult);
+        api.getAssignClustersResult);
+
+        app.post('/assignLineagesResult',
+        authCheck,
+        api.getAssignLineagesResult);
 
     app.get('/login/google',
         passport.authenticate('google', { scope: ['profile'] }));
@@ -170,8 +174,22 @@ export const apiEndpoints = (config => ({
             });
     },
 
-    async getAssignResult(request, response) {
-        await axios.post(`${config.api_url}/results/assign`,
+    async getAssignClustersResult(request, response) {
+        await axios.post(`${config.api_url}/results/assignClusters`,
+            request.body,
+            {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(res => response.send(res.data))
+            .catch(function (error) {
+                sendError(response, error);
+            });
+    },
+
+    async getAssignLineagesResult(request, response) {
+        await axios.post(`${config.api_url}/results/assignLineages`,
             request.body,
             {
                 headers: {

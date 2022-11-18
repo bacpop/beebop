@@ -7,14 +7,15 @@ import { mockRootState } from '../../mocks';
 describe('Progress bar', () => {
   const analysisProgress = jest.fn().mockReturnValue({
     finished: 1,
-    progress: 0.3333333333333333,
-    total: 3,
+    progress: 0.25,
+    total: 4,
   });
 
   const store = new Vuex.Store<RootState>({
     state: mockRootState({
       analysisStatus: {
-        assign: 'finished',
+        assignClusters: 'finished',
+        assignLineages: 'queued',
         microreact: 'queued',
         network: 'started',
       },
@@ -37,21 +38,22 @@ describe('Progress bar', () => {
   it('gets analysisProgress and displays status', () => {
     expect(analysisProgress).toHaveBeenCalledTimes(1);
     expect(wrapper.vm.animated).toBe(true);
-    expect(wrapper.find('.progress-bar').text()).toBe('33.33%');
+    expect(wrapper.find('.progress-bar').text()).toBe('25.00%');
   });
 });
 
 describe('Progress bar finished', () => {
   const analysisProgress = jest.fn().mockReturnValue({
-    finished: 3,
+    finished: 4,
     progress: 1,
-    total: 3,
+    total: 4,
   });
 
   const store = new Vuex.Store<RootState>({
     state: mockRootState({
       analysisStatus: {
-        assign: 'finished',
+        assignClusters: 'finished',
+        assignLineages: 'finished',
         microreact: 'finished',
         network: 'finished',
       },

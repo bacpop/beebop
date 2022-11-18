@@ -10,6 +10,7 @@ export interface Isolate {
     amr?: AMR
     sketch?: string
     cluster?: number | string
+    lineage?: Dict<string>
 }
 
 export interface Versions {
@@ -37,7 +38,8 @@ export interface IsolateValue {
 }
 
 export enum AnalysisType {
-    ASSIGN = 'assign',
+    ASSIGNCLUSTERS = 'assignClusters',
+    ASSIGNLINEAGES = 'assignLineages',
     MICROREACT = 'microreact',
     NETWORK = 'network'
 }
@@ -46,7 +48,7 @@ export type AnalysisStatus = {
     [key in AnalysisType]: string | null
 }
 
-export type ClusterInfo = Dict<Dict<string>>
+export type ClusterInfo = Dict<string[]>
 
 export interface BeebopError {
     error: string,

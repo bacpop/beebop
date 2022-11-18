@@ -19,7 +19,7 @@ export function mockRootState(state: Partial<RootState> = {}): RootState {
     },
     submitStatus: null,
     analysisStatus: {
-      assign: null, microreact: null, network: null,
+      assignClusters: null, assignLineages: null, microreact: null, network: null,
     },
     statusInterval: undefined,
     projectHash: null,

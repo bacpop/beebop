@@ -64,6 +64,14 @@ test.describe('Logged in Tests', () => {
     // Expect clusters appearing in table
     await expect(page.locator('tr:has-text("6930_8_13.fa")')).toContainText(['6930_8_13.fa', '✔', 'PCETE SXT', '7']);
     await expect(page.locator('tr:has-text("6930_8_11.fa")')).toContainText(['6930_8_11.fa', '✔', 'PCETE SXT', '24']);
+    // Expect lineages to appear in table
+    await expect(page.locator('tr:has-text("6930_8_13.fa")')).toContainText(['6930_8_13.fa', '✔', 'PCETE SXT', '7', '37']);
+    await expect(page.locator('tr:has-text("6930_8_11.fa")')).toContainText(['6930_8_11.fa', '✔', 'PCETE SXT', '24', '12']);
+    // Changing rank updates lineages
+    await page.click('text=Lineage Rank 1');
+    await page.click('text=Rank 2');
+    await expect(page.locator('tr:has-text("6930_8_13.fa")')).toContainText(['6930_8_13.fa', '✔', 'PCETE SXT', '7', '6']);
+    await expect(page.locator('tr:has-text("6930_8_11.fa")')).toContainText(['6930_8_11.fa', '✔', 'PCETE SXT', '24', '2']);
     // Expect download buttons and button to generate microreact URL to appear
     await expect(page.locator('tr:has-text("6930_8_13.fa") .btn').nth(0)).toContainText('Download zip file');
     await expect(page.locator('tr:has-text("6930_8_13.fa") .btn').nth(1)).toContainText('Generate Microreact URL');
