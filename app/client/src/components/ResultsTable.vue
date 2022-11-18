@@ -6,6 +6,19 @@
         <th>Sketch</th>
         <th>AMR</th>
         <th>Cluster</th>
+        <th class="dropdown">
+            <div class="dropdown-toggle"
+            type="button" id="dropdownMenuButton"
+            data-bs-toggle="dropdown"
+            aria-expanded="false">
+              Lineage Rank {{rank}}
+            </div>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <a class="dropdown-item" id="one" @click="onInput(1)" href="#">Rank 1</a>
+              <a class="dropdown-item" id="two" @click="onInput(2)" href="#">Rank 2</a>
+              <a class="dropdown-item" id="three" @click="onInput(3)" href="#">Rank 3</a>
+            </div>
+        </th>
         <th>Microreact</th>
         <th>Network</th>
       </thead>
@@ -28,6 +41,9 @@
           </td>
           <td :class="(typeof sample.Cluster === 'number') ? '' : 'processing'">
             {{sample.Cluster}}
+          </td>
+          <td :class="(typeof sample.Lineage === 'number') ? '' : 'processing'">
+            {{sample.Lineage}}
           </td>
           <td v-if="sample.Rowspan !== 0"
           style="vertical-align : middle;"
@@ -77,6 +93,11 @@ export default defineComponent({
     DownloadZip,
     GenerateMicroreactURL,
   },
+  data() {
+    return {
+      rank: 1,
+    };
+  },
   methods: {
     getRGB,
     tooltipLine,
@@ -91,13 +112,22 @@ export default defineComponent({
     },
     getCluster(sample: string) {
       return (this.results.perIsolate[sample].cluster
-        ? this.results.perIsolate[sample].cluster : this.analysisStatus.assign);
+        ? this.results.perIsolate[sample].cluster : this.analysisStatus.assignClusters);
+    },
+    getLineage(sample: string, rank: number) {
+      const selectedRank = `rank${rank}`;
+      return (this.results.perIsolate[sample].lineage
+        ? this.results.perIsolate[sample].lineage[selectedRank]
+        : this.analysisStatus.assignLineages);
     },
     getMicroreact() {
       return (this.analysisStatus.microreact === 'finished') ? 'showButton' : this.analysisStatus.microreact;
     },
     getNetwork() {
       return (this.analysisStatus.network === 'finished') ? 'showButton' : this.analysisStatus.network;
+    },
+    onInput(value: number) {
+      this.rank = value;
     },
   },
   computed: {
@@ -112,12 +142,13 @@ export default defineComponent({
           Sketch: (samples[sample].sketch) ? '\u2714' : 'processing',
           AMR: samples[sample].amr ? samples[sample].amr : 'processing',
           Cluster: this.submitStatus === 'submitted' ? this.getCluster(sample) : '',
+          Lineage: this.submitStatus === 'submitted' ? this.getLineage(sample, this.rank) : '',
           Microreact: this.submitStatus === 'submitted' ? this.getMicroreact() : '',
           Network: this.submitStatus === 'submitted' ? this.getNetwork() : '',
         });
       });
       const tableSorted = items.sort((a, b) => Number(a.Cluster) - Number(b.Cluster));
-      if (this.analysisStatus.assign === 'finished') {
+      if (this.analysisStatus.assignClusters === 'finished') {
         // adding a rowspan property to merge microreact/ network cells from same cluster
         const tableRowspan = addRowspan(tableSorted);
         return tableRowspan;

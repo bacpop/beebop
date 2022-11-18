@@ -77,21 +77,31 @@ export default {
         names: filenameMapping,
       });
     if (response) {
-      commit('setAnalysisStatus', { assign: 'submitted', microreact: 'submitted', network: 'submitted' });
+      commit('setAnalysisStatus', {
+        assignClusters: 'submitted',
+        assignLineages: 'submitted',
+        microreact: 'submitted',
+        network: 'submitted',
+      });
     }
   },
   async getStatus(context: ActionContext<RootState, RootState>) {
     const { state, dispatch } = context;
-    const prevAssign = state.analysisStatus.assign;
+    const prevAssignClusters = state.analysisStatus.assignClusters;
+    const prevAssignLineages = state.analysisStatus.assignLineages;
     const response = await api(context)
       .withSuccess('setAnalysisStatus')
       .withError('addError')
       .post<AnalysisStatus>(`${serverUrl}/status`, { hash: state.projectHash });
     if (response) {
-      if (response.data.assign === 'finished' && prevAssign !== 'finished') {
-        dispatch('getAssignResult');
+      if (response.data.assignClusters === 'finished' && prevAssignClusters !== 'finished') {
+        dispatch('getAssignClustersResult');
       }
-      if ((response.data.network === 'finished' || response.data.network === 'failed')
+      if (response.data.assignLineages === 'finished' && prevAssignLineages !== 'finished') {
+        dispatch('getAssignLineagesResult');
+      }
+      if ((response.data.assignLineages === 'finished' || response.data.assignLineages === 'failed')
+        && (response.data.network === 'finished' || response.data.network === 'failed')
         && (response.data.microreact === 'finished' || response.data.microreact === 'failed')) {
         clearInterval(state.statusInterval);
       }
@@ -100,12 +110,19 @@ export default {
       clearInterval(state.statusInterval);
     }
   },
-  async getAssignResult(context: ActionContext<RootState, RootState>) {
+  async getAssignClustersResult(context: ActionContext<RootState, RootState>) {
     const { state } = context;
     await api(context)
       .withSuccess('setClusters')
       .withError('addError')
-      .post<ClusterInfo>(`${serverUrl}/assignResult`, { projectHash: state.projectHash });
+      .post<ClusterInfo>(`${serverUrl}/assignClustersResult`, { projectHash: state.projectHash });
+  },
+  async getAssignLineagesResult(context: ActionContext<RootState, RootState>) {
+    const { state } = context;
+    await api(context)
+      .withSuccess('setLineages')
+      .withError('addError')
+      .post<ClusterInfo>(`${serverUrl}/assignLineagesResult`, { projectHash: state.projectHash });
   },
   async startStatusPolling(context: ActionContext<RootState, RootState>) {
     const { dispatch, commit } = context;

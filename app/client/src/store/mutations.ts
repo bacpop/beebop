@@ -1,6 +1,6 @@
 import { RootState } from '@/store/state';
 import {
-  Versions, User, IsolateValue, AnalysisStatus, ClusterInfo, BeebopError,
+  Versions, User, IsolateValue, AnalysisStatus, ClusterInfo, BeebopError, Dict,
 } from '@/types';
 
 export default {
@@ -43,9 +43,19 @@ export default {
     state.statusInterval = interval;
   },
   setClusters(state: RootState, clusterInfo: ClusterInfo) {
-    Object.keys(clusterInfo).forEach((element) => {
-      state.results.perIsolate[clusterInfo[element].hash]
-        .cluster = clusterInfo[element].cluster;
+    Object.keys(clusterInfo).forEach((cluster) => {
+      clusterInfo[cluster].forEach((hash) => {
+        state.results.perIsolate[hash].cluster = cluster;
+      });
+    });
+  },
+  setLineages(state: RootState, lineageInfo: Dict<Dict<string>>) {
+    Object.keys(lineageInfo).forEach((hash) => {
+      state.results.perIsolate[hash].lineage = {
+        rank1: lineageInfo[hash].rank1,
+        rank2: lineageInfo[hash].rank2,
+        rank3: lineageInfo[hash].rank3,
+      };
     });
   },
   addMicroreactURL(state: RootState, URLinfo: Record<string, string>) {

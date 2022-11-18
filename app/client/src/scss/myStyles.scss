@@ -177,3 +177,17 @@ small {
     border-top: 0;
     border-bottom: 0;
 }
+
+.dropdown {
+    position: relative;
+    display: flex;
+}
+
+.dropdown-toggle {
+    flex-grow: 1;
+    padding: 0 !important;
+}
+
+.dropdown-menu {
+    background-color: white !important;
+}
