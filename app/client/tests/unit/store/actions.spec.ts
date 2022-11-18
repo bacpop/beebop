@@ -99,7 +99,7 @@ describe('Actions', () => {
     });
     const expectedHash = Md5.hashStr('someFileHashsomeFilenamesomeFileHash2someFilename2');
     mockAxios.onPost(`${serverUrl}/poppunk`).reply(200, responseSuccess({
-      assign: 'job-id', microreact: 'job-id', network: 'job-id',
+      assignClusters: 'job-id', assignLineages: 'job-id', microreact: 'job-id', network: 'job-id',
     }));
     await actions.runPoppunk({ commit, state } as any);
     expect(mockAxios.history.post[0].url).toEqual(`${serverUrl}/poppunk`);
@@ -109,26 +109,28 @@ describe('Actions', () => {
     expect(commit.mock.calls[1]).toEqual([
       'setAnalysisStatus',
       {
-        assign: 'submitted',
+        assignClusters: 'submitted',
+        assignLineages: 'submitted',
         microreact: 'submitted',
         network: 'submitted',
       }]);
   });
 
-  it('getStatus makes axios call and updates analysisStatus, triggers getAssignResult', async () => {
+  it('getStatus makes axios call and updates analysisStatus, triggers getAssignClustersResult', async () => {
     const commit = jest.fn();
     const dispatch = jest.fn();
     const state = mockRootState({
       projectHash: 'randomHash',
       submitStatus: 'submitted',
       analysisStatus: {
-        assign: 'started',
+        assignClusters: 'started',
+        assignLineages: 'waiting',
         microreact: 'waiting',
         network: 'waiting',
       },
     });
     mockAxios.onPost(`${serverUrl}/status`).reply(200, responseSuccess({
-      assign: 'finished', microreact: 'started', network: 'queued',
+      assignClusters: 'finished', assignLineages: 'queued', microreact: 'started', network: 'queued',
     }));
     await actions.getStatus({ commit, state, dispatch } as any);
     expect(mockAxios.history.post[0].url).toEqual(`${serverUrl}/status`);
@@ -137,11 +139,12 @@ describe('Actions', () => {
       {
         microreact: 'started',
         network: 'queued',
-        assign: 'finished',
+        assignClusters: 'finished',
+        assignLineages: 'queued',
       },
     ]);
     expect(dispatch).toHaveBeenCalledTimes(1);
-    expect(dispatch).toHaveBeenCalledWith('getAssignResult');
+    expect(dispatch).toHaveBeenCalledWith('getAssignClustersResult');
   });
 
   it('getStatus stops updating analysisStatus once all jobs finished', async () => {
@@ -153,14 +156,15 @@ describe('Actions', () => {
       projectHash: 'randomHash',
       submitStatus: 'submitted',
       analysisStatus: {
-        assign: 'finished',
+        assignClusters: 'finished',
+        assignLineages: 'queued',
         microreact: 'started',
         network: 'queued',
       },
       statusInterval: 202,
     });
     mockAxios.onPost(`${serverUrl}/status`).reply(200, responseSuccess({
-      assign: 'finished', microreact: 'finished', network: 'finished',
+      assignClusters: 'finished', assignLineages: 'finished', microreact: 'finished', network: 'finished',
     }));
     await actions.getStatus({ commit, state, dispatch } as any);
     expect(clearInterval).toHaveBeenCalledTimes(1);
@@ -178,14 +182,15 @@ describe('Actions', () => {
       projectHash: 'randomHash',
       submitStatus: 'submitted',
       analysisStatus: {
-        assign: 'finished',
+        assignClusters: 'finished',
+        assignLineages: 'finished',
         microreact: 'started',
         network: 'queued',
       },
       statusInterval: 202,
     });
     mockAxios.onPost(`${serverUrl}/status`).reply(200, responseSuccess({
-      assign: 'finished', microreact: 'failed', network: 'failed',
+      assignClusters: 'finished', assignLineages: 'finished', microreact: 'failed', network: 'failed',
     }));
     await actions.getStatus({ commit, state, dispatch } as any);
     expect(clearInterval).toHaveBeenCalledTimes(1);
@@ -203,7 +208,8 @@ describe('Actions', () => {
       projectHash: 'randomHash',
       submitStatus: 'submitted',
       analysisStatus: {
-        assign: 'submitted',
+        assignClusters: 'submitted',
+        assignLineages: 'submitted',
         microreact: 'submitted',
         network: 'submitted',
       },
@@ -225,7 +231,7 @@ describe('Actions', () => {
     expect(commit.mock.calls[0][1]).toEqual(expect.any(Number));
   });
 
-  it('getAssignResult makes axios call and updates clusters', async () => {
+  it('getAssignClustersResult makes axios call and updates clusters', async () => {
     const commit = jest.fn();
     const state = mockRootState({
       projectHash: 'randomHash',
@@ -242,11 +248,37 @@ describe('Actions', () => {
       },
     });
     const expResponse = responseSuccess({ 0: { hash: 'someFileHash', cluster: '12' }, 1: { hash: 'someFileHash2', cluster: '2' } });
-    mockAxios.onPost(`${serverUrl}/assignResult`).reply(200, expResponse);
-    await actions.getAssignResult({ commit, state } as any);
-    expect(mockAxios.history.post[0].url).toEqual(`${serverUrl}/assignResult`);
+    mockAxios.onPost(`${serverUrl}/assignClustersResult`).reply(200, expResponse);
+    await actions.getAssignClustersResult({ commit, state } as any);
+    expect(mockAxios.history.post[0].url).toEqual(`${serverUrl}/assignClustersResult`);
     expect(commit.mock.calls[0]).toEqual([
       'setClusters',
+      expResponse.data,
+    ]);
+  });
+
+  it('getAssignLineagesResult makes axios call and updates clusters', async () => {
+    const commit = jest.fn();
+    const state = mockRootState({
+      projectHash: 'randomHash',
+      results: {
+        perIsolate: {
+          someFileHash: {
+            hash: 'someFileHash',
+          },
+          someFileHash2: {
+            hash: 'someFileHash2',
+          },
+        },
+        perCluster: {},
+      },
+    });
+    const expResponse = responseSuccess({ 0: { hash: 'someFileHash', cluster: '12' }, 1: { hash: 'someFileHash2', cluster: '2' } });
+    mockAxios.onPost(`${serverUrl}/assignLineagesResult`).reply(200, expResponse);
+    await actions.getAssignLineagesResult({ commit, state } as any);
+    expect(mockAxios.history.post[0].url).toEqual(`${serverUrl}/assignLineagesResult`);
+    expect(commit.mock.calls[0]).toEqual([
+      'setLineages',
       expResponse.data,
     ]);
   });

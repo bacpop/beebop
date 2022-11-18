@@ -15,7 +15,8 @@ describe('ResultsTable complete', () => {
       },
       submitStatus: 'submitted',
       analysisStatus: {
-        assign: 'finished',
+        assignClusters: 'finished',
+        assignLineages: 'finished',
         microreact: 'finished',
         network: 'finished',
       },
@@ -26,6 +27,11 @@ describe('ResultsTable complete', () => {
             filename: 'example1.fa',
             sketch: 'sketch',
             cluster: 7,
+            lineage: {
+              rank1: "12",
+              rank2: "3",
+              rank3: "2",
+            },
             amr: {
               filename: 'example1.fa',
               Penicillin: 0.892,
@@ -40,6 +46,11 @@ describe('ResultsTable complete', () => {
             filename: 'example2.fa',
             sketch: 'sketch',
             cluster: 3,
+            lineage: {
+              rank1: "7",
+              rank2: "2",
+              rank3: "2",
+            },
             amr: {
               filename: 'example2.fa',
               Penicillin: 0.892,
@@ -54,6 +65,11 @@ describe('ResultsTable complete', () => {
             filename: 'example3.fa',
             sketch: 'sketch',
             cluster: 7,
+            lineage: {
+              rank1: "15",
+              rank2: "4",
+              rank3: "2",
+            },
             amr: {
               filename: 'example3.fa',
               Penicillin: 0.892,
@@ -94,6 +110,7 @@ describe('ResultsTable complete', () => {
           Trim_sulfa: 0.974,
         },
         Cluster: 3,
+        Lineage: '7',
         Microreact: 'showButton',
         Network: 'showButton',
         Rowspan: 1,
@@ -111,6 +128,7 @@ describe('ResultsTable complete', () => {
           Trim_sulfa: 0.974,
         },
         Cluster: 7,
+        Lineage: '12',
         Microreact: 'showButton',
         Network: 'showButton',
         Rowspan: 2,
@@ -128,6 +146,7 @@ describe('ResultsTable complete', () => {
           Trim_sulfa: 0.974,
         },
         Cluster: 7,
+        Lineage: '15',
         Microreact: 'showButton',
         Network: 'showButton',
         Rowspan: 0,
@@ -150,24 +169,33 @@ describe('ResultsTable complete', () => {
   test('results are displayed in the table', () => {
     // 6 headers exist
     const headers = wrapper.findAll('th');
-    expect(headers.length).toBe(6);
+    expect(headers.length).toBe(7);
     // 3 rows exist
     const rows = wrapper.findAll('tr');
     expect(rows.length).toBe(3);
     // 16 cells exist (3x6 minus two merged cells)
     const cells = wrapper.findAll('td');
-    expect(cells.length).toBe(16);
+    expect(cells.length).toBe(19);
     // first cell in each row displays filenames
     expect(cells[0].text()).toBe('example2.fa');
-    expect(cells[6].text()).toBe('example1.fa');
-    expect(cells[12].text()).toBe('example3.fa');
+    expect(cells[7].text()).toBe('example1.fa');
+    expect(cells[14].text()).toBe('example3.fa');
     // microreact & network cells from same cluster are merged
-    expect(cells[10].attributes('rowspan')).toBe('2');
-    expect(cells[11].attributes('rowspan')).toBe('2');
+    expect(cells[12].attributes('rowspan')).toBe('2');
+    expect(cells[13].attributes('rowspan')).toBe('2');
     // AMR cells have tooltip
     const amrCells = wrapper.findAll('span');
     expect(amrCells.length).toBe(3);
     expect(amrCells[0].attributes('data-bs-original-title')).toBe(mockTooltipText);
+  });
+
+  test('selecting another rank from lineage dropdown menu changes lineages', async () => {
+    const cells = wrapper.findAll('td');
+    expect(cells[4].text()).toBe('7');
+    expect(wrapper.findAll('.dropdown-item')).toHaveLength(3);
+    await wrapper.find('#two').trigger('click');
+    expect(wrapper.vm.rank).toBe(2);
+    expect(cells[4].text()).toBe('2');
   });
 });
 
@@ -181,7 +209,8 @@ describe('ResultsTable incomplete', () => {
       },
       submitStatus: 'submitted',
       analysisStatus: {
-        assign: 'started',
+        assignClusters: 'started',
+        assignLineages: 'waiting',
         microreact: 'waiting',
         network: 'waiting',
       },
@@ -241,14 +270,15 @@ describe('ResultsTable incomplete', () => {
   test('results are displayed in the table', () => {
     const cells = wrapper.findAll('td');
     // cells not yet merged
-    expect(cells.length).toBe(18);
+    expect(cells.length).toBe(21);
     // filenames not yet sorted by cluster
     expect(cells[0].text()).toBe('example1.fa');
-    expect(cells[6].text()).toBe('example2.fa');
-    expect(cells[12].text()).toBe('example3.fa');
-    // cluster, microreact and network cells show analysis status
+    expect(cells[7].text()).toBe('example2.fa');
+    expect(cells[14].text()).toBe('example3.fa');
+    // cluster, lineage, microreact and network cells show analysis status
     expect(cells[3].text()).toBe('started');
     expect(cells[4].text()).toBe('waiting');
     expect(cells[5].text()).toBe('waiting');
+    expect(cells[6].text()).toBe('waiting');
   });
 });

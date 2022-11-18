@@ -92,7 +92,8 @@ describe('mutations', () => {
   it('sets analysisStatus', () => {
     const state = mockRootState();
     const statusUpdate = {
-      assign: 'finished',
+      assignClusters: 'finished',
+      assignLineages: 'finished',
       microreact: 'started',
       network: 'queued',
     };
@@ -125,8 +126,37 @@ describe('mutations', () => {
         perCluster: {},
       },
     });
-    mutations.setClusters(state, { 0: { hash: 'someFileHash', cluster: '12' }, 1: { hash: 'someFileHash2', cluster: '2' } });
+    mutations.setClusters(state, { 12: ['someFileHash'], 1: ['someFileHash2'] });
     expect(state.results.perIsolate.someFileHash.cluster).toBe('12');
+  });
+  it('sets lineages', () => {
+    const state = mockRootState({
+      results: {
+        perIsolate: {
+          someFileHash: {
+            hash: 'someFileHash',
+          },
+          someFileHash2: {
+            hash: 'someFileHash2',
+          },
+        },
+        perCluster: {},
+      },
+    });
+    mutations.setLineages(state, { 'someFileHash': {
+      rank1: "12",
+      rank2: "3",
+      rank3: "2",
+    }, 'someFileHash2': {
+      rank1: "15",
+      rank2: "4",
+      rank3: "2",
+    }});
+    expect(state.results.perIsolate.someFileHash.lineage).toStrictEqual({
+      rank1: "12",
+      rank2: "3",
+      rank3: "2",
+    });
   });
   it('sets MicroreactURL', () => {
     const state = mockRootState();
