@@ -1,58 +1,131 @@
-.btn-standard{
-    color:#fff;
-    background-color:#42b983;
-    border-color:rgba(0,0,0,0.2);
-    padding:0px 12px;
+.collapsedCol {
+    visibility: 'collapse';
+}
+
+.header {
+    display: flex;
+    width: 80%;
+    margin: 20px auto 0px auto;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.logo {
+    width: 200px;
+}
+
+.select-action {
+    width: 80%;
+    margin: auto;
+    padding: 50px 0px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 80vh;
+    overflow: scroll; 
+}
+
+.left {
+    text-align: start;
+}
+
+.right {
+    justify-content: right;
+}
+
+.project {
+    display: flex;
+    flex-direction: row;
+}
+
+.house {
+    font-size: 8rem;
+    margin: 80px 0px 0px 0px;
+}
+
+.dropzone {
+    border: 2px dotted rgb(56, 55, 55);
+    width: 80%;
+    height: 300px;
+    border-radius: 4px;
+    background-color: rgb(159, 176, 190);
+    margin: 10%;
+    text-align: center;
+    vertical-align: middle;
+    display: flex;
+    align-items: center;
+}
+
+.dropzone-text {
+    padding: 30px;
+}
+
+.overview {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.btn-selection {
+    width: 300px;
+}
+
+.btn-standard {
+    color: #fff;
+    background-color: #42b983;
+    border-color: rgba(0, 0, 0, 0.2);
+    padding: 0px 12px;
     margin: 6px;
-    line-height:40px;
-    font-size:1.3em;
-    text-align:center;
-    font-weight:400;
-    text-align:center;
-    vertical-align:middle;
-    border:1px solid transparent;
+    line-height: 40px;
+    font-size: 1.3em;
+    text-align: center;
+    font-weight: 400;
+    text-align: center;
+    vertical-align: middle;
+    border: 1px solid transparent;
     text-decoration: none;
 }
 
-.btn-standard:hover{
-    color:#fff;
-    background-color:#2e855e;
-    border-color:rgba(0,0,0,0.2);
+.btn-standard:hover {
+    color: #fff;
+    background-color: #2e855e;
+    border-color: rgba(0, 0, 0, 0.2);
     text-decoration: none;
 }
 
-.btn-disabled{
-    color:#fff;
-    background-color:#d3d6d8;
-    border-color:rgba(0,0,0,0.2);
-    padding:0px 12px;
+.btn-disabled {
+    color: #fff;
+    background-color: #d3d6d8;
+    border-color: rgba(0, 0, 0, 0.2);
+    padding: 0px 12px;
     margin: 6px;
-    line-height:40px;
-    font-size:1.3em;
-    text-align:center;
-    font-weight:400;
-    text-align:center;
-    vertical-align:middle;
-    border:1px solid transparent;
+    line-height: 40px;
+    font-size: 1.3em;
+    text-align: center;
+    font-weight: 400;
+    text-align: center;
+    vertical-align: middle;
+    border: 1px solid transparent;
     text-decoration: none;
 }
 
-.btn-disabled:hover{
-    color:#fff;
-    background-color:#d3d6d8;
-    border-color:rgba(0,0,0,0.2);
-    cursor:default;
+.btn-disabled:hover {
+    color: #fff;
+    background-color: #d3d6d8;
+    border-color: rgba(0, 0, 0, 0.2);
+    cursor: default;
     text-decoration: none;
 }
 
-.btn-download{
-    padding:3px 6px;
+.btn-download {
+    padding: 3px 6px;
     margin: 3px;
-    line-height:25px;
-    font-size:1em;
+    line-height: 25px;
+    font-size: 1em;
 }
 
 .progress {
+    min-width: 300px;
     max-width: 500px;
     height: 2rem;
     margin: 18px auto;
@@ -68,7 +141,7 @@
 }
 
 .processing {
-    color:#a1abb3;
+    color: #a1abb3;
 }
 
 b {
@@ -92,6 +165,12 @@ small {
 .table {
     width: 90%;
     margin: 24px auto;
+    border-collapse: separate;
+}
+
+th {
+    border-bottom: 1px solid black;
+    background-color: #42b98321;
 }
 
 .cytoscape-graph {
@@ -114,6 +193,10 @@ small {
     margin: 20px;
 }
 
+.tabs.tabs-horizontal{
+    width: 85%;
+}
+
 .nav-tabs .nav-link {
     width: 100%;
     border-top-right-radius: 0;
@@ -123,6 +206,25 @@ small {
     border-left: 0;
     border-top: 0;
     border-bottom: 0;
+}
+
+.nav-tabs-row {
+    display: flex;
+    flex-direction: row;
+}
+.nav-tabs-row .nav-link {
+    width: 100%;
+    border-top-right-radius: 6px;
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border: 1px solid grey;
+    background-color: white;
+}
+
+.nav-tabs-row .nav-link.active {
+    border-bottom: 0;
+    color: black;
 }
 
 .nav-tabs .nav-link.active {
@@ -156,6 +258,15 @@ small {
     flex-direction: column;
 }
 
+.tab-content-row {
+    width: 90%;
+    border: 1px solid grey;
+    border: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
 .tab-pane {
     flex-grow: 1;
     display: flex;
@@ -176,4 +287,17 @@ small {
     border-left: 0;
     border-top: 0;
     border-bottom: 0;
+}
+
+.fill-container-row {
+    flex-grow: 1;
+    border-bottom: 1px solid grey;
+    border-left: 0;
+    border-top: 0;
+    border-right: 0;
+}
+
+.menu {
+    font-size: 2rem;
+    color: black;
 }

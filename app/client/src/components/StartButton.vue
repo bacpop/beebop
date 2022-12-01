@@ -22,12 +22,14 @@ export default defineComponent({
   computed: {
     allSketched() {
       let all = true;
+      let count = 0;
       Object.keys(this.results.perIsolate).forEach((element: string) => {
+        count += 1;
         if (!this.results.perIsolate[element].sketch) {
           all = false;
         }
       });
-      return all;
+      return count > 0 && all;
     },
     ...mapState(['submitStatus', 'analysisStatus', 'results']),
   },

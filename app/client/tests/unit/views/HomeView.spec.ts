@@ -49,7 +49,7 @@ describe('Home', () => {
     expect(socialButtons[1].text()).toBe('Login with Github');
   });
 
-  it('shows logout button and dropzone when logged in', () => {
+  it('shows options to select when logged in', () => {
     const store = new Vuex.Store<RootState>({
       state: mockRootState({
         user: {
@@ -71,88 +71,11 @@ describe('Home', () => {
         plugins: [store],
       },
     });
-    expect(wrapper.find('h1').text()).toMatch('Welcome to beebop!');
     const buttons = wrapper.findAll('.btn-standard');
-    expect(buttons.length).toBe(1);
-    expect(buttons[0].text()).toBe('Logout');
-    expect(wrapper.find('.dropzone').exists());
-    expect(wrapper.find('.count').text()).toMatch('0');
+    expect(buttons.length).toBe(3);
+    expect(buttons[0].text()).toBe('Run new analysis');
+    expect(buttons[1].text()).toBe('See previous analyses');
+    expect(buttons[2].text()).toBe('Manage my data');
   });
 
-  it('shows start Analysis button when files are uploaded', () => {
-    const store = new Vuex.Store<RootState>({
-      state: mockRootState({
-        user: {
-          name: 'Jane',
-          id: '543653d45',
-          provider: 'google',
-        },
-        results: {
-          perIsolate: {
-            someFileHash: {},
-            someFileHash2: {},
-          },
-          perCluster: {},
-        },
-        submitStatus: null,
-        analysisStatus: {
-          assign: null, microreact: null, network: null,
-        },
-      }),
-      actions: {
-        getUser,
-      },
-    });
-    const wrapper = mount(HomeView, {
-      global: {
-        plugins: [store],
-      },
-    });
-    const buttons = wrapper.findAll('.btn');
-    expect(buttons.length).toBe(2);
-    expect(buttons[1].text()).toBe('Start Analysis');
-  });
-
-  it('shows status bar when data was submitted to backend', () => {
-    const analysisProgress = jest.fn().mockReturnValue({
-      finished: 1,
-      progress: 0.3333333333333333,
-      total: 3,
-    });
-    const store = new Vuex.Store<RootState>({
-      state: mockRootState({
-        user: {
-          name: 'Jane',
-          id: '543653d45',
-          provider: 'google',
-        },
-        results: {
-          perIsolate: {
-            someFileHash: {},
-            someFileHash2: {},
-          },
-          perCluster: {},
-        },
-        submitStatus: 'submitted',
-        analysisStatus: {
-          assign: 'finished', microreact: 'started', network: 'queued',
-        },
-      }),
-      actions: {
-        getUser,
-      },
-      getters: {
-        analysisProgress,
-      },
-    });
-    const wrapper = mount(HomeView, {
-      global: {
-        plugins: [store],
-      },
-    });
-    const statusBar = wrapper.findAll('.progress');
-    expect(analysisProgress).toHaveBeenCalled();
-    expect(statusBar.length).toBe(1);
-    expect(statusBar[0].text()).toBe('33.33%'); // Nan
-  });
 });

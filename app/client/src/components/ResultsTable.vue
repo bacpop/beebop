@@ -1,13 +1,17 @@
 <template>
-  <div>
-    <table class="table">
+  <div class="right">
+    <table class="table results-table">
+      <colgroup>
+        <col span="3">
+        <col span="3" :style="'visibility:'+ (!submitStatus ? 'collapse' : '')">
+      </colgroup>
       <thead>
         <th>Filename</th>
         <th>Sketch</th>
         <th>AMR</th>
-        <th>Cluster</th>
-        <th>Microreact</th>
-        <th>Network</th>
+        <th v-if="submitStatus">Cluster</th>
+        <th v-if="submitStatus">Microreact</th>
+        <th v-if="submitStatus">Network</th>
       </thead>
       <tbody v-if="tableData">
         <tr v-for="sample in tableData" :key="sample.Filename">
