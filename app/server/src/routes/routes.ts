@@ -1,5 +1,7 @@
 import axios from 'axios';
 import passport from 'passport';
+import {PoppunkRequest} from "../requestTypes";
+import {userStore} from "../db/userStore";
 
 export const router = ((app, config) => {
     app.get('/',
@@ -146,6 +148,10 @@ export const apiEndpoints = (config => ({
     },
 
     async runPoppunk(request, response) {
+        const projectHash = (request.body as PoppunkRequest).projectHash;
+        const { redis } = request.app.locals;
+        userStore(redis).saveProjectHash(request, projectHash);
+
         await axios.post(`${config.api_url}/poppunk`,
             request.body,
             {
