@@ -2,6 +2,7 @@ import axios from 'axios';
 import passport from 'passport';
 import {PoppunkRequest} from "../requestTypes";
 import {userStore} from "../db/userStore";
+import asyncHandler from "../errors/asyncHandler";
 
 export const router = ((app, config) => {
     app.get('/',
@@ -147,25 +148,27 @@ export const apiEndpoints = (config => ({
             .then(res => response.send(res.data));
     },
 
-    async runPoppunk(request, response) {
-        const projectHash = (request.body as PoppunkRequest).projectHash;
-        const { redis } = request.app.locals;
-        userStore(redis).saveProjectHash(request, projectHash);
+    async runPoppunk(request, response, next) {
+        await asyncHandler(next, async () => {
+            const projectHash = (request.body as PoppunkRequest).projectHash;
+            const {redis} = request.app.locals;
+            await userStore(redis).saveProjectHash(request, projectHash);
 
-        await axios.post(`${config.api_url}/poppunk`,
-            request.body,
-            {
-                headers: {
-                    'Content-Type': 'application/json'
+            await axios.post(`${config.api_url}/poppunk`,
+                request.body,
+                {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    maxContentLength: 1000000000,
+                    maxBodyLength: 1000000000
                 },
-                maxContentLength: 1000000000,
-                maxBodyLength: 1000000000
-            },
-        )
-            .then(res => response.send(res.data))
-            .catch(function (error) {
-                sendError(response, error);
-            });
+            )
+                .then(res => response.send(res.data))
+                .catch(function (error) {
+                    sendError(response, error);
+                })
+        });
     },
 
     async getStatus(request, response) {
