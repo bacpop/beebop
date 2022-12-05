@@ -171,7 +171,71 @@ describe('ResultsTable complete', () => {
   });
 });
 
-describe('ResultsTable incomplete', () => {
+describe('ResultsTable incomplete before webworker is ready', () => {
+  const store = new Vuex.Store<RootState>({
+    state: mockRootState({
+      user: {
+        name: 'Jane',
+        id: '543653d45',
+        provider: 'google',
+      },
+      submitStatus: null,
+      analysisStatus: {
+        assign: null,
+        microreact: null,
+        network: null,
+      },
+      results: {
+        perIsolate: {
+          hash1: {
+            hash: 'hash1',
+            filename: 'example1.fa',
+          },
+          hash2: {
+            hash: 'hash2',
+            filename: 'example2.fa',
+          },
+          hash3: {
+            hash: 'hash3',
+            filename: 'example3.fa',
+          },
+        },
+        perCluster: {},
+      },
+    }),
+  });
+  const wrapper = mount(ResultsTable, {
+    global: {
+      plugins: [store],
+    },
+
+  });
+
+  test('filenames are displayed in the table', () => {
+    const cells = wrapper.findAll('td');
+    // cells not yet merged
+    expect(cells.length).toBe(9);
+    // filenames not yet sorted by cluster
+    expect(cells[0].text()).toBe('example1.fa');
+    expect(cells[3].text()).toBe('example2.fa');
+    expect(cells[6].text()).toBe('example3.fa');
+  });
+
+  test('sketch and AMR columns show processing', () => {
+    const cells = wrapper.findAll('td');
+    expect(cells[1].text()).toBe('processing');
+    expect(cells[4].text()).toBe('processing');
+    expect(cells[7].text()).toBe('processing');
+    expect(cells[2].text()).toBe('processing');
+    expect(cells[5].text()).toBe('processing');
+    expect(cells[8].text()).toBe('processing');
+  });
+
+  
+});
+
+
+describe('ResultsTable incomplete after submission', () => {
   const store = new Vuex.Store<RootState>({
     state: mockRootState({
       user: {
