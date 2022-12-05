@@ -1,5 +1,5 @@
 export interface PoppunkRequest {
-    names: Record<string, string>,
+    names: Record<string, unknown>,
     projectHash: string,
-    sketches: Record<string, any>
+    sketches: Record<string, never>
 }
