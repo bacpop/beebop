@@ -3,13 +3,13 @@
     <h2>Create a new project</h2>
     <div class="project">
       <div class="file-input">
-        <DropZone v-if="user && !submitStatus" />
+        <DropZone v-if="user && !submitStatus" class="dropzone-component"/>
       </div>
       <div class="overview">
         <StartButton v-if="user" />
-        <ProgressBar v-if="user && filesUploaded && submitStatus" />
+        <ProgressBar v-if="submitStatus" class="progress-bar-component" />
 
-        <div v-if="(user && filesUploaded && submitStatus)" class="tabs tabs-horizontal">
+        <div v-if="submitStatus" class="tabs tabs-horizontal">
           <div class ="nav-row">
             <ul class="nav nav-tabs-row">
               <li class="nav-item">
@@ -20,7 +20,9 @@
               </li>
               <li class="nav-item">
                 <button class="nav-link no-transition"
-                :class="'network' == selectedTab ? 'active' : ''"
+                :class="(analysisStatus.network == 'finished' ?
+                'network' == selectedTab ? 'active' :'' :
+                'disabled')"
                 :aria-selected="'network' == selectedTab"
                 @click="onInput('network')">Network</button>
               </li>
@@ -29,7 +31,8 @@
           </div>
         </div>
 
-        <div class="tab-content tab-content-row">
+        <div class="tab-content tab-content-row"
+        :class="submitStatus == 'submitted' ? 'no-top-border' : '' ">
           <div
           class="tab-pane fade m-3"
           :class="'table' == selectedTab ? 'active show' : ''">
@@ -83,14 +86,7 @@ export default defineComponent({
     },
   },
   computed: {
-    filesUploaded() {
-      let count = 0;
-      Object.keys(this.results.perIsolate).forEach(() => {
-        count += 1;
-      });
-      return count > 0;
-    },
-    ...mapState(['user', 'results', 'submitStatus', 'analysisStatus']),
+    ...mapState(['user', 'submitStatus', 'analysisStatus']),
     ...mapGetters(['uniqueClusters']),
   },
 });
