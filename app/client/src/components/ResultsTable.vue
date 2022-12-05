@@ -30,10 +30,10 @@
               <b :style="{color: getRGB(sample.AMR.Trim_sulfa, 'Cotrim')}">S<sub>XT</sub></b>
             </span>
           </td>
-          <td :class="(typeof sample.Cluster === 'number') ? '' : 'processing'">
+          <td v-if="submitStatus" :class="(typeof sample.Cluster === 'number') ? '' : 'processing'">
             {{sample.Cluster}}
           </td>
-          <td v-if="sample.Rowspan !== 0"
+          <td v-if="submitStatus && sample.Rowspan !== 0"
           style="vertical-align : middle;"
           :rowspan="sample.Rowspan"
           :class="(sample.Microreact === 'showButton')? '' : 'processing'">
@@ -46,7 +46,7 @@
             v-if="(sample.Microreact === 'showButton')"
             :cluster="sample.Cluster"/>
           </td>
-          <td v-if="sample.Rowspan !== 0"
+          <td v-if="submitStatus && sample.Rowspan !== 0"
           style="vertical-align : middle;"
           :rowspan="sample.Rowspan"
           :class="(sample.Network === 'showButton') ? '' : 'processing'">
