@@ -56,5 +56,11 @@ jobs:
       run: |
         pwd
         cp ./src/resources/config.json.in.development ./src/resources/config.json
-    - name: Run unit tests
+    - name: Run all components
+      working-directory: .
+      run: ./scripts/run_test
+    - name: Run unit and integration tests
       run: npm run test
+    - name: Stop all components
+      working-directory: .
+      run: ./scripts/stop_test
