@@ -7,6 +7,7 @@
           v-for="item in uniqueClusters" :key="item"
           class="nav-item">
             <button class="nav-link no-transition"
+            id="cluster-tabs"
             :class="item == selectedCluster ? 'active' : ''"
             :aria-selected="item == selectedCluster"
             @click="onInput(item)">
