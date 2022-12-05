@@ -9,11 +9,10 @@ export class UserStore {
         this._redis = redis;
     }
 
-    private _userKey = (name: string) => `${USER_PREFIX}:${name}`;
-    private _userIdFromRequest = (request) => `${request.user.provider}${request.user.id}`;
+    private _userKey = (name: string) => `${USER_PREFIX}${name}`;
+    private _userIdFromRequest = (request) => `${request.user.provider}:${request.user.id}`;
 
-    // TODO: handle async errors - don't crash!
-    async saveProjectHash(request, projectHash: string) {
+     async saveProjectHash(request, projectHash: string) {
         const user = this._userIdFromRequest(request);
         await this._redis.hset(this._userKey("hash"), user, projectHash);
     }
