@@ -10,7 +10,7 @@
 
 <script lang='ts'>
 import { defineComponent } from 'vue';
-import { mapState, mapActions, mapGetters } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 import LoginPrompt from '@/components/LoginPrompt.vue';
 import SelectAction from '@/components/SelectAction.vue';
 
@@ -27,13 +27,7 @@ export default defineComponent({
     ...mapActions(['getUser']),
   },
   computed: {
-    filesUploaded() {
-      return Object.keys(this.results.perIsolate).length > 0;
-    },
-    ...mapState(['user', 'results', 'submitStatus', 'analysisStatus']),
-    ...mapGetters([
-      'uniqueClusters',
-    ]),
+    ...mapState(['user']),
   },
 });
 </script>
