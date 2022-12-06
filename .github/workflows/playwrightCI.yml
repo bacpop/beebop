@@ -30,13 +30,11 @@ jobs:
     - name: Run all components
       working-directory: .
       run: ./scripts/run_test
-    - name: tmate session
-      uses: mxschmitt/action-tmate@v3
-    - name: Install playwright and dependencies
-      working-directory: ./app/client
-      run: |
-        npx playwright install
-        npx playwright install-deps
+#     - name: Install playwright and dependencies
+#       working-directory: ./app/client
+#       run: |
+#         npx playwright install
+#         npx playwright install-deps
     - name: Run e2e tests
       env:
         MICROREACT_TOKEN: ${{ secrets.MICROREACT_TOKEN }}
@@ -45,3 +43,7 @@ jobs:
     - name: Stop all components
       working-directory: .
       run: ./scripts/stop_test
+      
+    - name: tmate session
+      if: ${{ failure() }}
+      uses: mxschmitt/action-tmate@v3
