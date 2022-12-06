@@ -13,7 +13,7 @@ module.exports = {
     },
     overrides: [{
       files: [
-          "**/tests/unit/**/*.test.{j,t}s?(x)"
+          "**/tests/**/*.{j,t}s"
       ],
       env: {
           jest: true

@@ -9,6 +9,7 @@ import fs from "fs";
 import path from "path";
 
 import configPath from "./args";
+import { redisConnection } from "./db/redis";
 
 const filename = path.join(configPath, "config.json");
 
@@ -38,3 +39,9 @@ const port = process.env.PORT || config.server_port;
 app.listen(port, () => {
   console.log(`listening on ${port}`);
 });
+
+const redis = redisConnection(
+    config.redis_url,
+    () => { throw Error(`Failed to connect to redis server ${config.redis_url}`); }
+);
+app.locals.redis = redis;
