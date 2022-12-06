@@ -34,7 +34,6 @@ jobs:
       working-directory: ./app/client
       run: |
         npx playwright install
-#         npx playwright install-deps
     - name: Run e2e tests
       env:
         MICROREACT_TOKEN: ${{ secrets.MICROREACT_TOKEN }}
@@ -44,6 +43,6 @@ jobs:
       working-directory: .
       run: ./scripts/stop_test
       
-    - name: tmate session
-      if: ${{ failure() }}
-      uses: mxschmitt/action-tmate@v3
+#     - name: tmate session
+#       if: ${{ failure() }}
+#       uses: mxschmitt/action-tmate@v3
