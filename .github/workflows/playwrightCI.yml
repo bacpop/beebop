@@ -30,10 +30,10 @@ jobs:
     - name: Run all components
       working-directory: .
       run: ./scripts/run_test
-#     - name: Install playwright and dependencies
-#       working-directory: ./app/client
-#       run: |
-#         npx playwright install
+    - name: Install playwright and dependencies
+      working-directory: ./app/client
+      run: |
+        npx playwright install
 #         npx playwright install-deps
     - name: Run e2e tests
       env:
