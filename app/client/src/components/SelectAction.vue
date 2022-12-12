@@ -7,7 +7,7 @@
     @click="runAnalysis">Run new analysis</button>
     <!-- These buttons are just dummies so far -->
     <button class="btn btn-block btn-standard btn-selection disabled">See previous analyses</button>
-    <button class="btn btn-block btn-standard btn-selection disabled">Manage my data</button>
+    <!--<button class="btn btn-block btn-standard btn-selection disabled">Manage my data</button>-->
   </div>
 </template>
 

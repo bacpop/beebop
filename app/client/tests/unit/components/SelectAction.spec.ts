@@ -45,11 +45,11 @@ describe('StartButton', () => {
     expect(greeting.text()).toBe('Welcome back, Jane!');
   })
 
-  test('has 3 buttons', () => {
+  test('has 2 buttons', () => {
     const buttons = wrapper.findAll('button');
+    expect(buttons.length).toBe(2);
     expect(buttons[0].text()).toBe('Run new analysis');
     expect(buttons[1].text()).toBe('See previous analyses');
-    expect(buttons[2].text()).toBe('Manage my data');
   })
 
   test('clicking first button leads to project view', () => {
