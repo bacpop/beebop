@@ -9,17 +9,19 @@
         <i class="bi bi-three-dots-vertical huge menu"></i>
         </div>
         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item menu-item" href="#">
-            <router-link to="/">Home</router-link>
-          </a>
-          <a v-if="user" class="dropdown-item menu-item" href="#">
-            <router-link to="/project">Project</router-link>
-          </a>
-          <a class="dropdown-item menu-item" href="#">
-            <router-link to="/about">About</router-link>
-          </a>
+          <router-link class="dropdown-item menu-item"  to="/">
+            Home
+          </router-link>
+          <router-link v-if="user" class="dropdown-item menu-item" to="/project">
+            Project
+          </router-link>
+          <router-link class="dropdown-item menu-item" to="/about">
+            About
+          </router-link>
           <div v-if="user" class="dropdown-divider"></div>
-          <a v-if="user" class="dropdown-item menu-item" :href="generateLogout">Logout</a>
+          <a v-if="user" id="logout-link" class="dropdown-item menu-item" :href="generateLogout">
+            Logout
+          </a>
         </div>
     </nav>
 </template>
@@ -27,9 +29,13 @@
 <script lang="ts">
 import { mapState } from 'vuex';
 import config from '@settings/config';
+import { RouterLink } from 'vue-router';
 
 export default {
   name: 'NavbarDropdown',
+  components: {
+    RouterLink,
+  },
   computed: {
     generateLogout() {
       return `${config.serverUrl()}/logout`;

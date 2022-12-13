@@ -3,6 +3,8 @@ import { mount } from '@vue/test-utils';
 import { RootState } from '@/store/state';
 import Vuex from 'vuex';
 import { mockRootState } from '../../mocks';
+import { RouterLink } from "vue-router";
+import router from "../../../src/router/index";
 
 describe('NavbarDropdown logged in', () => {
     const store = new Vuex.Store<RootState>({
@@ -16,7 +18,7 @@ describe('NavbarDropdown logged in', () => {
     });
     const wrapper = mount(NavbarDropdown, {
         global: {
-            plugins: [store],
+            plugins: [store, router],
         },
 
     });
@@ -26,12 +28,12 @@ describe('NavbarDropdown logged in', () => {
     });
 
     test('shows all expected links and divider', () => {
-        const links = wrapper.findAll('a');
-        expect(links.length).toBe(4);
-        expect(links[0].text()).toBe('Home');
-        expect(links[1].text()).toBe('Project');
-        expect(links[2].text()).toBe('About');
-        expect(links[3].text()).toBe('Logout');
+        const routerLinks = wrapper.findAllComponents(RouterLink);
+        expect(routerLinks.length).toBe(3);
+        expect(routerLinks[0].text()).toBe('Home');
+        expect(routerLinks[1].text()).toBe('Project');
+        expect(routerLinks[2].text()).toBe('About');
+        expect(wrapper.find('a#logout-link').text()).toBe('Logout');
         expect(wrapper.findAll('.dropdown-divider').length).toBe(1);
     })
 
@@ -43,7 +45,7 @@ describe('NavbarDropdown logged out', () => {
     });
     const wrapper = mount(NavbarDropdown, {
         global: {
-            plugins: [store],
+            plugins: [store, router],
         },
 
     });
