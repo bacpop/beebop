@@ -3,6 +3,7 @@
     "api_url": "http://beebop-py-api:5000",
     "client_url": "https://beebop.dide.ic.ac.uk",
     "server_url": "https://beebop.dide.ic.ac.uk/api",
+    "redis_url": "redis://beebop-redis:6379",
     "GOOGLE_CLIENT_ID": "${PROD_GOOGLE_ID}",
     "GOOGLE_CLIENT_SECRET": "$PROD_GOOGLE_SECRET",
     "SESSION_SECRET": "$PROD_EXPRESS_SESSION_SECRET",
