@@ -1,6 +1,6 @@
 <template>
   <div class="right">
-    <div v-if="!tableData.length">
+    <div v-if="!tableData.length" id="no-results">
       No data uploaded yet
     </div>
     <table v-else class="table results-table">

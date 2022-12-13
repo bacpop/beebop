@@ -72,9 +72,8 @@ describe('Home', () => {
       },
     });
     const buttons = wrapper.findAll('.btn-standard');
-    expect(buttons.length).toBe(3);
+    expect(buttons.length).toBe(2);
     expect(buttons[0].text()).toBe('Run new analysis');
     expect(buttons[1].text()).toBe('See previous analyses');
-    expect(buttons[2].text()).toBe('Manage my data');
   });
 });

@@ -11,7 +11,7 @@ describe('Project', () => {
     jest.resetAllMocks();
   });
 
-  it('displays dropzone, startbutton and empty table body, gets user information on mount', () => {
+  it('displays dropzone, startbutton and empty table message, gets user information on mount', () => {
     const store = new Vuex.Store<RootState>({
       state: mockRootState({
         user: {
@@ -34,7 +34,7 @@ describe('Project', () => {
     const buttons = wrapper.findAll('.btn-standard');
     expect(buttons.length).toBe(1);
     expect(buttons[0].text()).toBe('Start Analysis');
-    expect(wrapper.find('tbody').html()).toBe('<tbody></tbody>');
+    expect(wrapper.find('div#no-results').text()).toBe('No data uploaded yet');
     expect(getUser).toHaveBeenCalled();
   });
 
