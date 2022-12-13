@@ -77,5 +77,4 @@ describe('Home', () => {
     expect(buttons[1].text()).toBe('See previous analyses');
     expect(buttons[2].text()).toBe('Manage my data');
   });
-
 });

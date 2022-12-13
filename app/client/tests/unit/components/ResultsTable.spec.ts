@@ -230,10 +230,7 @@ describe('ResultsTable incomplete before webworker is ready', () => {
     expect(cells[5].text()).toBe('processing');
     expect(cells[8].text()).toBe('processing');
   });
-
-  
 });
-
 
 describe('ResultsTable incomplete after submission', () => {
   const store = new Vuex.Store<RootState>({

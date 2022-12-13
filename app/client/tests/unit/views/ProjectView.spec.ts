@@ -14,11 +14,11 @@ describe('Project', () => {
   it('displays dropzone, startbutton and empty table body, gets user information on mount', () => {
     const store = new Vuex.Store<RootState>({
       state: mockRootState({
-        user:{
-            name: 'Jane',
-            id: '543653d45',
-            provider: 'google',
-          },
+        user: {
+          name: 'Jane',
+          id: '543653d45',
+          provider: 'google',
+        },
       }),
       actions: {
         getUser,
@@ -42,71 +42,71 @@ describe('Project', () => {
     const uniqueClusters = jest.fn().mockReturnValue([3, 7]);
 
     const analysisProgress = jest.fn().mockReturnValue({
-        finished: 1,
-        progress: 0.3333333333333333,
-        total: 3,
-      });
+      finished: 1,
+      progress: 0.3333333333333333,
+      total: 3,
+    });
 
     const store = new Vuex.Store<RootState>({
       state: mockRootState({
         user: {
-            name: 'Jane',
-            id: '543653d45',
-            provider: 'google',
-          },
-          submitStatus: 'submitted',
-          analysisStatus: {
-            assign: 'finished',
-            microreact: 'finished',
-            network: 'finished',
-          },
-          results: {
-            perIsolate: {
-              hash1: {
-                hash: 'hash1',
+          name: 'Jane',
+          id: '543653d45',
+          provider: 'google',
+        },
+        submitStatus: 'submitted',
+        analysisStatus: {
+          assign: 'finished',
+          microreact: 'finished',
+          network: 'finished',
+        },
+        results: {
+          perIsolate: {
+            hash1: {
+              hash: 'hash1',
+              filename: 'example1.fa',
+              sketch: 'sketch',
+              cluster: 7,
+              amr: {
                 filename: 'example1.fa',
-                sketch: 'sketch',
-                cluster: 7,
-                amr: {
-                  filename: 'example1.fa',
-                  Penicillin: 0.892,
-                  Chloramphenicol: 0.39,
-                  Erythromycin: 0.151,
-                  Tetracycline: 0.453,
-                  Trim_sulfa: 0.974,
-                },
-              },
-              hash2: {
-                hash: 'hash2',
-                filename: 'example2.fa',
-                sketch: 'sketch',
-                cluster: 3,
-                amr: {
-                  filename: 'example2.fa',
-                  Penicillin: 0.892,
-                  Chloramphenicol: 0.39,
-                  Erythromycin: 0.151,
-                  Tetracycline: 0.453,
-                  Trim_sulfa: 0.974,
-                },
-              },
-              hash3: {
-                hash: 'hash3',
-                filename: 'example3.fa',
-                sketch: 'sketch',
-                cluster: 7,
-                amr: {
-                  filename: 'example3.fa',
-                  Penicillin: 0.892,
-                  Chloramphenicol: 0.39,
-                  Erythromycin: 0.151,
-                  Tetracycline: 0.453,
-                  Trim_sulfa: 0.974,
-                },
+                Penicillin: 0.892,
+                Chloramphenicol: 0.39,
+                Erythromycin: 0.151,
+                Tetracycline: 0.453,
+                Trim_sulfa: 0.974,
               },
             },
-            perCluster: {},
+            hash2: {
+              hash: 'hash2',
+              filename: 'example2.fa',
+              sketch: 'sketch',
+              cluster: 3,
+              amr: {
+                filename: 'example2.fa',
+                Penicillin: 0.892,
+                Chloramphenicol: 0.39,
+                Erythromycin: 0.151,
+                Tetracycline: 0.453,
+                Trim_sulfa: 0.974,
+              },
+            },
+            hash3: {
+              hash: 'hash3',
+              filename: 'example3.fa',
+              sketch: 'sketch',
+              cluster: 7,
+              amr: {
+                filename: 'example3.fa',
+                Penicillin: 0.892,
+                Chloramphenicol: 0.39,
+                Erythromycin: 0.151,
+                Tetracycline: 0.453,
+                Trim_sulfa: 0.974,
+              },
+            },
           },
+          perCluster: {},
+        },
       }),
       actions: {
         getUser,
@@ -121,10 +121,10 @@ describe('Project', () => {
         plugins: [store],
       },
       stubs: {
-        NetworkVisualisations: "<div>Network Visualisations</div>"
-      }
+        NetworkVisualisations: '<div>Network Visualisations</div>',
+      },
     });
-    
+
     expect(wrapper.findAll('.dropzone-component').length).toBe(0);
     expect(wrapper.findAll('.progress-bar-component').length).toBe(1);
     const tabs = wrapper.findAll('.nav-link');
@@ -135,7 +135,5 @@ describe('Project', () => {
     expect(wrapper.vm.selectedTab).toBe('table');
     tabs[1].trigger('click');
     expect(wrapper.vm.selectedTab).toBe('network');
-
   });
-
 });
