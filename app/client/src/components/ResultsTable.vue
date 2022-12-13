@@ -1,6 +1,9 @@
 <template>
   <div class="right">
-    <table class="table results-table">
+    <div v-if="!tableData.length">
+      No data uploaded yet
+    </div>
+    <table v-else class="table results-table">
       <thead>
         <th>Filename</th>
         <th>Sketch</th>
