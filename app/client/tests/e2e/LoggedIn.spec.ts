@@ -11,20 +11,24 @@ test.describe('Logged in Tests', () => {
     await page.goto(config.clientUrl());
   });
 
-  test('should display Logout button', async ({ page }) => {
-    await expect(page.locator('.auth')).toContainText('Logout');
+  test('should display Logout in dropdown menu', async ({ page }) => {
+    await page.click('.bi-three-dots-vertical');
+    await expect(page.locator('.dropdown-menu')).toContainText('Logout');
   });
 
   test('should display Login buttons after Logging out', async ({ page }) => {
+    await page.click('.bi-three-dots-vertical');
     await page.click('text=Logout');
     await expect(page.locator('.auth')).toContainText('Login');
   });
 
-  test('should display dropzone', async ({ page }) => {
+  test('should display dropzone in Project view', async ({ page }) => {
+    await page.click('text=Run new analysis');
     await expect(page.locator('.dropzone')).toBeVisible();
   });
 
   test('should update file list when files are dropped, process them in WebWorker and submit on click to backend', async ({ page }) => {
+    await page.click('text=Run new analysis');
     // Read files into a buffer
     const buffer = readFileSync('./tests/files/6930_8_13.fa', { encoding: 'utf8', flag: 'r' });
     const buffer2 = readFileSync('./tests/files/6930_8_11.fa', { encoding: 'utf8', flag: 'r' });
@@ -53,7 +57,7 @@ test.describe('Logged in Tests', () => {
     await page.waitForTimeout(10000);
     await expect(page.locator('tr:has-text("6930_8_13.fa")')).toContainText(['6930_8_13.fa', '✔', 'PCETE SXT']);
     await expect(page.locator('tr:has-text("6930_8_11.fa")')).toContainText(['6930_8_11.fa', '✔', 'PCETE SXT']);
-    // expect to have a 'start analysis' button after submitting files
+    // expect to have a 'start analysis' button
     await expect(page.locator('.start-analysis')).toContainText('Start Analysis');
     // Expect to see ProgressBar once button was pressed
     await page.click('text=Start Analysis');
@@ -78,7 +82,8 @@ test.describe('Logged in Tests', () => {
     await expect(page.locator('tr:has-text("6930_8_13.fa") a')).toContainText('Visit Microreact URL');
     await expect(page.locator('tr:has-text("6930_8_13.fa") a')).toHaveAttribute('href', /https:\/\/microreact.org\/project\/.*-poppunk.*/);
     // nework visualisation component has 1 button for each cluster (=2) and renders canvases
-    await expect(page.locator('.nav-link')).toHaveCount(2);
+    await page.click('.nav-link >> text=Network');
+    await expect(page.locator('#cluster-tabs')).toHaveCount(2);
     await expect(page.locator('#cy')).toHaveCount(1);
     await expect(page.locator('#cy canvas')).toHaveCount(3);
   });

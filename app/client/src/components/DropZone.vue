@@ -2,8 +2,9 @@
   <div>
     <div v-bind='getRootProps()' class=dropzone>
       <input v-bind='getInputProps()' />
-      <p v-if='isDragActive'>Drop the files here ...</p>
-      <p v-else>Drag and drop your fasta files here, or click to select files</p>
+      <p v-if='isDragActive' class="dropzone-text">Drop the files here ...</p>
+      <p v-else class="dropzone-text">Drag and drop your fasta files here,
+        or click to select files</p>
     </div>
     <p class="count"> Uploaded files: {{ Object.keys(results.perIsolate).length }}</p>
   </div>
@@ -35,17 +36,3 @@ export default {
   },
 };
 </script>
-
-<style>
-  .dropzone{
-    border: 2px dotted rgb(56, 55, 55);
-    width: 1000px;
-    height: 100px;
-    line-height: 100px;
-    border-radius: 4px;
-    background-color: rgb(159, 176, 190);
-    margin: 20px auto 20px auto;
-    text-align: center;
-
-  }
-</style>

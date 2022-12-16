@@ -11,6 +11,7 @@ test.describe('Logged out Tests', () => {
   });
 
   test('should display version info when clicking on about', async ({ page }) => {
+    await page.click('.bi-three-dots-vertical');
     await page.click('text=About');
     await expect(page.locator('.about:has(.version-info)')).toContainText(['beebop']);
   });

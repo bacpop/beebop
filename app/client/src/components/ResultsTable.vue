@@ -1,13 +1,18 @@
 <template>
-  <div>
-    <table class="table">
+  <div class="right">
+    <div v-if="!tableData.length" id="no-results">
+      No data uploaded yet
+    </div>
+    <table v-else class="table results-table">
       <thead>
         <th>Filename</th>
         <th>Sketch</th>
         <th>AMR</th>
-        <th>Cluster</th>
-        <th>Microreact</th>
-        <th>Network</th>
+        <template v-if="submitStatus">
+          <th>Cluster</th>
+          <th>Microreact</th>
+          <th>Network</th>
+        </template>
       </thead>
       <tbody v-if="tableData">
         <tr v-for="sample in tableData" :key="sample.Filename">
@@ -26,32 +31,34 @@
               <b :style="{color: getRGB(sample.AMR.Trim_sulfa, 'Cotrim')}">S<sub>XT</sub></b>
             </span>
           </td>
-          <td :class="(typeof sample.Cluster === 'number') ? '' : 'processing'">
+          <td v-if="submitStatus" :class="(typeof sample.Cluster === 'number') ? '' : 'processing'">
             {{sample.Cluster}}
           </td>
-          <td v-if="sample.Rowspan !== 0"
-          style="vertical-align : middle;"
-          :rowspan="sample.Rowspan"
-          :class="(sample.Microreact === 'showButton')? '' : 'processing'">
-            <p v-if="(sample.Microreact !== 'showButton')">{{sample.Microreact}}</p>
-            <DownloadZip
-            v-if="(sample.Microreact === 'showButton')"
-            :type="'microreact'"
-            :cluster="sample.Cluster"/>
-            <GenerateMicroreactURL
-            v-if="(sample.Microreact === 'showButton')"
-            :cluster="sample.Cluster"/>
-          </td>
-          <td v-if="sample.Rowspan !== 0"
-          style="vertical-align : middle;"
-          :rowspan="sample.Rowspan"
-          :class="(sample.Network === 'showButton') ? '' : 'processing'">
-            <p v-if="(sample.Network !== 'showButton')">{{sample.Network}}</p>
-            <DownloadZip
-            v-if="(sample.Network === 'showButton')"
-            :type="'network'"
-            :cluster="sample.Cluster"/>
-          </td>
+          <template v-if="submitStatus && sample.Rowspan !== 0">
+            <td
+            style="vertical-align : middle;"
+            :rowspan="sample.Rowspan"
+            :class="(sample.Microreact === 'showButton')? '' : 'processing'">
+              <p v-if="(sample.Microreact !== 'showButton')">{{sample.Microreact}}</p>
+              <DownloadZip
+              v-if="(sample.Microreact === 'showButton')"
+              :type="'microreact'"
+              :cluster="sample.Cluster"/>
+              <GenerateMicroreactURL
+              v-if="(sample.Microreact === 'showButton')"
+              :cluster="sample.Cluster"/>
+            </td>
+            <td v-if="submitStatus && sample.Rowspan !== 0"
+            style="vertical-align : middle;"
+            :rowspan="sample.Rowspan"
+            :class="(sample.Network === 'showButton') ? '' : 'processing'">
+              <p v-if="(sample.Network !== 'showButton')">{{sample.Network}}</p>
+              <DownloadZip
+              v-if="(sample.Network === 'showButton')"
+              :type="'network'"
+              :cluster="sample.Cluster"/>
+            </td>
+          </template>
         </tr>
       </tbody>
     </table>

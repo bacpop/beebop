@@ -20,16 +20,12 @@ export default defineComponent({
     },
   },
   computed: {
-    allSketched() {
-      let all = true;
-      Object.keys(this.results.perIsolate).forEach((element: string) => {
-        if (!this.results.perIsolate[element].sketch) {
-          all = false;
-        }
-      });
-      return all;
-    },
     ...mapState(['submitStatus', 'analysisStatus', 'results']),
+    allSketched(): boolean {
+      const isolates = this.results.perIsolate;
+      const keys = Object.keys(isolates);
+      return !!keys.length && keys.every((el: string) => isolates[el].sketch);
+    },
   },
 });
 </script>
