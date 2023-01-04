@@ -1,6 +1,7 @@
 import Redis from "ioredis";
 
 const USER_PREFIX = "beebop:user:";
+const USER_PROJECT_PREFIX = "beebop:userproject:";
 
 export class UserStore {
     private readonly _redis: Redis;
@@ -10,11 +11,17 @@ export class UserStore {
     }
 
     private _userKey = (name: string) => `${USER_PREFIX}${name}`;
+    private _userProjectKey = (name: string) => `${USER_PROJECT_PREFIX}${name}`;
     private _userIdFromRequest = (request) => `${request.user.provider}:${request.user.id}`;
+    private _userProjectId = (userId, projectHash) => `${userId}:${projectHash}`
 
-     async saveProjectHash(request, projectHash: string) {
+     async saveNewProject(request, projectHash: string, projectName: string) {
         const user = this._userIdFromRequest(request);
         await this._redis.hset(this._userKey("hash"), user, projectHash);
+        // Associate the project name with both the user and project hash, since in theory two users could get the same
+        // project hash if they used identical files
+        const userProjectId = this._userProjectId(user, projectHash);
+        await this._redis.hset(this._userProjectKey("name"), userProjectId, projectName);
     }
 }
 

@@ -150,9 +150,10 @@ export const apiEndpoints = (config => ({
 
     async runPoppunk(request, response, next) {
         await asyncHandler(next, async () => {
-            const projectHash = (request.body as PoppunkRequest).projectHash;
+            const poppunkRequest = request.body as PoppunkRequest;
+            const {projectHash, projectName} = poppunkRequest;
             const {redis} = request.app.locals;
-            await userStore(redis).saveProjectHash(request, projectHash);
+            await userStore(redis).saveNewProject(request, projectHash, projectName);
 
             await axios.post(`${config.api_url}/poppunk`,
                 request.body,

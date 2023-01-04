@@ -18,7 +18,7 @@ describe("UserStore", () => {
         } as any;
 
         const sut = new UserStore(mockRedis);
-        await sut.saveProjectHash(mockRequest, "testProjectHash");
+        await sut.saveNewProject(mockRequest, "testProjectHash");
         expect(mockRedis.hset).toHaveBeenCalledTimes(1);
         const params = mockRedis.hset.mock.calls[0];
         expect(params[0]).toBe("beebop:user:hash");
