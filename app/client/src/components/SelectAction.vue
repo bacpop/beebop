@@ -1,37 +1,45 @@
 <template>
-  <div class="select-action">
-    <i class="bi bi-house-fill left house"></i>
-    <p class="left">Welcome back, {{user.name}}!</p>
-    <button
-    class="btn btn-block btn-standard btn-selection"
-    @click="runAnalysis">Run new analysis</button>
-    <!-- These buttons are just dummies so far -->
-    <button class="btn btn-block btn-standard btn-selection disabled">See previous analyses</button>
-    <!--<button class="btn btn-block btn-standard btn-selection disabled">Manage my data</button>-->
+  <div class="mt-3 container left">
+    <div class="row">
+      <div class="col-6">
+        <input id="create-project-name"
+               placeholder="Project name"
+               type="text"
+               v-model="projectName"
+               aria-label="Project name"
+               class="form-control input-text">
+      </div>
+      <div class="col-6">
+        <button
+        class="btn btn-standard"
+        @click="runAnalysis">Create new project</button>
+      </div>
+    </div>
   </div>
 </template>
 
 <script lang='ts'>
 import { defineComponent } from 'vue';
-import { mapState, mapActions } from 'vuex';
+import { mapActions, mapMutations } from 'vuex';
 
 export default defineComponent({
   name: 'SelectAction',
+  data() {
+    return {
+      projectName: '',
+    };
+  },
   mounted() {
     this.getUser();
   },
   methods: {
     ...mapActions(['getUser']),
+    ...mapMutations(['setProjectName']),
     runAnalysis() {
+      // TODO: disable button when name is empty
+      this.setProjectName(this.projectName);
       this.$router.push('/project');
     },
   },
-  computed: {
-    ...mapState(['user']),
-  },
 });
 </script>
-
-<style>
-@import 'bootstrap-icons/font/bootstrap-icons.css';
-</style>

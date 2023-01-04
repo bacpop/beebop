@@ -152,6 +152,7 @@ export const apiEndpoints = (config => ({
         await asyncHandler(next, async () => {
             const poppunkRequest = request.body as PoppunkRequest;
             const {projectHash, projectName} = poppunkRequest;
+            console.log("Got project name " + projectName);
             const {redis} = request.app.locals;
             await userStore(redis).saveNewProject(request, projectHash, projectName);
 
