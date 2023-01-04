@@ -12,6 +12,7 @@
       <div class="col-6">
         <button
         class="btn btn-standard"
+        :disabled="!projectName"
         @click="runAnalysis">Create new project</button>
       </div>
     </div>
@@ -36,7 +37,6 @@ export default defineComponent({
     ...mapActions(['getUser']),
     ...mapMutations(['setProjectName']),
     runAnalysis() {
-      // TODO: disable button when name is empty
       this.setProjectName(this.projectName);
       this.$router.push('/project');
     },
