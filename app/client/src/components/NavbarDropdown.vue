@@ -6,7 +6,8 @@
         data-bs-toggle="dropdown"
         aria-haspopup="true"
         aria-expanded="false">
-        <i class="bi bi-three-dots-vertical huge menu"></i>
+          <span class="mr-2">{{ loggedInText }}</span>
+          <i class="bi bi-three-dots-vertical huge menu icon"></i>
         </div>
         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
           <router-link class="dropdown-item menu-item"  to="/">
@@ -41,6 +42,9 @@ export default {
       return `${config.serverUrl()}/logout`;
     },
     ...mapState(['user']),
+    loggedInText() {
+      return this.user ? `Logged in as ${this.user.name}` : '';
+    },
   },
 };
 </script>

@@ -7,7 +7,8 @@
                type="text"
                v-model="projectName"
                aria-label="Project name"
-               class="form-control input-text">
+               class="form-control input-text"
+               @keyup.enter="runAnalysis">
       </div>
       <div class="col-6">
         <button
@@ -37,8 +38,10 @@ export default defineComponent({
     ...mapActions(['getUser']),
     ...mapMutations(['setProjectName']),
     runAnalysis() {
-      this.setProjectName(this.projectName);
-      this.$router.push('/project');
+      if (this.projectName) {
+        this.setProjectName(this.projectName);
+        this.$router.push('/project');
+      }
     },
   },
 });
