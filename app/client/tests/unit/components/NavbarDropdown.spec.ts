@@ -36,6 +36,10 @@ describe('NavbarDropdown logged in', () => {
     expect(wrapper.find('a#logout-link').text()).toBe('Logout');
     expect(wrapper.findAll('.dropdown-divider').length).toBe(1);
   });
+
+  test('shows logged in user text', () => {
+    expect(wrapper.find('#logged-in-user').text()).toBe('Logged in as Jane');
+  });
 });
 
 describe('NavbarDropdown logged out', () => {
@@ -59,5 +63,9 @@ describe('NavbarDropdown logged out', () => {
     expect(links[0].text()).toBe('Home');
     expect(links[1].text()).toBe('About');
     expect(wrapper.findAll('.dropdown-divider').length).toBe(0);
+  });
+
+  test('shows no logged in user text', () => {
+    expect(wrapper.find('#logged-in-user').text()).toBe('');
   });
 });

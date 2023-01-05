@@ -12,6 +12,7 @@
       </div>
       <div class="col-6">
         <button
+        id="create-project-btn"
         class="btn btn-standard"
         :disabled="!projectName"
         @click="runAnalysis">Create new project</button>

@@ -151,4 +151,9 @@ describe('mutations', () => {
     mutations.addGraphml(state, mockGraphInfo);
     expect(state.results.perCluster[mockGraphInfo.cluster]).toStrictEqual({ cluster: '7', graph: '<graph></graph>' });
   });
+  it('sets project name', () => {
+    const state = mockRootState();
+    mutations.setProjectName(state, 'test name');
+    expect(state.projectName).toBe('test name');
+  });
 });

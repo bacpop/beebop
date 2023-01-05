@@ -94,7 +94,7 @@ The backend can be tested with
 ```
 npm run test
 ```
-insinde `app/server`.
+from `app/server`.
 
 ### End-to-end tests
 To run end-to-end test, the app must be started with `./scripts/run_test`. In a new terminal, these test can be launched with

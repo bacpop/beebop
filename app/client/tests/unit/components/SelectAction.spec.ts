@@ -1,11 +1,12 @@
 import SelectAction from '@/components/SelectAction.vue';
-import { mount } from '@vue/test-utils';
+import {mount, VueWrapper} from '@vue/test-utils';
 import { RootState } from '@/store/state';
 import Vuex from 'vuex';
 import { mockRootState } from '../../mocks';
 
-describe('StartButton', () => {
+describe('SelectAction', () => {
   const getUser = jest.fn();
+  const setProjectName = jest.fn();
   const mockRouter = {
     push: jest.fn(),
   };
@@ -21,8 +22,11 @@ describe('StartButton', () => {
     actions: {
       getUser,
     },
+    mutations: {
+      setProjectName,
+    },
   });
-  const wrapper = mount(SelectAction, {
+  const getWrapper = () => mount(SelectAction, {
     global: {
       plugins: [store],
       mocks: {
@@ -30,6 +34,13 @@ describe('StartButton', () => {
       },
     },
 
+  });
+
+  let wrapper: VueWrapper;
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+    wrapper = getWrapper();
   });
 
   test('does a wrapper exist', () => {
@@ -40,22 +51,44 @@ describe('StartButton', () => {
     expect(getUser).toHaveBeenCalledTimes(1);
   });
 
-  test('displays greeting', () => {
-    const greeting = wrapper.find('p');
-    expect(greeting.text()).toBe('Welcome back, Jane!');
+  test('displays as expected', () => {
+    const input = wrapper.find('input#create-project-name');
+    expect(input.text()).toBe('');
+    expect(input.attributes('placeholder')).toBe('Project name');
+    const button = wrapper.find('button#create-project-btn');
+    expect(button.text()).toBe('Create new project');
+    expect((button.element as HTMLButtonElement).disabled).toBe(true);
   });
 
-  test('has 2 buttons', () => {
-    const buttons = wrapper.findAll('button');
-    expect(buttons.length).toBe(2);
-    expect(buttons[0].text()).toBe('Run new analysis');
-    expect(buttons[1].text()).toBe('See previous analyses');
-  });
+  test('enter name and click button sets project name and loads project page', async () => {
+    const input = wrapper.find('#create-project-name');
+    await input.setValue('test name');
+    const button = wrapper.find('#create-project-btn');
+    expect((button.element as HTMLButtonElement).disabled).toBe(false);
+    await button.trigger('click');
 
-  test('clicking first button leads to project view', () => {
-    const button1 = wrapper.findAll('button')[0];
-    button1.trigger('click');
+    expect(setProjectName).toHaveBeenCalledTimes(1);
+    expect(setProjectName.mock.calls[0][1]).toBe('test name');
     expect(mockRouter.push).toHaveBeenCalledTimes(1);
     expect(mockRouter.push).toHaveBeenCalledWith('/project');
+  });
+
+  test('enter name and press enter sets project name and loads project page', async () => {
+    const input = wrapper.find('#create-project-name');
+    await input.setValue('test name');
+    await input.trigger('keyup.enter');
+
+    expect(setProjectName).toHaveBeenCalledTimes(1);
+    expect(setProjectName.mock.calls[0][1]).toBe('test name');
+    expect(mockRouter.push).toHaveBeenCalledTimes(1);
+    expect(mockRouter.push).toHaveBeenCalledWith('/project');
+  });
+
+  test('pressing enter while input is empty does nothing', async () => {
+    const input = wrapper.find('#create-project-name');
+    await input.trigger('keyup.enter');
+
+    expect(setProjectName).toHaveBeenCalledTimes(0);
+    expect(mockRouter.push).toHaveBeenCalledTimes(0);
   });
 });

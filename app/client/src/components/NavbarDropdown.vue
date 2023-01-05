@@ -6,7 +6,7 @@
         data-bs-toggle="dropdown"
         aria-haspopup="true"
         aria-expanded="false">
-          <span class="mr-2">{{ loggedInText }}</span>
+          <span id="logged-in-user" class="mr-2">{{ loggedInText }}</span>
           <i class="bi bi-three-dots-vertical huge menu icon"></i>
         </div>
         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
