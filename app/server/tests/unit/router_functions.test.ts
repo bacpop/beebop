@@ -1,6 +1,6 @@
 const mockUserStoreConstructor = jest.fn();
 const mockUserStore = {
-    saveProjectHash: jest.fn()
+    saveNewProject: jest.fn()
 };
 jest.mock("../../src/db/userStore", () => ({
     userStore: mockUserStoreConstructor.mockReturnValue(mockUserStore)
@@ -35,11 +35,24 @@ describe("test routes", () => {
         expect(res.send).toHaveBeenCalledWith(versionInfo)
     });
 
-    it("saves user hash when run poppunk", async () => {
+    it("saves new project and forwards request when run poppunk", async () => {
         const mockRedis = {};
+        const expectedPoppunkReq = {
+            projectHash: "1234",
+            names: {
+                sample1: "file1.fasta",
+                sample2: "file2.fasta"
+            },
+            sketches: {
+                sample1: {7: "abcd"},
+                sample2: {7: "efgh"}
+            }
+        };
+
         const req = {
             body: {
-                projectHash: "1234"
+               ...expectedPoppunkReq,
+                projectName: "test project"
             },
             app: {
                 locals: {
@@ -51,8 +64,12 @@ describe("test routes", () => {
         await apiEndpoints(config).runPoppunk(req, {}, jest.fn());
         expect(mockUserStoreConstructor).toHaveBeenCalledTimes(1);
         expect(mockUserStoreConstructor.mock.calls[0][0]).toBe(mockRedis);
-        expect(mockUserStore.saveProjectHash).toHaveBeenCalledTimes(1);
-        expect(mockUserStore.saveProjectHash.mock.calls[0][0]).toBe(req);
-        expect(mockUserStore.saveProjectHash.mock.calls[0][1]).toBe("1234");
+        expect(mockUserStore.saveNewProject).toHaveBeenCalledTimes(1);
+        expect(mockUserStore.saveNewProject.mock.calls[0][0]).toBe(req);
+        expect(mockUserStore.saveNewProject.mock.calls[0][1]).toBe("1234")
+        expect(mockUserStore.saveNewProject.mock.calls[0][2]).toBe("test project");
+
+        expect(mock.history.post[0].url).toBe("http://localhost:5000/poppunk");
+        expect(JSON.parse(mock.history.post[0].data)).toStrictEqual(expectedPoppunkReq);
     });
 });
