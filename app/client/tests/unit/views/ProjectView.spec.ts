@@ -58,6 +58,7 @@ describe('Project', () => {
 
     const store = new Vuex.Store<RootState>({
       state: mockRootState({
+        projectName: "testProject",
         user: {
           name: 'Jane',
           id: '543653d45',
@@ -160,7 +161,7 @@ describe('Project', () => {
         getUser,
       },
     });
-    const wrapper = mount(ProjectView, {
+    mount(ProjectView, {
       global: {
         plugins: [store],
         mocks: {
