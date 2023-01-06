@@ -23,12 +23,20 @@ test.describe('Logged in Tests', () => {
   });
 
   test('should display dropzone in Project view', async ({ page }) => {
-    await page.click('text=Run new analysis');
+    await page.fill('input#create-project-name', 'test project');
+    await page.click('button#create-project-btn');
     await expect(page.locator('.dropzone')).toBeVisible();
+    await expect(page.locator('h2')).toContainText('Project: test project');
+  });
+
+  test('should redirect from project page to home page if name has not been provided', async ({page}) => {
+    await page.goto(`${config.clientUrl()}/project`);
+    await expect(await page.locator('button#create-project-btn')).toBeVisible();
   });
 
   test('should update file list when files are dropped, process them in WebWorker and submit on click to backend', async ({ page }) => {
-    await page.click('text=Run new analysis');
+    await page.fill('input#create-project-name', 'test project');
+    await page.click('button#create-project-btn');
     // Read files into a buffer
     const buffer = readFileSync('./tests/files/6930_8_13.fa', { encoding: 'utf8', flag: 'r' });
     const buffer2 = readFileSync('./tests/files/6930_8_11.fa', { encoding: 'utf8', flag: 'r' });
