@@ -3,3 +3,7 @@ export interface PoppunkRequest {
     projectHash: string,
     sketches: Record<string, never>
 }
+
+export interface BeebopRunRequest extends PoppunkRequest {
+    projectName: string,
+}

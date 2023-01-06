@@ -49,7 +49,7 @@ describe('Home', () => {
     expect(socialButtons[1].text()).toBe('Login with Github');
   });
 
-  it('shows options to select when logged in', () => {
+  it('shows create project controls when logged in', () => {
     const store = new Vuex.Store<RootState>({
       state: mockRootState({
         user: {
@@ -71,9 +71,7 @@ describe('Home', () => {
         plugins: [store],
       },
     });
-    const buttons = wrapper.findAll('.btn-standard');
-    expect(buttons.length).toBe(2);
-    expect(buttons[0].text()).toBe('Run new analysis');
-    expect(buttons[1].text()).toBe('See previous analyses');
+    expect(wrapper.find('input#create-project-name').exists()).toBe(true);
+    expect(wrapper.find('button#create-project-btn').exists()).toBe(true);
   });
 });

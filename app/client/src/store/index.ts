@@ -15,6 +15,7 @@ export default new Vuex.Store<RootState>({
       perCluster: {},
     },
     projectHash: null,
+    projectName: null,
     submitStatus: null,
     analysisStatus: {
       assign: null,

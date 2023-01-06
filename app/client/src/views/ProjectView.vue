@@ -1,11 +1,11 @@
 <template>
   <div>
-    <h2>Create a new project</h2>
     <div class="project">
       <div class="file-input">
         <DropZone v-if="user && !submitStatus" class="dropzone-component"/>
       </div>
       <div class="overview">
+        <h2 class="left">Project: {{projectName}}</h2>
         <StartButton v-if="user" />
         <ProgressBar v-if="submitStatus" class="progress-bar-component" />
 
@@ -77,7 +77,12 @@ export default defineComponent({
     };
   },
   mounted() {
-    this.getUser();
+    // redirect to home page if no project name
+    if (!this.projectName) {
+      this.$router.push('/');
+    } else {
+      this.getUser();
+    }
   },
   methods: {
     ...mapActions(['getUser']),
@@ -86,7 +91,7 @@ export default defineComponent({
     },
   },
   computed: {
-    ...mapState(['user', 'submitStatus', 'analysisStatus']),
+    ...mapState(['user', 'submitStatus', 'analysisStatus', 'projectName']),
     ...mapGetters(['uniqueClusters']),
   },
 });

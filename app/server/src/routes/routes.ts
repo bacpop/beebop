@@ -1,6 +1,6 @@
 import axios from 'axios';
 import passport from 'passport';
-import {PoppunkRequest} from "../requestTypes";
+import {BeebopRunRequest, PoppunkRequest} from "../requestTypes";
 import {userStore} from "../db/userStore";
 import asyncHandler from "../errors/asyncHandler";
 
@@ -150,12 +150,14 @@ export const apiEndpoints = (config => ({
 
     async runPoppunk(request, response, next) {
         await asyncHandler(next, async () => {
-            const projectHash = (request.body as PoppunkRequest).projectHash;
+            const poppunkRequest = request.body as BeebopRunRequest;
+            const {projectHash, projectName, names, sketches} = poppunkRequest;
             const {redis} = request.app.locals;
-            await userStore(redis).saveProjectHash(request, projectHash);
+            await userStore(redis).saveNewProject(request, projectHash, projectName);
 
+            const apiRequest = {names, projectHash, sketches} as PoppunkRequest;
             await axios.post(`${config.api_url}/poppunk`,
-                request.body,
+                apiRequest,
                 {
                     headers: {
                         'Content-Type': 'application/json'

@@ -73,6 +73,7 @@ export default {
       .ignoreSuccess()
       .post<AnalysisStatus>(`${serverUrl}/poppunk`, {
         projectHash: phash,
+        projectName: state.projectName,
         sketches: jsonSketches,
         names: filenameMapping,
       });

@@ -7,6 +7,9 @@ export default {
   addError(state: RootState, payload: BeebopError) {
     state.errors.push(payload);
   },
+  setProjectName(state: RootState, projectName: string) {
+    state.projectName = projectName;
+  },
   setVersions(state: RootState, versioninfo: Versions) {
     state.versions = versioninfo;
   },

@@ -6,14 +6,18 @@ import { mockRootState } from '../../mocks';
 
 describe('Project', () => {
   const getUser = jest.fn();
+  const mockRouter = {
+    push: jest.fn(),
+  };
 
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
-  it('displays dropzone, startbutton and empty table message, gets user information on mount', () => {
+  it('displays as expected, gets user information on mount', () => {
     const store = new Vuex.Store<RootState>({
       state: mockRootState({
+        projectName: 'test project',
         user: {
           name: 'Jane',
           id: '543653d45',
@@ -27,15 +31,20 @@ describe('Project', () => {
     const wrapper = mount(ProjectView, {
       global: {
         plugins: [store],
+        mocks: {
+          $router: mockRouter,
+        },
       },
     });
 
+    expect(wrapper.find('h2').text()).toBe('Project: test project');
     expect(wrapper.findAll('.dropzone-component').length).toBe(1);
     const buttons = wrapper.findAll('.btn-standard');
     expect(buttons.length).toBe(1);
     expect(buttons[0].text()).toBe('Start Analysis');
     expect(wrapper.find('div#no-results').text()).toBe('No data uploaded yet');
     expect(getUser).toHaveBeenCalled();
+    expect(mockRouter.push).not.toHaveBeenCalled();
   });
 
   it('after submission  dropzone disappears, now has progress bar and table and network tabs + panes ', () => {
@@ -49,6 +58,7 @@ describe('Project', () => {
 
     const store = new Vuex.Store<RootState>({
       state: mockRootState({
+        projectName: "testProject",
         user: {
           name: 'Jane',
           id: '543653d45',
@@ -135,5 +145,33 @@ describe('Project', () => {
     expect(wrapper.vm.selectedTab).toBe('table');
     tabs[1].trigger('click');
     expect(wrapper.vm.selectedTab).toBe('network');
+  });
+
+  it('redirects to root if no project name', () => {
+    const store = new Vuex.Store<RootState>({
+      state: mockRootState({
+        projectName: null,
+        user: {
+          name: 'Jane',
+          id: '543653d45',
+          provider: 'google',
+        },
+      }),
+      actions: {
+        getUser,
+      },
+    });
+    mount(ProjectView, {
+      global: {
+        plugins: [store],
+        mocks: {
+          $router: mockRouter,
+        },
+      },
+    });
+
+    expect(getUser).not.toHaveBeenCalled();
+    expect(mockRouter.push).toHaveBeenCalledTimes(1);
+    expect(mockRouter.push.mock.calls[0][0]).toBe('/');
   });
 });

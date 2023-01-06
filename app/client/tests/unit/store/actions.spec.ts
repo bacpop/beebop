@@ -83,6 +83,7 @@ describe('Actions', () => {
   it('runPoppunk makes axios call', async () => {
     const commit = jest.fn();
     const state = mockRootState({
+      projectName: 'test project',
       results: {
         perIsolate: {
           someFileHash: {
@@ -103,6 +104,18 @@ describe('Actions', () => {
     }));
     await actions.runPoppunk({ commit, state } as any);
     expect(mockAxios.history.post[0].url).toEqual(`${serverUrl}/poppunk`);
+    expect(JSON.parse(mockAxios.history.post[0].data)).toStrictEqual({
+      projectHash: expectedHash,
+      projectName: 'test project',
+      sketches: {
+        someFileHash: { 14: '12345' },
+        someFileHash2: { 14: '12345' },
+      },
+      names: {
+        someFileHash: 'someFilename',
+        someFileHash2: 'someFilename2',
+      },
+    });
     expect(commit.mock.calls[0]).toEqual([
       'setProjectHash',
       expectedHash]);
