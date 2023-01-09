@@ -1,10 +1,10 @@
 import {
-  BeebopError,
-  Versions,
-  User,
-  Results,
-  AnalysisStatus,
-} from '@/types';
+    BeebopError,
+    Versions,
+    User,
+    Results,
+    AnalysisStatus
+} from "@/types";
 
 export interface RootState {
   errors: BeebopError[]

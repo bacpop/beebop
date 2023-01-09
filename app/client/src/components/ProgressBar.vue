@@ -13,23 +13,23 @@
 </template>
 
 <script lang="ts">
-import { mapGetters } from 'vuex';
-import { BProgress, BProgressBar } from 'bootstrap-vue-3';
-import { defineComponent } from 'vue';
+import { mapGetters } from "vuex";
+import { BProgress, BProgressBar } from "bootstrap-vue-3";
+import { defineComponent } from "vue";
 
 export default defineComponent({
-  name: 'ProgressBar',
-  computed: {
-    ...mapGetters([
-      'analysisProgress',
-    ]),
-    animated(): boolean {
-      return this.analysisProgress.progress !== 1;
+    name: "ProgressBar",
+    computed: {
+        ...mapGetters([
+            "analysisProgress"
+        ]),
+        animated(): boolean {
+            return this.analysisProgress.progress !== 1;
+        }
     },
-  },
-  components: {
-    BProgress,
-    BProgressBar,
-  },
+    components: {
+        BProgress,
+        BProgressBar
+    }
 });
 </script>

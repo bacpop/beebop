@@ -7,20 +7,20 @@
 </template>
 
 <script lang='ts'>
-import { defineComponent } from 'vue';
-import { mapState, mapActions } from 'vuex';
+import { defineComponent } from "vue";
+import { mapState, mapActions } from "vuex";
 
 export default defineComponent({
-  name: 'DownloadZip',
-  props: ['type', 'cluster'],
-  methods: {
-    ...mapActions(['getZip']),
-    async onClick() {
-      this.getZip({ type: this.type, cluster: this.cluster });
+    name: "DownloadZip",
+    props: ["type", "cluster"],
+    methods: {
+        ...mapActions(["getZip"]),
+        async onClick() {
+            this.getZip({ type: this.type, cluster: this.cluster });
+        }
     },
-  },
-  computed: {
-    ...mapState(['projectHash']),
-  },
+    computed: {
+        ...mapState(["projectHash"])
+    }
 });
 </script>

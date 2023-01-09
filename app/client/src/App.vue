@@ -9,20 +9,20 @@
 </template>
 
 <script lang='ts'>
-import { defineComponent } from 'vue';
-import { mapActions } from 'vuex';
-import NavbarDropdown from '@/components/NavbarDropdown.vue';
+import { defineComponent } from "vue";
+import { mapActions } from "vuex";
+import NavbarDropdown from "@/components/NavbarDropdown.vue";
 
 export default defineComponent({
-  components: {
-    NavbarDropdown,
-  },
-  mounted() {
-    this.getUser();
-  },
-  methods: {
-    ...mapActions(['getUser']),
-  },
+    components: {
+        NavbarDropdown
+    },
+    mounted() {
+        this.getUser();
+    },
+    methods: {
+        ...mapActions(["getUser"])
+    }
 });
 </script>
 

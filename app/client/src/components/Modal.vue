@@ -20,6 +20,6 @@
 
 <script lang="ts">
 export default {
-  name: 'ModalTemplate',
+    name: "ModalTemplate"
 };
 </script>
