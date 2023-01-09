@@ -49,7 +49,8 @@ describe("Actions", () => {
     });
 
     it("getUser fetches and commits user info", async () => {
-        mockAxios.onGet(`${serverUrl}/user`).reply(200, responseSuccess({ id: "12345", name: "Beebop", provider: "google" }));
+        mockAxios.onGet(`${serverUrl}/user`)
+            .reply(200, responseSuccess({ id: "12345", name: "Beebop", provider: "google" }));
         const commit = jest.fn();
         await actions.getUser({ commit } as any);
 
@@ -254,7 +255,10 @@ describe("Actions", () => {
                 perCluster: {}
             }
         });
-        const expResponse = responseSuccess({ 0: { hash: "someFileHash", cluster: "12" }, 1: { hash: "someFileHash2", cluster: "2" } });
+        const expResponse = responseSuccess({
+            0: { hash: "someFileHash", cluster: "12" },
+            1: { hash: "someFileHash2", cluster: "2" }
+        });
         mockAxios.onPost(`${serverUrl}/assignResult`).reply(200, expResponse);
         await actions.getAssignResult({ commit, state } as any);
         expect(mockAxios.history.post[0].url).toEqual(`${serverUrl}/assignResult`);

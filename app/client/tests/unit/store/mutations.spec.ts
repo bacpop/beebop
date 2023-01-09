@@ -32,7 +32,8 @@ describe("mutations", () => {
         const state = mockRootState();
         const mockFileMetadata = { hash: "someFileHash", name: "sampleName.fa" };
         mutations.addFile(state, mockFileMetadata);
-        expect(state.results.perIsolate.someFileHash).toStrictEqual({ hash: "someFileHash", filename: "sampleName.fa" });
+        expect(state.results.perIsolate.someFileHash)
+            .toStrictEqual({ hash: "someFileHash", filename: "sampleName.fa" });
     });
     it("sets sketch values", () => {
         const state = mockRootState({
@@ -125,7 +126,10 @@ describe("mutations", () => {
                 perCluster: {}
             }
         });
-        mutations.setClusters(state, { 0: { hash: "someFileHash", cluster: "12" }, 1: { hash: "someFileHash2", cluster: "2" } });
+        mutations.setClusters(
+            state,
+            { 0: { hash: "someFileHash", cluster: "12" }, 1: { hash: "someFileHash2", cluster: "2" } }
+        );
         expect(state.results.perIsolate.someFileHash.cluster).toBe("12");
     });
     it("sets MicroreactURL", () => {
@@ -135,7 +139,8 @@ describe("mutations", () => {
             url: "microreact.org/mock"
         };
         mutations.addMicroreactURL(state, mockURLInfo);
-        expect(state.results.perCluster[mockURLInfo.cluster]).toStrictEqual({ cluster: "7", microreactURL: "microreact.org/mock" });
+        expect(state.results.perCluster[mockURLInfo.cluster])
+            .toStrictEqual({ cluster: "7", microreactURL: "microreact.org/mock" });
     });
     it("sets Microreact Token", () => {
         const state = mockRootState();
@@ -149,7 +154,8 @@ describe("mutations", () => {
             graph: "<graph></graph>"
         };
         mutations.addGraphml(state, mockGraphInfo);
-        expect(state.results.perCluster[mockGraphInfo.cluster]).toStrictEqual({ cluster: "7", graph: "<graph></graph>" });
+        expect(state.results.perCluster[mockGraphInfo.cluster])
+            .toStrictEqual({ cluster: "7", graph: "<graph></graph>" });
     });
     it("sets project name", () => {
         const state = mockRootState();

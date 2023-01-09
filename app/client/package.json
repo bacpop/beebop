@@ -60,43 +60,6 @@
     "typescript": "~4.5.5",
     "vm": "^0.1.0"
   },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
-    },
-    "extends": [
-      "plugin:vue/vue3-essential",
-      "@vue/airbnb",
-      "@vue/typescript/recommended"
-    ],
-    "parserOptions": {
-      "ecmaVersion": 2020
-    },
-    "rules": {
-      "no-shadow": "off",
-      "@typescript-eslint/no-shadow": [
-        "error"
-      ]
-    },
-    "overrides": [
-      {
-        "files": [
-          "**/__tests__/*.{j,t}s?(x)",
-          "**/tests/unit/**/*.spec.{j,t}s?(x)",
-          "**/tests/**/*.{j,t}s"
-        ],
-        "env": {
-          "jest": true
-        },
-        "rules": {
-          "@typescript-eslint/no-explicit-any": "off",
-          "@typescript-eslint/no-empty-function": "off",
-          "no-underscore-dangle": "off"
-        }
-      }
-    ]
-  },
   "browserslist": [
     "> 1%",
     "last 2 versions",

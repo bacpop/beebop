@@ -26,7 +26,12 @@ describe("empty ResultsTable", () => {
 });
 
 describe("ResultsTable complete", () => {
-    const mockTooltipText = "Probability of resistance to:<br/>Penicillin: Very good chance <small>(0.892)</small><br/>Chloramphenicol: Highly unlikely <small>(0.39)</small><br/>Erythromycin: Highly unlikely <small>(0.151)</small><br/>Tetracycline: Highly unlikely <small>(0.453)</small><br/>Cotrim: Almost certainly <small>(0.974)</small>";
+    const mockTooltipText = "Probability of resistance to:<br/>"
+        + "Penicillin: Very good chance <small>(0.892)</small><br/>"
+        + "Chloramphenicol: Highly unlikely <small>(0.39)</small><br/>"
+        + "Erythromycin: Highly unlikely <small>(0.151)</small><br/>"
+        + "Tetracycline: Highly unlikely <small>(0.453)</small><br/>"
+        + "Cotrim: Almost certainly <small>(0.974)</small>";
     const store = new Vuex.Store<RootState>({
         state: mockRootState({
             user: {

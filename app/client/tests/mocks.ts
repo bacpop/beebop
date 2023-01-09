@@ -34,7 +34,7 @@ export const mockSuccess = (data: any): ResponseSuccess => ({
     errors: null
 });
 
-export const mockError = (errorMessage = "some message"): BeebopError => ({ error: "OTHER_ERROR", detail: errorMessage });
+export const mockError = (message = "some message"): BeebopError => ({ error: "OTHER_ERROR", detail: message });
 
 export const mockFailure = (errorMessage: string): ResponseFailure => ({
     data: null,

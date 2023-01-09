@@ -34,7 +34,7 @@ test.describe("Logged in Tests", () => {
         await expect(await page.locator("button#create-project-btn")).toBeVisible();
     });
 
-    test("should update file list when files are dropped, process them in WebWorker and submit on click to backend", async ({ page }) => {
+    test("should update file list on drop, process them in WebWorker and submit on click", async ({ page }) => {
         await page.fill("input#create-project-name", "test project");
         await page.click("button#create-project-btn");
         // Read files into a buffer
@@ -74,8 +74,10 @@ test.describe("Logged in Tests", () => {
         await page.waitForTimeout(20000);
         await expect(page.locator(".progress-bar")).toContainText("100.00%");
         // Expect clusters appearing in table
-        await expect(page.locator('tr:has-text("6930_8_13.fa")')).toContainText(["6930_8_13.fa", "✔", "PCETE SXT", "7"]);
-        await expect(page.locator('tr:has-text("6930_8_11.fa")')).toContainText(["6930_8_11.fa", "✔", "PCETE SXT", "24"]);
+        await expect(page.locator('tr:has-text("6930_8_13.fa")'))
+            .toContainText(["6930_8_13.fa", "✔", "PCETE SXT", "7"]);
+        await expect(page.locator('tr:has-text("6930_8_11.fa")'))
+            .toContainText(["6930_8_11.fa", "✔", "PCETE SXT", "24"]);
         // Expect download buttons and button to generate microreact URL to appear
         await expect(page.locator('tr:has-text("6930_8_13.fa") .btn').nth(0)).toContainText("Download zip file");
         await expect(page.locator('tr:has-text("6930_8_13.fa") .btn').nth(1)).toContainText("Generate Microreact URL");
@@ -88,7 +90,8 @@ test.describe("Logged in Tests", () => {
         await page.locator("input").fill(process.env.MICROREACT_TOKEN as string);
         await page.click("text=Save token");
         await expect(page.locator('tr:has-text("6930_8_13.fa") a')).toContainText("Visit Microreact URL");
-        await expect(page.locator('tr:has-text("6930_8_13.fa") a')).toHaveAttribute("href", /https:\/\/microreact.org\/project\/.*-poppunk.*/);
+        await expect(page.locator('tr:has-text("6930_8_13.fa") a'))
+            .toHaveAttribute("href", /https:\/\/microreact.org\/project\/.*-poppunk.*/);
         // nework visualisation component has 1 button for each cluster (=2) and renders canvases
         await page.click(".nav-link >> text=Network");
         await expect(page.locator("#cluster-tabs")).toHaveCount(2);
