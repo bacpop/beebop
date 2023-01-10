@@ -1,4 +1,4 @@
-import cytoscape from 'cytoscape';
+import cytoscape from "cytoscape";
 
 export type Dict<T> = Record<string, T>
 
@@ -26,8 +26,8 @@ export interface Results {
 }
 
 export enum ValueTypes {
-    AMR = 'amr',
-    SKETCH = 'sketch'
+    AMR = "amr",
+    SKETCH = "sketch"
 }
 
 export interface IsolateValue {
@@ -37,9 +37,9 @@ export interface IsolateValue {
 }
 
 export enum AnalysisType {
-    ASSIGN = 'assign',
-    MICROREACT = 'microreact',
-    NETWORK = 'network'
+    ASSIGN = "assign",
+    MICROREACT = "microreact",
+    NETWORK = "network"
 }
 
 export type AnalysisStatus = {
@@ -54,19 +54,19 @@ export interface BeebopError {
 }
 
 export interface ResponseFailure {
-    status: 'failure';
+    status: "failure";
     data: null;
     errors: BeebopError[];
 }
 
 export interface ResponseSuccess {
-    status: 'success';
+    status: "success";
     data: unknown;
     errors: null;
 }
 
 export enum Errors {
-    WRONG_TOKEN='Wrong Token',
+    WRONG_TOKEN="Wrong Token",
 }
 
 interface GraphmlExtension {

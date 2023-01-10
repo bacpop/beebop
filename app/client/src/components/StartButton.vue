@@ -8,24 +8,24 @@
 </template>
 
 <script lang='ts'>
-import { defineComponent } from 'vue';
-import { mapActions, mapState } from 'vuex';
+import { defineComponent } from "vue";
+import { mapActions, mapState } from "vuex";
 
 export default defineComponent({
-  name: 'StartButton',
-  methods: {
-    ...mapActions(['submitData']),
-    onClick() {
-      this.submitData();
+    name: "StartButton",
+    methods: {
+        ...mapActions(["submitData"]),
+        onClick() {
+            this.submitData();
+        }
     },
-  },
-  computed: {
-    ...mapState(['submitStatus', 'analysisStatus', 'results']),
-    allSketched(): boolean {
-      const isolates = this.results.perIsolate;
-      const keys = Object.keys(isolates);
-      return !!keys.length && keys.every((el: string) => isolates[el].sketch);
-    },
-  },
+    computed: {
+        ...mapState(["submitStatus", "analysisStatus", "results"]),
+        allSketched(): boolean {
+            const isolates = this.results.perIsolate;
+            const keys = Object.keys(isolates);
+            return !!keys.length && keys.every((el: string) => isolates[el].sketch);
+        }
+    }
 });
 </script>

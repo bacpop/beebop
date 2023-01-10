@@ -66,71 +66,71 @@
 </template>
 
 <script lang='ts'>
-import { defineComponent } from 'vue';
-import { mapState } from 'vuex';
-import { VBTooltip } from 'bootstrap-vue-3';
+import { defineComponent } from "vue";
+import { mapState } from "vuex";
+import { VBTooltip } from "bootstrap-vue-3";
 import {
-  addRowspan, getRGB, tooltipLine,
-} from '../utils';
-import DownloadZip from './DownloadZip.vue';
-import GenerateMicroreactURL from './GenerateMicroreactURL.vue';
+    addRowspan, getRGB, tooltipLine
+} from "../utils";
+import DownloadZip from "./DownloadZip.vue";
+import GenerateMicroreactURL from "./GenerateMicroreactURL.vue";
 
 export default defineComponent({
-  name: 'ResultsTable',
-  directives: {
-    'b-tooltip': VBTooltip,
-  },
-  components: {
-    DownloadZip,
-    GenerateMicroreactURL,
-  },
-  methods: {
-    getRGB,
-    tooltipLine,
-    getTooltipText(data: Record<string, number>) {
-      const firstLine = 'Probability of resistance to:';
-      const pen = this.tooltipLine('Penicillin', data.Penicillin);
-      const chlor = this.tooltipLine('Chloramphenicol', data.Chloramphenicol);
-      const ery = this.tooltipLine('Erythromycin', data.Erythromycin);
-      const tetra = this.tooltipLine('Tetracycline', data.Tetracycline);
-      const cotrim = this.tooltipLine('Cotrim', data.Trim_sulfa);
-      return [firstLine, pen, chlor, ery, tetra, cotrim].join('<br/>');
+    name: "ResultsTable",
+    directives: {
+        "b-tooltip": VBTooltip
     },
-    getCluster(sample: string) {
-      return (this.results.perIsolate[sample].cluster
-        ? this.results.perIsolate[sample].cluster : this.analysisStatus.assign);
+    components: {
+        DownloadZip,
+        GenerateMicroreactURL
     },
-    getMicroreact() {
-      return (this.analysisStatus.microreact === 'finished') ? 'showButton' : this.analysisStatus.microreact;
+    methods: {
+        getRGB,
+        tooltipLine,
+        getTooltipText(data: Record<string, number>) {
+            const firstLine = "Probability of resistance to:";
+            const pen = this.tooltipLine("Penicillin", data.Penicillin);
+            const chlor = this.tooltipLine("Chloramphenicol", data.Chloramphenicol);
+            const ery = this.tooltipLine("Erythromycin", data.Erythromycin);
+            const tetra = this.tooltipLine("Tetracycline", data.Tetracycline);
+            const cotrim = this.tooltipLine("Cotrim", data.Trim_sulfa);
+            return [firstLine, pen, chlor, ery, tetra, cotrim].join("<br/>");
+        },
+        getCluster(sample: string) {
+            return (this.results.perIsolate[sample].cluster
+                ? this.results.perIsolate[sample].cluster : this.analysisStatus.assign);
+        },
+        getMicroreact() {
+            return (this.analysisStatus.microreact === "finished") ? "showButton" : this.analysisStatus.microreact;
+        },
+        getNetwork() {
+            return (this.analysisStatus.network === "finished") ? "showButton" : this.analysisStatus.network;
+        }
     },
-    getNetwork() {
-      return (this.analysisStatus.network === 'finished') ? 'showButton' : this.analysisStatus.network;
-    },
-  },
-  computed: {
-    ...mapState(['results', 'submitStatus', 'analysisStatus']),
-    tableData() {
-      const samples = this.results.perIsolate;
-      const items: Record<string, string | number>[] = [];
-      Object.keys(samples).forEach((sample) => {
-        items.push({
-          Hash: samples[sample].hash,
-          Filename: samples[sample].filename,
-          Sketch: (samples[sample].sketch) ? '\u2714' : 'processing',
-          AMR: samples[sample].amr ? samples[sample].amr : 'processing',
-          Cluster: this.submitStatus === 'submitted' ? this.getCluster(sample) : '',
-          Microreact: this.submitStatus === 'submitted' ? this.getMicroreact() : '',
-          Network: this.submitStatus === 'submitted' ? this.getNetwork() : '',
-        });
-      });
-      const tableSorted = items.sort((a, b) => Number(a.Cluster) - Number(b.Cluster));
-      if (this.analysisStatus.assign === 'finished') {
-        // adding a rowspan property to merge microreact/ network cells from same cluster
-        const tableRowspan = addRowspan(tableSorted);
-        return tableRowspan;
-      }
-      return tableSorted;
-    },
-  },
+    computed: {
+        ...mapState(["results", "submitStatus", "analysisStatus"]),
+        tableData() {
+            const samples = this.results.perIsolate;
+            const items: Record<string, string | number>[] = [];
+            Object.keys(samples).forEach((sample) => {
+                items.push({
+                    Hash: samples[sample].hash,
+                    Filename: samples[sample].filename,
+                    Sketch: (samples[sample].sketch) ? "\u2714" : "processing",
+                    AMR: samples[sample].amr ? samples[sample].amr : "processing",
+                    Cluster: this.submitStatus === "submitted" ? this.getCluster(sample) : "",
+                    Microreact: this.submitStatus === "submitted" ? this.getMicroreact() : "",
+                    Network: this.submitStatus === "submitted" ? this.getNetwork() : ""
+                });
+            });
+            const tableSorted = items.sort((a, b) => Number(a.Cluster) - Number(b.Cluster));
+            if (this.analysisStatus.assign === "finished") {
+                // adding a rowspan property to merge microreact/ network cells from same cluster
+                const tableRowspan = addRowspan(tableSorted);
+                return tableRowspan;
+            }
+            return tableSorted;
+        }
+    }
 });
 </script>

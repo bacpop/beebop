@@ -22,28 +22,28 @@
 </template>
 
 <script lang='ts'>
-import { defineComponent } from 'vue';
-import { mapActions, mapMutations } from 'vuex';
+import { defineComponent } from "vue";
+import { mapActions, mapMutations } from "vuex";
 
 export default defineComponent({
-  name: 'SelectAction',
-  data() {
-    return {
-      projectName: '',
-    };
-  },
-  mounted() {
-    this.getUser();
-  },
-  methods: {
-    ...mapActions(['getUser']),
-    ...mapMutations(['setProjectName']),
-    runAnalysis() {
-      if (this.projectName) {
-        this.setProjectName(this.projectName);
-        this.$router.push('/project');
-      }
+    name: "SelectAction",
+    data() {
+        return {
+            projectName: ""
+        };
     },
-  },
+    mounted() {
+        this.getUser();
+    },
+    methods: {
+        ...mapActions(["getUser"]),
+        ...mapMutations(["setProjectName"]),
+        runAnalysis() {
+            if (this.projectName) {
+                this.setProjectName(this.projectName);
+                this.$router.push("/project");
+            }
+        }
+    }
 });
 </script>

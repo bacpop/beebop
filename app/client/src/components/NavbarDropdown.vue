@@ -28,24 +28,24 @@
 </template>
 
 <script lang="ts">
-import { mapState } from 'vuex';
-import config from '@settings/config';
-import { RouterLink } from 'vue-router';
+import { mapState } from "vuex";
+import config from "@settings/config";
+import { RouterLink } from "vue-router";
 
 export default {
-  name: 'NavbarDropdown',
-  components: {
-    RouterLink,
-  },
-  computed: {
-    generateLogout() {
-      return `${config.serverUrl()}/logout`;
+    name: "NavbarDropdown",
+    components: {
+        RouterLink
     },
-    ...mapState(['user']),
-    loggedInText() {
-      return this.user ? `Logged in as ${this.user.name}` : '';
-    },
-  },
+    computed: {
+        generateLogout() {
+            return `${config.serverUrl()}/logout`;
+        },
+        ...mapState(["user"]),
+        loggedInText() {
+            return this.user ? `Logged in as ${this.user.name}` : "";
+        }
+    }
 };
 </script>
 

@@ -54,45 +54,45 @@
 </template>
 
 <script lang='ts'>
-import { defineComponent } from 'vue';
-import { mapState, mapActions, mapGetters } from 'vuex';
-import DropZone from '@/components/DropZone.vue';
-import StartButton from '@/components/StartButton.vue';
-import ProgressBar from '@/components/ProgressBar.vue';
-import ResultsTable from '@/components/ResultsTable.vue';
-import NetworkVisualisations from '@/components/NetworkVisualisations.vue';
+import { defineComponent } from "vue";
+import { mapState, mapActions, mapGetters } from "vuex";
+import DropZone from "@/components/DropZone.vue";
+import StartButton from "@/components/StartButton.vue";
+import ProgressBar from "@/components/ProgressBar.vue";
+import ResultsTable from "@/components/ResultsTable.vue";
+import NetworkVisualisations from "@/components/NetworkVisualisations.vue";
 
 export default defineComponent({
-  name: 'ProjectView',
-  components: {
-    DropZone,
-    StartButton,
-    ProgressBar,
-    ResultsTable,
-    NetworkVisualisations,
-  },
-  data() {
-    return {
-      selectedTab: 'table',
-    };
-  },
-  mounted() {
-    // redirect to home page if no project name
-    if (!this.projectName) {
-      this.$router.push('/');
-    } else {
-      this.getUser();
-    }
-  },
-  methods: {
-    ...mapActions(['getUser']),
-    onInput(value: string) {
-      this.selectedTab = value;
+    name: "ProjectView",
+    components: {
+        DropZone,
+        StartButton,
+        ProgressBar,
+        ResultsTable,
+        NetworkVisualisations
     },
-  },
-  computed: {
-    ...mapState(['user', 'submitStatus', 'analysisStatus', 'projectName']),
-    ...mapGetters(['uniqueClusters']),
-  },
+    data() {
+        return {
+            selectedTab: "table"
+        };
+    },
+    mounted() {
+    // redirect to home page if no project name
+        if (!this.projectName) {
+            this.$router.push("/");
+        } else {
+            this.getUser();
+        }
+    },
+    methods: {
+        ...mapActions(["getUser"]),
+        onInput(value: string) {
+            this.selectedTab = value;
+        }
+    },
+    computed: {
+        ...mapState(["user", "submitStatus", "analysisStatus", "projectName"]),
+        ...mapGetters(["uniqueClusters"])
+    }
 });
 </script>

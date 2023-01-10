@@ -10,18 +10,18 @@
 </template>
 
 <script lang='ts'>
-import { defineComponent } from 'vue';
-import config from '@settings/config';
+import { defineComponent } from "vue";
+import config from "@settings/config";
 
 export default defineComponent({
-  computed: {
-    generateLoginGoogle() {
-      return `${config.serverUrl()}/login/google`;
-    },
-    generateLoginGithub() {
-      return `${config.serverUrl()}/login/github`;
-    },
-  },
+    computed: {
+        generateLoginGoogle() {
+            return `${config.serverUrl()}/login/google`;
+        },
+        generateLoginGithub() {
+            return `${config.serverUrl()}/login/github`;
+        }
+    }
 });
 </script>
 

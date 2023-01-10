@@ -10,21 +10,21 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { mapState, mapActions } from 'vuex';
+import { defineComponent } from "vue";
+import { mapState, mapActions } from "vuex";
 
 export default defineComponent({
-  name: 'VersionInfo',
-  mounted() {
-    this.getVersions();
-  },
-  methods: {
-    ...mapActions([
-      'getVersions',
-    ]),
-  },
-  computed: mapState([
-    'versions',
-  ]),
+    name: "VersionInfo",
+    mounted() {
+        this.getVersions();
+    },
+    methods: {
+        ...mapActions([
+            "getVersions"
+        ])
+    },
+    computed: mapState([
+        "versions"
+    ])
 });
 </script>

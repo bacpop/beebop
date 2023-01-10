@@ -1,43 +1,43 @@
-import { RootState } from '@/store/state';
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
+import { RootState } from "@/store/state";
+import axios from "axios";
+import MockAdapter from "axios-mock-adapter";
 import {
-  ResponseFailure, ResponseSuccess, BeebopError,
-} from '../src/types';
+    ResponseFailure, ResponseSuccess, BeebopError
+} from "../src/types";
 
 export const mockAxios = new MockAdapter(axios);
 
 export function mockRootState(state: Partial<RootState> = {}): RootState {
-  return {
-    errors: [],
-    versions: [],
-    user: null,
-    microreactToken: null,
-    results: {
-      perIsolate: {},
-      perCluster: {},
-    },
-    submitStatus: null,
-    analysisStatus: {
-      assign: null, microreact: null, network: null,
-    },
-    statusInterval: undefined,
-    projectHash: null,
-    projectName: null,
-    ...state,
-  };
+    return {
+        errors: [],
+        versions: [],
+        user: null,
+        microreactToken: null,
+        results: {
+            perIsolate: {},
+            perCluster: {}
+        },
+        submitStatus: null,
+        analysisStatus: {
+            assign: null, microreact: null, network: null
+        },
+        statusInterval: undefined,
+        projectHash: null,
+        projectName: null,
+        ...state
+    };
 }
 
 export const mockSuccess = (data: any): ResponseSuccess => ({
-  data,
-  status: 'success',
-  errors: null,
+    data,
+    status: "success",
+    errors: null
 });
 
-export const mockError = (errorMessage = 'some message'): BeebopError => ({ error: 'OTHER_ERROR', detail: errorMessage });
+export const mockError = (message = "some message"): BeebopError => ({ error: "OTHER_ERROR", detail: message });
 
 export const mockFailure = (errorMessage: string): ResponseFailure => ({
-  data: null,
-  status: 'failure',
-  errors: [mockError(errorMessage)],
+    data: null,
+    status: "failure",
+    errors: [mockError(errorMessage)]
 });

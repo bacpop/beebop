@@ -33,34 +33,34 @@
 </template>
 
 <script lang='ts'>
-import { defineComponent } from 'vue';
-import { mapGetters } from 'vuex';
-import CytoscapeGraph from '@/components/CytoscapeGraph.vue';
+import { defineComponent } from "vue";
+import { mapGetters } from "vuex";
+import CytoscapeGraph from "@/components/CytoscapeGraph.vue";
 
 export default defineComponent({
-  name: 'NetworkVisualisations',
-  props: ['firstCluster'],
-  data() {
-    return {
-      visitedTabs: [this.firstCluster],
-      selectedCluster: this.firstCluster,
-    };
-  },
-  components: {
-    CytoscapeGraph,
-  },
-  computed: {
-    ...mapGetters([
-      'uniqueClusters',
-    ]),
-  },
-  methods: {
-    onInput(value: number) {
-      this.selectedCluster = value;
-      if (!this.visitedTabs.includes(value)) {
-        this.visitedTabs.push(value);
-      }
+    name: "NetworkVisualisations",
+    props: ["firstCluster"],
+    data() {
+        return {
+            visitedTabs: [this.firstCluster],
+            selectedCluster: this.firstCluster
+        };
     },
-  },
+    components: {
+        CytoscapeGraph
+    },
+    computed: {
+        ...mapGetters([
+            "uniqueClusters"
+        ])
+    },
+    methods: {
+        onInput(value: number) {
+            this.selectedCluster = value;
+            if (!this.visitedTabs.includes(value)) {
+                this.visitedTabs.push(value);
+            }
+        }
+    }
 });
 </script>

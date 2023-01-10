@@ -79,46 +79,46 @@
 </template>
 
 <script lang='ts'>
-import { defineComponent } from 'vue';
-import { mapState, mapActions } from 'vuex';
-import Modal from '@/components/Modal.vue';
-import { BeebopError, Errors } from '../types';
+import { defineComponent } from "vue";
+import { mapState, mapActions } from "vuex";
+import Modal from "@/components/Modal.vue";
+import { BeebopError, Errors } from "../types";
 
 export default defineComponent({
-  name: 'GenerateMicroreactURL',
-  props: ['cluster'],
-  components: {
-    Modal,
-  },
-  data() {
-    return {
-      isModalVisible: false,
-      token: null,
-    };
-  },
-  methods: {
-    ...mapActions(['buildMicroreactURL']),
-    showModal() {
-      this.isModalVisible = true;
+    name: "GenerateMicroreactURL",
+    props: ["cluster"],
+    components: {
+        Modal
     },
-    closeModal() {
-      this.isModalVisible = false;
+    data() {
+        return {
+            isModalVisible: false,
+            token: null
+        };
     },
-    saveToken() {
-      this.buildMicroreactURL({ cluster: this.cluster, token: this.token });
+    methods: {
+        ...mapActions(["buildMicroreactURL"]),
+        showModal() {
+            this.isModalVisible = true;
+        },
+        closeModal() {
+            this.isModalVisible = false;
+        },
+        saveToken() {
+            this.buildMicroreactURL({ cluster: this.cluster, token: this.token });
+        }
     },
-  },
-  computed: {
-    ...mapState(['results', 'microreactToken', 'errors']),
-    tokenWasWrong() {
-      return this.errors.some((e: BeebopError) => e.error === Errors.WRONG_TOKEN);
-    },
-    tokenAvailable() {
-      return this.microreactToken && !this.results.perCluster[this.cluster]?.microreactURL;
-    },
-    URLgenerated() {
-      return this.microreactToken && this.results.perCluster[this.cluster]?.microreactURL;
-    },
-  },
+    computed: {
+        ...mapState(["results", "microreactToken", "errors"]),
+        tokenWasWrong() {
+            return this.errors.some((e: BeebopError) => e.error === Errors.WRONG_TOKEN);
+        },
+        tokenAvailable() {
+            return this.microreactToken && !this.results.perCluster[this.cluster]?.microreactURL;
+        },
+        URLgenerated() {
+            return this.microreactToken && this.results.perCluster[this.cluster]?.microreactURL;
+        }
+    }
 });
 </script>

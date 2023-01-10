@@ -9,25 +9,25 @@
 </template>
 
 <script lang='ts'>
-import { defineComponent } from 'vue';
-import { mapState, mapActions } from 'vuex';
-import LoginPrompt from '@/components/LoginPrompt.vue';
-import SelectAction from '@/components/SelectAction.vue';
+import { defineComponent } from "vue";
+import { mapState, mapActions } from "vuex";
+import LoginPrompt from "@/components/LoginPrompt.vue";
+import SelectAction from "@/components/SelectAction.vue";
 
 export default defineComponent({
-  name: 'HomeView',
-  components: {
-    LoginPrompt,
-    SelectAction,
-  },
-  mounted() {
-    this.getUser();
-  },
-  methods: {
-    ...mapActions(['getUser']),
-  },
-  computed: {
-    ...mapState(['user']),
-  },
+    name: "HomeView",
+    components: {
+        LoginPrompt,
+        SelectAction
+    },
+    mounted() {
+        this.getUser();
+    },
+    methods: {
+        ...mapActions(["getUser"])
+    },
+    computed: {
+        ...mapState(["user"])
+    }
 });
 </script>
