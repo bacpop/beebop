@@ -10,25 +10,33 @@ export class UserStore {
         this._redis = redis;
     }
 
-    private _userKey = (name: string) => `${USER_PREFIX}${name}`;
-    private _userProjectKey = (name: string) => `${USER_PROJECT_PREFIX}${name}`;
+    // We store all project hashes for a user in a list with key beebop:user:hashes:[userId]
+    private _userHashesKey = (userId) => `${USER_PREFIX}hashes:${userId}`;
+    // We store all details for a user project in a hash with key beebop:userproject:[userid]:[projectHash] (the same
+    // project has may be associated with multiple users if they use identical files, but they will have different project
+    // details.
+    private _userProjectKey = (userId: string, projectHash: string) => `${USER_PROJECT_PREFIX}${userId}:${projectHash}`;
     private _userIdFromRequest = (request) => `${request.user.provider}:${request.user.id}`;
-    private _userProjectId = (userId, projectHash) => `${userId}:${projectHash}`
+    //private _userProjectId = (userId, projectHash) => `${userId}:${projectHash}`
 
      async saveNewProject(request, projectHash: string, projectName: string) {
         const user = this._userIdFromRequest(request);
-        await this._redis.hset(this._userKey("hash"), user, projectHash);
-        // Associate the project name with both the user and project hash, since in theory two users could get the same
-        // project hash if they used identical files
-        const userProjectId = this._userProjectId(user, projectHash);
-        await this._redis.hset(this._userProjectKey("name"), userProjectId, projectName);
+        await this._redis.lpush(this._userHashesKey(user), projectHash);
+        await this._redis.hset(this._userProjectKey(user, projectHash), "name", projectName);
     }
 
     async getUserProjects(request) {
+        // Get all hashes for the user
         const user = this._userIdFromRequest(request);
-        // get all hashes
-        const result = await this._redis.hget(this._userKey("hash"), user);
-        console.log("got user hashes:" +  JSON.stringify(result));
+        const hashesKey = this._userHashesKey(user);
+        const count = await this._redis.llen(hashesKey);
+        const allHashes = await this._redis.lrange(hashesKey, 0, count-1);
+
+        const result = [];
+        for (const projectHash of allHashes) {
+            const project = await this._redis.hmget(this._userProjectKey(user, projectHash), "name");
+            result.push(project);
+        }
 
         return result;
     }
