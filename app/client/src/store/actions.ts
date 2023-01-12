@@ -4,7 +4,7 @@ import config from "@settings/config";
 import { Md5 } from "ts-md5/dist/md5";
 import { RootState } from "@/store/state";
 import {
-    Versions, User, AnalysisStatus, ClusterInfo, Dict
+    Versions, User, AnalysisStatus, ClusterInfo, Dict, SavedProject
 } from "@/types";
 import { api } from "@/apiService";
 
@@ -23,6 +23,12 @@ export default {
             .withSuccess("setUser")
             .withError("addError")
             .get<User>(`${serverUrl}/user`);
+    },
+    async getSavedProjects(context: ActionContext<RootState, RootState>) {
+        await api(context)
+            .withSuccess("setSavedProjects")
+            .withError("addError")
+            .get<SavedProject[]>(`${serverUrl}/projects`);
     },
     async logoutUser() {
         await axios.get(`${serverUrl}/logout`);

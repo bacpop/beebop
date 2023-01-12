@@ -3,7 +3,7 @@ import {
     Versions,
     User,
     Results,
-    AnalysisStatus
+    AnalysisStatus, SavedProject
 } from "@/types";
 
 export interface RootState {
@@ -17,4 +17,5 @@ export interface RootState {
   projectHash: string | null
   projectName: string | null
   statusInterval: number | undefined
+  savedProjects: SavedProject[]
 }

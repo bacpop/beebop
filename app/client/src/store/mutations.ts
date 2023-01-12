@@ -1,6 +1,6 @@
 import { RootState } from "@/store/state";
 import {
-    Versions, User, IsolateValue, AnalysisStatus, ClusterInfo, BeebopError
+    Versions, User, IsolateValue, AnalysisStatus, ClusterInfo, BeebopError, SavedProject
 } from "@/types";
 
 export default {
@@ -67,5 +67,8 @@ export default {
             cluster: graphInfo.cluster,
             graph: graphInfo.graph
         };
+    },
+    setSavedProjects(state: RootState, savedProjects: SavedProject[]) {
+        state.savedProjects = savedProjects;
     }
 };

@@ -23,6 +23,15 @@ export class UserStore {
         const userProjectId = this._userProjectId(user, projectHash);
         await this._redis.hset(this._userProjectKey("name"), userProjectId, projectName);
     }
+
+    async getUserProjects(request) {
+        const user = this._userIdFromRequest(request);
+        // get all hashes
+        const result = await this._redis.hget(this._userKey("hash"), user);
+        console.log("got user hashes:" +  JSON.stringify(result));
+
+        return result;
+    }
 }
 
 export const userStore = (redis: Redis) => new UserStore(redis);

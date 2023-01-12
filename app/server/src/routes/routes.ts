@@ -22,6 +22,10 @@ export const router = ((app, config) => {
         authCheck,
         api.runPoppunk);
 
+    app.get('/projects',
+        authCheck,
+        api.getProjects);
+
     app.post('/status',
         authCheck,
         api.getStatus);
@@ -155,6 +159,9 @@ export const apiEndpoints = (config => ({
             const {redis} = request.app.locals;
             await userStore(redis).saveNewProject(request, projectHash, projectName);
 
+            //TODO: this is for testing only, put list fetch into separate endpoint
+            await userStore(redis).getUserProjects(request);
+
             const apiRequest = {names, projectHash, sketches} as PoppunkRequest;
             await axios.post(`${config.api_url}/poppunk`,
                 apiRequest,
@@ -170,6 +177,14 @@ export const apiEndpoints = (config => ({
                 .catch(function (error) {
                     sendError(response, error);
                 })
+        });
+    },
+
+    async getProjects(request, response, next) {
+        await asyncHandler(next, async () => {
+            const {redis} = request.app.locals;
+            const projects = await userStore(redis).getUserProjects(request);
+            response.json(projects);
         });
     },
 
