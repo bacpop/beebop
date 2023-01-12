@@ -34,7 +34,11 @@ export class UserStore {
 
         const result = [];
         for (const projectHash of allHashes) {
-            const project = await this._redis.hmget(this._userProjectKey(user, projectHash), "name");
+            const name = await this._redis.hget(this._userProjectKey(user, projectHash), "name");
+            const project = {
+                hash: projectHash,
+                name
+            };
             result.push(project);
         }
 

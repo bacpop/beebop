@@ -24,6 +24,7 @@ export function mockRootState(state: Partial<RootState> = {}): RootState {
         statusInterval: undefined,
         projectHash: null,
         projectName: null,
+        savedProjects: [],
         ...state
     };
 }

@@ -22,7 +22,8 @@ export default new Vuex.Store<RootState>({
             microreact: null,
             network: null
         },
-        statusInterval: undefined
+        statusInterval: undefined,
+        savedProjects: []
     },
     getters,
     mutations,

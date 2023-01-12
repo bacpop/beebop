@@ -1,3 +1,5 @@
+$brand: #42b983;
+
 .collapsedCol {
     visibility: 'collapse';
 }
@@ -61,7 +63,7 @@
 
 .btn-standard {
     color: #fff;
-    background-color: #42b983;
+    background-color: $brand;
     border-color: rgba(0, 0, 0, 0.2);
     padding: 0px 12px;
     margin: 6px;
@@ -126,7 +128,7 @@
 }
 
 .progress-bar {
-    background-color: #42b983;
+    background-color: $brand;
 }
 
 .checkmark {
@@ -301,4 +303,12 @@ th {
 
 .icon {
     vertical-align: middle;
+}
+
+.brand-text {
+    color: $brand;
+}
+
+.clickable {
+    cursor: pointer;
 }

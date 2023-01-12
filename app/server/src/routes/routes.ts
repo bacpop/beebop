@@ -184,7 +184,7 @@ export const apiEndpoints = (config => ({
         await asyncHandler(next, async () => {
             const {redis} = request.app.locals;
             const projects = await userStore(redis).getUserProjects(request);
-            response.json(projects);
+            sendSuccess(response, projects);
         });
     },
 
@@ -241,4 +241,12 @@ function sendError(response, error) {
             data: null
         })  
     }
+}
+
+function sendSuccess(response, data) {
+    response.json({
+        status: 'success',
+        errors: [],
+        data
+    });
 }
