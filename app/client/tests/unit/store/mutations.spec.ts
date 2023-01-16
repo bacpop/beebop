@@ -162,4 +162,10 @@ describe("mutations", () => {
         mutations.setProjectName(state, "test name");
         expect(state.projectName).toBe("test name");
     });
+    it("sets saved projects", () => {
+        const state = mockRootState();
+        const projects = [{ hash: "123", name: "proj 1" }, { hash: "456", name: "proj 2" }];
+        mutations.setSavedProjects(state, projects);
+        expect(state.savedProjects).toBe(projects);
+    });
 });

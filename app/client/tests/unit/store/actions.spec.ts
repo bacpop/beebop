@@ -1,6 +1,7 @@
 import actions from "@/store/actions";
 import versionInfo from "@/resources/versionInfo.json";
 import { Md5 } from "ts-md5/dist/md5";
+import { BeebopError } from "@/types";
 import config from "../../../src/settings/development/config";
 import { mockAxios, mockRootState } from "../../mocks";
 
@@ -10,6 +11,14 @@ function responseSuccess(data : any) {
         status: "success",
         errors: [],
         data
+    };
+}
+
+function responseError(error: BeebopError) {
+    return {
+        status: "failure",
+        errors: [error],
+        data: null
     };
 }
 
@@ -326,6 +335,29 @@ describe("Actions", () => {
         expect(commit.mock.calls[0]).toEqual([
             "addGraphml",
             expResponse.data
+        ]);
+    });
+
+    it("getSavedProjects fetches and commits user projects", async () => {
+        const commit = jest.fn();
+        const projects = [{ hash: "123", name: "proj 1" }, { hash: "456", name: "proj 2" }];
+        mockAxios.onGet(`${serverUrl}/projects`).reply(200, responseSuccess(projects));
+        await actions.getSavedProjects({ commit } as any);
+        expect(mockAxios.history.get[0].url).toEqual(`${serverUrl}/projects`);
+        expect(commit.mock.calls[0]).toEqual([
+            "setSavedProjects",
+            projects
+        ]);
+    });
+
+    it("getSavedProjects commits error", async () => {
+        const commit = jest.fn();
+        mockAxios.onGet(`${serverUrl}/projects`).reply(500, responseError({ error: "test error" }));
+        await actions.getSavedProjects({ commit } as any);
+        expect(mockAxios.history.get[0].url).toEqual(`${serverUrl}/projects`);
+        expect(commit.mock.calls[0]).toEqual([
+            "addError",
+            { error: "test error" }
         ]);
     });
 });

@@ -1,6 +1,8 @@
 const mockUserStoreConstructor = jest.fn();
+const mockUserProjects = [{name: "p1", hash: "123"}];
 const mockUserStore = {
-    saveNewProject: jest.fn()
+    saveNewProject: jest.fn(),
+    getUserProjects: jest.fn().mockImplementation(() => mockUserProjects)
 };
 jest.mock("../../src/db/userStore", () => ({
     userStore: mockUserStoreConstructor.mockReturnValue(mockUserStore)
@@ -17,7 +19,16 @@ const mockRequest: any = { };
 const mockResponse = () => {
     const res: any = {};
     res.send = jest.fn().mockReturnValue(res);
+    res.json = jest.fn();
     return res;
+};
+
+const mockRedis = {};
+
+const mockApp = {
+    locals: {
+        redis: mockRedis
+    }
 };
 
 describe("test routes", () => {
@@ -36,7 +47,6 @@ describe("test routes", () => {
     });
 
     it("saves new project and forwards request when run poppunk", async () => {
-        const mockRedis = {};
         const expectedPoppunkReq = {
             projectHash: "1234",
             names: {
@@ -54,11 +64,7 @@ describe("test routes", () => {
                ...expectedPoppunkReq,
                 projectName: "test project"
             },
-            app: {
-                locals: {
-                    redis: mockRedis
-                }
-            }
+            app: mockApp
         };
 
         await apiEndpoints(config).runPoppunk(req, {}, jest.fn());
@@ -71,5 +77,23 @@ describe("test routes", () => {
 
         expect(mock.history.post[0].url).toBe("http://localhost:5000/poppunk");
         expect(JSON.parse(mock.history.post[0].data)).toStrictEqual(expectedPoppunkReq);
+    });
+
+    it("gets projects for user", async () => {
+        const req = {
+            app: mockApp
+        };
+        const res = mockResponse();
+        await apiEndpoints(config).getProjects(req, res, jest.fn());
+        expect(mockUserStoreConstructor).toHaveBeenCalledTimes(1);
+        expect(mockUserStoreConstructor.mock.calls[0][0]).toBe(mockRedis);
+        expect(mockUserStore.getUserProjects).toHaveBeenCalledTimes(1);
+        expect(mockUserStore.getUserProjects.mock.calls[0][0]).toBe(req);
+        expect(res.json).toHaveBeenCalledTimes(1);
+        expect(res.json.mock.calls[0][0]).toStrictEqual({
+            status: "success",
+            errors: [],
+            data: mockUserProjects
+        });
     });
 });

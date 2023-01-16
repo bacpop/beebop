@@ -2,6 +2,7 @@ import SelectAction from "@/components/SelectAction.vue";
 import { mount, VueWrapper } from "@vue/test-utils";
 import { RootState } from "@/store/state";
 import Vuex from "vuex";
+import SavedProjects from "@/components/SavedProjects.vue";
 import { mockRootState } from "../../mocks";
 
 describe("SelectAction", () => {
@@ -58,6 +59,18 @@ describe("SelectAction", () => {
         const button = wrapper.find("button#create-project-btn");
         expect(button.text()).toBe("Create new project");
         expect((button.element as HTMLButtonElement).disabled).toBe(true);
+        expect(wrapper.findComponent(SavedProjects).exists()).toBe(true);
+    });
+
+    test("renders nothing when no user", () => {
+        const noUserStore = new Vuex.Store<RootState>({ state: mockRootState() });
+        const emptyWrapper = mount(SelectAction, {
+            global: {
+                plugins: [noUserStore]
+            }
+
+        });
+        expect(emptyWrapper.find("div").exists()).toBe(false);
     });
 
     test("enter name and click button sets project name and loads project page", async () => {

@@ -17,7 +17,6 @@ export class UserStore {
     // details.
     private _userProjectKey = (userId: string, projectHash: string) => `${USER_PROJECT_PREFIX}${userId}:${projectHash}`;
     private _userIdFromRequest = (request) => `${request.user.provider}:${request.user.id}`;
-    //private _userProjectId = (userId, projectHash) => `${userId}:${projectHash}`
 
      async saveNewProject(request, projectHash: string, projectName: string) {
         const user = this._userIdFromRequest(request);

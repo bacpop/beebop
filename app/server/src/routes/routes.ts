@@ -44,25 +44,16 @@ export const router = ((app, config) => {
         authCheck,
         (request, response) => {
             if (request.user.provider == 'github') {
-                response.json({
-                    status: 'success',
-                    errors: [],
-                    data: {
-                        id: request.user.id,
-                        provider: request.user.provider,
-                        name: request.user.username
-                    }
-                    
+                sendSuccess(response, {
+                    id: request.user.id,
+                    provider: request.user.provider,
+                    name: request.user.username
                 });
             } else {
-                response.json({
-                    status: 'success',
-                    errors: [],
-                    data: {
-                        id: request.user.id,
-                        provider: request.user.provider,
-                        name: request.user.name.givenName
-                    }    
+                sendSuccess(response, {
+                    id: request.user.id,
+                    provider: request.user.provider,
+                    name: request.user.name.givenName
                 });
             }
         }
@@ -158,10 +149,6 @@ export const apiEndpoints = (config => ({
             const {projectHash, projectName, names, sketches} = poppunkRequest;
             const {redis} = request.app.locals;
             await userStore(redis).saveNewProject(request, projectHash, projectName);
-
-            //TODO: this is for testing only, put list fetch into separate endpoint
-            await userStore(redis).getUserProjects(request);
-
             const apiRequest = {names, projectHash, sketches} as PoppunkRequest;
             await axios.post(`${config.api_url}/poppunk`,
                 apiRequest,
