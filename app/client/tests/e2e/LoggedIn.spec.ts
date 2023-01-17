@@ -99,6 +99,6 @@ test.describe("Logged in Tests", () => {
         await expect(page.locator("#cy canvas")).toHaveCount(3);
         // can browse back to Home page and see new project in history
         await page.goto(config.clientUrl());
-        await expect(await page.locator(".saved-project-row").innerText()).toBe("test project");
+        await expect(await page.locator(":nth-match(.saved-project-row, 1)").innerText()).toBe("test project");
     });
 });
