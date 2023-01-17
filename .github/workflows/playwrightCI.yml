@@ -38,7 +38,7 @@ jobs:
       env:
         MICROREACT_TOKEN: ${{ secrets.MICROREACT_TOKEN }}
       working-directory: ./app/client
-      run: npx playwright test
+      run: npx playwright test --reporter=github
     - name: Stop all components
       working-directory: .
       run: ./scripts/stop_test
