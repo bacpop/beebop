@@ -14,8 +14,9 @@ export interface RootState {
   results: Results
   submitStatus: string | null
   analysisStatus: AnalysisStatus
-  projectHash: string | null
   projectName: string | null
+  projectId: string | null
+  projectHash: string | null
   statusInterval: number | undefined
   savedProjects: SavedProject[]
 }

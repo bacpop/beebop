@@ -24,6 +24,15 @@ export default {
             .withError("addError")
             .get<User>(`${serverUrl}/user`);
     },
+    async newProject(context: ActionContext<RootState, RootState>, name: string) {
+        const { state, commit } = context;
+        commit("setProjectName", name);
+        // TODO: request type
+        await api(context)
+            .withSuccess("setProjectId")
+            .withError("addError")
+            .post<any>(`${serverUrl}/project`, { name: state.projectName });
+    },
     async getSavedProjects(context: ActionContext<RootState, RootState>) {
         await api(context)
             .withSuccess("setSavedProjects")
@@ -79,7 +88,7 @@ export default {
             .ignoreSuccess()
             .post<AnalysisStatus>(`${serverUrl}/poppunk`, {
                 projectHash: phash,
-                projectName: state.projectName,
+                projectId: state.projectId,
                 sketches: jsonSketches,
                 names: filenameMapping
             });

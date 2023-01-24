@@ -10,6 +10,9 @@ export default {
     setProjectName(state: RootState, projectName: string) {
         state.projectName = projectName;
     },
+    setProjectId(state: RootState, projectId: string) {
+        state.projectId = projectId;
+    },
     setVersions(state: RootState, versioninfo: Versions) {
         state.versions = versioninfo;
     },

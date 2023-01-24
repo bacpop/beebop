@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="project">
+    <div v-if="projectId" class="project">
       <div class="file-input">
         <DropZone v-if="user && !submitStatus" class="dropzone-component"/>
       </div>
@@ -49,7 +49,9 @@
         </div>
       </div>
     </div>
-
+    <div v-else>
+        Loading...
+    </div>
   </div>
 </template>
 
@@ -91,7 +93,7 @@ export default defineComponent({
         }
     },
     computed: {
-        ...mapState(["user", "submitStatus", "analysisStatus", "projectName"]),
+        ...mapState(["user", "submitStatus", "analysisStatus", "projectId", "projectName"]),
         ...mapGetters(["uniqueClusters"])
     }
 });

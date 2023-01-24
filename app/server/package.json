@@ -28,7 +28,8 @@
     "passport-github": "^1.1.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-mock-strategy": "^2.0.0",
-    "ts-node": "^10.7.0"
+    "ts-node": "^10.7.0",
+    "uid": "^2.0.1"
   },
   "devDependencies": {
     "@types/jest": "^27.4.1",

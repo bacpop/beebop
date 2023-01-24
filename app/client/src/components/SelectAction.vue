@@ -26,7 +26,7 @@
 
 <script lang='ts'>
 import { defineComponent } from "vue";
-import { mapActions, mapMutations, mapState } from "vuex";
+import { mapActions, mapState } from "vuex";
 import SavedProjects from "@/components/SavedProjects.vue";
 
 export default defineComponent({
@@ -46,11 +46,10 @@ export default defineComponent({
         ...mapState(["user"])
     },
     methods: {
-        ...mapActions(["getUser"]),
-        ...mapMutations(["setProjectName"]),
+        ...mapActions(["getUser", "newProject"]),
         runAnalysis() {
             if (this.projectName) {
-                this.setProjectName(this.projectName);
+                this.newProject(this.projectName);
                 this.$router.push("/project");
             }
         }

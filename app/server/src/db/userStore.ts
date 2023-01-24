@@ -1,7 +1,7 @@
 import Redis from "ioredis";
+import {uid} from "uid";
 
-const USER_PREFIX = "beebop:user:";
-const USER_PROJECT_PREFIX = "beebop:userproject:";
+const BEEBOP_PREFIX = "beebop:";
 
 export class UserStore {
     private readonly _redis: Redis;
@@ -10,35 +10,41 @@ export class UserStore {
         this._redis = redis;
     }
 
-    // We store all project hashes for a user in a list with key beebop:user:hashes:[userId]
-    private _userHashesKey = (userId) => `${USER_PREFIX}hashes:${userId}`;
-    // We store all details for a user project in a hash with key beebop:userproject:[userid]:[projectHash] (the same
-    // project has may be associated with multiple users if they use identical files, but they will have different project
-    // details.
-    private _userProjectKey = (userId: string, projectHash: string) => `${USER_PROJECT_PREFIX}${userId}:${projectHash}`;
     private _userIdFromRequest = (request) => `${request.user.provider}:${request.user.id}`;
+    private _userProjectsKey = (userId: string) => `${BEEBOP_PREFIX}userprojects:${userId}`;
+    private _projectKey = (projectId: string) => `${BEEBOP_PREFIX}project:${projectId}`;
 
-     async saveNewProject(request, projectHash: string, projectName: string) {
+    private _newProjectId = () => uid(32);
+
+     async saveNewProject(request, projectName: string) {
         const user = this._userIdFromRequest(request);
-        await this._redis.lpush(this._userHashesKey(user), projectHash);
-        await this._redis.hset(this._userProjectKey(user, projectHash), "name", projectName);
+        const projectId = this._newProjectId();
+        await this._redis.lpush(this._userProjectsKey(user), projectId);
+        await this._redis.hset(this._projectKey(projectId), "name", projectName);
+        return projectId;
+    }
+
+    async saveProjectHash(request, projectId: string, projectHash: string) {
+        // TODO: could verify that this project belongs to the request user
+        await this._redis.hset(this._projectKey(projectId), "hash", projectHash);
     }
 
     async getUserProjects(request) {
-        // Get all hashes for the user
+        // Get all project ids for the user
         const user = this._userIdFromRequest(request);
-        const hashesKey = this._userHashesKey(user);
-        const count = await this._redis.llen(hashesKey);
-        const allHashes = await this._redis.lrange(hashesKey, 0, count-1);
+        const projectIdsKey = this._userProjectsKey(user);
+        const count = await this._redis.llen(projectIdsKey);
+        const projectIds = await this._redis.lrange(projectIdsKey, 0, count-1);
 
         const result = [];
-        for (const projectHash of allHashes) {
-            const name = await this._redis.hget(this._userProjectKey(user, projectHash), "name");
-            const project = {
-                hash: projectHash,
-                name
-            };
-            result.push(project);
+        // TODO: pipeline this?
+        for (const projectId of projectIds) {
+            const values = await this._redis.hmget(this._projectKey(projectId), "name", "hash");
+            result.push({
+                id: projectId,
+                name: values[0],
+                hash: values[1]
+            });
         }
 
         return result;

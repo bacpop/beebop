@@ -11,8 +11,8 @@ describe("SavedProjects", () => {
         const store = new Vuex.Store<RootState>({
             state: mockRootState({
                 savedProjects: [
-                    { name: "project one", hash: "123abc" },
-                    { name: "project two", hash: "456def" }
+                    { name: "project one", hash: "123abc", id: "ABC-123" },
+                    { name: "project two", hash: "456def", id: "DEF-123" }
                 ]
             }),
             actions: {
