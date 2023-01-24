@@ -7,7 +7,7 @@ import { mockRootState } from "../../mocks";
 
 describe("SelectAction", () => {
     const getUser = jest.fn();
-    const setProjectName = jest.fn();
+    const newProject = jest.fn();
     const mockRouter = {
         push: jest.fn()
     };
@@ -21,10 +21,8 @@ describe("SelectAction", () => {
             }
         }),
         actions: {
-            getUser
-        },
-        mutations: {
-            setProjectName
+            getUser,
+            newProject
         }
     });
     const getWrapper = () => mount(SelectAction, {
@@ -73,15 +71,15 @@ describe("SelectAction", () => {
         expect(emptyWrapper.find("div").exists()).toBe(false);
     });
 
-    test("enter name and click button sets project name and loads project page", async () => {
+    test("enter name and click button dispatches newProject and loads project page", async () => {
         const input = wrapper.find("#create-project-name");
         await input.setValue("test name");
         const button = wrapper.find("#create-project-btn");
         expect((button.element as HTMLButtonElement).disabled).toBe(false);
         await button.trigger("click");
 
-        expect(setProjectName).toHaveBeenCalledTimes(1);
-        expect(setProjectName.mock.calls[0][1]).toBe("test name");
+        expect(newProject).toHaveBeenCalledTimes(1);
+        expect(newProject.mock.calls[0][1]).toBe("test name");
         expect(mockRouter.push).toHaveBeenCalledTimes(1);
         expect(mockRouter.push).toHaveBeenCalledWith("/project");
     });
@@ -91,8 +89,8 @@ describe("SelectAction", () => {
         await input.setValue("test name");
         await input.trigger("keyup.enter");
 
-        expect(setProjectName).toHaveBeenCalledTimes(1);
-        expect(setProjectName.mock.calls[0][1]).toBe("test name");
+        expect(newProject).toHaveBeenCalledTimes(1);
+        expect(newProject.mock.calls[0][1]).toBe("test name");
         expect(mockRouter.push).toHaveBeenCalledTimes(1);
         expect(mockRouter.push).toHaveBeenCalledWith("/project");
     });
@@ -101,7 +99,7 @@ describe("SelectAction", () => {
         const input = wrapper.find("#create-project-name");
         await input.trigger("keyup.enter");
 
-        expect(setProjectName).toHaveBeenCalledTimes(0);
+        expect(newProject).toHaveBeenCalledTimes(0);
         expect(mockRouter.push).toHaveBeenCalledTimes(0);
     });
 });

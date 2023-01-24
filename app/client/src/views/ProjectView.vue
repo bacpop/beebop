@@ -49,7 +49,7 @@
         </div>
       </div>
     </div>
-    <div v-else>
+    <div v-else id="loading-project">
         Loading...
     </div>
   </div>

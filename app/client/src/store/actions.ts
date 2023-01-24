@@ -4,7 +4,7 @@ import config from "@settings/config";
 import { Md5 } from "ts-md5/dist/md5";
 import { RootState } from "@/store/state";
 import {
-    Versions, User, AnalysisStatus, ClusterInfo, Dict, SavedProject
+    Versions, User, AnalysisStatus, ClusterInfo, Dict, SavedProject, NewProjectRequest
 } from "@/types";
 import { api } from "@/apiService";
 
@@ -25,13 +25,12 @@ export default {
             .get<User>(`${serverUrl}/user`);
     },
     async newProject(context: ActionContext<RootState, RootState>, name: string) {
-        const { state, commit } = context;
+        const { commit } = context;
         commit("setProjectName", name);
-        // TODO: request type
         await api(context)
             .withSuccess("setProjectId")
             .withError("addError")
-            .post<any>(`${serverUrl}/project`, { name: state.projectName });
+            .post<NewProjectRequest>(`${serverUrl}/project`, { name });
     },
     async getSavedProjects(context: ActionContext<RootState, RootState>) {
         await api(context)

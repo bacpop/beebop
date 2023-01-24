@@ -59,6 +59,7 @@ describe("Project", () => {
         const store = new Vuex.Store<RootState>({
             state: mockRootState({
                 projectName: "testProject",
+                projectId: "ABC-123",
                 user: {
                     name: "Jane",
                     id: "543653d45",
@@ -145,11 +146,13 @@ describe("Project", () => {
         expect(wrapper.vm.selectedTab).toBe("table");
         tabs[1].trigger("click");
         expect(wrapper.vm.selectedTab).toBe("network");
+        expect(wrapper.find("#loading-project").exists()).toBe(false);
     });
 
     it("redirects to root if no project name", () => {
         const store = new Vuex.Store<RootState>({
             state: mockRootState({
+                projectId: "ABC-123",
                 projectName: null,
                 user: {
                     name: "Jane",
@@ -173,5 +176,33 @@ describe("Project", () => {
         expect(getUser).not.toHaveBeenCalled();
         expect(mockRouter.push).toHaveBeenCalledTimes(1);
         expect(mockRouter.push.mock.calls[0][0]).toBe("/");
+    });
+
+    it("displays placeholder if no project id", () => {
+        const store = new Vuex.Store<RootState>({
+            state: mockRootState({
+                projectId: null,
+                projectName: "test",
+                user: {
+                    name: "Jane",
+                    id: "543653d45",
+                    provider: "google"
+                }
+            }),
+            actions: {
+                getUser
+            }
+        });
+        const wrapper = mount(ProjectView, {
+            global: {
+                plugins: [store],
+                mocks: {
+                    $router: mockRouter
+                }
+            }
+        });
+
+        expect(wrapper.find("div.router").exists()).toBe(false);
+        expect(wrapper.find("div#loading-project").text()).toBe("Loading...");
     });
 });
