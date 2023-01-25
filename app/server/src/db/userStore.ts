@@ -25,7 +25,8 @@ export class UserStore {
     }
 
     async saveProjectHash(request, projectId: string, projectHash: string) {
-        // TODO: could verify that this project belongs to the request user
+        // TODO: verify that this project belongs to the request user:
+        // https://mrc-ide.myjetbrains.com/youtrack/issue/bacpop-96
         await this._redis.hset(this._projectKey(projectId), "hash", projectHash);
     }
 
@@ -37,7 +38,6 @@ export class UserStore {
         const projectIds = await this._redis.lrange(projectIdsKey, 0, count-1);
 
         const result = [];
-        // TODO: pipeline this?
         for (const projectId of projectIds) {
             const values = await this._redis.hmget(this._projectKey(projectId), "name", "hash");
             result.push({
