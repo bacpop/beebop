@@ -18,6 +18,7 @@ describe("Project", () => {
         const store = new Vuex.Store<RootState>({
             state: mockRootState({
                 projectName: "test project",
+                projectId: "ABC-123",
                 user: {
                     name: "Jane",
                     id: "543653d45",

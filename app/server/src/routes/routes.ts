@@ -1,5 +1,5 @@
 import axios from 'axios';
-import passport, {authenticate} from 'passport';
+import passport from 'passport';
 import {BeebopRunRequest, NewProjectRequest, PoppunkRequest} from "../requestTypes";
 import {userStore} from "../db/userStore";
 import asyncHandler from "../errors/asyncHandler";

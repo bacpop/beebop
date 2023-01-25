@@ -1,8 +1,9 @@
 const mockUserStoreConstructor = jest.fn();
 const mockUserProjects = [{name: "p1", hash: "123"}];
 const mockUserStore = {
-    saveNewProject: jest.fn(),
-    getUserProjects: jest.fn().mockImplementation(() => mockUserProjects)
+    saveNewProject: jest.fn().mockImplementation(() => "test-project-id"),
+    getUserProjects: jest.fn().mockImplementation(() => mockUserProjects),
+    saveProjectHash: jest.fn()
 };
 jest.mock("../../src/db/userStore", () => ({
     userStore: mockUserStoreConstructor.mockReturnValue(mockUserStore)
@@ -46,7 +47,29 @@ describe("test routes", () => {
         expect(res.send).toHaveBeenCalledWith(versionInfo)
     });
 
-    it("saves new project and forwards request when run poppunk", async () => {
+    it("saves new project", async () => {
+        const req = {
+            body: {
+                name: "test project name"
+            },
+            app: mockApp
+        };
+        const res = mockResponse();
+        await apiEndpoints(config).newProject(req, res);
+        expect(mockUserStoreConstructor).toHaveBeenCalledTimes(1);
+        expect(mockUserStoreConstructor.mock.calls[0][0]).toBe(mockRedis);
+        expect(mockUserStore.saveNewProject).toHaveBeenCalledTimes(1);
+        expect(mockUserStore.saveNewProject.mock.calls[0][0]).toBe(req);
+        expect(mockUserStore.saveNewProject.mock.calls[0][1]).toBe("test project name");
+        expect(res.json).toHaveBeenCalledTimes(1);
+        expect(res.json.mock.calls[0][0]).toStrictEqual({
+            status: "success",
+            errors: [],
+            data: "test-project-id"
+        });
+    });
+
+    it("sets hash for project and forwards request when run poppunk", async () => {
         const expectedPoppunkReq = {
             projectHash: "1234",
             names: {
@@ -62,7 +85,7 @@ describe("test routes", () => {
         const req = {
             body: {
                ...expectedPoppunkReq,
-                projectName: "test project"
+                projectId: "test-project-id"
             },
             app: mockApp
         };
@@ -70,10 +93,10 @@ describe("test routes", () => {
         await apiEndpoints(config).runPoppunk(req, {}, jest.fn());
         expect(mockUserStoreConstructor).toHaveBeenCalledTimes(1);
         expect(mockUserStoreConstructor.mock.calls[0][0]).toBe(mockRedis);
-        expect(mockUserStore.saveNewProject).toHaveBeenCalledTimes(1);
-        expect(mockUserStore.saveNewProject.mock.calls[0][0]).toBe(req);
-        expect(mockUserStore.saveNewProject.mock.calls[0][1]).toBe("1234")
-        expect(mockUserStore.saveNewProject.mock.calls[0][2]).toBe("test project");
+        expect(mockUserStore.saveProjectHash).toHaveBeenCalledTimes(1);
+        expect(mockUserStore.saveProjectHash.mock.calls[0][0]).toBe(req);
+        expect(mockUserStore.saveProjectHash.mock.calls[0][1]).toBe("test-project-id")
+        expect(mockUserStore.saveProjectHash.mock.calls[0][2]).toBe("1234");
 
         expect(mock.history.post[0].url).toBe("http://localhost:5000/poppunk");
         expect(JSON.parse(mock.history.post[0].data)).toStrictEqual(expectedPoppunkReq);

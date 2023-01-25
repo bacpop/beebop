@@ -74,7 +74,7 @@ describe("Actions", () => {
             .reply(200, responseSuccess("ABC-123"));
         const commit = jest.fn();
         await actions.newProject({ commit } as any, "testproj");
-        expect(JSON.parse(mockAxios.history.post[0].data)).toStrictEqual({name: "testproj"});
+        expect(JSON.parse(mockAxios.history.post[0].data)).toStrictEqual({ name: "testproj" });
         expect(commit).toHaveBeenCalledTimes(2);
         expect(commit.mock.calls[0][0]).toBe("setProjectName");
         expect(commit.mock.calls[0][1]).toBe("testproj");
@@ -83,7 +83,7 @@ describe("Actions", () => {
     });
 
     it("newProject adds error response", async () => {
-        const error = {error: "test", detail: "test detail"};
+        const error = { error: "test", detail: "test detail" };
         mockAxios.onPost(`${serverUrl}/project`)
             .reply(500, responseError(error));
         const commit = jest.fn();
