@@ -2,9 +2,9 @@ import actions from "@/store/actions";
 import versionInfo from "@/resources/versionInfo.json";
 import { Md5 } from "ts-md5/dist/md5";
 import { BeebopError } from "@/types";
+import { emptyState } from "@/utils";
 import config from "../../../src/settings/development/config";
 import { mockAxios, mockRootState } from "../../mocks";
-import {emptyState} from "@/utils";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function responseSuccess(data : any) {
@@ -96,7 +96,8 @@ describe("Actions", () => {
         mockAxios.onPost(`${serverUrl}/project`)
             .reply(500, responseError(error));
         const commit = jest.fn();
-        await actions.newProject({ commit } as any, "testproj");
+        const state = emptyState();
+        await actions.newProject({ commit, state } as any, "testproj");
         expect(commit).toHaveBeenCalledTimes(2);
         expect(commit.mock.calls[0][0]).toBe("setProjectName");
         expect(commit.mock.calls[0][1]).toBe("testproj");

@@ -1,4 +1,6 @@
-import {addRowspan, emptyState, getRGB, verbalProb} from "../../src/utils";
+import {
+    addRowspan, emptyState, getRGB, verbalProb
+} from "../../src/utils";
 
 describe("util functions", () => {
     const sortedTable = [
