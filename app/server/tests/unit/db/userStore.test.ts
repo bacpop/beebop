@@ -4,7 +4,6 @@ describe("UserStore", () => {
     const mockRedis = {
         hset: jest.fn(),
         lpush: jest.fn(),
-        llen: jest.fn().mockImplementation(() => 2),
         lrange: jest.fn().mockImplementation(() => ["123", "456"]),
         hmget: jest.fn().mockImplementation((key: string, ...valueNames: string[]) => {
             return valueNames.map((valueName) => `${valueName} for ${key}`);
@@ -53,12 +52,10 @@ describe("UserStore", () => {
             {id: "456", name: "name for beebop:project:456", hash: "hash for beebop:project:456"}
         ]);
 
-        expect(mockRedis.llen).toHaveBeenCalledTimes(1);
-        expect(mockRedis.llen.mock.calls[0][0]).toBe("beebop:userprojects:testProvider:testId");
         expect(mockRedis.lrange).toHaveBeenCalledTimes(1);
         expect(mockRedis.lrange.mock.calls[0][0]).toBe("beebop:userprojects:testProvider:testId");
         expect(mockRedis.lrange.mock.calls[0][1]).toBe(0);
-        expect(mockRedis.lrange.mock.calls[0][2]).toBe(1);
+        expect(mockRedis.lrange.mock.calls[0][2]).toBe(-1);
     });
 
 });
