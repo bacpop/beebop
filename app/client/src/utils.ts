@@ -1,3 +1,27 @@
+import { RootState } from "@/store/state";
+
+export const emptyState = (): RootState => ({
+    errors: [],
+    versions: [],
+    user: null,
+    microreactToken: null,
+    results: {
+        perIsolate: {},
+        perCluster: {}
+    },
+    projectName: null,
+    projectId: null,
+    projectHash: null,
+    submitStatus: null,
+    analysisStatus: {
+        assign: null,
+        microreact: null,
+        network: null
+    },
+    statusInterval: undefined,
+    savedProjects: []
+});
+
 export function addRowspan(tableSorted: Record<string, string | number>[]) {
     // extract cluster numbers
     const clusters = tableSorted.map((a) => a.Cluster);

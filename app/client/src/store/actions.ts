@@ -7,6 +7,7 @@ import {
     Versions, User, AnalysisStatus, ClusterInfo, Dict, SavedProject, NewProjectRequest
 } from "@/types";
 import { api } from "@/apiService";
+import { emptyState } from "@/utils";
 
 axios.defaults.withCredentials = true;
 const serverUrl = config.serverUrl();
@@ -25,7 +26,11 @@ export default {
             .get<User>(`${serverUrl}/user`);
     },
     async newProject(context: ActionContext<RootState, RootState>, name: string) {
-        const { commit } = context;
+        const { commit, state } = context;
+        // We assume that the latest current project state has been persisted so we can immediately use empty state for
+        // new project
+        Object.assign(state, emptyState());
+
         commit("setProjectName", name);
         await api(context)
             .withSuccess("setProjectId")

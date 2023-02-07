@@ -1,4 +1,4 @@
-import { addRowspan, getRGB, verbalProb } from "../../src/utils";
+import {addRowspan, emptyState, getRGB, verbalProb} from "../../src/utils";
 
 describe("util functions", () => {
     const sortedTable = [
@@ -63,5 +63,30 @@ describe("util functions", () => {
         expect(verbalProb(0.6, "Cotrim")).toEqual("Very good chance");
         expect(verbalProb(0.4, "Cotrim")).toEqual("Probably not");
         expect(verbalProb(0.1, "Cotrim")).toEqual("Unlikely");
+    });
+
+    it("generates empty state", () => {
+        const state = emptyState();
+        expect(state).toStrictEqual({
+            errors: [],
+            versions: [],
+            user: null,
+            microreactToken: null,
+            results: {
+                perIsolate: {},
+                perCluster: {}
+            },
+            projectName: null,
+            projectId: null,
+            projectHash: null,
+            submitStatus: null,
+            analysisStatus: {
+                assign: null,
+                microreact: null,
+                network: null
+            },
+            statusInterval: undefined,
+            savedProjects: []
+        });
     });
 });
