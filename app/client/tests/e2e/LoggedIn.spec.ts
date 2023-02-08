@@ -92,10 +92,13 @@ test.describe("Logged in Tests", () => {
         await expect(page.locator('tr:has-text("6930_8_13.fa") a')).toContainText("Visit Microreact URL");
         await expect(page.locator('tr:has-text("6930_8_13.fa") a'))
             .toHaveAttribute("href", /https:\/\/microreact.org\/project\/.*-poppunk.*/);
-        // nework visualisation component has 1 button for each cluster (=2) and renders canvases
+        // network visualisation component has 1 button for each cluster (=2) and renders canvases
         await page.click(".nav-link >> text=Network");
         await expect(page.locator("#cluster-tabs")).toHaveCount(2);
         await expect(page.locator("#cy")).toHaveCount(1);
         await expect(page.locator("#cy canvas")).toHaveCount(3);
+        // can browse back to Home page and see new project in history
+        await page.goto(config.clientUrl());
+        await expect(await page.locator(":nth-match(.saved-project-row, 1)").innerText()).toBe("test project");
     });
 });

@@ -74,3 +74,13 @@ interface GraphmlExtension {
 }
 
 export type CyGraphml = cytoscape.Core & GraphmlExtension
+
+export interface NewProjectRequest {
+    name: string
+}
+
+export interface SavedProject {
+    id: string,
+    name: string,
+    hash: string
+}

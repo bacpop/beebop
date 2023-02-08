@@ -1,6 +1,6 @@
 import { RootState } from "@/store/state";
 import {
-    Versions, User, IsolateValue, AnalysisStatus, ClusterInfo, BeebopError
+    Versions, User, IsolateValue, AnalysisStatus, ClusterInfo, BeebopError, SavedProject
 } from "@/types";
 
 export default {
@@ -9,6 +9,9 @@ export default {
     },
     setProjectName(state: RootState, projectName: string) {
         state.projectName = projectName;
+    },
+    setProjectId(state: RootState, projectId: string) {
+        state.projectId = projectId;
     },
     setVersions(state: RootState, versioninfo: Versions) {
         state.versions = versioninfo;
@@ -67,5 +70,9 @@ export default {
             cluster: graphInfo.cluster,
             graph: graphInfo.graph
         };
+    },
+    setSavedProjects(state: RootState, savedProjects: SavedProject[]) {
+        console.log(`setting saved projects: ${JSON.stringify(savedProjects)}`);
+        state.savedProjects = savedProjects;
     }
 };

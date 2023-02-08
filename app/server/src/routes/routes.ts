@@ -1,6 +1,6 @@
 import axios from 'axios';
 import passport from 'passport';
-import {BeebopRunRequest, PoppunkRequest} from "../requestTypes";
+import {BeebopRunRequest, NewProjectRequest, PoppunkRequest} from "../requestTypes";
 import {userStore} from "../db/userStore";
 import asyncHandler from "../errors/asyncHandler";
 
@@ -18,9 +18,17 @@ export const router = ((app, config) => {
     app.get('/version',
         api.getVersionInfo);
 
+    app.post('/project',
+        authCheck,
+        api.newProject);
+
     app.post('/poppunk',
         authCheck,
         api.runPoppunk);
+
+    app.get('/projects',
+        authCheck,
+        api.getProjects);
 
     app.post('/status',
         authCheck,
@@ -40,25 +48,16 @@ export const router = ((app, config) => {
         authCheck,
         (request, response) => {
             if (request.user.provider == 'github') {
-                response.json({
-                    status: 'success',
-                    errors: [],
-                    data: {
-                        id: request.user.id,
-                        provider: request.user.provider,
-                        name: request.user.username
-                    }
-                    
+                sendSuccess(response, {
+                    id: request.user.id,
+                    provider: request.user.provider,
+                    name: request.user.username
                 });
             } else {
-                response.json({
-                    status: 'success',
-                    errors: [],
-                    data: {
-                        id: request.user.id,
-                        provider: request.user.provider,
-                        name: request.user.name.givenName
-                    }    
+                sendSuccess(response, {
+                    id: request.user.id,
+                    provider: request.user.provider,
+                    name: request.user.name.givenName
                 });
             }
         }
@@ -148,13 +147,19 @@ export const apiEndpoints = (config => ({
             .then(res => response.send(res.data));
     },
 
+    async newProject(request, response) {
+        const name = (request.body as NewProjectRequest).name;
+        const {redis} = request.app.locals;
+        const projectId = await userStore(redis).saveNewProject(request, name);
+        sendSuccess(response, projectId);
+    },
+
     async runPoppunk(request, response, next) {
         await asyncHandler(next, async () => {
             const poppunkRequest = request.body as BeebopRunRequest;
-            const {projectHash, projectName, names, sketches} = poppunkRequest;
+            const {projectHash, projectId, names, sketches} = poppunkRequest;
             const {redis} = request.app.locals;
-            await userStore(redis).saveNewProject(request, projectHash, projectName);
-
+            await userStore(redis).saveProjectHash(request, projectId, projectHash);
             const apiRequest = {names, projectHash, sketches} as PoppunkRequest;
             await axios.post(`${config.api_url}/poppunk`,
                 apiRequest,
@@ -170,6 +175,14 @@ export const apiEndpoints = (config => ({
                 .catch(function (error) {
                     sendError(response, error);
                 })
+        });
+    },
+
+    async getProjects(request, response, next) {
+        await asyncHandler(next, async () => {
+            const {redis} = request.app.locals;
+            const projects = await userStore(redis).getUserProjects(request);
+            sendSuccess(response, projects);
         });
     },
 
@@ -226,4 +239,12 @@ function sendError(response, error) {
             data: null
         })  
     }
+}
+
+function sendSuccess(response, data) {
+    response.json({
+        status: 'success',
+        errors: [],
+        data
+    });
 }

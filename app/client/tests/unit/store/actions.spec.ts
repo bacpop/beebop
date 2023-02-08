@@ -1,6 +1,7 @@
 import actions from "@/store/actions";
 import versionInfo from "@/resources/versionInfo.json";
 import { Md5 } from "ts-md5/dist/md5";
+import { BeebopError } from "@/types";
 import config from "../../../src/settings/development/config";
 import { mockAxios, mockRootState } from "../../mocks";
 
@@ -10,6 +11,14 @@ function responseSuccess(data : any) {
         status: "success",
         errors: [],
         data
+    };
+}
+
+function responseError(error: BeebopError) {
+    return {
+        status: "failure",
+        errors: [error],
+        data: null
     };
 }
 
@@ -60,6 +69,32 @@ describe("Actions", () => {
         );
     });
 
+    it("newProject posts project name and commits returned id", async () => {
+        mockAxios.onPost(`${serverUrl}/project`)
+            .reply(200, responseSuccess("ABC-123"));
+        const commit = jest.fn();
+        await actions.newProject({ commit } as any, "testproj");
+        expect(JSON.parse(mockAxios.history.post[0].data)).toStrictEqual({ name: "testproj" });
+        expect(commit).toHaveBeenCalledTimes(2);
+        expect(commit.mock.calls[0][0]).toBe("setProjectName");
+        expect(commit.mock.calls[0][1]).toBe("testproj");
+        expect(commit.mock.calls[1][0]).toBe("setProjectId");
+        expect(commit.mock.calls[1][1]).toBe("ABC-123");
+    });
+
+    it("newProject adds error response", async () => {
+        const error = { error: "test", detail: "test detail" };
+        mockAxios.onPost(`${serverUrl}/project`)
+            .reply(500, responseError(error));
+        const commit = jest.fn();
+        await actions.newProject({ commit } as any, "testproj");
+        expect(commit).toHaveBeenCalledTimes(2);
+        expect(commit.mock.calls[0][0]).toBe("setProjectName");
+        expect(commit.mock.calls[0][1]).toBe("testproj");
+        expect(commit.mock.calls[1][0]).toBe("addError");
+        expect(commit.mock.calls[1][1]).toStrictEqual(error);
+    });
+
     it("logoutUser makes axios call", async () => {
         mockAxios.onGet(`${serverUrl}/logout`).reply(200);
         await actions.logoutUser();
@@ -84,7 +119,7 @@ describe("Actions", () => {
     it("runPoppunk makes axios call", async () => {
         const commit = jest.fn();
         const state = mockRootState({
-            projectName: "test project",
+            projectId: "test-project",
             results: {
                 perIsolate: {
                     someFileHash: {
@@ -107,7 +142,7 @@ describe("Actions", () => {
         expect(mockAxios.history.post[0].url).toEqual(`${serverUrl}/poppunk`);
         expect(JSON.parse(mockAxios.history.post[0].data)).toStrictEqual({
             projectHash: expectedHash,
-            projectName: "test project",
+            projectId: "test-project",
             sketches: {
                 someFileHash: { 14: "12345" },
                 someFileHash2: { 14: "12345" }
@@ -326,6 +361,29 @@ describe("Actions", () => {
         expect(commit.mock.calls[0]).toEqual([
             "addGraphml",
             expResponse.data
+        ]);
+    });
+
+    it("getSavedProjects fetches and commits user projects", async () => {
+        const commit = jest.fn();
+        const projects = [{ hash: "123", name: "proj 1" }, { hash: "456", name: "proj 2" }];
+        mockAxios.onGet(`${serverUrl}/projects`).reply(200, responseSuccess(projects));
+        await actions.getSavedProjects({ commit } as any);
+        expect(mockAxios.history.get[0].url).toEqual(`${serverUrl}/projects`);
+        expect(commit.mock.calls[0]).toEqual([
+            "setSavedProjects",
+            projects
+        ]);
+    });
+
+    it("getSavedProjects commits error", async () => {
+        const commit = jest.fn();
+        mockAxios.onGet(`${serverUrl}/projects`).reply(500, responseError({ error: "test error" }));
+        await actions.getSavedProjects({ commit } as any);
+        expect(mockAxios.history.get[0].url).toEqual(`${serverUrl}/projects`);
+        expect(commit.mock.calls[0]).toEqual([
+            "addError",
+            { error: "test error" }
         ]);
     });
 });
