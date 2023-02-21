@@ -1,9 +1,15 @@
 /// <reference lib="dom"/>
 /* eslint-disable no-tabs */
 
-import { test, expect } from "@playwright/test";
+import {test, expect, Page} from "@playwright/test";
 import { readFileSync } from "fs";
 import config from "../../src/settings/development/config";
+
+const createProject = async (projectName: string, page: Page) => {
+    await page.fill("input#create-project-name", "test project");
+    await page.click("button#create-project-btn");
+    expect(await page.locator("#no-results").innerText()).toBe("No data uploaded yet");
+};
 
 test.describe("Logged in Tests", () => {
     test.beforeEach(async ({ page }) => {
@@ -23,8 +29,7 @@ test.describe("Logged in Tests", () => {
     });
 
     test("should display dropzone in Project view", async ({ page }) => {
-        await page.fill("input#create-project-name", "test project");
-        await page.click("button#create-project-btn");
+        await createProject("test project", page);
         await expect(page.locator(".dropzone")).toBeVisible();
         await expect(page.locator("h2")).toContainText("Project: test project");
     });
@@ -34,9 +39,8 @@ test.describe("Logged in Tests", () => {
         await expect(await page.locator("button#create-project-btn")).toBeVisible();
     });
 
-    test("should update file list on drop, process them in WebWorker and submit on click", async ({ page }) => {
-        await page.fill("input#create-project-name", "test project");
-        await page.click("button#create-project-btn");
+    test("should behave as expected when doing full project analysis, then new project", async ({ page }) => {
+        await createProject("test project", page);
         // Read files into a buffer
         const buffer = readFileSync("./tests/files/6930_8_13.fa", { encoding: "utf8", flag: "r" });
         const buffer2 = readFileSync("./tests/files/6930_8_11.fa", { encoding: "utf8", flag: "r" });
@@ -100,5 +104,7 @@ test.describe("Logged in Tests", () => {
         // can browse back to Home page and see new project in history
         await page.goto(config.clientUrl());
         await expect(await page.locator(":nth-match(.saved-project-row, 1)").innerText()).toBe("test project");
+        // can create a new empty project
+        await createProject("another test project", page);
     });
 });
