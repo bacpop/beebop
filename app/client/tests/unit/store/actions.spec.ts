@@ -2,6 +2,7 @@ import actions from "@/store/actions";
 import versionInfo from "@/resources/versionInfo.json";
 import { Md5 } from "ts-md5/dist/md5";
 import { BeebopError } from "@/types";
+import { emptyState } from "@/utils";
 import config from "../../../src/settings/development/config";
 import { mockAxios, mockRootState } from "../../mocks";
 
@@ -69,12 +70,20 @@ describe("Actions", () => {
         );
     });
 
-    it("newProject posts project name and commits returned id", async () => {
+    it("newProject clears state, posts project name and commits returned id", async () => {
         mockAxios.onPost(`${serverUrl}/project`)
             .reply(200, responseSuccess("ABC-123"));
         const commit = jest.fn();
-        await actions.newProject({ commit } as any, "testproj");
+        const state = {
+            ...emptyState(),
+            projectId: "123",
+            projectHash: "abc",
+            errors: ["test error"],
+            submitStatus: "test status"
+        } as any;
+        await actions.newProject({ commit, state } as any, "testproj");
         expect(JSON.parse(mockAxios.history.post[0].data)).toStrictEqual({ name: "testproj" });
+        expect(state).toStrictEqual(emptyState());
         expect(commit).toHaveBeenCalledTimes(2);
         expect(commit.mock.calls[0][0]).toBe("setProjectName");
         expect(commit.mock.calls[0][1]).toBe("testproj");
@@ -87,7 +96,8 @@ describe("Actions", () => {
         mockAxios.onPost(`${serverUrl}/project`)
             .reply(500, responseError(error));
         const commit = jest.fn();
-        await actions.newProject({ commit } as any, "testproj");
+        const state = emptyState();
+        await actions.newProject({ commit, state } as any, "testproj");
         expect(commit).toHaveBeenCalledTimes(2);
         expect(commit.mock.calls[0][0]).toBe("setProjectName");
         expect(commit.mock.calls[0][1]).toBe("testproj");
