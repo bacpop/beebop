@@ -74,5 +74,9 @@ export default {
     setSavedProjects(state: RootState, savedProjects: SavedProject[]) {
         console.log(`setting saved projects: ${JSON.stringify(savedProjects)}`);
         state.savedProjects = savedProjects;
+    },
+    loadProject(state: RootState, project: any) {
+        console.log("Got project data:");
+        console.log(JSON.stringify(project));
     }
 };

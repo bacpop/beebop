@@ -43,6 +43,12 @@ export default {
             .withError("addError")
             .get<SavedProject[]>(`${serverUrl}/projects`);
     },
+    async getProject(context: ActionContext<RootState, RootState>, projectHash: string) {
+        await api(context)
+            .withSuccess("loadProject")
+            .withError("addError")
+            .get<any>(`${serverUrl}/project/${projectHash}`);
+    },
     async logoutUser() {
         await axios.get(`${serverUrl}/logout`);
     },

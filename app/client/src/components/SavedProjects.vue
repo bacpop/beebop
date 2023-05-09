@@ -8,7 +8,7 @@
           <hr/>
           <div v-for="project in savedProjects" :key="project.hash" class="row saved-project-row">
               <div class="col-6">
-                  <span class="clickable brand-text">{{ project.name }}</span>
+                  <a href="#" class="clickable brand-text" @click="getProject(project.hash)">{{ project.name }}</a>
               </div>
           </div>
       </div>
@@ -22,7 +22,7 @@ import { mapActions, mapState } from "vuex";
 export default {
     name: "SavedProjects",
     methods: {
-        ...mapActions(["getSavedProjects"])
+        ...mapActions(["getSavedProjects", "getProject"])
     },
     computed: {
         ...mapState(["savedProjects"])
