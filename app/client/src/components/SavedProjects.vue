@@ -8,9 +8,9 @@
           <hr/>
           <div v-for="project in savedProjects" :key="project.hash" class="row saved-project-row">
               <div class="col-6">
-                  <span class="clickable brand-text" @click="loadProject(project)" @keydown="loadKB">
+                  <button class="clickable brand-text" @click="loadProject(project)" @keydown="loadProjectFromKey(project, $event.keyCode)">
                       {{ project.name }}
-                  </span>
+                  </button>
               </div>
           </div>
       </div>
@@ -32,8 +32,11 @@ function loadProject(project: SavedProject) {
     router.push("/project");
 }
 
-function loadKB() {
-    console.log("TODO");
+function loadProjectFromKey(project: SavedProject, keyCode: number) {
+    // load on Enter
+    if (keyCode === 13) {
+        loadProject(project);
+    }
 }
 
 onMounted(() => {
