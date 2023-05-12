@@ -83,7 +83,7 @@ export default {
 
         const samplesAsDict: Record<string, Isolate> = {};
         projectResponse.samples.forEach((sample) => {
-            samplesAsDict[sample.hash!] = sample;
+            samplesAsDict[sample.hash!] = { ...sample, sketch: JSON.stringify(sample.sketch) };
         });
         state.results.perIsolate = samplesAsDict;
     }
