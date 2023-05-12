@@ -36,6 +36,9 @@ export default {
         }
         state.results.perIsolate[input.hash][input.type] = results;
     },
+    setLoadingProject(state: RootState, value: boolean) {
+        state.loadingProject = value;
+    },
     setProjectHash(state: RootState, phash: string) {
         state.projectHash = phash;
     },
@@ -72,10 +75,9 @@ export default {
         };
     },
     setSavedProjects(state: RootState, savedProjects: SavedProject[]) {
-        console.log(`setting saved projects: ${JSON.stringify(savedProjects)}`);
         state.savedProjects = savedProjects;
     },
-    loadProject(state: RootState, project: any) {
+    projectLoaded(state: RootState, project: any) {
         console.log("Got project data:");
         console.log(JSON.stringify(project));
     }

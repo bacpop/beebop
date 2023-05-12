@@ -43,11 +43,21 @@ export default {
             .withError("addError")
             .get<SavedProject[]>(`${serverUrl}/projects`);
     },
-    async getProject(context: ActionContext<RootState, RootState>, projectHash: string) {
+    async loadProject(context: ActionContext<RootState, RootState>, project: SavedProject) {
+        const { commit, state } = context;
+        Object.assign(state, {
+            ...emptyState(),
+            loadingProject: true,
+            projectId: project.id,
+            projectHash: project.hash,
+            projectName: project.name,
+        });
         await api(context)
-            .withSuccess("loadProject")
+            .withSuccess("projectLoaded")
             .withError("addError")
-            .get<any>(`${serverUrl}/project/${projectHash}`);
+            .get<any>(`${serverUrl}/project/${project.hash}`);
+        // we may need to change this to happen later when other loading steps are implemented
+        commit("setLoadingProject", false);
     },
     async logoutUser() {
         await axios.get(`${serverUrl}/logout`);

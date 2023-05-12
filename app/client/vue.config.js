@@ -17,5 +17,6 @@ module.exports = defineConfig({
                 "src/settings/",
                 process.env.BUILD_TARGET || "development"
             ));
-    }
+    },
+    lintOnSave: "warning"
 });

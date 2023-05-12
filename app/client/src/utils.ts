@@ -19,7 +19,9 @@ export const emptyState = (): RootState => ({
         network: null
     },
     statusInterval: undefined,
-    savedProjects: []
+    savedProjects: [],
+    loadingProject: false,
+    loadingProjectMessages: []
 });
 
 export function addRowspan(tableSorted: Record<string, string | number>[]) {

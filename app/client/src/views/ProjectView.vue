@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="projectId" class="project">
+    <div v-if="projectId && !loadingProject" class="project">
       <div class="file-input">
         <DropZone v-if="user && !submitStatus" class="dropzone-component"/>
       </div>
@@ -50,7 +50,7 @@
       </div>
     </div>
     <div v-else id="loading-project">
-        Loading...
+        <loading-project></loading-project>
     </div>
   </div>
 </template>
@@ -62,6 +62,7 @@ import DropZone from "@/components/DropZone.vue";
 import StartButton from "@/components/StartButton.vue";
 import ProgressBar from "@/components/ProgressBar.vue";
 import ResultsTable from "@/components/ResultsTable.vue";
+import LoadingProject from "@/components/LoadingProject.vue";
 import NetworkVisualisations from "@/components/NetworkVisualisations.vue";
 
 export default defineComponent({
@@ -71,7 +72,8 @@ export default defineComponent({
         StartButton,
         ProgressBar,
         ResultsTable,
-        NetworkVisualisations
+        NetworkVisualisations,
+        LoadingProject
     },
     data() {
         return {
@@ -93,7 +95,7 @@ export default defineComponent({
         }
     },
     computed: {
-        ...mapState(["user", "submitStatus", "analysisStatus", "projectId", "projectName"]),
+        ...mapState(["user", "submitStatus", "analysisStatus", "projectId", "projectName", "loadingProject"]),
         ...mapGetters(["uniqueClusters"])
     }
 });
