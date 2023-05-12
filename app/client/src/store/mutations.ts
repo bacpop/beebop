@@ -1,6 +1,6 @@
 import { RootState } from "@/store/state";
 import {
-    Versions, User, IsolateValue, AnalysisStatus, ClusterInfo, BeebopError, SavedProject
+    Versions, User, IsolateValue, AnalysisStatus, ClusterInfo, BeebopError, SavedProject, ProjectResponse, Isolate
 } from "@/types";
 
 export default {
@@ -77,8 +77,14 @@ export default {
     setSavedProjects(state: RootState, savedProjects: SavedProject[]) {
         state.savedProjects = savedProjects;
     },
-    projectLoaded(state: RootState, project: any) {
+    projectLoaded(state: RootState, projectResponse: ProjectResponse) {
         console.log("Got project data:");
-        console.log(JSON.stringify(project));
+        console.log(JSON.stringify(projectResponse));
+
+        const samplesAsDict: Record<string, Isolate> = {};
+        projectResponse.samples.forEach((sample) => {
+            samplesAsDict[sample.hash!] = sample;
+        });
+        state.results.perIsolate = samplesAsDict;
     }
 };

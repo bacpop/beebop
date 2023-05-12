@@ -4,7 +4,7 @@ import config from "@settings/config";
 import { Md5 } from "ts-md5/dist/md5";
 import { RootState } from "@/store/state";
 import {
-    Versions, User, AnalysisStatus, ClusterInfo, Dict, SavedProject, NewProjectRequest
+    Versions, User, AnalysisStatus, ClusterInfo, Dict, SavedProject, NewProjectRequest, ProjectResponse
 } from "@/types";
 import { api } from "@/apiService";
 import { emptyState } from "@/utils";
@@ -50,12 +50,12 @@ export default {
             loadingProject: true,
             projectId: project.id,
             projectHash: project.hash,
-            projectName: project.name,
+            projectName: project.name
         });
         await api(context)
             .withSuccess("projectLoaded")
             .withError("addError")
-            .get<any>(`${serverUrl}/project/${project.hash}`);
+            .get<ProjectResponse>(`${serverUrl}/project/${project.hash}`);
         // we may need to change this to happen later when other loading steps are implemented
         commit("setLoadingProject", false);
     },
