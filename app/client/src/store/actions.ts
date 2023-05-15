@@ -45,6 +45,7 @@ export default {
     },
     async loadProject(context: ActionContext<RootState, RootState>, project: SavedProject) {
         const { commit, state } = context;
+        commit("addLoadingProjectMessage", "Clearing state");
         Object.assign(state, {
             ...emptyState(),
             loadingProject: true,
@@ -52,10 +53,12 @@ export default {
             projectHash: project.hash,
             projectName: project.name
         });
+        commit("addLoadingProjectMessage", "Fetching sketches");
         await api(context)
             .withSuccess("projectLoaded")
             .withError("addError")
             .get<ProjectResponse>(`${serverUrl}/project/${project.hash}`);
+        commit("addLoadingProjectMessage", "Loading complete");
         // we may need to change this to happen later when other loading steps are implemented
         commit("setLoadingProject", false);
     },

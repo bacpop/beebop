@@ -38,6 +38,9 @@ export default {
     },
     setLoadingProject(state: RootState, value: boolean) {
         state.loadingProject = value;
+        if (!value) {
+            state.loadingProjectMessages = [];
+        }
     },
     setProjectHash(state: RootState, phash: string) {
         state.projectHash = phash;
@@ -77,10 +80,10 @@ export default {
     setSavedProjects(state: RootState, savedProjects: SavedProject[]) {
         state.savedProjects = savedProjects;
     },
+    addLoadingProjectMessage(state: RootState, message: string) {
+        state.loadingProjectMessages.push(message);
+    },
     projectLoaded(state: RootState, projectResponse: ProjectResponse) {
-        console.log("Got project data:");
-        console.log(JSON.stringify(projectResponse));
-
         const samplesAsDict: Record<string, Isolate> = {};
         projectResponse.samples.forEach((sample) => {
             samplesAsDict[sample.hash!] = { ...sample, sketch: JSON.stringify(sample.sketch) };
