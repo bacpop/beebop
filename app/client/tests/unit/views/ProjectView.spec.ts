@@ -4,6 +4,8 @@ import Vuex, { Store } from "vuex";
 import { RootState } from "@/store/state";
 import LoadingProject from "@/components/LoadingProject.vue";
 import { mockRootState } from "../../mocks";
+import StartButton from "@/components/StartButton.vue";
+import ResultsTable from "@/components/ResultsTable.vue";
 
 describe("Project", () => {
     const getUser = jest.fn();
@@ -22,7 +24,7 @@ describe("Project", () => {
     });
 
     const getWrapper = (store: Store<RootState>) => {
-        return mount(ProjectView, {
+        return shallowMount(ProjectView, {
             global: {
                 plugins: [store],
                 mocks: {
@@ -47,10 +49,9 @@ describe("Project", () => {
 
         expect(wrapper.find("h2").text()).toBe("Project: test project");
         expect(wrapper.findAll(".dropzone-component").length).toBe(1);
-        const buttons = wrapper.findAll(".btn-standard");
-        expect(buttons.length).toBe(1);
-        expect(buttons[0].text()).toBe("Start Analysis");
-        expect(wrapper.find("div#no-results").text()).toBe("No data uploaded yet");
+
+        expect(wrapper.findComponent(StartButton).exists()).toBe(true);
+        expect(wrapper.findComponent(ResultsTable).exists()).toBe(true);
         expect(getUser).toHaveBeenCalled();
         expect(mockRouter.push).not.toHaveBeenCalled();
     });
