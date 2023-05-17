@@ -1,7 +1,7 @@
 <template>
     <loading-spinner class="spinner"></loading-spinner>
     <div>Loading project...</div>
-    <div v-for="message in loadingProjectMessages">
+    <div v-for="message in loadingProjectMessages" class="loading-project-message">
         {{ message }}
     </div>
 </template>

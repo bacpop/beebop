@@ -45,6 +45,7 @@ export default {
     },
     async loadProject(context: ActionContext<RootState, RootState>, project: SavedProject) {
         const { commit, state } = context;
+        commit("setLoadingProject", true);
         commit("addLoadingProjectMessage", "Clearing state");
         Object.assign(state, {
             ...emptyState(),

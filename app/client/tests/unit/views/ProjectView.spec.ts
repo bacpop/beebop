@@ -1,8 +1,9 @@
 import { mount, shallowMount } from "@vue/test-utils";
 import ProjectView from "@/views/ProjectView.vue";
-import Vuex from "vuex";
+import Vuex, {Store} from "vuex";
 import { RootState } from "@/store/state";
 import { mockRootState } from "../../mocks";
+import LoadingProject from "@/components/LoadingProject.vue";
 
 describe("Project", () => {
     const getUser = jest.fn();
@@ -10,26 +11,18 @@ describe("Project", () => {
         push: jest.fn()
     };
 
+    const user = {
+        name: "Jane",
+        id: "543653d45",
+        provider: "google"
+    };
+
     beforeEach(() => {
         jest.resetAllMocks();
     });
 
-    it("displays as expected, gets user information on mount", () => {
-        const store = new Vuex.Store<RootState>({
-            state: mockRootState({
-                projectName: "test project",
-                projectId: "ABC-123",
-                user: {
-                    name: "Jane",
-                    id: "543653d45",
-                    provider: "google"
-                }
-            }),
-            actions: {
-                getUser
-            }
-        });
-        const wrapper = mount(ProjectView, {
+    const getWrapper = (store: Store<RootState>) => {
+        return mount(ProjectView, {
             global: {
                 plugins: [store],
                 mocks: {
@@ -37,6 +30,20 @@ describe("Project", () => {
                 }
             }
         });
+    };
+
+    it("displays as expected, gets user information on mount", () => {
+        const store = new Vuex.Store<RootState>({
+            state: mockRootState({
+                projectName: "test project",
+                projectId: "ABC-123",
+                user
+            }),
+            actions: {
+                getUser
+            }
+        });
+        const wrapper = getWrapper(store);
 
         expect(wrapper.find("h2").text()).toBe("Project: test project");
         expect(wrapper.findAll(".dropzone-component").length).toBe(1);
@@ -61,11 +68,7 @@ describe("Project", () => {
             state: mockRootState({
                 projectName: "testProject",
                 projectId: "ABC-123",
-                user: {
-                    name: "Jane",
-                    id: "543653d45",
-                    provider: "google"
-                },
+                user,
                 submitStatus: "submitted",
                 analysisStatus: {
                     assign: "finished",
@@ -128,14 +131,7 @@ describe("Project", () => {
                 uniqueClusters
             }
         });
-        const wrapper = shallowMount(ProjectView, {
-            global: {
-                plugins: [store]
-            },
-            stubs: {
-                NetworkVisualisations: "<div>Network Visualisations</div>"
-            }
-        });
+        const wrapper = getWrapper(store);
 
         expect(wrapper.findAll(".dropzone-component").length).toBe(0);
         expect(wrapper.findAll(".progress-bar-component").length).toBe(1);
@@ -147,7 +143,7 @@ describe("Project", () => {
         expect(wrapper.vm.selectedTab).toBe("table");
         tabs[1].trigger("click");
         expect(wrapper.vm.selectedTab).toBe("network");
-        expect(wrapper.find("#loading-project").exists()).toBe(false);
+        expect(wrapper.findComponent(LoadingProject).exists()).toBe(false);
     });
 
     it("redirects to root if no project name", () => {
@@ -155,55 +151,51 @@ describe("Project", () => {
             state: mockRootState({
                 projectId: "ABC-123",
                 projectName: null,
-                user: {
-                    name: "Jane",
-                    id: "543653d45",
-                    provider: "google"
-                }
+                user
             }),
             actions: {
                 getUser
             }
         });
-        mount(ProjectView, {
-            global: {
-                plugins: [store],
-                mocks: {
-                    $router: mockRouter
-                }
-            }
-        });
+        getWrapper(store);
 
         expect(getUser).not.toHaveBeenCalled();
         expect(mockRouter.push).toHaveBeenCalledTimes(1);
         expect(mockRouter.push.mock.calls[0][0]).toBe("/");
     });
 
-    it("displays placeholder if no project id", () => {
+    it("displays loading project component if no project id", () => {
         const store = new Vuex.Store<RootState>({
             state: mockRootState({
                 projectId: null,
                 projectName: "test",
-                user: {
-                    name: "Jane",
-                    id: "543653d45",
-                    provider: "google"
-                }
+                user
             }),
             actions: {
                 getUser
             }
         });
-        const wrapper = mount(ProjectView, {
-            global: {
-                plugins: [store],
-                mocks: {
-                    $router: mockRouter
-                }
-            }
-        });
+        const wrapper = getWrapper(store);
 
         expect(wrapper.find("div.router").exists()).toBe(false);
-        expect(wrapper.find("div#loading-project").text()).toBe("Loading...");
+        expect(wrapper.findComponent(LoadingProject).exists()).toBe(true);
+    });
+
+    it("displays loading project component if project is loading", () => {
+        const store = new Vuex.Store<RootState>({
+            state: mockRootState({
+                projectId: "123",
+                loadingProject: true,
+                projectName: "test",
+                user
+            }),
+            actions: {
+                getUser
+            }
+        });
+        const wrapper = getWrapper(store);
+
+        expect(wrapper.find("div.router").exists()).toBe(false);
+        expect(wrapper.findComponent(LoadingProject).exists()).toBe(true);
     });
 });

@@ -38,9 +38,7 @@ export default {
     },
     setLoadingProject(state: RootState, value: boolean) {
         state.loadingProject = value;
-        if (!value) {
-            state.loadingProjectMessages = [];
-        }
+        state.loadingProjectMessages = [];
     },
     setProjectHash(state: RootState, phash: string) {
         state.projectHash = phash;
