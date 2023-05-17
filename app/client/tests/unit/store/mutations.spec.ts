@@ -179,7 +179,7 @@ describe("mutations", () => {
         });
         mutations.setLoadingProject(state, true);
         expect(state.loadingProject).toBe(true);
-        expect(state.loadingProject).toStrictEqual([]);
+        expect(state.loadingProjectMessages).toStrictEqual([]);
     });
     it("adds loading project message", () => {
         const state = mockRootState({

@@ -88,7 +88,9 @@ describe("util functions", () => {
                 network: null
             },
             statusInterval: undefined,
-            savedProjects: []
+            savedProjects: [],
+            loadingProject: false,
+            loadingProjectMessages: []
         });
     });
 });

@@ -1,7 +1,7 @@
 /// <reference lib="dom"/>
 /* eslint-disable no-tabs */
 
-import {test, expect, Page} from "@playwright/test";
+import { test, expect, Page } from "@playwright/test";
 import { readFileSync } from "fs";
 import config from "../../src/settings/development/config";
 import PlaywrightConfig from "../../playwright.config";
@@ -114,7 +114,9 @@ test.describe("Logged in Tests", () => {
         await page.goto(config.clientUrl());
         await page.click(`:nth-match(.saved-project-row button, ${lastProjectIndex})`);
         // TODO: "unknown.fa" will be replaced with real filename when persisting these per user is implemented
-        await expect(page.locator(":nth-match(.tab-content tr, 1)")).toContainText(["unknown.fa", "✔", "PCETE SXT"], { timeout });
-        await expect(page.locator(":nth-match(.tab-content tr, 2)")).toContainText(["unknown.fa", "✔", "PCETE SXT"]);
+        await expect(page.locator(":nth-match(.tab-content tr, 1)"))
+            .toContainText(["unknown.fa", "✔", "PCETE SXT"], { timeout });
+        await expect(page.locator(":nth-match(.tab-content tr, 2)"))
+            .toContainText(["unknown.fa", "✔", "PCETE SXT"]);
     });
 });

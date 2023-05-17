@@ -1,9 +1,9 @@
 import { mount, shallowMount } from "@vue/test-utils";
 import ProjectView from "@/views/ProjectView.vue";
-import Vuex, {Store} from "vuex";
+import Vuex, { Store } from "vuex";
 import { RootState } from "@/store/state";
-import { mockRootState } from "../../mocks";
 import LoadingProject from "@/components/LoadingProject.vue";
+import { mockRootState } from "../../mocks";
 
 describe("Project", () => {
     const getUser = jest.fn();

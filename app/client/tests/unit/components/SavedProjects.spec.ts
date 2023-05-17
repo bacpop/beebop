@@ -2,6 +2,10 @@ import Vuex from "vuex";
 import { RootState } from "@/store/state";
 import { shallowMount } from "@vue/test-utils";
 import { mockRootState } from "../../mocks";
+// We need to import SavedProjects after mocking the router
+// eslint-disable-next-line import/order
+import SavedProjects from "@/components/SavedProjects.vue";
+
 const mockRouter = {
     push: jest.fn()
 };
@@ -13,14 +17,10 @@ const savedProjects = [
     { name: "project one", hash: "123abc", id: "ABC-123" },
     { name: "project two", hash: "456def", id: "DEF-123" }
 ];
-// We need to import SavedProjects after mocking the router
-// eslint-disable-next-line import/order
-import SavedProjects from "@/components/SavedProjects.vue";
 
 describe("SavedProjects", () => {
     const mockGetSavedProjects = jest.fn();
     const mockLoadProject = jest.fn();
-
 
     const getWrapper = () => {
         const store = new Vuex.Store<RootState>({
@@ -85,6 +85,6 @@ describe("SavedProjects", () => {
         const loadProjectButton = wrapper.find(".saved-project-row button");
         await loadProjectButton.trigger("keydown.down");
         expect(mockLoadProject).not.toHaveBeenCalled();
-        expect(mockRouter).not.toHaveBeenCalled();
+        expect(mockRouter.push).not.toHaveBeenCalled();
     });
 });

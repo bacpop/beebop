@@ -8,7 +8,9 @@
           <hr/>
           <div v-for="project in savedProjects" :key="project.hash" class="row saved-project-row">
               <div class="col-6">
-                  <button class="clickable brand-text" @click="loadProject(project)" @keydown="loadProjectFromKey(project, $event.keyCode)">
+                  <button class="clickable brand-text"
+                          @click="loadProject(project)"
+                          @keydown="loadProjectFromKey(project, $event.keyCode)">
                       {{ project.name }}
                   </button>
               </div>
@@ -19,9 +21,9 @@
 
 <script setup lang="ts">
 import { useRouter } from "vue-router";
-import {computed, onMounted} from "vue";
-import {useStore} from "vuex";
-import {SavedProject} from "@/types";
+import { computed, onMounted } from "vue";
+import { useStore } from "vuex";
+import { SavedProject } from "@/types";
 
 const store = useStore();
 const router = useRouter();

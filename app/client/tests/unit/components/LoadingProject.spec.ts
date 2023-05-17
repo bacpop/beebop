@@ -1,9 +1,10 @@
 import Vuex from "vuex";
 import { shallowMount } from "@vue/test-utils";
 import { RootState } from "@/store/state";
-import {mockRootState} from "../../mocks";
 import LoadingProject from "@/components/LoadingProject.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
+import { mockRootState } from "../../mocks";
+
 describe("LoadingProject", () => {
     const store = new Vuex.Store<RootState>({
         state: mockRootState({

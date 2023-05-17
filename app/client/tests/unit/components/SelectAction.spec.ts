@@ -27,7 +27,10 @@ describe("SelectAction", () => {
     });
     const getWrapper = () => mount(SelectAction, {
         global: {
-            plugins: [store]
+            plugins: [store],
+            mocks: {
+                $router: mockRouter
+            }
         }
 
     });

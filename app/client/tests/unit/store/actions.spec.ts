@@ -401,11 +401,11 @@ describe("Actions", () => {
     it("loadProject", async () => {
         const commit = jest.fn();
         const state = mockRootState();
-        const savedProject = {hash: "123", id: "abc", name: "test project"};
-        const projectResponse = {test: "value"};
+        const savedProject = { hash: "123", id: "abc", name: "test project" };
+        const projectResponse = { test: "value" };
         const url = `${serverUrl}/project/123`;
         mockAxios.onGet(url).reply(200, responseSuccess(projectResponse));
-        await actions.loadProject({commit, state} as any, savedProject);
+        await actions.loadProject({ commit, state } as any, savedProject);
         expect(mockAxios.history.get[0].url).toEqual(url);
         expect(commit.mock.calls.length).toBe(6);
         expect(commit.mock.calls[0][0]).toBe("setLoadingProject");
@@ -425,11 +425,11 @@ describe("Actions", () => {
     it("loadProject commits error on error response", async () => {
         const commit = jest.fn();
         const state = mockRootState();
-        const savedProject = {hash: "123", id: "abc", name: "test project"};
-        const projectResponse = {test: "value"};
+        const savedProject = { hash: "123", id: "abc", name: "test project" };
+        const projectResponse = { test: "value" };
         const url = `${serverUrl}/project/123`;
-        mockAxios.onGet(url).reply(500, responseError({error: "test error"}));
-        await actions.loadProject({commit, state} as any, savedProject);
+        mockAxios.onGet(url).reply(500, responseError({ error: "test error" }));
+        await actions.loadProject({ commit, state } as any, savedProject);
         expect(mockAxios.history.get[0].url).toEqual(url);
         expect(commit.mock.calls.length).toBe(6);
         expect(commit.mock.calls[0][0]).toBe("setLoadingProject");
@@ -439,7 +439,7 @@ describe("Actions", () => {
         expect(commit.mock.calls[2][0]).toBe("addLoadingProjectMessage");
         expect(commit.mock.calls[2][1]).toBe("Fetching sketches");
         expect(commit.mock.calls[3][0]).toBe("addError");
-        expect(commit.mock.calls[3][1]).toStrictEqual({error: "test error"});
+        expect(commit.mock.calls[3][1]).toStrictEqual({ error: "test error" });
         expect(commit.mock.calls[4][0]).toBe("addLoadingProjectMessage");
         expect(commit.mock.calls[4][1]).toBe("Loading complete");
         expect(commit.mock.calls[5][0]).toBe("setLoadingProject");
