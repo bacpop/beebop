@@ -4,7 +4,7 @@ import config from "@settings/config";
 import { Md5 } from "ts-md5/dist/md5";
 import { RootState } from "@/store/state";
 import {
-    Versions, User, AnalysisStatus, ClusterInfo, Dict, SavedProject, NewProjectRequest
+    Versions, User, AnalysisStatus, ClusterInfo, Dict, SavedProject, NewProjectRequest, ProjectResponse
 } from "@/types";
 import { api } from "@/apiService";
 import { emptyState } from "@/utils";
@@ -42,6 +42,26 @@ export default {
             .withSuccess("setSavedProjects")
             .withError("addError")
             .get<SavedProject[]>(`${serverUrl}/projects`);
+    },
+    async loadProject(context: ActionContext<RootState, RootState>, project: SavedProject) {
+        const { commit, state } = context;
+        commit("setLoadingProject", true);
+        commit("addLoadingProjectMessage", "Clearing state");
+        Object.assign(state, {
+            ...emptyState(),
+            loadingProject: true,
+            projectId: project.id,
+            projectHash: project.hash,
+            projectName: project.name
+        });
+        commit("addLoadingProjectMessage", "Fetching sketches");
+        await api(context)
+            .withSuccess("projectLoaded")
+            .withError("addError")
+            .get<ProjectResponse>(`${serverUrl}/project/${project.hash}`);
+        commit("addLoadingProjectMessage", "Loading complete");
+        // we may need to change this to happen later when other loading steps are implemented
+        commit("setLoadingProject", false);
     },
     async logoutUser() {
         await axios.get(`${serverUrl}/logout`);

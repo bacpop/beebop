@@ -1,9 +1,10 @@
 /// <reference lib="dom"/>
 /* eslint-disable no-tabs */
 
-import {test, expect, Page} from "@playwright/test";
+import { test, expect, Page } from "@playwright/test";
 import { readFileSync } from "fs";
 import config from "../../src/settings/development/config";
+import PlaywrightConfig from "../../playwright.config";
 
 const createProject = async (projectName: string, page: Page) => {
     await page.fill("input#create-project-name", "test project");
@@ -12,6 +13,8 @@ const createProject = async (projectName: string, page: Page) => {
 };
 
 test.describe("Logged in Tests", () => {
+    const { timeout } = PlaywrightConfig;
+
     test.beforeEach(async ({ page }) => {
         await page.goto(`${config.serverUrl()}/login/mock`);
         await page.goto(config.clientUrl());
@@ -103,8 +106,17 @@ test.describe("Logged in Tests", () => {
         await expect(page.locator("#cy canvas")).toHaveCount(3);
         // can browse back to Home page and see new project in history
         await page.goto(config.clientUrl());
-        await expect(await page.locator(":nth-match(.saved-project-row, 1)").innerText()).toBe("test project");
+        await expect(await page.locator(".saved-project-row").last()).toHaveText("test project", { timeout });
+        const lastProjectIndex = await page.locator(".saved-project-row").count();
         // can create a new empty project
         await createProject("another test project", page);
+        // can browse back to Home page ad load previous project
+        await page.goto(config.clientUrl());
+        await page.click(`:nth-match(.saved-project-row button, ${lastProjectIndex})`);
+        // TODO: "unknown.fa" will be replaced with real filename when persisting these per user is implemented
+        await expect(page.locator(":nth-match(.tab-content tr, 1)"))
+            .toContainText(["unknown.fa", "✔", "PCETE SXT"], { timeout });
+        await expect(page.locator(":nth-match(.tab-content tr, 2)"))
+            .toContainText(["unknown.fa", "✔", "PCETE SXT"]);
     });
 });

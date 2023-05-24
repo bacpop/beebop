@@ -173,4 +173,58 @@ describe("mutations", () => {
         mutations.setSavedProjects(state, projects);
         expect(state.savedProjects).toBe(projects);
     });
+    it("sets loadingProject", () => {
+        const state = mockRootState({
+            loadingProjectMessages: ["msg1"]
+        });
+        mutations.setLoadingProject(state, true);
+        expect(state.loadingProject).toBe(true);
+        expect(state.loadingProjectMessages).toStrictEqual([]);
+    });
+    it("adds loading project message", () => {
+        const state = mockRootState({
+            loadingProjectMessages: ["msg1"]
+        });
+        mutations.addLoadingProjectMessage(state, "msg2");
+        expect(state.loadingProjectMessages).toStrictEqual(["msg1", "msg2"]);
+    });
+    it("project loaded sets project values", () => {
+        const state = mockRootState();
+        const projectResponse = {
+            hash: "testProjectHash",
+            samples: [
+                {
+                    hash: "sample1",
+                    filename: "sample1.fa",
+                    amr: { Penicillin: 0.5 },
+                    sketch: {
+                        sketchValue: "testValue1"
+                    }
+                },
+                {
+                    hash: "sample2",
+                    filename: "sample2.fa",
+                    amr: { Penicillin: 0.6 },
+                    sketch: {
+                        sketchValue: "testValue2"
+                    }
+                }
+            ]
+        };
+        mutations.projectLoaded(state, projectResponse as any);
+        expect(state.results.perIsolate).toStrictEqual({
+            sample1: {
+                hash: "sample1",
+                filename: "sample1.fa",
+                amr: { Penicillin: 0.5 },
+                sketch: "{\"sketchValue\":\"testValue1\"}"
+            },
+            sample2: {
+                hash: "sample2",
+                filename: "sample2.fa",
+                amr: { Penicillin: 0.6 },
+                sketch: "{\"sketchValue\":\"testValue2\"}"
+            }
+        });
+    });
 });

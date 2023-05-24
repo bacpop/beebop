@@ -84,3 +84,8 @@ export interface SavedProject {
     name: string,
     hash: string
 }
+
+export interface ProjectResponse {
+    hash: string,
+    samples: Isolate[]
+}

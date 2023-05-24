@@ -19,4 +19,6 @@ export interface RootState {
   projectHash: string | null
   statusInterval: number | undefined
   savedProjects: SavedProject[]
+  loadingProject: boolean
+  loadingProjectMessages: string[]
 }

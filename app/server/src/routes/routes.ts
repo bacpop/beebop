@@ -30,6 +30,10 @@ export const router = ((app, config) => {
         authCheck,
         api.getProjects);
 
+    app.get('/project/:projectHash',
+        authCheck,
+        api.getProject);
+
     app.post('/status',
         authCheck,
         api.getStatus);
@@ -184,6 +188,15 @@ export const apiEndpoints = (config => ({
             const projects = await userStore(redis).getUserProjects(request);
             sendSuccess(response, projects);
         });
+    },
+
+    async getProject(request, response) {
+        const {projectHash} = request.params;
+        await axios.get(`${config.api_url}/project/${projectHash}`)
+            .then(res => response.send(res.data))
+            .catch(function (error) {
+                sendError(response, error);
+            });
     },
 
     async getStatus(request, response) {

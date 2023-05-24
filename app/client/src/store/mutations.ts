@@ -1,6 +1,6 @@
 import { RootState } from "@/store/state";
 import {
-    Versions, User, IsolateValue, AnalysisStatus, ClusterInfo, BeebopError, SavedProject
+    Versions, User, IsolateValue, AnalysisStatus, ClusterInfo, BeebopError, SavedProject, ProjectResponse, Isolate
 } from "@/types";
 
 export default {
@@ -35,6 +35,10 @@ export default {
             results = input.result;
         }
         state.results.perIsolate[input.hash][input.type] = results;
+    },
+    setLoadingProject(state: RootState, value: boolean) {
+        state.loadingProject = value;
+        state.loadingProjectMessages = [];
     },
     setProjectHash(state: RootState, phash: string) {
         state.projectHash = phash;
@@ -72,7 +76,16 @@ export default {
         };
     },
     setSavedProjects(state: RootState, savedProjects: SavedProject[]) {
-        console.log(`setting saved projects: ${JSON.stringify(savedProjects)}`);
         state.savedProjects = savedProjects;
+    },
+    addLoadingProjectMessage(state: RootState, message: string) {
+        state.loadingProjectMessages.push(message);
+    },
+    projectLoaded(state: RootState, projectResponse: ProjectResponse) {
+        const samplesAsDict: Record<string, Isolate> = {};
+        projectResponse.samples.forEach((sample) => {
+            samplesAsDict[sample.hash!] = { ...sample, sketch: JSON.stringify(sample.sketch) };
+        });
+        state.results.perIsolate = samplesAsDict;
     }
 };

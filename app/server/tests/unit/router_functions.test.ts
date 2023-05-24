@@ -21,6 +21,7 @@ const mockResponse = () => {
     const res: any = {};
     res.send = jest.fn().mockReturnValue(res);
     res.json = jest.fn();
+    res.status = jest.fn().mockReturnValue(res);
     return res;
 };
 
@@ -33,8 +34,8 @@ const mockApp = {
 };
 
 describe("test routes", () => {
-    const mock = new MockAdapter(axios);
-    mock.onGet(`${config.api_url}/version`).reply(200, versionInfo);
+    const mockAxios = new MockAdapter(axios);
+    mockAxios.onGet(`${config.api_url}/version`).reply(200, versionInfo);
 
     beforeEach(() => {
         jest.clearAllMocks();
@@ -98,8 +99,8 @@ describe("test routes", () => {
         expect(mockUserStore.saveProjectHash.mock.calls[0][1]).toBe("test-project-id")
         expect(mockUserStore.saveProjectHash.mock.calls[0][2]).toBe("1234");
 
-        expect(mock.history.post[0].url).toBe("http://localhost:5000/poppunk");
-        expect(JSON.parse(mock.history.post[0].data)).toStrictEqual(expectedPoppunkReq);
+        expect(mockAxios.history.post[0].url).toBe("http://localhost:5000/poppunk");
+        expect(JSON.parse(mockAxios.history.post[0].data)).toStrictEqual(expectedPoppunkReq);
     });
 
     it("gets projects for user", async () => {
@@ -117,6 +118,49 @@ describe("test routes", () => {
             status: "success",
             errors: [],
             data: mockUserProjects
+        });
+    });
+
+    it("gets project", async () => {
+        const req = {
+            app: mockApp,
+            params: {
+                projectHash: "123"
+            }
+        };
+        const res = mockResponse();
+        const projectData = {hash: 123, samples: [{sketch: "abc"}]};
+
+        mockAxios.onGet(`${config.api_url}/project/123`).reply(200, projectData);
+
+        await apiEndpoints(config).getProject(req, res);
+
+        expect(res.send).toHaveBeenCalledWith(projectData);
+    });
+
+    it("getProject returns error", async () => {
+        const req = {
+            app: mockApp,
+            params: {
+                projectHash: "123"
+            }
+        };
+        const res = mockResponse();
+        const mockError = {
+            error: {
+                errors: [
+                    {error: "PROJECT_ERROR", detail: "test project error"}
+                ]
+            }
+        };
+        mockAxios.onGet(`${config.api_url}/project/123`).reply(500, mockError);
+
+        await apiEndpoints(config).getProject(req, res);
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.send).toHaveBeenCalledWith({
+            status: "failure",
+            errors: [{error: "PROJECT_ERROR", detail: "test project error"}],
+            data: null
         });
     });
 });

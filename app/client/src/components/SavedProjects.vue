@@ -8,27 +8,41 @@
           <hr/>
           <div v-for="project in savedProjects" :key="project.hash" class="row saved-project-row">
               <div class="col-6">
-                  <span class="clickable brand-text">{{ project.name }}</span>
+                  <button class="clickable brand-text"
+                          @click="loadProject(project)"
+                          @keydown="loadProjectFromKey(project, $event.keyCode)">
+                      {{ project.name }}
+                  </button>
               </div>
           </div>
       </div>
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { useRouter } from "vue-router";
+import { computed, onMounted } from "vue";
+import { useStore } from "vuex";
+import { SavedProject } from "@/types";
 
-import { mapActions, mapState } from "vuex";
+const store = useStore();
+const router = useRouter();
 
-export default {
-    name: "SavedProjects",
-    methods: {
-        ...mapActions(["getSavedProjects"])
-    },
-    computed: {
-        ...mapState(["savedProjects"])
-    },
-    mounted() {
-        this.getSavedProjects();
+const savedProjects = computed(() => store.state.savedProjects);
+function loadProject(project: SavedProject) {
+    store.dispatch("loadProject", project);
+    router.push("/project");
+}
+
+function loadProjectFromKey(project: SavedProject, keyCode: number) {
+    // load on Enter
+    if (keyCode === 13) {
+        loadProject(project);
     }
-};
+}
+
+onMounted(() => {
+    store.dispatch("getSavedProjects");
+});
+
 </script>
