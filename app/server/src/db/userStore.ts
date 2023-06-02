@@ -1,5 +1,6 @@
 import Redis from "ioredis";
 import {uid} from "uid";
+import {PostAMRRequest} from "../requestTypes";
 
 const BEEBOP_PREFIX = "beebop:";
 
@@ -13,6 +14,7 @@ export class UserStore {
     private _userIdFromRequest = (request) => `${request.user.provider}:${request.user.id}`;
     private _userProjectsKey = (userId: string) => `${BEEBOP_PREFIX}userprojects:${userId}`;
     private _projectKey = (projectId: string) => `${BEEBOP_PREFIX}project:${projectId}`;
+    private _sampleKey = (sampleHash: string) => `${BEEBOP_PREFIX}sample:${sampleHash}`;
 
     private _newProjectId = () => uid(32);
 
@@ -47,6 +49,10 @@ export class UserStore {
         }));
 
         return result;
+    }
+
+    async saveAMR(sampleHash: string, amr: PostAMRRequest) {
+        await this._redis.hset(this._sampleKey(sampleHash), "amr", JSON.stringify(amr));
     }
 }
 

@@ -66,7 +66,8 @@ export default {
     async logoutUser() {
         await axios.get(`${serverUrl}/logout`);
     },
-    async processFiles({ commit } : { commit: Commit }, acceptFiles: Array<File>) {
+    async processFiles(context: ActionContext<RootState, RootState>, acceptFiles: Array<File>) {
+        const { commit, dispatch } = context;
         function readContent(file: File) {
             return file.text();
         }
@@ -78,6 +79,9 @@ export default {
                     const worker = new Worker("./worker.js");
                     worker.onmessage = (event) => {
                         commit("setIsolateValue", event.data);
+                        if (event.type === "amr") {
+                            dispatch("postAMR", event.data);
+                        }
                     };
                     worker.postMessage({ hash: fileHash, fileObject: file });
                 });
@@ -212,5 +216,13 @@ export default {
                 cluster,
                 projectHash: state.projectHash
             });
+    },
+    async postAMR(context: ActionContext<RootState, RootState>, amrData: any) { //TODO!!!
+        const sampleHash = amrData.hash;
+        const amr = JSON.parse(amrData.result);
+        await api(context)
+            .ignoreSuccess()
+            .withError("addError")
+            .post<any>(`${serverUrl}/amr/${sampleHash}`, amr); //TODO!!
     }
 };
