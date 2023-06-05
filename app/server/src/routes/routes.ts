@@ -97,7 +97,7 @@ export const router = ((app, config) => {
     app.post('/downloadGraphml',
         api.downloadGraphml);
 
-    app.post('/amr/:sampleHash',
+    app.post('/project/:projectId/amr/:sampleHash',
         authCheck,
         api.postAMR)
 })
@@ -188,9 +188,10 @@ export const apiEndpoints = (config => ({
     async postAMR(request, response, next) {
         await asyncHandler(next, async () => {
             const amr = request.body as PostAMRRequest;
-            const {sampleHash} = request.params;
+            const {projectId, sampleHash} = request.params;
             const {redis} = request.app.locals;
-            await userStore(redis).saveAMR(sampleHash, amr);
+            await userStore(redis).saveAMR(projectId, sampleHash, amr);
+            sendSuccess(response, null);
         });
     },
 

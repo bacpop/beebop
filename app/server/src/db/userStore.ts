@@ -14,9 +14,11 @@ export class UserStore {
     private _userIdFromRequest = (request) => `${request.user.provider}:${request.user.id}`;
     private _userProjectsKey = (userId: string) => `${BEEBOP_PREFIX}userprojects:${userId}`;
     private _projectKey = (projectId: string) => `${BEEBOP_PREFIX}project:${projectId}`;
-    private _sampleKey = (sampleHash: string) => `${BEEBOP_PREFIX}sample:${sampleHash}`;
+    private _projectSamplesKey = (projectId: string) => `${this._projectKey(projectId)}:samples`;
+    private _projectSampleKey = (projectId: string, sampleId: string) => `${this._projectKey(projectId)}:sample:${sampleId}`;
 
     private _newProjectId = () => uid(32);
+    private _sampleId = (sampleHash: string, fileName: string) => `${sampleHash}:${fileName}`;
 
      async saveNewProject(request, projectName: string) {
         const user = this._userIdFromRequest(request);
@@ -51,8 +53,10 @@ export class UserStore {
         return result;
     }
 
-    async saveAMR(sampleHash: string, amr: PostAMRRequest) {
-        await this._redis.hset(this._sampleKey(sampleHash), "amr", JSON.stringify(amr));
+    async saveAMR(projectId: string, sampleHash: string, amr: PostAMRRequest) {
+        const sampleId = this._sampleId(sampleHash, amr.filename);
+        await this._redis.sadd(this._projectSamplesKey(projectId), sampleId);
+        await this._redis.hset(this._projectSampleKey(projectId, sampleId), "amr", JSON.stringify(amr));
     }
 }
 

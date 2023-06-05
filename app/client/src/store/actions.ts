@@ -79,7 +79,7 @@ export default {
                     const worker = new Worker("./worker.js");
                     worker.onmessage = (event) => {
                         commit("setIsolateValue", event.data);
-                        if (event.type === "amr") {
+                        if (event.data.type === "amr") {
                             dispatch("postAMR", event.data);
                         }
                     };
@@ -218,11 +218,13 @@ export default {
             });
     },
     async postAMR(context: ActionContext<RootState, RootState>, amrData: any) { //TODO!!!
+        const { state } = context;
         const sampleHash = amrData.hash;
         const amr = JSON.parse(amrData.result);
+        const url = `${serverUrl}/project/${state.projectId}/amr/${sampleHash}`;
         await api(context)
             .ignoreSuccess()
             .withError("addError")
-            .post<any>(`${serverUrl}/amr/${sampleHash}`, amr); //TODO!!
+            .post<any>(url, amr); //TODO!!
     }
 };

@@ -52,6 +52,12 @@ export const getRedisHash = async (key: string) => {
     });
 }
 
+export const getRedisSet = async (key: string) => {
+    return await withRedis(async (redis: Redis) => {
+        return redis.smembers(key);
+    });
+}
+
 export const saveRedisList = async (key: string, listData: string[]) => {
     await withRedis(async (redis: Redis) => {
         await redis.rpush(key, ...listData);
