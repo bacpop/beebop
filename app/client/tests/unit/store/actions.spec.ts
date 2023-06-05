@@ -129,7 +129,7 @@ describe("Actions", () => {
         await actions.processFiles({ commit } as any, [file as any]);
         expect(commit.mock.calls[0]).toEqual([
             "addFile",
-            { hash: "97f83117a2679651d4044b5ffdc5fd00", name: "sample.fa", type: "sketch" }]);
+            { hash: "97f83117a2679651d4044b5ffdc5fd00", name: "sample.fa" }]);
         expect(commit.mock.calls[1]).toEqual([
             "setIsolateValue",
             { hash: "97f83117a2679651d4044b5ffdc5fd00", fileObject: file, type: "sketch" }]);
