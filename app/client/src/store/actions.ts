@@ -66,7 +66,7 @@ export default {
         await api(context)
             .withSuccess("projectLoaded")
             .withError("addError")
-            .get<ProjectResponse>(`${serverUrl}/project/${project.hash}`);
+            .get<ProjectResponse>(`${serverUrl}/project/${project.id}`);
         commit("addLoadingProjectMessage", "Loading complete");
         // we may need to change this to happen later when other loading steps are implemented
         commit("setLoadingProject", false);

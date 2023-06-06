@@ -1,6 +1,6 @@
 import Redis from "ioredis";
 import {uid} from "uid";
-import {PostAMRRequest} from "../requestTypes";
+import {AMR} from "../types/models";
 
 const BEEBOP_PREFIX = "beebop:";
 
@@ -34,6 +34,10 @@ export class UserStore {
         await this._redis.hset(this._projectKey(projectId), "hash", projectHash);
     }
 
+    async getProjectHash(request, projectId: string) {
+         return await this._redis.hget(this._projectKey(projectId), "hash")
+    }
+
     async getUserProjects(request) {
         // Get all project ids for the user
         const user = this._userIdFromRequest(request);
@@ -53,10 +57,24 @@ export class UserStore {
         return result;
     }
 
-    async saveAMR(projectId: string, sampleHash: string, amr: PostAMRRequest) {
+    async saveAMR(projectId: string, sampleHash: string, amr: AMR) {
         const sampleId = this._sampleId(sampleHash, amr.filename);
         await this._redis.sadd(this._projectSamplesKey(projectId), sampleId);
         await this._redis.hset(this._projectSampleKey(projectId, sampleId), "amr", JSON.stringify(amr));
+    }
+
+    async getAMR(projectId: string, sampleHash: string, fileName: string) {
+         const sampleId = this._sampleId(sampleHash, fileName);
+         const amrString = await this._redis.hget(this._projectSampleKey(projectId, sampleId), "amr");
+         return JSON.parse(amrString) as AMR;
+    }
+
+    async getProjectSamples(projectId: string) {
+         const sampleIds = await this._redis.smembers(this._projectSamplesKey(projectId));
+         return sampleIds.map((sampleId) => {
+             const [hash, fileName] = sampleId.split(":");
+             return {hash, fileName};
+         });
     }
 }
 
