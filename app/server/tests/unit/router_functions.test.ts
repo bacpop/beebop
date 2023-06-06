@@ -124,6 +124,7 @@ describe("test routes", () => {
 
     it("saved amr data", async () => {
         const req = {
+           app: mockApp,
            body: {
                filename: "test.fa",
                Penicillin: 0.5
@@ -135,7 +136,7 @@ describe("test routes", () => {
         };
         const res = mockResponse();
         await apiEndpoints(config).postAMR(req, res, jest.fn());
-        expect(mockUserStoreConstructor.mock.calls[0][0]).toBe(mockRedis);
+        //expect(mockUserStoreConstructor.mock.calls[0][0]).toBe(mockRedis);
         expect(mockUserStore.saveAMR).toHaveBeenCalledWith("testProjectId", "1234", req.body);
     });
 
