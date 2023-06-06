@@ -1,10 +1,18 @@
 import axios from "axios";
-import { Commit, ActionContext } from "vuex";
+import { ActionContext } from "vuex";
 import config from "@settings/config";
 import { Md5 } from "ts-md5/dist/md5";
 import { RootState } from "@/store/state";
 import {
-    Versions, User, AnalysisStatus, ClusterInfo, Dict, SavedProject, NewProjectRequest, ProjectResponse
+    Versions,
+    User,
+    AnalysisStatus,
+    ClusterInfo,
+    Dict,
+    SavedProject,
+    NewProjectRequest,
+    ProjectResponse,
+    IsolateValue, ValueTypes, AMR
 } from "@/types";
 import { api } from "@/apiService";
 import { emptyState } from "@/utils";
@@ -79,7 +87,7 @@ export default {
                     const worker = new Worker("./worker.js");
                     worker.onmessage = (event) => {
                         commit("setIsolateValue", event.data);
-                        if (event.data.type === "amr") {
+                        if (event.data.type === ValueTypes.AMR) {
                             dispatch("postAMR", event.data);
                         }
                     };
@@ -217,7 +225,7 @@ export default {
                 projectHash: state.projectHash
             });
     },
-    async postAMR(context: ActionContext<RootState, RootState>, amrData: any) { //TODO!!!
+    async postAMR(context: ActionContext<RootState, RootState>, amrData: IsolateValue) {
         const { state } = context;
         const sampleHash = amrData.hash;
         const amr = JSON.parse(amrData.result);
@@ -225,6 +233,6 @@ export default {
         await api(context)
             .ignoreSuccess()
             .withError("addError")
-            .post<any>(url, amr); //TODO!!
+            .post<AMR>(url, amr);
     }
 };

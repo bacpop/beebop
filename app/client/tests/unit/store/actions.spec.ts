@@ -1,10 +1,12 @@
 import actions from "@/store/actions";
 import versionInfo from "@/resources/versionInfo.json";
 import { Md5 } from "ts-md5/dist/md5";
-import { BeebopError } from "@/types";
+import { BeebopError, ValueTypes } from "@/types";
 import { emptyState } from "@/utils";
 import config from "../../../src/settings/development/config";
-import {mockAxios, mockFailure, mockRootState, mockSuccess} from "../../mocks";
+import {
+    mockAxios, mockFailure, mockRootState, mockSuccess
+} from "../../mocks";
 import mock = jest.mock;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -484,7 +486,8 @@ describe("Actions", () => {
             hash: "1234",
             result: JSON.stringify({
                 Penicillin: 0.5
-            })
+            }),
+            type: ValueTypes.AMR
         };
         const url = `${serverUrl}/project/testProjectId/amr/1234`;
         mockAxios.onPost(url).reply(200, mockSuccess(null));
@@ -503,7 +506,8 @@ describe("Actions", () => {
             hash: "1234",
             result: JSON.stringify({
                 Penicillin: 0.5
-            })
+            }),
+            type: ValueTypes.AMR
         };
         const url = `${serverUrl}/project/testProjectId/amr/1234`;
         mockAxios.onPost(url).reply(500, mockFailure("TEST ERROR"));
