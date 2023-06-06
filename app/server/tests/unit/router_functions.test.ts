@@ -136,7 +136,7 @@ describe("test routes", () => {
         };
         const res = mockResponse();
         await apiEndpoints(config).postAMR(req, res, jest.fn());
-        //expect(mockUserStoreConstructor.mock.calls[0][0]).toBe(mockRedis);
+        expect(mockUserStoreConstructor.mock.calls[0][0]).toBe(mockRedis);
         expect(mockUserStore.saveAMR).toHaveBeenCalledWith("testProjectId", "1234", req.body);
     });
 
