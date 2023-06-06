@@ -152,7 +152,7 @@ describe("test routes", () => {
 
         mockAxios.onGet(`${config.api_url}/project/123`).reply(200, projectData);
 
-        await apiEndpoints(config).getProject(req, res, jest.fn());
+        await apiEndpoints(config).getProject(req, res);
 
         expect(res.send).toHaveBeenCalledWith(projectData);
     });
@@ -174,7 +174,7 @@ describe("test routes", () => {
         };
         mockAxios.onGet(`${config.api_url}/project/123`).reply(500, mockError);
 
-        await apiEndpoints(config).getProject(req, res, jest.fn());
+        await apiEndpoints(config).getProject(req, res);
         expect(res.status).toHaveBeenCalledWith(500);
         expect(res.send).toHaveBeenCalledWith({
             status: "failure",

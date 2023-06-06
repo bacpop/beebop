@@ -1,10 +1,8 @@
 import axios from 'axios';
 import passport from 'passport';
-import {BeebopRunRequest, NewProjectRequest, PoppunkRequest} from "../types/requestTypes";
-import {AMR} from "../types/models";
+import {BeebopRunRequest, NewProjectRequest, PoppunkRequest, PostAMRRequest} from "../requestTypes";
 import {userStore} from "../db/userStore";
 import asyncHandler from "../errors/asyncHandler";
-import {ProjectResponse} from "../types/responseTypes";
 
 export const router = ((app, config) => {
     app.get('/',
@@ -32,7 +30,7 @@ export const router = ((app, config) => {
         authCheck,
         api.getProjects);
 
-    app.get('/project/:projectId',
+    app.get('/project/:projectHash',
         authCheck,
         api.getProject);
 
@@ -189,7 +187,7 @@ export const apiEndpoints = (config => ({
 
     async postAMR(request, response, next) {
         await asyncHandler(next, async () => {
-            const amr = request.body as AMR;
+            const amr = request.body as PostAMRRequest;
             const {projectId, sampleHash} = request.params;
             const {redis} = request.app.locals;
             await userStore(redis).saveAMR(projectId, sampleHash, amr);
@@ -205,35 +203,13 @@ export const apiEndpoints = (config => ({
         });
     },
 
-    async getProject(request, response, next) {
-        await asyncHandler(next, async () => {
-            const {projectId} = request.params;
-            const {redis} = request.app.locals;
-            const store = userStore(redis);
-            const projectHash = await store.getProjectHash(request, projectId);
-            await axios.get<ProjectResponse>(`${config.api_url}/project/${projectHash}`)
-                .then(async res => {
-                    // Get each project sample (a combination of sample hash and filename) from redis and find the
-                    // corresponding sample (by hash) in the response from beebop_py api (containing cluster info etc) -
-                    // combine data from both in response to client
-                    const projectSamples = await store.getProjectSamples(projectId);
-                    const responseSamples = [];
-                    await Promise.all(projectSamples.map(async (sample) => {
-                        const apiSample = res.data.samples.find(s => s.hash === sample.hash);
-                        const amr = await store.getAMR(projectId, sample.hash, sample.fileName);
-                        responseSamples.push({
-                            ...apiSample,  //TODO: take dummy amr & filename out of beebop_py - this will overwrite though, so can be done separately
-                            filename: sample.fileName,
-                            amr
-                        });
-                    }));
-                    res.data.samples = responseSamples;
-                    response.send(res.data);
-                })
-                .catch(function (error) {
-                    sendError(response, error);
-                });
-        });
+    async getProject(request, response) {
+        const {projectHash} = request.params;
+        await axios.get(`${config.api_url}/project/${projectHash}`)
+            .then(res => response.send(res.data))
+            .catch(function (error) {
+                sendError(response, error);
+            });
     },
 
     async getStatus(request, response) {
