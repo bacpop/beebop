@@ -24,7 +24,7 @@ export const post = (url: string, payload: any, cookie: string) => {
     return axios.post(fullUrl(url), payload, {headers: headers(cookie), validateStatus });
 };
 
-const withRedis = async (func: (redis: Redis) => any) => {
+export const withRedis = async (func: (redis: Redis) => any) => {
     const redis = new Redis(redisUrl);
     try {
         return await func(redis);
@@ -72,5 +72,11 @@ export const saveRedisHash = async (key: string, hash: Record<string, string>) =
             args.push(hash[hashKey]);
         });
         await redis.hmset(key, args);
+    });
+}
+
+export const saveRedisSet = async (key: string, setData: string[]) => {
+    await withRedis(async (redis: Redis) => {
+        await redis.sadd(key, setData);
     });
 }

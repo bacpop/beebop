@@ -59,7 +59,7 @@ describe("UserStore", () => {
         expect(mockRedis.lrange.mock.calls[0][2]).toBe(-1);
     });
 
-    it("saved amr data", async () => {
+    it("saves amr data", async () => {
         const sut = new UserStore(mockRedis);
         const testAMR = {
             filename: "testfile.fa",
@@ -73,5 +73,30 @@ describe("UserStore", () => {
         await sut.saveAMR("testProjectId", "1234", testAMR as any);
         expect(mockRedis.sadd).toHaveBeenCalledWith(expectedSamplesKey, expectedSampleId);
         expect(mockRedis.hset).toHaveBeenCalledWith(expectedSampleKey, "amr", JSON.stringify(testAMR));
+    });
+
+    it("gets amr data", async () => {
+        const mockAMR = {Pencicillin: 0.5};
+        const mockAMRRedis = {
+            hget: jest.fn().mockImplementation(() => JSON.stringify(mockAMR))
+        } as any;
+
+        const sut = new UserStore(mockAMRRedis);
+        const result = await sut.getAMR("testProjectId", "1234", "test.fa");
+        expect(mockAMRRedis.hget).toHaveBeenCalledWith("beebop:project:testProjectId:sample:1234:test.fa", "amr");
+        expect(result).toStrictEqual(mockAMR);
+    });
+
+    it("gets project samples", async() => {
+        const mockProjectRedis = {
+            smembers: jest.fn().mockImplementation(() => ["1234:test1.fa", "5678:test2.fa"])
+        } as any;
+        const sut = new UserStore(mockProjectRedis);
+        const result = await sut.getProjectSamples("testProjectId");
+        expect(mockProjectRedis.smembers).toHaveBeenCalledWith("beebop:project:testProjectId:samples");
+        expect(result).toStrictEqual([
+            { hash: "1234", fileName: "test1.fa" },
+            { hash: "5678", fileName: "test2.fa" }
+        ]);
     });
 });

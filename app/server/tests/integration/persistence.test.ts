@@ -1,4 +1,16 @@
-import {get, post, flushRedis, getRedisHash, getRedisList, getRedisSet, saveRedisHash, saveRedisList} from "./utils";
+import {
+    get,
+    post,
+    flushRedis,
+    getRedisHash,
+    getRedisList,
+    getRedisSet,
+    saveRedisHash,
+    saveRedisList,
+    saveRedisSet,
+    withRedis
+} from "./utils";
+import {UserStore} from "../../src/db/userStore";
 describe("User persistence", () => {
     let connectionCookie = "";
     beforeEach(async () => {
@@ -58,5 +70,27 @@ describe("User persistence", () => {
         expect(persistedSampleIds).toStrictEqual(["1234:test.fa"]);
         const persisted = await getRedisHash("beebop:project:testProjectId:sample:1234:test.fa");
         expect(persisted).toStrictEqual({"amr": JSON.stringify(testAMR)});
+    });
+
+    it("gets amr data from redis", async () => {
+        await saveRedisHash("beebop:project:abcd:sample:1234:test.fa", {amr: "{\"Penicillin\": 0.5}"});
+        await withRedis(async (redis) => {
+                const userStore = new UserStore(redis);
+                const result = await userStore.getAMR("abcd", "1234", "test.fa");
+                expect(result).toStrictEqual({Penicillin: 0.5});
+            }
+        );
+    });
+
+    it("gets project samples from redis", async () => {
+        await saveRedisSet("beebop:project:abcd:samples", ["1234:test1.fa", "5678:test2.fa"]);
+        await withRedis(async (redis) => {
+            const userStore = new UserStore(redis);
+            const result = await userStore.getProjectSamples("abcd");
+            expect(result).toStrictEqual([
+                {hash: "1234", fileName: "test1.fa"},
+                {hash: "5678", fileName: "test2.fa"}
+            ]);
+        });
     });
 });
