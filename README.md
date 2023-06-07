@@ -1,5 +1,7 @@
 # beebop
 
+## Local development
+
 Clone the repository to your computer with
 ```
 git clone git@github.com:bacpop/beebop.git
@@ -31,6 +33,12 @@ To start all required components, run:
 ```
 
 The website can be viewed at http://localhost:8080/ . You can stop the application with `./scripts/stop_test`.
+
+The `run_test` script uses [pm2](https://github.com/Unitech/pm2) to manage running the client and server applications.
+
+To see logs, use `pm2 logs` (append `beebop_server` or `beebop_client` to show logs for one application only).
+To reload an application after making code changes, use `pm2 reload beebop_server` or `pm2 reload beebop_client`.
+To see fuller monitoring dashboard, use `pm2 monit`.
 
 ## Config
 Config for the front-end lives in `./app/client/src/settings` and by default webpack (via the vue-cli) will use the config 
