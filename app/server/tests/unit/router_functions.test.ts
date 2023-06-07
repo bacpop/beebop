@@ -3,7 +3,8 @@ const mockUserProjects = [{name: "p1", hash: "123"}];
 const mockUserStore = {
     saveNewProject: jest.fn().mockImplementation(() => "test-project-id"),
     getUserProjects: jest.fn().mockImplementation(() => mockUserProjects),
-    saveProjectHash: jest.fn()
+    saveProjectHash: jest.fn(),
+    saveAMR: jest.fn()
 };
 jest.mock("../../src/db/userStore", () => ({
     userStore: mockUserStoreConstructor.mockReturnValue(mockUserStore)
@@ -119,6 +120,24 @@ describe("test routes", () => {
             errors: [],
             data: mockUserProjects
         });
+    });
+
+    it("saved amr data", async () => {
+        const req = {
+           app: mockApp,
+           body: {
+               filename: "test.fa",
+               Penicillin: 0.5
+           },
+           params: {
+               projectId: "testProjectId",
+               sampleHash: "1234"
+           }
+        };
+        const res = mockResponse();
+        await apiEndpoints(config).postAMR(req, res, jest.fn());
+        expect(mockUserStoreConstructor.mock.calls[0][0]).toBe(mockRedis);
+        expect(mockUserStore.saveAMR).toHaveBeenCalledWith("testProjectId", "1234", req.body);
     });
 
     it("gets project", async () => {

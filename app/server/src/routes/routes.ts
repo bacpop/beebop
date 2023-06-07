@@ -1,6 +1,6 @@
 import axios from 'axios';
 import passport from 'passport';
-import {BeebopRunRequest, NewProjectRequest, PoppunkRequest} from "../requestTypes";
+import {BeebopRunRequest, NewProjectRequest, PoppunkRequest, PostAMRRequest} from "../requestTypes";
 import {userStore} from "../db/userStore";
 import asyncHandler from "../errors/asyncHandler";
 
@@ -97,6 +97,9 @@ export const router = ((app, config) => {
     app.post('/downloadGraphml',
         api.downloadGraphml);
 
+    app.post('/project/:projectId/amr/:sampleHash',
+        authCheck,
+        api.postAMR)
 })
 
 export const apiEndpoints = (config => ({
@@ -179,6 +182,16 @@ export const apiEndpoints = (config => ({
                 .catch(function (error) {
                     sendError(response, error);
                 })
+        });
+    },
+
+    async postAMR(request, response, next) {
+        await asyncHandler(next, async () => {
+            const amr = request.body as PostAMRRequest;
+            const {projectId, sampleHash} = request.params;
+            const {redis} = request.app.locals;
+            await userStore(redis).saveAMR(projectId, sampleHash, amr);
+            sendSuccess(response, null);
         });
     },
 

@@ -1,4 +1,4 @@
-import {get, post, flushRedis, getRedisHash, getRedisList, saveRedisHash, saveRedisList} from "./utils";
+import {get, post, flushRedis, getRedisHash, getRedisList, getRedisSet, saveRedisHash, saveRedisList} from "./utils";
 describe("User persistence", () => {
     let connectionCookie = "";
     beforeEach(async () => {
@@ -49,5 +49,14 @@ describe("User persistence", () => {
             ],
             errors: []
         });
+    });
+
+    it("saves amr data to redis", async () => {
+        const testAMR = {filename: "test.fa", Penicillin: 0.5};
+        await post("project/testProjectId/amr/1234", testAMR, connectionCookie);
+        const persistedSampleIds = await getRedisSet("beebop:project:testProjectId:samples");
+        expect(persistedSampleIds).toStrictEqual(["1234:test.fa"]);
+        const persisted = await getRedisHash("beebop:project:testProjectId:sample:1234:test.fa");
+        expect(persisted).toStrictEqual({"amr": JSON.stringify(testAMR)});
     });
 });

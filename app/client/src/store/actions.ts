@@ -1,10 +1,18 @@
 import axios from "axios";
-import { Commit, ActionContext } from "vuex";
+import { ActionContext } from "vuex";
 import config from "@settings/config";
 import { Md5 } from "ts-md5/dist/md5";
 import { RootState } from "@/store/state";
 import {
-    Versions, User, AnalysisStatus, ClusterInfo, Dict, SavedProject, NewProjectRequest, ProjectResponse
+    Versions,
+    User,
+    AnalysisStatus,
+    ClusterInfo,
+    Dict,
+    SavedProject,
+    NewProjectRequest,
+    ProjectResponse,
+    IsolateValue, ValueTypes, AMR
 } from "@/types";
 import { api } from "@/apiService";
 import { emptyState } from "@/utils";
@@ -66,7 +74,8 @@ export default {
     async logoutUser() {
         await axios.get(`${serverUrl}/logout`);
     },
-    async processFiles({ commit } : { commit: Commit }, acceptFiles: Array<File>) {
+    async processFiles(context: ActionContext<RootState, RootState>, acceptFiles: Array<File>) {
+        const { commit, dispatch } = context;
         function readContent(file: File) {
             return file.text();
         }
@@ -78,6 +87,9 @@ export default {
                     const worker = new Worker("./worker.js");
                     worker.onmessage = (event) => {
                         commit("setIsolateValue", event.data);
+                        if (event.data.type === ValueTypes.AMR) {
+                            dispatch("postAMR", event.data);
+                        }
                     };
                     worker.postMessage({ hash: fileHash, fileObject: file });
                 });
@@ -212,5 +224,15 @@ export default {
                 cluster,
                 projectHash: state.projectHash
             });
+    },
+    async postAMR(context: ActionContext<RootState, RootState>, amrData: IsolateValue) {
+        const { state } = context;
+        const sampleHash = amrData.hash;
+        const amr = JSON.parse(amrData.result);
+        const url = `${serverUrl}/project/${state.projectId}/amr/${sampleHash}`;
+        await api(context)
+            .ignoreSuccess()
+            .withError("addError")
+            .post<AMR>(url, amr);
     }
 };

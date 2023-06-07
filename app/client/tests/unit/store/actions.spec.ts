@@ -1,10 +1,12 @@
 import actions from "@/store/actions";
 import versionInfo from "@/resources/versionInfo.json";
 import { Md5 } from "ts-md5/dist/md5";
-import { BeebopError } from "@/types";
+import { BeebopError, ValueTypes } from "@/types";
 import { emptyState } from "@/utils";
 import config from "../../../src/settings/development/config";
-import { mockAxios, mockRootState } from "../../mocks";
+import {
+    mockAxios, mockFailure, mockRootState, mockSuccess
+} from "../../mocks";
 import mock = jest.mock;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -24,6 +26,7 @@ function responseError(error: BeebopError) {
     };
 }
 
+let mockWorkerResultType = "sketch";
 class MockWorker implements Partial<Worker> {
   url: string
 
@@ -35,7 +38,12 @@ class MockWorker implements Partial<Worker> {
   }
 
   postMessage(msg: any) {
-      this.onmessage({ data: msg });
+      this.onmessage({
+          data: {
+              ...msg,
+              type: mockWorkerResultType
+          }
+      });
   }
 }
 
@@ -114,17 +122,40 @@ describe("Actions", () => {
 
     it("processFiles calculates filehash, adds hash & filename to store and calls setSketch", async () => {
         const commit = jest.fn();
+        const dispatch = jest.fn();
         const file = {
             name: "sample.fa",
             text: () => Promise.resolve("ACGTGTAGTCTGACGTAAC")
         };
-        await actions.processFiles({ commit }, [file as any]);
+        mockWorkerResultType = "sketch";
+        await actions.processFiles({ commit } as any, [file as any]);
         expect(commit.mock.calls[0]).toEqual([
             "addFile",
             { hash: "97f83117a2679651d4044b5ffdc5fd00", name: "sample.fa" }]);
         expect(commit.mock.calls[1]).toEqual([
             "setIsolateValue",
-            { hash: "97f83117a2679651d4044b5ffdc5fd00", fileObject: file }]);
+            { hash: "97f83117a2679651d4044b5ffdc5fd00", fileObject: file, type: "sketch" }]);
+
+        expect(dispatch).not.toHaveBeenCalled();
+    });
+
+    it("processFiles persists AMR when worker result type is amr", async () => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const file = {
+            name: "sample.fa",
+            text: () => Promise.resolve("ACGTGTAGTCTGACGTAAC")
+        };
+        mockWorkerResultType = "amr";
+        await actions.processFiles({ commit, dispatch } as any, [file as any]);
+        expect(commit).toHaveBeenCalledTimes(2);
+        expect(dispatch).toHaveBeenCalledTimes(1);
+        expect(dispatch.mock.calls[0][0]).toBe("postAMR");
+        expect(dispatch.mock.calls[0][1]).toStrictEqual({
+            fileObject: file,
+            hash: "97f83117a2679651d4044b5ffdc5fd00",
+            type: "amr"
+        });
     });
 
     it("runPoppunk makes axios call", async () => {
@@ -444,5 +475,46 @@ describe("Actions", () => {
         expect(commit.mock.calls[4][1]).toBe("Loading complete");
         expect(commit.mock.calls[5][0]).toBe("setLoadingProject");
         expect(commit.mock.calls[5][1]).toBe(false);
+    });
+
+    it("postAMR posts amr data", async () => {
+        const state = mockRootState({
+            projectId: "testProjectId"
+        });
+        const commit = jest.fn();
+        const amrData = {
+            hash: "1234",
+            result: JSON.stringify({
+                Penicillin: 0.5
+            }),
+            type: ValueTypes.AMR
+        };
+        const url = `${serverUrl}/project/testProjectId/amr/1234`;
+        mockAxios.onPost(url).reply(200, mockSuccess(null));
+        await actions.postAMR({ commit, state } as any, amrData);
+        expect(mockAxios.history.post[0].url).toEqual(url);
+        expect(mockAxios.history.post[0].data).toStrictEqual(amrData.result);
+        expect(commit).not.toHaveBeenCalled();
+    });
+
+    it("postAMR commits error", async () => {
+        const state = mockRootState({
+            projectId: "testProjectId"
+        });
+        const commit = jest.fn();
+        const amrData = {
+            hash: "1234",
+            result: JSON.stringify({
+                Penicillin: 0.5
+            }),
+            type: ValueTypes.AMR
+        };
+        const url = `${serverUrl}/project/testProjectId/amr/1234`;
+        mockAxios.onPost(url).reply(500, mockFailure("TEST ERROR"));
+        await actions.postAMR({ commit, state } as any, amrData);
+        expect(commit.mock.calls[0]).toEqual([
+            "addError",
+            { error: "OTHER_ERROR", detail: "TEST ERROR" }
+        ]);
     });
 });

@@ -4,6 +4,7 @@ describe("UserStore", () => {
     const mockRedis = {
         hset: jest.fn(),
         lpush: jest.fn(),
+        sadd: jest.fn(),
         lrange: jest.fn().mockImplementation(() => ["123", "456"]),
         hmget: jest.fn().mockImplementation((key: string, ...valueNames: string[]) => {
             return valueNames.map((valueName) => `${valueName} for ${key}`);
@@ -58,4 +59,19 @@ describe("UserStore", () => {
         expect(mockRedis.lrange.mock.calls[0][2]).toBe(-1);
     });
 
+    it("saved amr data", async () => {
+        const sut = new UserStore(mockRedis);
+        const testAMR = {
+            filename: "testfile.fa",
+            Penicillin: 0.1,
+        };
+
+        const expectedSamplesKey = "beebop:project:testProjectId:samples";
+        const expectedSampleId = "1234:testfile.fa";
+        const expectedSampleKey = `beebop:project:testProjectId:sample:${expectedSampleId}`;
+
+        await sut.saveAMR("testProjectId", "1234", testAMR as any);
+        expect(mockRedis.sadd).toHaveBeenCalledWith(expectedSamplesKey, expectedSampleId);
+        expect(mockRedis.hset).toHaveBeenCalledWith(expectedSampleKey, "amr", JSON.stringify(testAMR));
+    });
 });
