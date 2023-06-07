@@ -72,8 +72,8 @@ export class UserStore {
     async getProjectSamples(projectId: string) {
          const sampleIds = await this._redis.smembers(this._projectSamplesKey(projectId));
          return sampleIds.map((sampleId) => {
-             const [hash, fileName] = sampleId.split(":");
-             return {hash, fileName};
+             const [hash, filename] = sampleId.split(":");
+             return {hash, filename};
          });
     }
 }

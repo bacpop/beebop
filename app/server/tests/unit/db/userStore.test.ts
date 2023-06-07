@@ -95,8 +95,8 @@ describe("UserStore", () => {
         const result = await sut.getProjectSamples("testProjectId");
         expect(mockProjectRedis.smembers).toHaveBeenCalledWith("beebop:project:testProjectId:samples");
         expect(result).toStrictEqual([
-            { hash: "1234", fileName: "test1.fa" },
-            { hash: "5678", fileName: "test2.fa" }
+            { hash: "1234", filename: "test1.fa" },
+            { hash: "5678", filename: "test2.fa" }
         ]);
     });
 });

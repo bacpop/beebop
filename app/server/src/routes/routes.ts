@@ -227,10 +227,10 @@ export const apiEndpoints = (config => ({
                     if (!apiSample) {
                         throw Error(`Sample with hash ${sample.hash} was not in API response`);
                     }
-                    const amr = await store.getAMR(projectId, sample.hash, sample.fileName);
+                    const amr = await store.getAMR(projectId, sample.hash, sample.filename);
                     responseSamples.push({
                         ...apiSample,
-                        filename: sample.fileName,
+                        filename: sample.filename,
                         amr
                     });
                 }

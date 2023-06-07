@@ -1,9 +1,9 @@
 const mockUserStoreConstructor = jest.fn();
 const mockUserProjects = [{name: "p1", hash: "123"}];
 const mockProjectSamples = [
-    {hash: "5678", fileName: "test1.fa"},
-    {hash: "1234", fileName: "test2.fa"},
-    {hash: "1234", fileName: "test3.fa"}
+    {hash: "5678", filename: "test1.fa"},
+    {hash: "1234", filename: "test2.fa"},
+    {hash: "1234", filename: "test3.fa"}
 ];
 const mockUserStore = {
     saveNewProject: jest.fn().mockImplementation(() => "test-project-id"),

@@ -88,8 +88,8 @@ describe("User persistence", () => {
             const userStore = new UserStore(redis);
             const result = await userStore.getProjectSamples("abcd");
             expect(result).toStrictEqual([
-                {hash: "1234", fileName: "test1.fa"},
-                {hash: "5678", fileName: "test2.fa"}
+                {hash: "1234", filename: "test1.fa"},
+                {hash: "5678", filename: "test2.fa"}
             ]);
         });
     });
