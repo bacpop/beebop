@@ -3,6 +3,7 @@ import { uid } from "uid";
 import { reqWithError } from "../logging";
 import { ErrorType } from "./errorType";
 import { BeebopError } from "./beebopError";
+import { sendError } from "../utils";
 
 // Need to include the unused next var for this to be used correctly as an error handler
 export const handleError = (err: Error, req: Request, res: Response, _: Function) => {
