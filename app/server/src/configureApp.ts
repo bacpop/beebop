@@ -5,6 +5,7 @@ import passport from 'passport';
 import session from 'express-session';
 import PassportGoogle from 'passport-google-oauth20';
 import PassportGithub from 'passport-github';
+import {handleError} from "./errors/handleError";
 
 export const configureApp = ((app, config) => {
     //set up passport
@@ -59,4 +60,7 @@ export const configureApp = ((app, config) => {
     app.use(express.urlencoded({
         extended: true
     }));
+
+    // Error handler
+    app.use(handleError);
 })
