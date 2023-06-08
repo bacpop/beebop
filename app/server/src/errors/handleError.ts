@@ -2,7 +2,14 @@ import { Request, Response } from "express";
 import { uid } from "uid";
 import { reqWithError } from "../logging";
 import { BeebopError } from "./beebopError";
-import { sendError } from "../utils";
+
+function sendError(response, error, status = 500) {
+    response.status(status).send({
+        status: "failure",
+        errors: [error],
+        data: null
+    });
+}
 
 // Need to include the unused next var for this to be used correctly as an error handler
 export const handleError = (err: Error, req: Request, res: Response, _: Function) => {
