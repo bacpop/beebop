@@ -3,11 +3,14 @@ export class BeebopError extends Error {
 
     errorType: string;
 
-    constructor(errorType: string, message: string, status: number) {
+    writeToResponse: boolean;
+
+    constructor(errorType: string, message: string, status = 500, writeToResponse = false) {
         super(message);
 
         this.name = "BeebopError";
         this.status = status;
         this.errorType = errorType;
+        this.writeToResponse = writeToResponse;
     }
 }
