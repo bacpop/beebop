@@ -458,7 +458,7 @@ describe("Actions", () => {
         const state = mockRootState();
         const savedProject = { hash: "123", id: "abc", name: "test project" };
         const projectResponse = { test: "value" };
-        const url = `${serverUrl}/project/123`;
+        const url = `${serverUrl}/project/abc`;
         mockAxios.onGet(url).reply(500, responseError({ error: "test error" }));
         await actions.loadProject({ commit, state } as any, savedProject);
         expect(mockAxios.history.get[0].url).toEqual(url);

@@ -1,8 +1,10 @@
-import axios from 'axios';
+import axios, {AxiosResponse} from 'axios';
 import passport from 'passport';
-import {BeebopRunRequest, NewProjectRequest, PoppunkRequest, PostAMRRequest} from "../requestTypes";
+import {BeebopRunRequest, NewProjectRequest, PoppunkRequest} from "../types/requestTypes";
+import {AMR} from "../types/models";
 import {userStore} from "../db/userStore";
 import asyncHandler from "../errors/asyncHandler";
+import {APIResponse, ProjectResponse} from "../types/responseTypes";
 
 export const router = ((app, config) => {
     app.get('/',
@@ -30,7 +32,7 @@ export const router = ((app, config) => {
         authCheck,
         api.getProjects);
 
-    app.get('/project/:projectHash',
+    app.get('/project/:projectId',
         authCheck,
         api.getProject);
 
@@ -114,7 +116,7 @@ export const apiEndpoints = (config => ({
             })
             .then(res => response.send(res.data))
             .catch(function (error) {
-                sendError(response, error);
+                sendAPIError(response, error);
             });
     },
 
@@ -129,7 +131,7 @@ export const apiEndpoints = (config => ({
             })
             .then(res => response.send(res.data))
             .catch(function (error) {
-                sendError(response, error);
+                sendAPIError(response, error);
             });
     },
 
@@ -145,7 +147,7 @@ export const apiEndpoints = (config => ({
                 response.send(res.data)
             })
             .catch(function (error) {
-                sendError(response, error);
+                sendAPIError(response, error);
             });
     },
 
@@ -180,14 +182,14 @@ export const apiEndpoints = (config => ({
             )
                 .then(res => response.send(res.data))
                 .catch(function (error) {
-                    sendError(response, error);
+                    sendAPIError(response, error);
                 })
         });
     },
 
     async postAMR(request, response, next) {
         await asyncHandler(next, async () => {
-            const amr = request.body as PostAMRRequest;
+            const amr = request.body as AMR;
             const {projectId, sampleHash} = request.params;
             const {redis} = request.app.locals;
             await userStore(redis).saveAMR(projectId, sampleHash, amr);
@@ -203,20 +205,46 @@ export const apiEndpoints = (config => ({
         });
     },
 
-    async getProject(request, response) {
-        const {projectHash} = request.params;
-        await axios.get(`${config.api_url}/project/${projectHash}`)
-            .then(res => response.send(res.data))
-            .catch(function (error) {
-                sendError(response, error);
-            });
+    async getProject(request, response, next) {
+        await asyncHandler(next, async () => {
+            const {projectId} = request.params;
+            const {redis} = request.app.locals;
+            const store = userStore(redis);
+            const projectHash = await store.getProjectHash(request, projectId);
+            const res = await axios.get<APIResponse<ProjectResponse>>(`${config.api_url}/project/${projectHash}`)
+                .catch(function (error) {
+                    sendAPIError(response, error);
+                });
+            if (res) {
+                const apiData = (res as AxiosResponse<APIResponse<ProjectResponse>>).data.data;
+                // Get each project sample (sample hash and filename) from redis and find the
+                // corresponding sample (by hash) in the response from beebop_py api (containing cluster info etc) -
+                // combine data from both in response to client
+                const projectSamples = await store.getProjectSamples(projectId);
+                const responseSamples = [];
+                for (const sample of projectSamples) {
+                    const apiSample = apiData.samples.find(s => s.hash === sample.hash);
+                    if (!apiSample) {
+                        throw Error(`Sample with hash ${sample.hash} was not in API response`);
+                    }
+                    const amr = await store.getAMR(projectId, sample.hash, sample.filename);
+                    responseSamples.push({
+                        ...apiSample,
+                        filename: sample.filename,
+                        amr
+                    });
+                }
+                apiData.samples = responseSamples;
+                sendSuccess(response, apiData);
+            }
+        });
     },
 
     async getStatus(request, response) {
         await axios.get(`${config.api_url}/status/${request.body.hash}`)
             .then(res => response.send(res.data))
             .catch(function (error) {
-                sendError(response, error);
+                sendAPIError(response, error);
             });
     },
 
@@ -230,7 +258,7 @@ export const apiEndpoints = (config => ({
             })
             .then(res => response.send(res.data))
             .catch(function (error) {
-                sendError(response, error);
+                sendAPIError(response, error);
             });
     }
 }));
@@ -249,22 +277,19 @@ const authCheck = (req, res, next) => {
     }
 }
 
+function sendAPIError(response, error) {
+    const responseError = error.response ?
+        {error: error.response.data.error.errors[0].error, detail: error.response.data.error.errors[0].detail} :
+        {error: 'Could not connect to API', detail: error};
+    sendError(response, responseError);
+}
+
 function sendError(response, error) {
-    if (error.response) {
-        response.status(500).send(
-            {
-                status:"failure",
-                errors:[{error: error.response.data.error.errors[0].error, detail: error.response.data.error.errors[0].detail}],
-                data: null
-            })  
-    } else {
-      response.status(500).send(
-        {
-            status:"failure",
-            errors:[{error: 'Could not connect to API', detail: error}],
-            data: null
-        })  
-    }
+    response.status(500).send({
+        status: "failure",
+        errors: [error],
+        data: null
+    });
 }
 
 function sendSuccess(response, data) {

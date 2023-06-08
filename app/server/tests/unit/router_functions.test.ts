@@ -1,10 +1,19 @@
 const mockUserStoreConstructor = jest.fn();
 const mockUserProjects = [{name: "p1", hash: "123"}];
+const mockProjectSamples = [
+    {hash: "5678", filename: "test1.fa"},
+    {hash: "1234", filename: "test2.fa"},
+    {hash: "1234", filename: "test3.fa"}
+];
 const mockUserStore = {
     saveNewProject: jest.fn().mockImplementation(() => "test-project-id"),
     getUserProjects: jest.fn().mockImplementation(() => mockUserProjects),
     saveProjectHash: jest.fn(),
-    saveAMR: jest.fn()
+    getProjectHash: jest.fn().mockImplementation(() => "123"),
+    saveAMR: jest.fn(),
+    getProjectSamples: jest.fn().mockImplementation(() => mockProjectSamples),
+    getAMR: jest.fn().mockImplementation((projectId: string, sampleHash: string, fileName: string) =>
+        `AMR for ${projectId}-${sampleHash}-${fileName}`)
 };
 jest.mock("../../src/db/userStore", () => ({
     userStore: mockUserStoreConstructor.mockReturnValue(mockUserStore)
@@ -144,20 +153,61 @@ describe("test routes", () => {
         const req = {
             app: mockApp,
             params: {
-                projectHash: "123"
+                projectId: "testProjectId"
             }
         };
         const res = mockResponse();
-        const projectData = {hash: 123, samples: [{sketch: "abc"}]};
+        const projectData = {
+            hash: "abcd",
+            samples: [
+                {hash: "1234", sketch: "AGTC"},
+                {hash: "5678", sketch: "CTGA"}
+            ]};
 
-        mockAxios.onGet(`${config.api_url}/project/123`).reply(200, projectData);
+        mockAxios.onGet(`${config.api_url}/project/123`).reply(200, {data: projectData});
 
-        await apiEndpoints(config).getProject(req, res);
+        await apiEndpoints(config).getProject(req, res, jest.fn());
 
-        expect(res.send).toHaveBeenCalledWith(projectData);
+        const response = res.json.mock.calls[0][0];
+        expect(response).toStrictEqual({
+            status: "success",
+            errors: [],
+            data: {
+                hash: "abcd",
+                samples: [
+                    {hash: "5678", sketch: "CTGA", filename: "test1.fa", amr: "AMR for testProjectId-5678-test1.fa"},
+                    {hash: "1234", sketch: "AGTC", filename: "test2.fa", amr: "AMR for testProjectId-1234-test2.fa"},
+                    {hash: "1234", sketch: "AGTC", filename: "test3.fa", amr: "AMR for testProjectId-1234-test3.fa"}
+                ]
+            }
+        });
+        expect(mockUserStore.getProjectHash).toHaveBeenCalledWith(req, "testProjectId");
+        expect(mockUserStore.getProjectSamples).toHaveBeenCalledWith("testProjectId");
     });
 
-    it("getProject returns error", async () => {
+    it("getProject throws expected error when sample is missing in API response", async () => {
+        const req = {
+            app: mockApp,
+            params: {
+                projectId: "testProjectId"
+            }
+        };
+        const res = mockResponse();
+        const projectData = {
+            hash: "abcd",
+            samples: [
+                {hash: "5678", sketch: "CTGA"}
+            ]};
+
+        mockAxios.onGet(`${config.api_url}/project/123`).reply(200, {data: projectData});
+        const next = jest.fn();
+
+        await apiEndpoints(config).getProject(req, res, next);
+        expect(next).toHaveBeenCalledTimes(1);
+        expect(next.mock.calls[0][0].message).toBe("Sample with hash 1234 was not in API response");
+    });
+
+    it("getProject returns API error", async () => {
         const req = {
             app: mockApp,
             params: {
@@ -174,7 +224,7 @@ describe("test routes", () => {
         };
         mockAxios.onGet(`${config.api_url}/project/123`).reply(500, mockError);
 
-        await apiEndpoints(config).getProject(req, res);
+        await apiEndpoints(config).getProject(req, res, jest.fn());
         expect(res.status).toHaveBeenCalledWith(500);
         expect(res.send).toHaveBeenCalledWith({
             status: "failure",

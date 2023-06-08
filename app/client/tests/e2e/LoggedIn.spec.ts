@@ -113,10 +113,9 @@ test.describe("Logged in Tests", () => {
         // can browse back to Home page ad load previous project
         await page.goto(config.clientUrl());
         await page.click(`:nth-match(.saved-project-row button, ${lastProjectIndex})`);
-        // TODO: "unknown.fa" will be replaced with real filename when persisting these per user is implemented
         await expect(page.locator(":nth-match(.tab-content tr, 1)"))
-            .toContainText(["unknown.fa", "✔", "PCETE SXT"], { timeout });
+            .toContainText(["6930_8_13.fa", "✔", "PCETE SXT"], { timeout });
         await expect(page.locator(":nth-match(.tab-content tr, 2)"))
-            .toContainText(["unknown.fa", "✔", "PCETE SXT"]);
+            .toContainText(["6930_8_11.fa", "✔", "PCETE SXT"]);
     });
 });
