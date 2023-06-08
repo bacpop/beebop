@@ -1,11 +1,9 @@
-import { ErrorType } from "./errorType";
-
 export class BeebopError extends Error {
     status: number;
 
-    errorType: ErrorType;
+    errorType: string;
 
-    constructor(message: string, status: number, errorType: ErrorType) {
+    constructor(errorType: string, message: string, status: number) {
         super(message);
 
         this.name = "BeebopError";

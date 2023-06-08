@@ -6,8 +6,7 @@ import {userStore} from "../db/userStore";
 import asyncHandler from "../errors/asyncHandler";
 import {APIResponse, ProjectResponse} from "../types/responseTypes";
 import {BeebopError} from "../errors/beebopError";
-import {ErrorType} from "../errors/errorType";
-import {sendAPIError, sendSuccess} from "../utils";
+import {throwAPIError, sendSuccess} from "../utils";
 
 export const router = ((app, config) => {
     app.get('/',
@@ -119,7 +118,7 @@ export const apiEndpoints = (config => ({
             })
             .then(res => response.send(res.data))
             .catch(function (error) {
-                sendAPIError(response, error);
+                throwAPIError(response, error);
             });
     },
 
@@ -134,7 +133,7 @@ export const apiEndpoints = (config => ({
             })
             .then(res => response.send(res.data))
             .catch(function (error) {
-                sendAPIError(response, error);
+                throwAPIError(response, error);
             });
     },
 
@@ -150,7 +149,7 @@ export const apiEndpoints = (config => ({
                 response.send(res.data)
             })
             .catch(function (error) {
-                sendAPIError(response, error);
+                throwAPIError(response, error);
             });
     },
 
@@ -185,7 +184,7 @@ export const apiEndpoints = (config => ({
             )
                 .then(res => response.send(res.data))
                 .catch(function (error) {
-                    sendAPIError(response, error);
+                    throwAPIError(response, error);
                 })
         });
     },
@@ -216,7 +215,7 @@ export const apiEndpoints = (config => ({
             const projectHash = await store.getProjectHash(request, projectId);
             const res = await axios.get<APIResponse<ProjectResponse>>(`${config.api_url}/project/${projectHash}`)
                 .catch(function (error) {
-                    sendAPIError(response, error);
+                    throwAPIError(response, error);
                 });
             if (res) {
                 const apiData = (res as AxiosResponse<APIResponse<ProjectResponse>>).data.data;
@@ -228,7 +227,7 @@ export const apiEndpoints = (config => ({
                 for (const sample of projectSamples) {
                     const apiSample = apiData.samples.find(s => s.hash === sample.hash);
                     if (!apiSample) {
-                        throw new BeebopError(`Sample with hash ${sample.hash} was not in API response`, 500, ErrorType.INVALID_DATA);
+                        throw new BeebopError(`Sample with hash ${sample.hash} was not in API response`, 500, "Invalid data");
                     }
                     const amr = await store.getAMR(projectId, sample.hash, sample.filename);
                     responseSamples.push({
@@ -247,7 +246,7 @@ export const apiEndpoints = (config => ({
         await axios.get(`${config.api_url}/status/${request.body.hash}`)
             .then(res => response.send(res.data))
             .catch(function (error) {
-                sendAPIError(response, error);
+                throwAPIError(response, error);
             });
     },
 
@@ -261,7 +260,7 @@ export const apiEndpoints = (config => ({
             })
             .then(res => response.send(res.data))
             .catch(function (error) {
-                sendAPIError(response, error);
+                throwAPIError(response, error);
             });
     }
 }));

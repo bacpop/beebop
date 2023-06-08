@@ -1,9 +1,13 @@
-// TODO: use handleError instead of sendAPIError
-export function sendAPIError(response, error) {
-    const responseError = error.response ?
-        {error: error.response.data.error.errors[0].error, detail: error.response.data.error.errors[0].detail} :
-        {error: 'Could not connect to API', detail: error};
-    sendError(response, responseError);
+import {BeebopError} from "./errors/beebopError";
+import {APIResponse} from "./types/responseTypes";
+
+export function throwAPIError(response, error: any) {
+    if (error.response) {
+        const apiResponse = error.response.data.error as APIResponse<any>;
+        throw new BeebopError(apiResponse.errors[0].error, apiResponse.errors[0].detail, error.response.status);
+    } else {
+        throw new BeebopError("Could not connect to API", error.toString(), 500);
+    }
 }
 
 export function sendError(response, error, status = 500) {

@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { uid } from "uid";
 import { reqWithError } from "../logging";
-import { ErrorType } from "./errorType";
 import { BeebopError } from "./beebopError";
 import { sendError } from "../utils";
 
@@ -10,7 +9,7 @@ export const handleError = (err: Error, req: Request, res: Response, _: Function
     const beebopError = err instanceof BeebopError;
 
     const status = beebopError ? err.status : 500;
-    const type = beebopError ? err.errorType : ErrorType.OTHER_ERROR;
+    const type = beebopError ? err.errorType : "Unexpected error";
 
     // Do not return raw messages from unexpected errors to the front end
     const detail = beebopError ? err.message
