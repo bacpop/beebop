@@ -5,6 +5,9 @@ import {AMR} from "../types/models";
 import {userStore} from "../db/userStore";
 import asyncHandler from "../errors/asyncHandler";
 import {APIResponse, ProjectResponse} from "../types/responseTypes";
+import {BeebopError} from "../errors/beebopError";
+import {ErrorType} from "../errors/errorType";
+import {sendAPIError, sendSuccess} from "../utils";
 
 export const router = ((app, config) => {
     app.get('/',
@@ -225,7 +228,7 @@ export const apiEndpoints = (config => ({
                 for (const sample of projectSamples) {
                     const apiSample = apiData.samples.find(s => s.hash === sample.hash);
                     if (!apiSample) {
-                        throw Error(`Sample with hash ${sample.hash} was not in API response`);
+                        throw new BeebopError(`Sample with hash ${sample.hash} was not in API response`, 500, ErrorType.INVALID_DATA);
                     }
                     const amr = await store.getAMR(projectId, sample.hash, sample.filename);
                     responseSamples.push({
@@ -277,25 +280,3 @@ const authCheck = (req, res, next) => {
     }
 }
 
-function sendAPIError(response, error) {
-    const responseError = error.response ?
-        {error: error.response.data.error.errors[0].error, detail: error.response.data.error.errors[0].detail} :
-        {error: 'Could not connect to API', detail: error};
-    sendError(response, responseError);
-}
-
-function sendError(response, error) {
-    response.status(500).send({
-        status: "failure",
-        errors: [error],
-        data: null
-    });
-}
-
-function sendSuccess(response, data) {
-    response.json({
-        status: 'success',
-        errors: [],
-        data
-    });
-}

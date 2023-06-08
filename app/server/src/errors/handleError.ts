@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { uid } from "uid";
-import { jsonResponseError } from "../jsonResponse";
 import { reqWithError } from "../logging";
 import { ErrorType } from "./errorType";
 import { BeebopError } from "./beebopError";
@@ -21,12 +20,5 @@ export const handleError = (err: Error, req: Request, res: Response, _: Function
     reqWithError(req).errorDetail = detail;
     reqWithError(req).errorStack = err.stack;
 
-    // Return JSON error response if request is for JSON, otherwise render error view
-    const jsonRequest = req.headers.accept?.includes("application/json");
-    if (jsonRequest) {
-        jsonResponseError(status, type, detail, res);
-
-    } else {
-        res.status(status).render("error", { detail });
-    }
+    sendError(res, {error: type, detail}, status);
 };
