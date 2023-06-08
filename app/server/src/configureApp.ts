@@ -61,6 +61,5 @@ export const configureApp = ((app, config) => {
         extended: true
     }));
 
-    // Error handler
     app.use(handleError);
 })

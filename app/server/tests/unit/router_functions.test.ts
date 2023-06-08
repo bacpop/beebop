@@ -1,3 +1,5 @@
+import {BeebopError} from "../../src/errors/beebopError";
+
 const mockUserStoreConstructor = jest.fn();
 const mockUserProjects = [{name: "p1", hash: "123"}];
 const mockProjectSamples = [
@@ -224,12 +226,13 @@ describe("test routes", () => {
         };
         mockAxios.onGet(`${config.api_url}/project/123`).reply(500, mockError);
 
-        await apiEndpoints(config).getProject(req, res, jest.fn());
-        expect(res.status).toHaveBeenCalledWith(500);
-        expect(res.send).toHaveBeenCalledWith({
-            status: "failure",
-            errors: [{error: "PROJECT_ERROR", detail: "test project error"}],
-            data: null
-        });
+        const next = jest.fn();
+        await apiEndpoints(config).getProject(req, res, next);
+        const error = next.mock.calls[0][0];
+        expect(error instanceof BeebopError).toBe(true);
+        expect(error.errorType).toBe("PROJECT_ERROR");
+        expect(error.message).toBe("test project error");
+        expect(error.status).toBe(500);
+        expect(error.writeToResponse).toBe(false);
     });
 });
