@@ -11,6 +11,7 @@ import path from "path";
 import configPath from "./args";
 import { redisConnection } from "./db/redis";
 import {initialiseLogging} from "./logging";
+import {handleError} from "./errors/handleError";
 
 const filename = path.join(configPath, "config.json");
 
@@ -47,3 +48,5 @@ const redis = redisConnection(
     () => { throw Error(`Failed to connect to redis server ${config.redis_url}`); }
 );
 app.locals.redis = redis;
+
+app.use(handleError);

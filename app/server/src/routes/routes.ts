@@ -167,6 +167,7 @@ export const apiEndpoints = (config => ({
 
     async runPoppunk(request, response, next) {
         await asyncHandler(next, async () => {
+            //throw Error("oh no!");
             const poppunkRequest = request.body as BeebopRunRequest;
             const {projectHash, projectId, names, sketches} = poppunkRequest;
             const {redis} = request.app.locals;
