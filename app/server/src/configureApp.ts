@@ -45,7 +45,6 @@ export const configureApp = ((app, config) => {
     app.use(passport.initialize());
     app.use(passport.session());
 
-    app.use(morgan('tiny'));
     app.use(
         cors({
             origin: [

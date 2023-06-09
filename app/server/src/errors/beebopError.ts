@@ -5,12 +5,11 @@ export class BeebopError extends Error {
 
     writeToResponse: boolean;
 
-    constructor(errorType: string, message: string, status = 500, writeToResponse = false) {
+    constructor(errorType: string, message: string, status = 500) {
         super(message);
 
         this.name = "BeebopError";
         this.status = status;
         this.errorType = errorType;
-        this.writeToResponse = writeToResponse;
     }
 }

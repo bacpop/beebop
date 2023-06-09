@@ -18,8 +18,8 @@ export const handleError = (err: Error, req: Request, res: Response, _: Function
     const status = beebopError ? err.status : 500;
     const type = beebopError ? err.errorType : "Unexpected error";
 
-    // Do not return raw messages from unexpected errors (or expected errors with writeToResponse == false)
-    const detail = beebopError && err.writeToResponse ? err.message
+    // Do not return raw messages from unexpected errors
+    const detail = beebopError ? err.message
         : `An unexpected error occurred. Please contact support and quote error code ${uid()}`;
 
     // Set error type, detail and stack on req so morgan logs them
