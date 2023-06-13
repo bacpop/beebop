@@ -4,21 +4,17 @@ import {AxiosError} from "axios";
 import {handleError} from "./errors/handleError";
 
 export function handleAPIError(request, response, error: AxiosError<any>) {
-    let errorType: string;
-    let errorMessage: string;
-    let status: number;
+    let errorToHandle: Error;
     if (error.response) {
-        status = error.response.status;
         const apiResponse = error.response.data.error as APIResponse<any>;
         const firstError = apiResponse?.errors && apiResponse.errors[0];
-        errorType = firstError ? firstError.error : "Malformed response from API";
-        errorMessage = firstError ? firstError.detail : "The API returned a response which could not be parsed";
+        const errorType = firstError ? firstError.error : "Malformed response from API";
+        const errorMessage = firstError ? firstError.detail : "The API returned a response which could not be parsed";
+        errorToHandle = new BeebopError(errorType, errorMessage, error.response.status);
     } else {
-        status = 500;
-        errorType = "Could not connect to API";
-        errorMessage = error.toString();
+        errorToHandle = Error(`Could not connect to API: ${error.toString()}`)
     }
-    handleError(new BeebopError(errorType, errorMessage, status), request, response, null);
+    handleError(errorToHandle, request, response, null);
 }
 
 export function sendSuccess(response, data) {

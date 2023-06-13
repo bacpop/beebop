@@ -1,4 +1,10 @@
-import {BeebopError} from "../../src/errors/beebopError";
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
+import {apiEndpoints} from '../../src/routes/routes';
+import versionInfo from '../../../server/resources/versionInfo.json';
+import config from '../../src/resources/config.json';
+
+import {mockResponse} from "./utils";
 
 const mockUserStoreConstructor = jest.fn();
 const mockUserProjects = [{name: "p1", hash: "123"}];
@@ -21,21 +27,7 @@ jest.mock("../../src/db/userStore", () => ({
     userStore: mockUserStoreConstructor.mockReturnValue(mockUserStore)
 }))
 
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
-import {apiEndpoints} from '../../src/routes/routes';
-import versionInfo from '../../../server/resources/versionInfo.json';
-import config from '../../src/resources/config.json';
-
 const mockRequest: any = { };
-
-const mockResponse = () => {
-    const res: any = {};
-    res.send = jest.fn().mockReturnValue(res);
-    res.json = jest.fn();
-    res.status = jest.fn().mockReturnValue(res);
-    return res;
-};
 
 const mockRedis = {};
 
@@ -213,7 +205,7 @@ describe("test routes", () => {
         const req = {
             app: mockApp,
             params: {
-                projectHash: "123"
+                projectId: "123"
             }
         };
         const res = mockResponse();
@@ -228,11 +220,12 @@ describe("test routes", () => {
 
         const next = jest.fn();
         await apiEndpoints(config).getProject(req, res, next);
-        const error = next.mock.calls[0][0];
-        expect(error instanceof BeebopError).toBe(true);
-        expect(error.errorType).toBe("PROJECT_ERROR");
-        expect(error.message).toBe("test project error");
-        expect(error.status).toBe(500);
-        expect(error.writeToResponse).toBe(false);
+
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.json).toHaveBeenCalledWith({
+            status: "failure",
+            data: null,
+            errors: [{error: "PROJECT_ERROR", detail: "test project error"}]
+        });
     });
 });

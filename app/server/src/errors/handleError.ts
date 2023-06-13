@@ -4,7 +4,7 @@ import { reqWithError } from "../logging";
 import { BeebopError } from "./beebopError";
 
 function sendError(response, error, status = 500) {
-    response.status(status).send({
+    response.status(status).json({
         status: "failure",
         errors: [error],
         data: null

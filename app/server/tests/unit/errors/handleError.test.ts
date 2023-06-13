@@ -5,7 +5,7 @@ describe("handleError", () => {
     const mockReq = {} as any;
     const mockRes = {
         status: jest.fn(),
-        send: jest.fn()
+        json: jest.fn()
     } as any;
     mockRes.status.mockImplementation(() => mockRes);
 
@@ -22,7 +22,7 @@ describe("handleError", () => {
         expect(mockReq.errorStack).toBe("test stack");
 
         expect(mockRes.status).toHaveBeenCalledWith(400);
-        expect(mockRes.send).toHaveBeenCalledWith({
+        expect(mockRes.json).toHaveBeenCalledWith({
             status: "failure",
             errors: [
                 {error: "test error type", detail: "test error msg"}
@@ -40,7 +40,7 @@ describe("handleError", () => {
         expect(mockReq.errorStack).toBe("test stack");
 
         expect(mockRes.status).toHaveBeenCalledWith(500);
-        expect(mockRes.send).toHaveBeenCalledWith({
+        expect(mockRes.json).toHaveBeenCalledWith({
             status: "failure",
             errors: [
                 {error: "Unexpected error", detail: mockReq.errorDetail}
