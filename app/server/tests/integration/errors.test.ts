@@ -61,7 +61,7 @@ describe("Error handling", () => {
         return projectId;
     };
 
-    it("Returns API error", async () => {
+    it("Returns well-formed API error", async () => {
         // Request status for a project hash which does not exist
         const nonexistentHash = uid();
         const response = await post("status", {hash: nonexistentHash}, connectionCookie);
@@ -77,7 +77,7 @@ describe("Error handling", () => {
         ]);
     });
 
-    it("Returns malformed API error", async () => {
+    it("Returns expect response for malformed API error", async () => {
         // Send rubbish to poppunk request - API responds with a 400 response, but unfortunately an HTML one -
         // should be logged as a 400 response and error message returned indicating malformed response
         const junk = {
@@ -98,8 +98,6 @@ describe("Error handling", () => {
                 detail: "The API returned a response which could not be parsed"
             }
         ]);
-
-        //TODO: test logging, in a separate describe block, from within server process
     });
 
     it("Returns error on unexpected sample when get project", async () => {
@@ -107,11 +105,11 @@ describe("Error handling", () => {
         // beebop_py
         const projectId = await runProjectToCompletion();
 
-        // 4. insert rogue extra sample id to redis
+        // insert rogue extra sample id to redis
         const fakeSampleId = `1234:fakeSample.fa`
         await saveRedisSet(`beebop:project:${projectId}:samples`, [sampleId, fakeSampleId]);
 
-        // 5. Get project data - should get error
+        // get project data - should get error
         const projectRes = await get(`project/${projectId}`, connectionCookie);
         expect(projectRes.status).toBe(500);
         expect(projectRes.data.data).toBe(null);
@@ -124,7 +122,6 @@ describe("Error handling", () => {
     it("Omits unexpected error detail from response", async () => {
         // Run a project then sabotage its AMR in the database so we get an unexpected JSON parse error
         const projectId = await runProjectToCompletion();
-        // This doesn't work - file names don't match?
         const redisKey = `beebop:project:${projectId}:sample:${sampleId}`
         await saveRedisHash(redisKey, {"amr": "{{{{nope"});
 
