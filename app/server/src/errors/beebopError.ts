@@ -3,8 +3,6 @@ export class BeebopError extends Error {
 
     errorType: string;
 
-    writeToResponse: boolean;
-
     constructor(errorType: string, message: string, status = 500) {
         super(message);
 
