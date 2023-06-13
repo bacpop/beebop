@@ -12,7 +12,8 @@ function sendError(response, error, status = 500) {
 }
 
 // Need to include the unused next var for this to be used correctly as an error handler
-export const handleError = (err: Error, req: Request, res: Response, _: Function) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const handleError = (err: Error, req: Request, res: Response, _: () => void) => {
     const beebopError = err instanceof BeebopError;
 
     const status = beebopError ? err.status : 500;

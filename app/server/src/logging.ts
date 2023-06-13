@@ -15,6 +15,7 @@ export const initialiseLogging = (app: Application) => {
     morgan.token("error-detail", (req: Request) => reqWithError(req).errorDetail);
     morgan.token("error-stack", (req: Request) => reqWithError(req).errorStack);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const customFormat = (tokens: any, req: Request, res: Response) => {
         return [
             tokens["remote-addr"](req, res),

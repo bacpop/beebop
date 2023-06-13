@@ -1,6 +1,5 @@
 import express from "express";
 import cors from "cors";
-import morgan from "morgan";
 import passport from 'passport';
 import session from 'express-session';
 import PassportGoogle from 'passport-google-oauth20';
