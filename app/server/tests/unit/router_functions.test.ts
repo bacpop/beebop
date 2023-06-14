@@ -1,11 +1,3 @@
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
-import {apiEndpoints} from '../../src/routes/routes';
-import versionInfo from '../../../server/resources/versionInfo.json';
-import config from '../../src/resources/config.json';
-
-import {mockResponse} from "./utils";
-
 const mockUserStoreConstructor = jest.fn();
 const mockUserProjects = [{name: "p1", hash: "123"}];
 const mockProjectSamples = [
@@ -26,6 +18,14 @@ const mockUserStore = {
 jest.mock("../../src/db/userStore", () => ({
     userStore: mockUserStoreConstructor.mockReturnValue(mockUserStore)
 }))
+
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
+import {apiEndpoints} from '../../src/routes/routes';
+import versionInfo from '../../../server/resources/versionInfo.json';
+import config from '../../src/resources/config.json';
+
+import {mockResponse} from "./utils";
 
 const mockRequest: any = { };
 
