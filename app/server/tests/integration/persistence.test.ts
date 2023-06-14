@@ -87,6 +87,8 @@ describe("User persistence", () => {
         await withRedis(async (redis) => {
             const userStore = new UserStore(redis);
             const result = await userStore.getProjectSamples("abcd");
+            // sample results are not in a defined order as saved in set - may not be order uploaded
+            result.sort((a, b) => a.hash < b.hash ? -1 : 1);
             expect(result).toStrictEqual([
                 {hash: "1234", filename: "test1.fa"},
                 {hash: "5678", filename: "test2.fa"}
