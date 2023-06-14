@@ -1,7 +1,7 @@
 set -e
 
 HERE=$(realpath "$(dirname $0)")
-. $HERE/run_dev_dependencies
+. $HERE/run_dependencies
 
 npm --prefix app/server install
 npm --prefix app/client install
