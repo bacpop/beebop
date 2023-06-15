@@ -1,7 +1,9 @@
 {
     "compilerOptions": {
+        "target": "es2019",
         "esModuleInterop": true,
         "resolveJsonModule": true,
-        "outDir": "dist"
+        "outDir": "dist",
+        "moduleResolution": "Node"
     }
 }

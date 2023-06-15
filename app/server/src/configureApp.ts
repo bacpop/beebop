@@ -1,6 +1,5 @@
 import express from "express";
 import cors from "cors";
-import morgan from "morgan";
 import passport from 'passport';
 import session from 'express-session';
 import PassportGoogle from 'passport-google-oauth20';
@@ -45,7 +44,6 @@ export const configureApp = ((app, config) => {
     app.use(passport.initialize());
     app.use(passport.session());
 
-    app.use(morgan('tiny'));
     app.use(
         cors({
             origin: [

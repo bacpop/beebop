@@ -40,6 +40,11 @@ To see logs, use `pm2 logs` (append `beebop_server` or `beebop_client` to show l
 To reload an application after making code changes, use `pm2 reload beebop_server` or `pm2 reload beebop_client`.
 To see fuller monitoring dashboard, use `pm2 monit`.
 
+You can also run everything outside pm2, by separately running:
+- `./scripts/run_dev_dependencies`
+- `./scripts/run_server`
+- `./scripts/run_client`
+
 ## Config
 Config for the front-end lives in `./app/client/src/settings` and by default webpack (via the vue-cli) will use the config 
 defined in `./app/client/src/settings/development`; this gets overriden by setting an env var called `BUILD_TARGET` - see `./proxy/Dockerfile`.

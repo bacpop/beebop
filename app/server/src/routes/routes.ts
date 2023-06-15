@@ -5,6 +5,8 @@ import {AMR} from "../types/models";
 import {userStore} from "../db/userStore";
 import asyncHandler from "../errors/asyncHandler";
 import {APIResponse, ProjectResponse} from "../types/responseTypes";
+import {BeebopError} from "../errors/beebopError";
+import {handleAPIError, sendSuccess} from "../utils";
 
 export const router = ((app, config) => {
     app.get('/',
@@ -116,7 +118,7 @@ export const apiEndpoints = (config => ({
             })
             .then(res => response.send(res.data))
             .catch(function (error) {
-                sendAPIError(response, error);
+                handleAPIError(request, response, error);
             });
     },
 
@@ -131,7 +133,7 @@ export const apiEndpoints = (config => ({
             })
             .then(res => response.send(res.data))
             .catch(function (error) {
-                sendAPIError(response, error);
+                handleAPIError(request, response, error);
             });
     },
 
@@ -147,7 +149,7 @@ export const apiEndpoints = (config => ({
                 response.send(res.data)
             })
             .catch(function (error) {
-                sendAPIError(response, error);
+                handleAPIError(request, response, error);
             });
     },
 
@@ -182,7 +184,7 @@ export const apiEndpoints = (config => ({
             )
                 .then(res => response.send(res.data))
                 .catch(function (error) {
-                    sendAPIError(response, error);
+                    handleAPIError(request, response, error);
                 })
         });
     },
@@ -213,7 +215,7 @@ export const apiEndpoints = (config => ({
             const projectHash = await store.getProjectHash(request, projectId);
             const res = await axios.get<APIResponse<ProjectResponse>>(`${config.api_url}/project/${projectHash}`)
                 .catch(function (error) {
-                    sendAPIError(response, error);
+                    handleAPIError(request, response, error);
                 });
             if (res) {
                 const apiData = (res as AxiosResponse<APIResponse<ProjectResponse>>).data.data;
@@ -225,7 +227,7 @@ export const apiEndpoints = (config => ({
                 for (const sample of projectSamples) {
                     const apiSample = apiData.samples.find(s => s.hash === sample.hash);
                     if (!apiSample) {
-                        throw Error(`Sample with hash ${sample.hash} was not in API response`);
+                        throw new BeebopError("Invalid data",`Sample with hash ${sample.hash} was not in API response`);
                     }
                     const amr = await store.getAMR(projectId, sample.hash, sample.filename);
                     responseSamples.push({
@@ -244,7 +246,7 @@ export const apiEndpoints = (config => ({
         await axios.get(`${config.api_url}/status/${request.body.hash}`)
             .then(res => response.send(res.data))
             .catch(function (error) {
-                sendAPIError(response, error);
+                handleAPIError(request, response, error);
             });
     },
 
@@ -258,7 +260,7 @@ export const apiEndpoints = (config => ({
             })
             .then(res => response.send(res.data))
             .catch(function (error) {
-                sendAPIError(response, error);
+                handleAPIError(request, response, error);
             });
     }
 }));
@@ -277,25 +279,3 @@ const authCheck = (req, res, next) => {
     }
 }
 
-function sendAPIError(response, error) {
-    const responseError = error.response ?
-        {error: error.response.data.error.errors[0].error, detail: error.response.data.error.errors[0].detail} :
-        {error: 'Could not connect to API', detail: error};
-    sendError(response, responseError);
-}
-
-function sendError(response, error) {
-    response.status(500).send({
-        status: "failure",
-        errors: [error],
-        data: null
-    });
-}
-
-function sendSuccess(response, data) {
-    response.json({
-        status: 'success',
-        errors: [],
-        data
-    });
-}

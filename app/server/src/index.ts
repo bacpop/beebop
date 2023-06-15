@@ -10,6 +10,8 @@ import path from "path";
 
 import configPath from "./args";
 import { redisConnection } from "./db/redis";
+import {initialiseLogging} from "./logging";
+import {handleError} from "./errors/handleError";
 
 const filename = path.join(configPath, "config.json");
 
@@ -23,6 +25,7 @@ if (!fs.existsSync(filename)) {
     throw new Error(`File ${configPath} does not exist`);
 }
 const app = express();
+initialiseLogging(app);
 
 configureApp(app, config);
 
@@ -45,3 +48,5 @@ const redis = redisConnection(
     () => { throw Error(`Failed to connect to redis server ${config.redis_url}`); }
 );
 app.locals.redis = redis;
+
+app.use(handleError);

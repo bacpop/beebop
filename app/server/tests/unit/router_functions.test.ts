@@ -25,15 +25,9 @@ import {apiEndpoints} from '../../src/routes/routes';
 import versionInfo from '../../../server/resources/versionInfo.json';
 import config from '../../src/resources/config.json';
 
-const mockRequest: any = { };
+import {mockResponse} from "./utils";
 
-const mockResponse = () => {
-    const res: any = {};
-    res.send = jest.fn().mockReturnValue(res);
-    res.json = jest.fn();
-    res.status = jest.fn().mockReturnValue(res);
-    return res;
-};
+const mockRequest: any = { };
 
 const mockRedis = {};
 
@@ -211,7 +205,7 @@ describe("test routes", () => {
         const req = {
             app: mockApp,
             params: {
-                projectHash: "123"
+                projectId: "123"
             }
         };
         const res = mockResponse();
@@ -224,12 +218,14 @@ describe("test routes", () => {
         };
         mockAxios.onGet(`${config.api_url}/project/123`).reply(500, mockError);
 
-        await apiEndpoints(config).getProject(req, res, jest.fn());
+        const next = jest.fn();
+        await apiEndpoints(config).getProject(req, res, next);
+
         expect(res.status).toHaveBeenCalledWith(500);
-        expect(res.send).toHaveBeenCalledWith({
+        expect(res.json).toHaveBeenCalledWith({
             status: "failure",
-            errors: [{error: "PROJECT_ERROR", detail: "test project error"}],
-            data: null
+            data: null,
+            errors: [{error: "PROJECT_ERROR", detail: "test project error"}]
         });
     });
 });
