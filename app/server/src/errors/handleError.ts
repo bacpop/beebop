@@ -3,7 +3,7 @@ import { uid } from "uid";
 import { reqWithError } from "../logging";
 import { BeebopError } from "./beebopError";
 
-function sendError(response, error, status = 500) {
+function sendError(response: Response, error: {error: string, detail: string}, status: number) {
     response.status(status).json({
         status: "failure",
         errors: [error],
