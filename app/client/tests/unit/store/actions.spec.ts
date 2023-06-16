@@ -88,7 +88,7 @@ describe("Actions", () => {
             projectId: "123",
             projectHash: "abc",
             errors: ["test error"],
-            submitStatus: "test status"
+            submitStatus: true
         } as any;
         await actions.newProject({ commit, state } as any, "testproj");
         expect(JSON.parse(mockAxios.history.post[0].data)).toStrictEqual({ name: "testproj" });
@@ -211,7 +211,7 @@ describe("Actions", () => {
         const dispatch = jest.fn();
         const state = mockRootState({
             projectHash: "randomHash",
-            submitStatus: "submitted",
+            submitStatus: true,
             analysisStatus: {
                 assign: "started",
                 microreact: "waiting",
@@ -242,7 +242,7 @@ describe("Actions", () => {
         const dispatch = jest.fn();
         const state = mockRootState({
             projectHash: "randomHash",
-            submitStatus: "submitted",
+            submitStatus: true,
             analysisStatus: {
                 assign: "finished",
                 microreact: "started",
@@ -267,7 +267,7 @@ describe("Actions", () => {
         const dispatch = jest.fn();
         const state = mockRootState({
             projectHash: "randomHash",
-            submitStatus: "submitted",
+            submitStatus: true,
             analysisStatus: {
                 assign: "finished",
                 microreact: "started",
@@ -292,7 +292,7 @@ describe("Actions", () => {
         const dispatch = jest.fn();
         const state = mockRootState({
             projectHash: "randomHash",
-            submitStatus: "submitted",
+            submitStatus: true,
             analysisStatus: {
                 assign: "submitted",
                 microreact: "submitted",
@@ -350,7 +350,7 @@ describe("Actions", () => {
         const dispatch = jest.fn();
         await actions.submitData({ commit, dispatch } as any);
         expect(commit.mock.calls[0][0]).toEqual("setSubmitStatus");
-        expect(commit.mock.calls[0][1]).toEqual("submitted");
+        expect(commit.mock.calls[0][1]).toEqual(true);
         expect(dispatch.mock.calls[0][0]).toEqual("runPoppunk");
         expect(dispatch.mock.calls[1][0]).toEqual("startStatusPolling");
     });

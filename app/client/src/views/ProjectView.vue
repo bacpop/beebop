@@ -32,7 +32,7 @@
         </div>
 
         <div class="tab-content tab-content-row"
-        :class="submitStatus == 'submitted' ? 'no-top-border' : '' ">
+        :class="submitStatus ? 'no-top-border' : '' ">
           <div
           class="tab-pane fade m-3"
           :class="'table' == selectedTab ? 'active show' : ''">

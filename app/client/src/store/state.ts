@@ -12,7 +12,7 @@ export interface RootState {
   user: User | null
   microreactToken: string | null
   results: Results
-  submitStatus: string | null
+  submitStatus: boolean | null
   analysisStatus: AnalysisStatus
   projectName: string | null
   projectId: string | null

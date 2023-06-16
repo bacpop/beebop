@@ -87,8 +87,8 @@ describe("mutations", () => {
     });
     it("sets submitStatus", () => {
         const state = mockRootState();
-        mutations.setSubmitStatus(state, "submitted");
-        expect(state.submitStatus).toBe("submitted");
+        mutations.setSubmitStatus(state, true);
+        expect(state.submitStatus).toBe(true);
     });
     it("sets analysisStatus", () => {
         const state = mockRootState();

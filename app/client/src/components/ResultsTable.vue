@@ -118,9 +118,9 @@ export default defineComponent({
                     Filename: samples[sample].filename,
                     Sketch: (samples[sample].sketch) ? "\u2714" : "processing",
                     AMR: samples[sample].amr ? samples[sample].amr : "processing",
-                    Cluster: this.submitStatus === "submitted" ? this.getCluster(sample) : "",
-                    Microreact: this.submitStatus === "submitted" ? this.getMicroreact() : "",
-                    Network: this.submitStatus === "submitted" ? this.getNetwork() : ""
+                    Cluster: this.submitStatus ? this.getCluster(sample) : "",
+                    Microreact: this.submitStatus ? this.getMicroreact() : "",
+                    Network: this.submitStatus ? this.getNetwork() : ""
                 });
             });
             const tableSorted = items.sort((a, b) => Number(a.Cluster) - Number(b.Cluster));
