@@ -12,7 +12,7 @@ import {
     SavedProject,
     NewProjectRequest,
     ProjectResponse,
-    IsolateValue, ValueTypes, AMR
+    IsolateValue, ValueTypes, AMR, AnalysisType
 } from "@/types";
 import { api } from "@/apiService";
 import { emptyState } from "@/utils";
@@ -52,7 +52,7 @@ export default {
             .get<SavedProject[]>(`${serverUrl}/projects`);
     },
     async loadProject(context: ActionContext<RootState, RootState>, project: SavedProject) {
-        const { commit, state } = context;
+        const { commit, dispatch, state } = context;
         commit("setLoadingProject", true);
         commit("addLoadingProjectMessage", "Clearing state");
         Object.assign(state, {
@@ -70,6 +70,14 @@ export default {
         commit("addLoadingProjectMessage", "Loading complete");
         // we may need to change this to happen later when other loading steps are implemented
         commit("setLoadingProject", false);
+        // start polling if response indicated project has not yet completed
+        const complete = Object.keys(state.analysisStatus).every((key) => {
+            const status = state.analysisStatus[key as AnalysisType];
+            return status && ["finished", "failed"].includes(status);
+        });
+        if (!complete) {
+            dispatch("startStatusPolling");
+        }
     },
     async logoutUser() {
         await axios.get(`${serverUrl}/logout`);
