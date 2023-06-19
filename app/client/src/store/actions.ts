@@ -147,17 +147,20 @@ export default {
             .withSuccess("setAnalysisStatus")
             .withError("addError")
             .post<AnalysisStatus>(`${serverUrl}/status`, { hash: state.projectHash });
+        let stopPolling = false;
         if (response) {
             if (response.data.assign === "finished" && prevAssign !== "finished") {
                 dispatch("getAssignResult");
             }
             if ((response.data.network === "finished" || response.data.network === "failed")
-        && (response.data.microreact === "finished" || response.data.microreact === "failed")) {
-                clearInterval(state.statusInterval);
+                && (response.data.microreact === "finished" || response.data.microreact === "failed")) {
+                stopPolling = true;
             }
+        } else {
+            stopPolling = true;
         }
-        if (!response) {
-            clearInterval(state.statusInterval);
+        if (stopPolling) {
+            dispatch("stopStatusPolling");
         }
     },
     async getAssignResult(context: ActionContext<RootState, RootState>) {
@@ -168,9 +171,20 @@ export default {
             .post<ClusterInfo>(`${serverUrl}/assignResult`, { projectHash: state.projectHash });
     },
     async startStatusPolling(context: ActionContext<RootState, RootState>) {
-        const { dispatch, commit } = context;
-        const inter = setInterval(() => { dispatch("getStatus"); }, 1000);
-        commit("setStatusInterval", inter);
+        const { dispatch, commit, state } = context;
+        if (state.statusInterval === undefined) {
+            const inter = setInterval(() => {
+                dispatch("getStatus");
+            }, 1000);
+            commit("setStatusInterval", inter);
+        }
+    },
+    async stopStatusPolling(context: ActionContext<RootState, RootState>) {
+        const { state, commit } = context;
+        if (state.statusInterval !== undefined) {
+            clearInterval(state.statusInterval);
+            commit("setStatusInterval", undefined);
+        }
     },
     async submitData(context: ActionContext<RootState, RootState>) {
         const { dispatch, commit } = context;

@@ -88,8 +88,11 @@ export default defineComponent({
             this.getUser();
         }
     },
+    beforeUnmount() {
+        this.stopStatusPolling();
+    },
     methods: {
-        ...mapActions(["getUser"]),
+        ...mapActions(["getUser", "stopStatusPolling"]),
         onInput(value: string) {
             this.selectedTab = value;
         }
