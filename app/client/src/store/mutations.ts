@@ -93,6 +93,5 @@ export default {
         // indication of submitted status in the response for all projects including those which had never been submitted
         // and will need to update this line accordingly.
         state.submitted = true;
-        // TODO: if project has not finished running, start monitoring for status - need to do this from the action - share logic & code w runPoppunk
     }
 };
