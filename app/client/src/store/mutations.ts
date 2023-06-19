@@ -43,8 +43,8 @@ export default {
     setProjectHash(state: RootState, phash: string) {
         state.projectHash = phash;
     },
-    setSubmitStatus(state: RootState, data: boolean) {
-        state.submitStatus = data;
+    setSubmitted(state: RootState, data: boolean) {
+        state.submitted = data;
     },
     setAnalysisStatus(state: RootState, data: AnalysisStatus) {
         state.analysisStatus = data;
@@ -92,7 +92,7 @@ export default {
         // you get an error if it hadn't because beebop_py won't know about it. When bacpop-98 is done, we should get
         // indication of submitted status in the response for all projects including those which had never been submitted
         // and will need to update this line accordingly.
-        state.submitStatus = true;
+        state.submitted = true;
         // TODO: if project has not finished running, start monitoring for status - need to do this from the action - share logic & code w runPoppunk
     }
 };

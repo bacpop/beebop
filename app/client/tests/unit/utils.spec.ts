@@ -81,7 +81,7 @@ describe("util functions", () => {
             projectName: null,
             projectId: null,
             projectHash: null,
-            submitStatus: null,
+            submitted: false,
             analysisStatus: {
                 assign: null,
                 microreact: null,

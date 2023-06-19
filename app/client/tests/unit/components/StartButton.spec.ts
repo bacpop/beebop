@@ -98,7 +98,7 @@ describe("StartButton disabled", () => {
 describe("StartButton disabled after submit", () => {
     const store = new Vuex.Store<RootState>({
         state: mockRootState({
-            submitStatus: true,
+            submitted: true,
             user: {
                 name: "Jane",
                 id: "543653d45",

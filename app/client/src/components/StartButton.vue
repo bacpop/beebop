@@ -20,7 +20,7 @@ export default defineComponent({
         }
     },
     computed: {
-        ...mapState(["submitStatus", "analysisStatus", "results"]),
+        ...mapState(["submitted", "analysisStatus", "results"]),
         allSketched(): boolean {
             const isolates = this.results.perIsolate;
             const keys = Object.keys(isolates);

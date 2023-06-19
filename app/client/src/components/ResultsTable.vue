@@ -8,7 +8,7 @@
         <th>Filename</th>
         <th>Sketch</th>
         <th>AMR</th>
-        <template v-if="submitStatus">
+        <template v-if="submitted">
           <th>Cluster</th>
           <th>Microreact</th>
           <th>Network</th>
@@ -31,10 +31,10 @@
               <b :style="{color: getRGB(sample.AMR.Trim_sulfa, 'Cotrim')}">S<sub>XT</sub></b>
             </span>
           </td>
-          <td v-if="submitStatus" :class="(typeof sample.Cluster === 'number') ? '' : 'processing'">
+          <td v-if="submitted" :class="(typeof sample.Cluster === 'number') ? '' : 'processing'">
             {{sample.Cluster}}
           </td>
-          <template v-if="submitStatus && sample.Rowspan !== 0">
+          <template v-if="submitted && sample.Rowspan !== 0">
             <td
             style="vertical-align : middle;"
             :rowspan="sample.Rowspan"
@@ -48,7 +48,7 @@
               v-if="(sample.Microreact === 'showButton')"
               :cluster="sample.Cluster"/>
             </td>
-            <td v-if="submitStatus && sample.Rowspan !== 0"
+            <td v-if="submitted && sample.Rowspan !== 0"
             style="vertical-align : middle;"
             :rowspan="sample.Rowspan"
             :class="(sample.Network === 'showButton') ? '' : 'processing'">
@@ -108,7 +108,7 @@ export default defineComponent({
         }
     },
     computed: {
-        ...mapState(["results", "submitStatus", "analysisStatus"]),
+        ...mapState(["results", "submitted", "analysisStatus"]),
         tableData() {
             const samples = this.results.perIsolate;
             const items: Record<string, string | number>[] = [];
@@ -118,9 +118,9 @@ export default defineComponent({
                     Filename: samples[sample].filename,
                     Sketch: (samples[sample].sketch) ? "\u2714" : "processing",
                     AMR: samples[sample].amr ? samples[sample].amr : "processing",
-                    Cluster: this.submitStatus ? this.getCluster(sample) : "",
-                    Microreact: this.submitStatus ? this.getMicroreact() : "",
-                    Network: this.submitStatus ? this.getNetwork() : ""
+                    Cluster: this.submitted ? this.getCluster(sample) : "",
+                    Microreact: this.submitted ? this.getMicroreact() : "",
+                    Network: this.submitted ? this.getNetwork() : ""
                 });
             });
             const tableSorted = items.sort((a, b) => Number(a.Cluster) - Number(b.Cluster));

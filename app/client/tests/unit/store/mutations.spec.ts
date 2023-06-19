@@ -85,10 +85,10 @@ describe("mutations", () => {
             amr: { Penicillin: 0.5, Chloramphenicol: 0.2 }
         });
     });
-    it("sets submitStatus", () => {
+    it("sets submitted", () => {
         const state = mockRootState();
-        mutations.setSubmitStatus(state, true);
-        expect(state.submitStatus).toBe(true);
+        mutations.setSubmitted(state, true);
+        expect(state.submitted).toBe(true);
     });
     it("sets analysisStatus", () => {
         const state = mockRootState();

@@ -2,14 +2,14 @@
   <div>
     <div v-if="projectId && !loadingProject" class="project">
       <div class="file-input">
-        <DropZone v-if="user && !submitStatus" class="dropzone-component"/>
+        <DropZone v-if="user && !submitted" class="dropzone-component"/>
       </div>
       <div class="overview">
         <h2 class="left">Project: {{projectName}}</h2>
         <StartButton v-if="user" />
-        <ProgressBar v-if="submitStatus" class="progress-bar-component" />
+        <ProgressBar v-if="submitted" class="progress-bar-component" />
 
-        <div v-if="submitStatus" class="tabs tabs-horizontal">
+        <div v-if="submitted" class="tabs tabs-horizontal">
           <div class ="nav-row">
             <ul class="nav nav-tabs-row">
               <li class="nav-item">
@@ -32,7 +32,7 @@
         </div>
 
         <div class="tab-content tab-content-row"
-        :class="submitStatus ? 'no-top-border' : '' ">
+        :class="submitted ? 'no-top-border' : '' ">
           <div
           class="tab-pane fade m-3"
           :class="'table' == selectedTab ? 'active show' : ''">
@@ -98,7 +98,7 @@ export default defineComponent({
         }
     },
     computed: {
-        ...mapState(["user", "submitStatus", "analysisStatus", "projectId", "projectName", "loadingProject"]),
+        ...mapState(["user", "submitted", "analysisStatus", "projectId", "projectName", "loadingProject"]),
         ...mapGetters(["uniqueClusters"])
     }
 });

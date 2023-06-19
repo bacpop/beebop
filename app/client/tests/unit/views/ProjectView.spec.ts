@@ -70,7 +70,7 @@ describe("Project", () => {
                 projectName: "testProject",
                 projectId: "ABC-123",
                 user,
-                submitStatus: true,
+                submitted: true,
                 analysisStatus: {
                     assign: "finished",
                     microreact: "finished",
