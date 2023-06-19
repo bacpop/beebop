@@ -299,9 +299,12 @@ describe("Actions", () => {
         const state = mockRootState({
             statusInterval: 202
         });
-        await actions.stopStatusPolling({state} as any);
+        const commit = jest.fn();
+        await actions.stopStatusPolling({state, commit} as any);
         expect(clearInterval).toHaveBeenCalledTimes(1);
         expect(clearInterval).toHaveBeenLastCalledWith(202);
+        expect(commit).toHaveBeenCalledTimes(1);
+        expect(commit).toHaveBeenCalledWith("setStatusInterval", undefined);
         jest.runOnlyPendingTimers();
         jest.useRealTimers();
     });
@@ -465,7 +468,7 @@ describe("Actions", () => {
         const projectResponse = { test: "value" };
         const url = `${serverUrl}/project/abc`;
         mockAxios.onGet(url).reply(200, responseSuccess(projectResponse));
-        await actions.loadProject({ commit, state } as any, savedProject);
+        await actions.loadProject({ commit, dispatch, state } as any, savedProject);
         expect(mockAxios.history.get[0].url).toEqual(url);
         expect(commit.mock.calls.length).toBe(6);
         expect(commit.mock.calls[0][0]).toBe("setLoadingProject");
@@ -485,34 +488,39 @@ describe("Actions", () => {
     });
 
     it("loadProject does not start status polling if project has completed run", async () => {
-        const commit = jest.fn();
+        const state = mockRootState();
+        // We need to fake the setting of the status here because the action does an Object.assign to overwrite existing
+        // state
+        const commit = jest.fn().mockImplementation((name, payload) => {
+            if (name === "projectLoaded") {
+                state.analysisStatus = payload.status;
+            }
+        });
         const dispatch = jest.fn();
-        const state = mockRootState({
-            // If we were using real mutations, this would be set by setLoading Project, but we're not, so initialise
-            // it in the state
-            analysisStatus: {
+        const savedProject = { hash: "123", id: "abc", name: "test project" };
+        const projectResponse = {
+            status: {
                 assign: "finished",
                 network: "finished",
                 microreact: "failed"
             }
-        });
-        const savedProject = { hash: "123", id: "abc", name: "test project" };
-        const projectResponse = { test: "value" };
+        };
         const url = `${serverUrl}/project/abc`;
         mockAxios.onGet(url).reply(200, responseSuccess(projectResponse));
-        await actions.loadProject({ commit, state } as any, savedProject);
+        await actions.loadProject({ commit, dispatch, state } as any, savedProject);
         expect(commit).toHaveBeenCalledTimes(6);
         expect(dispatch).not.toHaveBeenCalled();
     });
 
     it("loadProject commits error on error response", async () => {
         const commit = jest.fn();
+        const dispatch = jest.fn();
         const state = mockRootState();
         const savedProject = { hash: "123", id: "abc", name: "test project" };
         const projectResponse = { test: "value" };
         const url = `${serverUrl}/project/abc`;
         mockAxios.onGet(url).reply(500, responseError({ error: "test error" }));
-        await actions.loadProject({ commit, state } as any, savedProject);
+        await actions.loadProject({ commit, dispatch, state } as any, savedProject);
         expect(mockAxios.history.get[0].url).toEqual(url);
         expect(commit.mock.calls.length).toBe(6);
         expect(commit.mock.calls[0][0]).toBe("setLoadingProject");

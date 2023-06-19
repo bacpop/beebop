@@ -1,6 +1,6 @@
 <template>
   <div class="start-analysis">
-    <button :class="(!submitStatus && allSketched) ? '' : 'disabled'"
+    <button :class="(!submitted && allSketched) ? '' : 'disabled'"
     class="btn btn-block btn-standard"
     @click='onClick'>
       Start Analysis</button>
