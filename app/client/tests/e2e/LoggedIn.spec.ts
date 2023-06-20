@@ -12,6 +12,12 @@ const createProject = async (projectName: string, page: Page) => {
     expect(await page.locator("#no-results").innerText()).toBe("No data uploaded yet");
 };
 
+const expectDownloadButtons = async (fileName: string, page: Page) => {
+    await expect(page.locator(`tr:has-text("${fileName}") .btn`).nth(0)).toContainText("Download zip file");
+    await expect(page.locator(`tr:has-text("${fileName}") .btn`).nth(1)).toContainText("Generate Microreact URL");
+    await expect(page.locator(`tr:has-text("${fileName}") .btn`).nth(2)).toContainText("Download zip file");
+};
+
 test.describe("Logged in Tests", () => {
     const { timeout } = PlaywrightConfig;
 
@@ -86,9 +92,8 @@ test.describe("Logged in Tests", () => {
         await expect(page.locator('tr:has-text("6930_8_11.fa")'))
             .toContainText(["6930_8_11.fa", "✔", "PCETE SXT", "24"]);
         // Expect download buttons and button to generate microreact URL to appear
-        await expect(page.locator('tr:has-text("6930_8_13.fa") .btn').nth(0)).toContainText("Download zip file");
-        await expect(page.locator('tr:has-text("6930_8_13.fa") .btn').nth(1)).toContainText("Generate Microreact URL");
-        await expect(page.locator('tr:has-text("6930_8_13.fa") .btn').nth(2)).toContainText("Download zip file");
+        await expectDownloadButtons("6930_8_13.fa", page);
+
         // on clicking Generate Microreact URL button, modal appears
         await page.click("text=Generate Microreact URL");
         await expect(page.locator(".modalFlex")).toContainText("No token submitted yet");
@@ -117,5 +122,6 @@ test.describe("Logged in Tests", () => {
             .toContainText(["6930_8_13.fa", "✔", "PCETE SXT"], { timeout });
         await expect(page.locator(":nth-match(.tab-content tr, 2)"))
             .toContainText(["6930_8_11.fa", "✔", "PCETE SXT"]);
+        await expectDownloadButtons("6930_8_13.fa", page);
     });
 });
