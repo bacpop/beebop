@@ -90,8 +90,8 @@ export default {
         state.analysisStatus = projectResponse.status;
         // TODO: We can currently assume that if we've got a successful response then the project had been submitted as
         // you get an error if it hadn't because beebop_py won't know about it. When bacpop-98 is done, we should get
-        // indication of submitted status in the response for all projects including those which had never been submitted
-        // and will need to update this line accordingly.
+        // indication of submitted status in the response for all projects including those which had never been
+        // submitted and will need to update this line accordingly.
         state.submitted = true;
     }
 };

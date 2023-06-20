@@ -300,7 +300,7 @@ describe("Actions", () => {
             statusInterval: 202
         });
         const commit = jest.fn();
-        await actions.stopStatusPolling({state, commit} as any);
+        await actions.stopStatusPolling({ state, commit } as any);
         expect(clearInterval).toHaveBeenCalledTimes(1);
         expect(clearInterval).toHaveBeenLastCalledWith(202);
         expect(commit).toHaveBeenCalledTimes(1);
@@ -315,7 +315,7 @@ describe("Actions", () => {
         const state = mockRootState({
             statusInterval: undefined
         });
-        await actions.stopStatusPolling({state} as any);
+        await actions.stopStatusPolling({ state } as any);
         expect(clearInterval).not.toHaveBeenCalled();
         jest.runOnlyPendingTimers();
         jest.useRealTimers();
@@ -333,7 +333,7 @@ describe("Actions", () => {
     it("startStatusPolling does nothing if statusInterval already set", async () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
-        const state = mockRootState({statusInterval: 101});
+        const state = mockRootState({ statusInterval: 101 });
         await actions.startStatusPolling({ commit, dispatch, state } as any);
         expect(commit).not.toHaveBeenCalled();
         expect(dispatch).not.toHaveBeenCalled();
