@@ -225,9 +225,12 @@ export const apiEndpoints = (config => ({
                 const projectSamples = await store.getProjectSamples(projectId);
                 const responseSamples = [];
                 for (const sample of projectSamples) {
-                    const apiSample = apiData.samples.find(s => s.hash === sample.hash);
+                    let apiSample = apiData.samples.find(s => s.hash === sample.hash);
                     if (!apiSample) {
-                        throw new BeebopError("Invalid data",`Sample with hash ${sample.hash} was not in API response`);
+                        // api sample may not be present if api has not completed initial processing of the sample
+                        apiSample = {
+                            hash: sample.hash
+                        };
                     }
                     const amr = await store.getAMR(projectId, sample.hash, sample.filename);
                     responseSamples.push({
