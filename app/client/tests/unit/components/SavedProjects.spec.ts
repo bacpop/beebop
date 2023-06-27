@@ -14,8 +14,8 @@ jest.mock("vue-router", () => ({
 }));
 
 const savedProjects = [
-    { name: "project one", hash: "123abc", id: "ABC-123" },
-    { name: "project two", hash: "456def", id: "DEF-123" }
+    { name: "project one", hash: "123abc", id: "ABC-123", timestamp: 1687879913811 },
+    { name: "project two", hash: "456def", id: "DEF-123", timestamp: 1687879927224}
 ];
 
 describe("SavedProjects", () => {

@@ -432,7 +432,12 @@ describe("Actions", () => {
     it("loadProject", async () => {
         const commit = jest.fn();
         const state = mockRootState();
-        const savedProject = { hash: "123", id: "abc", name: "test project" };
+        const savedProject = {
+            hash: "123",
+            id: "abc",
+            name: "test project",
+            timestamp: 1687879927224
+        };
         const projectResponse = { test: "value" };
         const url = `${serverUrl}/project/abc`;
         mockAxios.onGet(url).reply(200, responseSuccess(projectResponse));
@@ -456,7 +461,12 @@ describe("Actions", () => {
     it("loadProject commits error on error response", async () => {
         const commit = jest.fn();
         const state = mockRootState();
-        const savedProject = { hash: "123", id: "abc", name: "test project" };
+        const savedProject = {
+            hash: "123",
+            id: "abc",
+            name: "test project",
+            timestamp: 1687879927224
+        };
         const projectResponse = { test: "value" };
         const url = `${serverUrl}/project/abc`;
         mockAxios.onGet(url).reply(500, responseError({ error: "test error" }));

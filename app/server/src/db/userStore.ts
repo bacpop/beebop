@@ -25,6 +25,7 @@ export class UserStore {
         const projectId = this._newProjectId();
         await this._redis.lpush(this._userProjectsKey(user), projectId);
         await this._redis.hset(this._projectKey(projectId), "name", projectName);
+        await this._redis.hset(this._projectKey(projectId), "timestamp", Date.now());
         return projectId;
     }
 
@@ -46,11 +47,12 @@ export class UserStore {
 
         const result = [];
         await Promise.all(projectIds.map(async (projectId: string) => {
-            const values = await this._redis.hmget(this._projectKey(projectId), "name", "hash");
+            const values = await this._redis.hmget(this._projectKey(projectId), "name", "hash", "timestamp");
             result.push({
                 id: projectId,
                 name: values[0],
-                hash: values[1]
+                hash: values[1],
+                timestamp: values[2]
             });
         }));
 

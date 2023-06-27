@@ -4,6 +4,7 @@
       <div class="container">
           <div class="row fw-bold saved-project-headers">
             <div class="col-6">Project name</div>
+            <div class="col-6">Date</div>
           </div>
           <hr/>
           <div v-for="project in savedProjects" :key="project.hash" class="row saved-project-row">
@@ -13,6 +14,9 @@
                           @keydown="loadProjectFromKey(project, $event.keyCode)">
                       {{ project.name }}
                   </button>
+              </div>
+              <div class="col-6">
+                  {{ project.timestamp }}
               </div>
           </div>
       </div>
