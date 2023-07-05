@@ -85,10 +85,10 @@ describe("mutations", () => {
             amr: { Penicillin: 0.5, Chloramphenicol: 0.2 }
         });
     });
-    it("sets submitStatus", () => {
+    it("sets submitted", () => {
         const state = mockRootState();
-        mutations.setSubmitStatus(state, "submitted");
-        expect(state.submitStatus).toBe("submitted");
+        mutations.setSubmitted(state, true);
+        expect(state.submitted).toBe(true);
     });
     it("sets analysisStatus", () => {
         const state = mockRootState();
@@ -209,7 +209,12 @@ describe("mutations", () => {
                         sketchValue: "testValue2"
                     }
                 }
-            ]
+            ],
+            status: {
+                amr: "finished",
+                assign: "finished",
+                microreact: "waiting"
+            }
         };
         mutations.projectLoaded(state, projectResponse as any);
         expect(state.results.perIsolate).toStrictEqual({
@@ -226,5 +231,7 @@ describe("mutations", () => {
                 sketch: "{\"sketchValue\":\"testValue2\"}"
             }
         });
+        expect(state.analysisStatus).toStrictEqual(projectResponse.status);
+        expect(state.submitted).toBe(true);
     });
 });

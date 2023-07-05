@@ -1,6 +1,6 @@
 <template>
   <div class="start-analysis">
-    <button :class="(!submitStatus && allSketched) ? '' : 'disabled'"
+    <button :class="(!submitted && allSketched) ? '' : 'disabled'"
     class="btn btn-block btn-standard"
     @click='onClick'>
       Start Analysis</button>
@@ -20,7 +20,7 @@ export default defineComponent({
         }
     },
     computed: {
-        ...mapState(["submitStatus", "analysisStatus", "results"]),
+        ...mapState(["submitted", "analysisStatus", "results"]),
         allSketched(): boolean {
             const isolates = this.results.perIsolate;
             const keys = Object.keys(isolates);

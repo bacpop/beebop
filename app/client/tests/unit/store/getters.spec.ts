@@ -5,7 +5,7 @@ describe("getters", () => {
     it("calculates analysisProgress", () => {
         const state = mockRootState({
             projectHash: "randomHash",
-            submitStatus: "submitted",
+            submitted: true,
             analysisStatus: {
                 assign: "finished",
                 microreact: "started",

@@ -12,7 +12,7 @@ import {
     SavedProject,
     NewProjectRequest,
     ProjectResponse,
-    IsolateValue, ValueTypes, AMR
+    IsolateValue, ValueTypes, AMR, AnalysisType
 } from "@/types";
 import { api } from "@/apiService";
 import { emptyState } from "@/utils";
@@ -52,7 +52,7 @@ export default {
             .get<SavedProject[]>(`${serverUrl}/projects`);
     },
     async loadProject(context: ActionContext<RootState, RootState>, project: SavedProject) {
-        const { commit, state } = context;
+        const { commit, dispatch, state } = context;
         commit("setLoadingProject", true);
         commit("addLoadingProjectMessage", "Clearing state");
         Object.assign(state, {
@@ -70,6 +70,14 @@ export default {
         commit("addLoadingProjectMessage", "Loading complete");
         // we may need to change this to happen later when other loading steps are implemented
         commit("setLoadingProject", false);
+        // start polling if response indicated project has not yet completed
+        const complete = Object.keys(state.analysisStatus).every((key) => {
+            const status = state.analysisStatus[key as AnalysisType];
+            return status && ["finished", "failed"].includes(status);
+        });
+        if (!complete) {
+            dispatch("startStatusPolling");
+        }
     },
     async logoutUser() {
         await axios.get(`${serverUrl}/logout`);
@@ -139,17 +147,20 @@ export default {
             .withSuccess("setAnalysisStatus")
             .withError("addError")
             .post<AnalysisStatus>(`${serverUrl}/status`, { hash: state.projectHash });
+        let stopPolling = false;
         if (response) {
             if (response.data.assign === "finished" && prevAssign !== "finished") {
                 dispatch("getAssignResult");
             }
             if ((response.data.network === "finished" || response.data.network === "failed")
-        && (response.data.microreact === "finished" || response.data.microreact === "failed")) {
-                clearInterval(state.statusInterval);
+                && (response.data.microreact === "finished" || response.data.microreact === "failed")) {
+                stopPolling = true;
             }
+        } else {
+            stopPolling = true;
         }
-        if (!response) {
-            clearInterval(state.statusInterval);
+        if (stopPolling) {
+            dispatch("stopStatusPolling");
         }
     },
     async getAssignResult(context: ActionContext<RootState, RootState>) {
@@ -160,14 +171,25 @@ export default {
             .post<ClusterInfo>(`${serverUrl}/assignResult`, { projectHash: state.projectHash });
     },
     async startStatusPolling(context: ActionContext<RootState, RootState>) {
-        const { dispatch, commit } = context;
-        const inter = setInterval(() => { dispatch("getStatus"); }, 1000);
-        commit("setStatusInterval", inter);
+        const { dispatch, commit, state } = context;
+        if (state.statusInterval === undefined) {
+            const inter = setInterval(() => {
+                dispatch("getStatus");
+            }, 1000);
+            commit("setStatusInterval", inter);
+        }
+    },
+    async stopStatusPolling(context: ActionContext<RootState, RootState>) {
+        const { state, commit } = context;
+        if (state.statusInterval !== undefined) {
+            clearInterval(state.statusInterval);
+            commit("setStatusInterval", undefined);
+        }
     },
     async submitData(context: ActionContext<RootState, RootState>) {
         const { dispatch, commit } = context;
         await dispatch("runPoppunk");
-        commit("setSubmitStatus", "submitted");
+        commit("setSubmitted", true);
         dispatch("startStatusPolling");
     },
     async getZip(

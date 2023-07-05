@@ -88,7 +88,7 @@ describe("Actions", () => {
             projectId: "123",
             projectHash: "abc",
             errors: ["test error"],
-            submitStatus: "test status"
+            submitted: true
         } as any;
         await actions.newProject({ commit, state } as any, "testproj");
         expect(JSON.parse(mockAxios.history.post[0].data)).toStrictEqual({ name: "testproj" });
@@ -211,7 +211,7 @@ describe("Actions", () => {
         const dispatch = jest.fn();
         const state = mockRootState({
             projectHash: "randomHash",
-            submitStatus: "submitted",
+            submitted: true,
             analysisStatus: {
                 assign: "started",
                 microreact: "waiting",
@@ -236,13 +236,11 @@ describe("Actions", () => {
     });
 
     it("getStatus stops updating analysisStatus once all jobs finished", async () => {
-        jest.useFakeTimers();
-        jest.spyOn(global, "clearInterval");
         const commit = jest.fn();
         const dispatch = jest.fn();
         const state = mockRootState({
             projectHash: "randomHash",
-            submitStatus: "submitted",
+            submitted: true,
             analysisStatus: {
                 assign: "finished",
                 microreact: "started",
@@ -254,20 +252,15 @@ describe("Actions", () => {
             assign: "finished", microreact: "finished", network: "finished"
         }));
         await actions.getStatus({ commit, state, dispatch } as any);
-        expect(clearInterval).toHaveBeenCalledTimes(1);
-        expect(clearInterval).toHaveBeenLastCalledWith(202);
-        jest.runOnlyPendingTimers();
-        jest.useRealTimers();
+        expect(dispatch).toHaveBeenCalledWith("stopStatusPolling");
     });
 
     it("getStatus stops updating analysisStatus when jobs fail", async () => {
-        jest.useFakeTimers();
-        jest.spyOn(global, "clearInterval");
         const commit = jest.fn();
         const dispatch = jest.fn();
         const state = mockRootState({
             projectHash: "randomHash",
-            submitStatus: "submitted",
+            submitted: true,
             analysisStatus: {
                 assign: "finished",
                 microreact: "started",
@@ -279,20 +272,15 @@ describe("Actions", () => {
             assign: "finished", microreact: "failed", network: "failed"
         }));
         await actions.getStatus({ commit, state, dispatch } as any);
-        expect(clearInterval).toHaveBeenCalledTimes(1);
-        expect(clearInterval).toHaveBeenLastCalledWith(202);
-        jest.runOnlyPendingTimers();
-        jest.useRealTimers();
+        expect(dispatch).toHaveBeenCalledWith("stopStatusPolling");
     });
 
     it("getStatus stops updating analysisStatus when it receives no results from API", async () => {
-        jest.useFakeTimers();
-        jest.spyOn(global, "clearInterval");
         const commit = jest.fn();
         const dispatch = jest.fn();
         const state = mockRootState({
             projectHash: "randomHash",
-            submitStatus: "submitted",
+            submitted: true,
             analysisStatus: {
                 assign: "submitted",
                 microreact: "submitted",
@@ -302,8 +290,33 @@ describe("Actions", () => {
         });
         mockAxios.onPost(`${serverUrl}/status`).reply(400);
         await actions.getStatus({ commit, state, dispatch } as any);
+        expect(dispatch).toHaveBeenCalledWith("stopStatusPolling");
+    });
+
+    it("stopStatusPolling clears interval", async () => {
+        jest.useFakeTimers();
+        jest.spyOn(global, "clearInterval");
+        const state = mockRootState({
+            statusInterval: 202
+        });
+        const commit = jest.fn();
+        await actions.stopStatusPolling({ state, commit } as any);
         expect(clearInterval).toHaveBeenCalledTimes(1);
         expect(clearInterval).toHaveBeenLastCalledWith(202);
+        expect(commit).toHaveBeenCalledTimes(1);
+        expect(commit).toHaveBeenCalledWith("setStatusInterval", undefined);
+        jest.runOnlyPendingTimers();
+        jest.useRealTimers();
+    });
+
+    it("stopStatusPolling does nothing if interval is not set", async () => {
+        jest.useFakeTimers();
+        jest.spyOn(global, "clearInterval");
+        const state = mockRootState({
+            statusInterval: undefined
+        });
+        await actions.stopStatusPolling({ state } as any);
+        expect(clearInterval).not.toHaveBeenCalled();
         jest.runOnlyPendingTimers();
         jest.useRealTimers();
     });
@@ -311,9 +324,19 @@ describe("Actions", () => {
     it("startStatusPolling sets statusInterval", async () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
-        await actions.startStatusPolling({ commit, dispatch } as any);
+        const state = mockRootState();
+        await actions.startStatusPolling({ commit, dispatch, state } as any);
         expect(commit.mock.calls[0][0]).toEqual("setStatusInterval");
         expect(commit.mock.calls[0][1]).toEqual(expect.any(Number));
+    });
+
+    it("startStatusPolling does nothing if statusInterval already set", async () => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const state = mockRootState({ statusInterval: 101 });
+        await actions.startStatusPolling({ commit, dispatch, state } as any);
+        expect(commit).not.toHaveBeenCalled();
+        expect(dispatch).not.toHaveBeenCalled();
     });
 
     it("getAssignResult makes axios call and updates clusters", async () => {
@@ -345,12 +368,12 @@ describe("Actions", () => {
         ]);
     });
 
-    it("submitData triggers runPoppunk, startStatusPolling and sets submitStatus", async () => {
+    it("submitData triggers runPoppunk, startStatusPolling and sets submitted", async () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         await actions.submitData({ commit, dispatch } as any);
-        expect(commit.mock.calls[0][0]).toEqual("setSubmitStatus");
-        expect(commit.mock.calls[0][1]).toEqual("submitted");
+        expect(commit.mock.calls[0][0]).toEqual("setSubmitted");
+        expect(commit.mock.calls[0][1]).toEqual(true);
         expect(dispatch.mock.calls[0][0]).toEqual("runPoppunk");
         expect(dispatch.mock.calls[1][0]).toEqual("startStatusPolling");
     });
@@ -431,12 +454,21 @@ describe("Actions", () => {
 
     it("loadProject", async () => {
         const commit = jest.fn();
-        const state = mockRootState();
+        const dispatch = jest.fn();
+        const state = mockRootState({
+            // If we were using real mutations, this would be set by setLoading Project, but we're not, so initialise
+            // it in the state
+            analysisStatus: {
+                assign: "finished",
+                network: "finished",
+                microreact: "waiting"
+            }
+        });
         const savedProject = { hash: "123", id: "abc", name: "test project" };
         const projectResponse = { test: "value" };
         const url = `${serverUrl}/project/abc`;
         mockAxios.onGet(url).reply(200, responseSuccess(projectResponse));
-        await actions.loadProject({ commit, state } as any, savedProject);
+        await actions.loadProject({ commit, dispatch, state } as any, savedProject);
         expect(mockAxios.history.get[0].url).toEqual(url);
         expect(commit.mock.calls.length).toBe(6);
         expect(commit.mock.calls[0][0]).toBe("setLoadingProject");
@@ -451,16 +483,44 @@ describe("Actions", () => {
         expect(commit.mock.calls[4][1]).toBe("Loading complete");
         expect(commit.mock.calls[5][0]).toBe("setLoadingProject");
         expect(commit.mock.calls[5][1]).toBe(false);
+        expect(dispatch).toHaveBeenCalledTimes(1);
+        expect(dispatch.mock.calls[0][0]).toBe("startStatusPolling");
+    });
+
+    it("loadProject does not start status polling if project has completed run", async () => {
+        const state = mockRootState();
+        // We need to fake the setting of the status here because the action does an Object.assign to overwrite existing
+        // state
+        const commit = jest.fn().mockImplementation((name, payload) => {
+            if (name === "projectLoaded") {
+                state.analysisStatus = payload.status;
+            }
+        });
+        const dispatch = jest.fn();
+        const savedProject = { hash: "123", id: "abc", name: "test project" };
+        const projectResponse = {
+            status: {
+                assign: "finished",
+                network: "finished",
+                microreact: "failed"
+            }
+        };
+        const url = `${serverUrl}/project/abc`;
+        mockAxios.onGet(url).reply(200, responseSuccess(projectResponse));
+        await actions.loadProject({ commit, dispatch, state } as any, savedProject);
+        expect(commit).toHaveBeenCalledTimes(6);
+        expect(dispatch).not.toHaveBeenCalled();
     });
 
     it("loadProject commits error on error response", async () => {
         const commit = jest.fn();
+        const dispatch = jest.fn();
         const state = mockRootState();
         const savedProject = { hash: "123", id: "abc", name: "test project" };
         const projectResponse = { test: "value" };
         const url = `${serverUrl}/project/abc`;
         mockAxios.onGet(url).reply(500, responseError({ error: "test error" }));
-        await actions.loadProject({ commit, state } as any, savedProject);
+        await actions.loadProject({ commit, dispatch, state } as any, savedProject);
         expect(mockAxios.history.get[0].url).toEqual(url);
         expect(commit.mock.calls.length).toBe(6);
         expect(commit.mock.calls[0][0]).toBe("setLoadingProject");
