@@ -16,7 +16,7 @@
                   </button>
               </div>
               <div class="col-6">
-                  {{ project.timestamp }}
+                  {{ displayDateFromTimestamp(project.timestamp) }}
               </div>
           </div>
       </div>
@@ -43,6 +43,10 @@ function loadProjectFromKey(project: SavedProject, keyCode: number) {
     if (keyCode === 13) {
         loadProject(project);
     }
+}
+
+function displayDateFromTimestamp(timestamp: number) {
+    return new Date(timestamp).toLocaleString();
 }
 
 onMounted(() => {

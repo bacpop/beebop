@@ -52,7 +52,7 @@ export class UserStore {
                 id: projectId,
                 name: values[0],
                 hash: values[1],
-                timestamp: values[2]
+                timestamp: parseInt(values[2])
             });
         }));
 
