@@ -15,7 +15,7 @@ jest.mock("vue-router", () => ({
 
 const savedProjects = [
     { name: "project one", hash: "123abc", id: "ABC-123", timestamp: 1687879913811 },
-    { name: "project two", hash: "456def", id: "DEF-123", timestamp: 1687879927224}
+    { name: "project two", hash: "456def", id: "DEF-123", timestamp: 1687879927224 }
 ];
 
 describe("SavedProjects", () => {
@@ -47,12 +47,15 @@ describe("SavedProjects", () => {
         const wrapper = getWrapper();
         expect(wrapper.find("h4").text()).toBe("Load a previously saved project");
         const headers = wrapper.findAll(".saved-project-headers div");
-        expect(headers.length).toBe(1);
+        expect(headers.length).toBe(2);
         expect(headers.at(0)!.text()).toBe("Project name");
+        expect(headers.at(1)!.text()).toBe("Date");
         const projectRows = wrapper.findAll(".saved-project-row");
         expect(projectRows.length).toBe(2);
-        expect(projectRows.at(0)!.find("div").text()).toBe("project one");
-        expect(projectRows.at(1)!.find("div").text()).toBe("project two");
+        expect(projectRows.at(0)!.find(".saved-project-name").text()).toBe("project one");
+        expect(projectRows.at(0)!.find(".saved-project-date").text()).toBe("27/06/2023, 16:31:53");
+        expect(projectRows.at(1)!.find(".saved-project-name").text()).toBe("project two");
+        expect(projectRows.at(1)!.find(".saved-project-date").text()).toBe("27/06/2023, 16:32:07");
     });
 
     it("dispatches getSavedProjects on load", () => {

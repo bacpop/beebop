@@ -8,14 +8,14 @@
           </div>
           <hr/>
           <div v-for="project in savedProjects" :key="project.hash" class="row saved-project-row">
-              <div class="col-6">
+              <div class="col-6 saved-project-name">
                   <button class="clickable brand-text"
                           @click="loadProject(project)"
                           @keydown="loadProjectFromKey(project, $event.keyCode)">
                       {{ project.name }}
                   </button>
               </div>
-              <div class="col-6">
+              <div class="col-6 saved-project-date">
                   {{ displayDateFromTimestamp(project.timestamp) }}
               </div>
           </div>

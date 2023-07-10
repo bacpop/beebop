@@ -7,7 +7,7 @@ describe("UserStore", () => {
         sadd: jest.fn(),
         lrange: jest.fn().mockImplementation(() => ["123", "456"]),
         hmget: jest.fn().mockImplementation((key: string, ...valueNames: string[]) => {
-            return valueNames.map((valueName) => `${valueName} for ${key}`);
+            return valueNames.map((valueName) => valueName === "timestamp" ? 1687879913811 : `${valueName} for ${key}`);
         })
     } as any;
 
@@ -18,8 +18,16 @@ describe("UserStore", () => {
         }
     } as any;
 
+    beforeAll(() => {
+        jest.useFakeTimers().setSystemTime(new Date(1687879913811));
+    });
+
     beforeEach(() => {
         jest.clearAllMocks();
+    });
+
+    afterAll(() => {
+        jest.useRealTimers();
     });
 
     it("saves new project data", async () => {
@@ -30,10 +38,9 @@ describe("UserStore", () => {
         const projectId = mockRedis.lpush.mock.calls[0][1];
         expect(projectId.length).toBe(32);
 
-        expect(mockRedis.hset).toHaveBeenCalledTimes(1);
-        expect(mockRedis.hset.mock.calls[0][0]).toBe(`beebop:project:${projectId}`);
-        expect(mockRedis.hset.mock.calls[0][1]).toBe("name");
-        expect(mockRedis.hset.mock.calls[0][2]).toBe("test project name");
+        expect(mockRedis.hset).toHaveBeenCalledTimes(2);
+        expect(mockRedis.hset).toHaveBeenNthCalledWith(1, `beebop:project:${projectId}`, "name", "test project name");
+        expect(mockRedis.hset).toHaveBeenNthCalledWith(2, `beebop:project:${projectId}`, "timestamp", 1687879913811);
     });
 
     it("saves project hash", async () => {
@@ -49,8 +56,8 @@ describe("UserStore", () => {
         const sut = new UserStore(mockRedis);
         const result = await sut.getUserProjects(mockRequest);
         expect(result).toStrictEqual([
-            {id: "123", name: "name for beebop:project:123", hash: "hash for beebop:project:123"},
-            {id: "456", name: "name for beebop:project:456", hash: "hash for beebop:project:456"}
+            {id: "123", name: "name for beebop:project:123", hash: "hash for beebop:project:123", timestamp: 1687879913811},
+            {id: "456", name: "name for beebop:project:456", hash: "hash for beebop:project:456", timestamp: 1687879913811}
         ]);
 
         expect(mockRedis.lrange).toHaveBeenCalledTimes(1);

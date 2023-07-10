@@ -501,7 +501,12 @@ describe("Actions", () => {
             }
         });
         const dispatch = jest.fn();
-        const savedProject = { hash: "123", id: "abc", name: "test project" };
+        const savedProject = {
+            hash: "123",
+            id: "abc",
+            name: "test project",
+            timestamp: 1687879927224
+        };
         const projectResponse = {
             status: {
                 assign: "finished",
