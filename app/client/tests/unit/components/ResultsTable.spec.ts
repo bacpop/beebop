@@ -39,7 +39,7 @@ describe("ResultsTable complete", () => {
                 id: "543653d45",
                 provider: "google"
             },
-            submitStatus: "submitted",
+            submitted: true,
             analysisStatus: {
                 assign: "finished",
                 microreact: "finished",
@@ -205,7 +205,7 @@ describe("ResultsTable incomplete before webworker is ready", () => {
                 id: "543653d45",
                 provider: "google"
             },
-            submitStatus: null,
+            submitted: false,
             analysisStatus: {
                 assign: null,
                 microreact: null,
@@ -266,7 +266,7 @@ describe("ResultsTable incomplete after submission", () => {
                 id: "543653d45",
                 provider: "google"
             },
-            submitStatus: "submitted",
+            submitted: true,
             analysisStatus: {
                 assign: "started",
                 microreact: "waiting",
