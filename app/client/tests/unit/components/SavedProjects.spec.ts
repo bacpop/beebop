@@ -1,3 +1,10 @@
+/* eslint-disable import/first */
+const { toLocaleString } = Date.prototype;
+// eslint-disable-next-line no-extend-native
+Date.prototype.toLocaleString = function (locale: any = undefined, ...args: any) {
+    return toLocaleString.call(this, "en-GB", ...args);
+};
+
 import Vuex from "vuex";
 import { RootState } from "@/store/state";
 import { shallowMount } from "@vue/test-utils";
@@ -12,12 +19,6 @@ const mockRouter = {
 jest.mock("vue-router", () => ({
     useRouter: jest.fn(() => mockRouter)
 }));
-
-const { toLocaleString } = Date.prototype;
-// eslint-disable-next-line no-extend-native
-Date.prototype.toLocaleString = function (locale: any = undefined, ...args: any) {
-    return toLocaleString.call(this, "en-GB", ...args);
-};
 
 const savedProjects = [
     { name: "project one", hash: "123abc", id: "ABC-123", timestamp: 1687879913811 },
