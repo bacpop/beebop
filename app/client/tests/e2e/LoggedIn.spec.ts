@@ -110,7 +110,6 @@ test.describe("Logged in Tests", () => {
         await expect(page.locator("#cy")).toHaveCount(1);
         await expect(page.locator("#cy canvas")).toHaveCount(3);
         // can browse back to Home page and see new project in history
-        const dateRegex = new RegExp("/");
         await page.goto(config.clientUrl());
         await expect(await page.locator(".saved-project-row .saved-project-name").last())
             .toHaveText("test project", { timeout });
