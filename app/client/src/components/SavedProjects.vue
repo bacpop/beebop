@@ -46,7 +46,7 @@ function loadProjectFromKey(project: SavedProject, keyCode: number) {
 }
 
 function displayDateFromTimestamp(timestamp: number) {
-    return new Date(timestamp).toLocaleString();
+    return new Date(timestamp).toLocaleString(undefined, { dateStyle: "short", timeStyle: "short" }).replace(",", "");
 }
 
 onMounted(() => {
