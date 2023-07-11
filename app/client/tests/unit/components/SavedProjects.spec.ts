@@ -2,7 +2,8 @@
 const { toLocaleString } = Date.prototype;
 // eslint-disable-next-line no-extend-native
 Date.prototype.toLocaleString = function (locale: any = undefined, ...args: any) {
-    return toLocaleString.call(this, "en-GB", ...args);
+    const options = args[0];
+    return toLocaleString.call(this, "en-GB", { ...options, timeZone: "UTC" });
 };
 
 import Vuex from "vuex";
@@ -60,9 +61,9 @@ describe("SavedProjects", () => {
         const projectRows = wrapper.findAll(".saved-project-row");
         expect(projectRows.length).toBe(2);
         expect(projectRows.at(0)!.find(".saved-project-name").text()).toBe("project one");
-        expect(projectRows.at(0)!.find(".saved-project-date").text()).toBe("27/06/2023 16:31");
+        expect(projectRows.at(0)!.find(".saved-project-date").text()).toBe("27/06/2023 15:31");
         expect(projectRows.at(1)!.find(".saved-project-name").text()).toBe("project two");
-        expect(projectRows.at(1)!.find(".saved-project-date").text()).toBe("27/06/2023 16:32");
+        expect(projectRows.at(1)!.find(".saved-project-date").text()).toBe("27/06/2023 15:32");
     });
 
     it("dispatches getSavedProjects on load", () => {
