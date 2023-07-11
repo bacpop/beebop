@@ -20,6 +20,11 @@ describe("User persistence", () => {
         connectionCookie = response.headers["set-cookie"][0];
     });
 
+    const expectTimestampIsSoonAfter = (timestamp: number, now: number) => {
+        expect(timestamp).toBeGreaterThanOrEqual(now);
+        expect(timestamp).toBeLessThan(now + 1000);
+    }
+
     it("adds user project to redis", async () => {
         const payload = {
             name: "test name"
@@ -33,8 +38,7 @@ describe("User persistence", () => {
         const projectDetails = await getRedisHash(`beebop:project:${projectId}`);
         expect(projectDetails.name).toStrictEqual("test name");
         const timestamp = parseInt(projectDetails.timestamp);
-        expect(timestamp).toBeGreaterThanOrEqual(now);
-        expect(timestamp).toBeLessThan(now + 1000);
+        expectTimestampIsSoonAfter(timestamp, now);
     });
 
     it("adds project's hash to redis", async () => {
@@ -50,16 +54,16 @@ describe("User persistence", () => {
 
     it("gets user project details from redis", async () => {
         await saveRedisList("beebop:userprojects:mock:1234", ["abcd", "efgh"]);
-        await saveRedisHash("beebop:project:abcd", {name: "test save 1"});
-        await saveRedisHash("beebop:project:efgh", {name: "test save 2", hash: "1234"});
+        await saveRedisHash("beebop:project:abcd", {name: "test save 1", timestamp: "1689070004473"});
+        await saveRedisHash("beebop:project:efgh", {name: "test save 2", hash: "1234", timestamp: "1689070004573"});
 
         const response = await get("projects", connectionCookie);
         expect(response.status).toBe(200);
         expect(response.data).toStrictEqual({
             status: "success",
             data: [
-                {id: "abcd", name: "test save 1", hash: null},
-                {id: "efgh", name: "test save 2", hash: "1234"}
+                {id: "abcd", name: "test save 1", hash: null, timestamp: 1689070004473},
+                {id: "efgh", name: "test save 2", hash: "1234", timestamp: 1689070004573}
             ],
             errors: []
         });
