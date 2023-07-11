@@ -53,9 +53,9 @@ describe("SavedProjects", () => {
         const projectRows = wrapper.findAll(".saved-project-row");
         expect(projectRows.length).toBe(2);
         expect(projectRows.at(0)!.find(".saved-project-name").text()).toBe("project one");
-        expect(projectRows.at(0)!.find(".saved-project-date").text()).toBe("27/06/2023, 16:31:53");
+        expect(projectRows.at(0)!.find(".saved-project-date").text()).toBe(new Date(1687879913811).toLocaleString());
         expect(projectRows.at(1)!.find(".saved-project-name").text()).toBe("project two");
-        expect(projectRows.at(1)!.find(".saved-project-date").text()).toBe("27/06/2023, 16:32:07");
+        expect(projectRows.at(1)!.find(".saved-project-date").text()).toBe(new Date(1687879927224).toLocaleString());
     });
 
     it("dispatches getSavedProjects on load", () => {

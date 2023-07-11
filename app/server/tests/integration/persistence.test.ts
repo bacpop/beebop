@@ -24,15 +24,17 @@ describe("User persistence", () => {
         const payload = {
             name: "test name"
         };
+        const now = Date.now();
         await post("project", payload, connectionCookie);
         const userProjects = await getRedisList("beebop:userprojects:mock:1234")
         expect(userProjects.length).toBe(1);
         const projectId = userProjects[0];
         expect(projectId.length).toBe(32);
         const projectDetails = await getRedisHash(`beebop:project:${projectId}`);
-        expect(projectDetails).toStrictEqual({
-            name: "test name"
-        });
+        expect(projectDetails.name).toStrictEqual("test name");
+        const timestamp = parseInt(projectDetails.timestamp);
+        expect(timestamp).toBeGreaterThanOrEqual(now);
+        expect(timestamp).toBeLessThan(now + 1000);
     });
 
     it("adds project's hash to redis", async () => {

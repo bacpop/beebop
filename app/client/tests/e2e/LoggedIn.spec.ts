@@ -110,8 +110,12 @@ test.describe("Logged in Tests", () => {
         await expect(page.locator("#cy")).toHaveCount(1);
         await expect(page.locator("#cy canvas")).toHaveCount(3);
         // can browse back to Home page and see new project in history
+        const dateRegex = new RegExp("/");
         await page.goto(config.clientUrl());
-        await expect(await page.locator(".saved-project-row").last()).toHaveText("test project", { timeout });
+        await expect(await page.locator(".saved-project-row .saved-project-name").last())
+            .toHaveText("test project", { timeout });
+        await expect(await page.locator(".saved-project-row .saved-project-date").last())
+            .toMatch("^[0-3][1-9]/[0-1][1-9]/20[2-9][0-9], [0-2][0-9]:[0-5][0-9]:[0-5][0-9]$");
         const lastProjectIndex = await page.locator(".saved-project-row").count();
         // can create a new empty project
         await createProject("another test project", page);
