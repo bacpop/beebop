@@ -15,8 +15,8 @@ jest.mock("vue-router", () => ({
 
 const { toLocaleString } = Date.prototype;
 // eslint-disable-next-line no-extend-native
-Date.prototype.toLocaleString = function (locale: any = "en-GB", ...args: any) {
-    return toLocaleString.call(this, locale, ...args);
+Date.prototype.toLocaleString = function (locale: any = undefined, ...args: any) {
+    return toLocaleString.call(this, "en-GB", ...args);
 };
 
 const savedProjects = [
