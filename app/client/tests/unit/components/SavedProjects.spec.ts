@@ -13,6 +13,12 @@ jest.mock("vue-router", () => ({
     useRouter: jest.fn(() => mockRouter)
 }));
 
+const { toLocaleString } = Date.prototype;
+// eslint-disable-next-line no-extend-native
+Date.prototype.toLocaleString = function (locale: any = "en-GB", ...args: any) {
+    return toLocaleString.call(this, locale, ...args);
+};
+
 const savedProjects = [
     { name: "project one", hash: "123abc", id: "ABC-123", timestamp: 1687879913811 },
     { name: "project two", hash: "456def", id: "DEF-123", timestamp: 1687879927224 }
@@ -53,9 +59,9 @@ describe("SavedProjects", () => {
         const projectRows = wrapper.findAll(".saved-project-row");
         expect(projectRows.length).toBe(2);
         expect(projectRows.at(0)!.find(".saved-project-name").text()).toBe("project one");
-        expect(projectRows.at(0)!.find(".saved-project-date").text()).toBe(new Date(1687879913811).toLocaleString());
+        expect(projectRows.at(0)!.find(".saved-project-date").text()).toBe("27/06/2023 16:31");
         expect(projectRows.at(1)!.find(".saved-project-name").text()).toBe("project two");
-        expect(projectRows.at(1)!.find(".saved-project-date").text()).toBe(new Date(1687879927224).toLocaleString());
+        expect(projectRows.at(1)!.find(".saved-project-date").text()).toBe("27/06/2023 16:32");
     });
 
     it("dispatches getSavedProjects on load", () => {
