@@ -1,6 +1,7 @@
 FROM node:16
 
 COPY ./package.json /app/package.json
+COPY ./package-lock.json /app/package-lock.json
 WORKDIR /app
 RUN npm ci
 
