@@ -20,13 +20,23 @@ export class UserStore {
     private _newProjectId = () => uid(32);
     private _sampleId = (sampleHash: string, fileName: string) => `${sampleHash}:${fileName}`;
 
-     async saveNewProject(request, projectName: string) {
+    private async _setProjectName (projectId: string, newProjectName: string) {
+        await this._redis.hset(this._projectKey(projectId), "name", newProjectName);
+    }
+
+    async saveNewProject(request, projectName: string) {
         const user = this._userIdFromRequest(request);
         const projectId = this._newProjectId();
         await this._redis.lpush(this._userProjectsKey(user), projectId);
-        await this._redis.hset(this._projectKey(projectId), "name", projectName);
+        await this._setProjectName(projectId, projectName);
         await this._redis.hset(this._projectKey(projectId), "timestamp", Date.now());
         return projectId;
+    }
+
+    async renameProject(request, projectId: string, newProjectName: string) {
+        // TODO: verify that this project belongs to the request user:
+        // https://mrc-ide.myjetbrains.com/youtrack/issue/bacpop-96
+        await this._setProjectName(projectId, newProjectName);
     }
 
     async saveProjectHash(request, projectId: string, projectHash: string) {

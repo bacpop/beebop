@@ -1,4 +1,4 @@
-import {NewProjectRequest} from "../types/requestTypes";
+import {ProjectNameRequest} from "../types/requestTypes";
 import {userStore} from "../db/userStore";
 import {handleAPIError, sendSuccess} from "../utils";
 import asyncHandler from "../errors/asyncHandler";
@@ -18,10 +18,18 @@ export default (config) => {
         },
 
         async newProject(request, response) {
-            const name = (request.body as NewProjectRequest).name;
+            const name = (request.body as ProjectNameRequest).name;
             const {redis} = request.app.locals;
             const projectId = await userStore(redis).saveNewProject(request, name);
             sendSuccess(response, projectId);
+        },
+
+        async renameProject(request, response) {
+            const {projectId} = request.params;
+            const name = (request.body as ProjectNameRequest).name;
+            const {redis} = request.app.locals;
+            await userStore(redis).renameProject(request, projectId, name);
+            sendSuccess(response, null);
         },
 
         async getProject(request, response, next) {

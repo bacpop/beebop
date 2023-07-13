@@ -18,5 +18,8 @@ export default {
         app.post('/project/:projectId/amr/:sampleHash',
             authCheck,
             controller.postAMR);
+        app.post('/project/:projectId/rename',
+            authCheck,
+            controller.renameProject);
     }
 } as BeebopRoutes;
