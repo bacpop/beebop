@@ -5,3 +5,10 @@ export const mockResponse = () => {
     res.status = jest.fn().mockReturnValue(res);
     return res;
 };
+
+export const mockRedis = {};
+export const mockApp = {
+    locals: {
+        redis: mockRedis
+    }
+};
