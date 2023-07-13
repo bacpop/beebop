@@ -4,15 +4,19 @@
       <div class="container">
           <div class="row fw-bold saved-project-headers">
             <div class="col-6">Project name</div>
+            <div class="col-6">Date</div>
           </div>
           <hr/>
           <div v-for="project in savedProjects" :key="project.hash" class="row saved-project-row">
-              <div class="col-6">
+              <div class="col-6 saved-project-name">
                   <button class="clickable brand-text"
                           @click="loadProject(project)"
                           @keydown="loadProjectFromKey(project, $event.keyCode)">
                       {{ project.name }}
                   </button>
+              </div>
+              <div class="col-6 saved-project-date">
+                  {{ displayDateFromTimestamp(project.timestamp) }}
               </div>
           </div>
       </div>
@@ -39,6 +43,10 @@ function loadProjectFromKey(project: SavedProject, keyCode: number) {
     if (keyCode === 13) {
         loadProject(project);
     }
+}
+
+function displayDateFromTimestamp(timestamp: number) {
+    return new Date(timestamp).toLocaleString(undefined, { dateStyle: "short", timeStyle: "short" }).replace(",", "");
 }
 
 onMounted(() => {

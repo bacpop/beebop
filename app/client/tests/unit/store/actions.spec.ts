@@ -7,7 +7,6 @@ import config from "../../../src/settings/development/config";
 import {
     mockAxios, mockFailure, mockRootState, mockSuccess
 } from "../../mocks";
-import mock = jest.mock;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function responseSuccess(data : any) {
@@ -464,7 +463,12 @@ describe("Actions", () => {
                 microreact: "waiting"
             }
         });
-        const savedProject = { hash: "123", id: "abc", name: "test project" };
+        const savedProject = {
+            hash: "123",
+            id: "abc",
+            name: "test project",
+            timestamp: 1687879927224
+        };
         const projectResponse = { test: "value" };
         const url = `${serverUrl}/project/abc`;
         mockAxios.onGet(url).reply(200, responseSuccess(projectResponse));
@@ -497,7 +501,12 @@ describe("Actions", () => {
             }
         });
         const dispatch = jest.fn();
-        const savedProject = { hash: "123", id: "abc", name: "test project" };
+        const savedProject = {
+            hash: "123",
+            id: "abc",
+            name: "test project",
+            timestamp: 1687879927224
+        };
         const projectResponse = {
             status: {
                 assign: "finished",
@@ -516,7 +525,12 @@ describe("Actions", () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const state = mockRootState();
-        const savedProject = { hash: "123", id: "abc", name: "test project" };
+        const savedProject = {
+            hash: "123",
+            id: "abc",
+            name: "test project",
+            timestamp: 1687879927224
+        };
         const projectResponse = { test: "value" };
         const url = `${serverUrl}/project/abc`;
         mockAxios.onGet(url).reply(500, responseError({ error: "test error" }));
