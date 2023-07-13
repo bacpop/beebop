@@ -75,7 +75,7 @@ interface GraphmlExtension {
 
 export type CyGraphml = cytoscape.Core & GraphmlExtension
 
-export interface NewProjectRequest {
+export interface ProjectNameRequest {
     name: string
 }
 
@@ -84,6 +84,11 @@ export interface SavedProject {
     name: string,
     hash: string,
     timestamp: number
+}
+
+export interface RenameProjectPayload {
+    projectId: string,
+    name: string
 }
 
 export interface ProjectResponse {

@@ -1,6 +1,15 @@
 import { RootState } from "@/store/state";
 import {
-    Versions, User, IsolateValue, AnalysisStatus, ClusterInfo, BeebopError, SavedProject, ProjectResponse, Isolate
+    Versions,
+    User,
+    IsolateValue,
+    AnalysisStatus,
+    ClusterInfo,
+    BeebopError,
+    SavedProject,
+    ProjectResponse,
+    Isolate,
+    RenameProjectPayload
 } from "@/types";
 
 export default {
@@ -93,5 +102,15 @@ export default {
         // indication of submitted status in the response for all projects including those which had never been
         // submitted and will need to update this line accordingly.
         state.submitted = true;
+    },
+    projectRenamed(state: RootState, payload: RenameProjectPayload) {
+        const { projectId, name } = payload;
+        const savedProject = state.savedProjects.find((p) => p.id === projectId);
+        if (savedProject) {
+            savedProject.name = name;
+        }
+        if (state.projectId === projectId) {
+            state.projectName = name;
+        }
     }
 };
