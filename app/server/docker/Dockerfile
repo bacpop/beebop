@@ -2,7 +2,7 @@ FROM node:16
 
 COPY ./package.json /app/package.json
 WORKDIR /app
-RUN npm install
+RUN npm ci
 
 COPY . /app
 EXPOSE 4000
