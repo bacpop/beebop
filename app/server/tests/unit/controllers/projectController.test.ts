@@ -12,7 +12,8 @@ const mockUserStore = {
     saveAMR: jest.fn(),
     getProjectSamples: jest.fn().mockImplementation(() => mockProjectSamples),
     getAMR: jest.fn().mockImplementation((projectId: string, sampleHash: string, fileName: string) =>
-        `AMR for ${projectId}-${sampleHash}-${fileName}`)
+        `AMR for ${projectId}-${sampleHash}-${fileName}`),
+    renameProject: jest.fn()
 };
 jest.mock("../../../src/db/userStore", () => ({
     userStore: mockUserStoreConstructor.mockReturnValue(mockUserStore)
@@ -50,6 +51,29 @@ describe("projectController", () => {
             status: "success",
             errors: [],
             data: "test-project-id"
+        });
+    });
+
+    it("renames project", async() => {
+        const req = {
+            body: {
+                name: "new name"
+            },
+            params: {
+                projectId: "testProjectId"
+            },
+            app: mockApp
+        };
+        const res = mockResponse();
+        await projectController(config).renameProject(req, res);
+        expect(mockUserStoreConstructor).toHaveBeenCalledTimes(1);
+        expect(mockUserStoreConstructor.mock.calls[0][0]).toBe(mockRedis);
+        expect(mockUserStore.renameProject).toHaveBeenCalledWith(req, "testProjectId", "new name");
+        expect(res.json).toHaveBeenCalledTimes(1);
+        expect(res.json.mock.calls[0][0]).toStrictEqual({
+            status: "success",
+            errors: [],
+            data: null
         });
     });
 

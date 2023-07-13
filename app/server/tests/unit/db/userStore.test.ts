@@ -43,6 +43,15 @@ describe("UserStore", () => {
         expect(mockRedis.hset).toHaveBeenNthCalledWith(2, `beebop:project:${projectId}`, "timestamp", 1687879913811);
     });
 
+    it("renames project", async () => {
+        const sut = new UserStore(mockRedis);
+        await sut.renameProject(mockRequest, "testProjectId", "new proj name");
+        expect(mockRedis.hset).toHaveBeenCalledTimes(1);
+        expect(mockRedis.hset.mock.calls[0][0]).toBe("beebop:project:testProjectId");
+        expect(mockRedis.hset.mock.calls[0][1]).toBe("name");
+        expect(mockRedis.hset.mock.calls[0][2]).toBe("new proj name");
+    });
+
     it("saves project hash", async () => {
         const sut = new UserStore(mockRedis);
         await sut.saveProjectHash(mockRequest, "testProjectId", "testProjectHash");
