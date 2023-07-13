@@ -26,3 +26,17 @@ export function sendSuccess(response, data) {
         data
     });
 }
+
+export function authCheck(req, res, next) {
+    if (!req.user) {
+        res.json(
+            {
+                status:"failure",
+                errors:["not authenticated"],
+                data: null
+            }
+        );
+    } else {
+        next();
+    }
+}
