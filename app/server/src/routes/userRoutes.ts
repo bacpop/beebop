@@ -1,6 +1,6 @@
-import {Application} from "express";
+import {Application, Request, Response} from "express";
 import {BeebopConfig, BeebopRoutes} from "../types/app";
-import passport from "passport";
+import passport, { Profile } from "passport";
 import {authCheck, sendSuccess} from "../utils";
 
 export default {
@@ -13,18 +13,19 @@ export default {
 
         app.get('/user',
             authCheck,
-            (request, response) => {
-                if (request.user.provider == 'github') {
+            (request: Request, response: Response) => {
+                const user = request.user as Profile;
+                if (user.provider == 'github') {
                     sendSuccess(response, {
-                        id: request.user.id,
-                        provider: request.user.provider,
-                        name: request.user.username
+                        id: user.id,
+                        provider: user.provider,
+                        name: user.username
                     });
                 } else {
                     sendSuccess(response, {
-                        id: request.user.id,
-                        provider: request.user.provider,
-                        name: request.user.name.givenName
+                        id: user.id,
+                        provider: user.provider,
+                        name: user.name.givenName
                     });
                 }
             }
