@@ -241,4 +241,36 @@ describe("mutations", () => {
         expect(state.analysisStatus).toStrictEqual(projectResponse.status);
         expect(state.submitted).toBe(true);
     });
+    it("updates store for renamed current project", () => {
+        const state = mockRootState({
+            projectId: "testProjectId",
+            projectName: "old name",
+            savedProjects: [
+                { id: "someOtherProject", name: "some other name" },
+                { id: "testProjectId", name: "old name" }
+            ] as any
+        });
+        mutations.projectRenamed(state, { projectId: "testProjectId", name: "new name" });
+        expect(state.projectName).toBe("new name");
+        expect(state.savedProjects).toStrictEqual([
+            { id: "someOtherProject", name: "some other name" },
+            { id: "testProjectId", name: "new name" }
+        ]);
+    });
+    it("updates store for renamed non-current project", () => {
+        const state = mockRootState({
+            projectId: "someOtherProject",
+            projectName: "some other name",
+            savedProjects: [
+                { id: "someOtherProject", name: "some other name" },
+                { id: "testProjectId", name: "old name" }
+            ] as any
+        });
+        mutations.projectRenamed(state, { projectId: "testProjectId", name: "new name" });
+        expect(state.projectName).toBe("some other name");
+        expect(state.savedProjects).toStrictEqual([
+            { id: "someOtherProject", name: "some other name" },
+            { id: "testProjectId", name: "new name" }
+        ]);
+    });
 });
