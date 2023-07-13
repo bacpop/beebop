@@ -32,7 +32,7 @@ export default {
         );
 
         app.get('/logout',
-            (req, res) => {
+            (req: Request, res: Response) => {
                 req.logout();
                 res.redirect(config.client_url);
             }
@@ -40,14 +40,14 @@ export default {
 
         app.get('/return/google',
             passport.authenticate('google', { failureRedirect: '/' }),
-            (req, res) => {
+            (req: Request, res: Response) => {
                 res.redirect(config.client_url);
             }
         );
 
         app.get('/return/github',
             passport.authenticate('github', { failureRedirect: '/' }),
-            (req, res) => {
+            (req: Request, res: Response) => {
                 res.redirect(config.client_url);
             }
         );
