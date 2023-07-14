@@ -16,7 +16,7 @@
                 ></i>
             </span>
             <span v-else>
-                <input ref="renameProject" type="text" :value="projectName" />
+                <input ref="renameProject" type="text" v-on:keyup.enter="saveProjectName" :value="projectName" />
                 <button @click="saveProjectName" class="btn btn-standard ms-2">Save</button>
                 <button @click="cancelEditProjectName" class="btn btn-standard ms-1">Cancel</button>
             </span>
