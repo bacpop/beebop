@@ -16,9 +16,9 @@
                 ></i>
             </span>
             <span v-else>
-                <input type="text" />
+                <input ref="renameProject" type="text" :value="projectName" />
                 <button @click="saveProjectName" class="btn btn-standard ms-2">Save</button>
-                <button @click="cancelEditProjectName" class="btn btn-standard ms-2">Cancel</button>
+                <button @click="cancelEditProjectName" class="btn btn-standard ms-1">Cancel</button>
             </span>
         </h2>
         <StartButton v-if="user" />
@@ -112,7 +112,7 @@ export default defineComponent({
         this.stopStatusPolling();
     },
     methods: {
-        ...mapActions(["getUser", "stopStatusPolling"]),
+        ...mapActions(["getUser", "stopStatusPolling", "renameProject"]),
         onInput(value: string) {
             this.selectedTab = value;
         },
@@ -123,6 +123,8 @@ export default defineComponent({
             this.editingProjectName = false;
         },
         saveProjectName() {
+            const name = (this.$refs.renameProject as HTMLInputElement).value;
+            this.renameProject({ projectId: this.projectId, name });
             this.editingProjectName = false;
         }
     },
