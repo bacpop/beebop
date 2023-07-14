@@ -58,11 +58,13 @@ export class UserStore {
         const result = [];
         await Promise.all(projectIds.map(async (projectId: string) => {
             const values = await this._redis.hmget(this._projectKey(projectId), "name", "hash", "timestamp");
+            const samplesCount = await this.getProjectSampleCount(projectId);
             result.push({
                 id: projectId,
                 name: values[0],
                 hash: values[1],
-                timestamp: parseInt(values[2])
+                timestamp: parseInt(values[2]),
+                samplesCount
             });
         }));
 
@@ -87,6 +89,10 @@ export class UserStore {
              const [hash, filename] = sampleId.split(":");
              return {hash, filename};
          });
+    }
+
+    async getProjectSampleCount(projectId: string) {
+        return this._redis.scard(this._projectSamplesKey(projectId));
     }
 }
 

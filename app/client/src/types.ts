@@ -83,7 +83,8 @@ export interface SavedProject {
     id: string,
     name: string,
     hash: string,
-    timestamp: number
+    timestamp: number,
+    samplesCount: number
 }
 
 export interface RenameProjectPayload {
