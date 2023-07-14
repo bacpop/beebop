@@ -12,7 +12,7 @@ import { shallowMount } from "@vue/test-utils";
 import { mockRootState } from "../../mocks";
 // We need to import SavedProjects after mocking the router
 // eslint-disable-next-line import/order
-import SavedProjects from "@/components/SavedProjects.vue";
+import SavedProjects from "@/components/projects/SavedProjects.vue";
 
 const mockRouter = {
     push: jest.fn()

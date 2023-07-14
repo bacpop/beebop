@@ -27,7 +27,7 @@
 <script lang='ts'>
 import { defineComponent } from "vue";
 import { mapActions, mapState } from "vuex";
-import SavedProjects from "@/components/SavedProjects.vue";
+import SavedProjects from "@/components/projects/SavedProjects.vue";
 
 export default defineComponent({
     name: "SelectAction",

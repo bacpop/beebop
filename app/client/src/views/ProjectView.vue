@@ -7,19 +7,9 @@
       <div class="overview">
         <h2 class="left">
             Project:
-            <span v-if="!editingProjectName">
-                {{projectName}}
-                <i class="bi bi-pencil header-icon clickable"
-                   v-b-tooltip.hover
-                   :title="'Edit Project name'"
-                   @click="editProjectName"
-                ></i>
-            </span>
-            <span v-else>
-                <input ref="renameProject" type="text" v-on:keyup.enter="saveProjectName" :value="projectName" />
-                <button @click="saveProjectName" class="btn btn-standard ms-2">Save</button>
-                <button @click="cancelEditProjectName" class="btn btn-standard ms-1">Cancel</button>
-            </span>
+            <edit-project-name :project-id="projectId" :project-name="projectName">
+                {{ projectName }}
+            </edit-project-name>
         </h2>
         <StartButton v-if="user" />
         <ProgressBar v-if="submitted" class="progress-bar-component" />
@@ -72,27 +62,25 @@
 
 <script lang='ts'>
 import { defineComponent } from "vue";
-import { VBTooltip } from "bootstrap-vue-3";
 import { mapState, mapActions, mapGetters } from "vuex";
+import EditProjectName from "@/components/projects/EditProjectName.vue";
 import DropZone from "@/components/DropZone.vue";
 import StartButton from "@/components/StartButton.vue";
 import ProgressBar from "@/components/ProgressBar.vue";
 import ResultsTable from "@/components/ResultsTable.vue";
-import LoadingProject from "@/components/LoadingProject.vue";
+import LoadingProject from "@/components/projects/LoadingProject.vue";
 import NetworkVisualisations from "@/components/NetworkVisualisations.vue";
 
 export default defineComponent({
     name: "ProjectView",
     components: {
+        EditProjectName,
         DropZone,
         StartButton,
         ProgressBar,
         ResultsTable,
         NetworkVisualisations,
         LoadingProject
-    },
-    directives: {
-        "b-tooltip": VBTooltip
     },
     data() {
         return {
@@ -112,20 +100,9 @@ export default defineComponent({
         this.stopStatusPolling();
     },
     methods: {
-        ...mapActions(["getUser", "stopStatusPolling", "renameProject"]),
+        ...mapActions(["getUser", "stopStatusPolling"]),
         onInput(value: string) {
             this.selectedTab = value;
-        },
-        editProjectName() {
-            this.editingProjectName = true;
-        },
-        cancelEditProjectName() {
-            this.editingProjectName = false;
-        },
-        saveProjectName() {
-            const name = (this.$refs.renameProject as HTMLInputElement).value;
-            this.renameProject({ projectId: this.projectId, name });
-            this.editingProjectName = false;
         }
     },
     computed: {
@@ -134,9 +111,3 @@ export default defineComponent({
     }
 });
 </script>
-<style scoped>
-  .header-icon {
-      color: #a1abb3;
-      margin-left: 0.3em;
-  }
-</style>
