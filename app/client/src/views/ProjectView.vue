@@ -5,7 +5,22 @@
         <DropZone v-if="user && !submitted" class="dropzone-component"/>
       </div>
       <div class="overview">
-        <h2 class="left">Project: {{projectName}}</h2>
+        <h2 class="left">
+            Project:
+            <span v-if="!editingProjectName">
+                {{projectName}}
+                <i class="bi bi-pencil header-icon clickable"
+                   v-b-tooltip.hover
+                   :title="'Edit Project name'"
+                   @click="editProjectName"
+                ></i>
+            </span>
+            <span v-else>
+                <input type="text" />
+                <button @click="saveProjectName" class="btn btn-standard ms-2">Save</button>
+                <button @click="cancelEditProjectName" class="btn btn-standard ms-2">Cancel</button>
+            </span>
+        </h2>
         <StartButton v-if="user" />
         <ProgressBar v-if="submitted" class="progress-bar-component" />
 
@@ -57,6 +72,7 @@
 
 <script lang='ts'>
 import { defineComponent } from "vue";
+import { VBTooltip } from "bootstrap-vue-3";
 import { mapState, mapActions, mapGetters } from "vuex";
 import DropZone from "@/components/DropZone.vue";
 import StartButton from "@/components/StartButton.vue";
@@ -75,9 +91,13 @@ export default defineComponent({
         NetworkVisualisations,
         LoadingProject
     },
+    directives: {
+        "b-tooltip": VBTooltip
+    },
     data() {
         return {
-            selectedTab: "table"
+            selectedTab: "table",
+            editingProjectName: false,
         };
     },
     mounted() {
@@ -95,6 +115,15 @@ export default defineComponent({
         ...mapActions(["getUser", "stopStatusPolling"]),
         onInput(value: string) {
             this.selectedTab = value;
+        },
+        editProjectName() {
+            this.editingProjectName = true;
+        },
+        cancelEditProjectName() {
+            this.editingProjectName = false;
+        },
+        saveProjectName() {
+            this.editingProjectName = false;
         }
     },
     computed: {
@@ -103,3 +132,9 @@ export default defineComponent({
     }
 });
 </script>
+<style scoped>
+  .header-icon {
+      color: #a1abb3;
+      margin-left: 0.3em;
+  }
+</style>
