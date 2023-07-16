@@ -7,7 +7,7 @@
       <div class="overview">
         <h2 class="left">
             Project:
-            <edit-project-name :project-id="projectId" :project-name="projectName">
+            <edit-project-name :project-id="projectId" :project-name="projectName" :button-class="'btn-standard'">
                 {{ projectName }}
             </edit-project-name>
         </h2>

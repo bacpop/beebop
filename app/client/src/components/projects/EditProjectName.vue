@@ -14,8 +14,8 @@
                style="display:inline"
                v-on:keyup.enter="saveProjectName"
                :value="projectName" />
-        <button @click="saveProjectName" class="btn btn-standard ms-2">Save</button>
-        <button @click="cancelEditProjectName" class="btn btn-standard ms-1">Cancel</button>
+        <button @click="saveProjectName" class="btn ms-2" :class="buttonClass">Save</button>
+        <button @click="cancelEditProjectName" class="btn ms-1" :class="buttonClass">Cancel</button>
     </span>
 </template>
 <script lang="ts">
@@ -29,7 +29,8 @@ export default defineComponent({
     },
     props: {
         projectId: String,
-        projectName: String
+        projectName: String,
+        buttonClass: String
     },
     data() {
         return {
