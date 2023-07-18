@@ -1,7 +1,7 @@
 import Vuex from "vuex";
 import { shallowMount } from "@vue/test-utils";
 import { RootState } from "@/store/state";
-import LoadingProject from "@/components/LoadingProject.vue";
+import LoadingProject from "@/components/projects/LoadingProject.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import { mockRootState } from "../../mocks";
 

@@ -2,7 +2,7 @@ import { mount, shallowMount } from "@vue/test-utils";
 import ProjectView from "@/views/ProjectView.vue";
 import Vuex, { Store } from "vuex";
 import { RootState } from "@/store/state";
-import LoadingProject from "@/components/LoadingProject.vue";
+import LoadingProject from "@/components/projects/LoadingProject.vue";
 import StartButton from "@/components/StartButton.vue";
 import ResultsTable from "@/components/ResultsTable.vue";
 import { mockRootState } from "../../mocks";

@@ -10,11 +10,13 @@
           <hr/>
           <div v-for="project in savedProjects" :key="project.hash" class="row saved-project-row">
               <div class="col-6 saved-project-name">
-                  <button class="clickable brand-text"
-                          @click="loadProject(project)"
-                          @keydown="loadProjectFromKey(project, $event.keyCode)">
-                      {{ project.name }}
-                  </button>
+                  <edit-project-name :project-name="project.name" :project-id="project.id" :button-class="'btn-sm'">
+                      <button class="clickable brand-text"
+                              @click="loadProject(project)"
+                              @keydown="loadProjectFromKey(project, $event.keyCode)">
+                          {{ project.name }}
+                      </button>
+                  </edit-project-name>
               </div>
               <div class="col-3 saved-project-samples-count">
                   {{ project.samplesCount }}
@@ -32,6 +34,7 @@ import { useRouter } from "vue-router";
 import { computed, onMounted } from "vue";
 import { useStore } from "vuex";
 import { SavedProject } from "@/types";
+import EditProjectName from "@/components/projects/EditProjectName.vue";
 
 const store = useStore();
 const router = useRouter();
