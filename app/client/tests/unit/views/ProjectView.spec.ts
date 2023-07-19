@@ -5,8 +5,8 @@ import { RootState } from "@/store/state";
 import LoadingProject from "@/components/projects/LoadingProject.vue";
 import StartButton from "@/components/StartButton.vue";
 import ResultsTable from "@/components/ResultsTable.vue";
-import { mockRootState } from "../../mocks";
 import EditProjectName from "@/components/projects/EditProjectName.vue";
+import { mockRootState } from "../../mocks";
 
 describe("Project", () => {
     const getUser = jest.fn();
