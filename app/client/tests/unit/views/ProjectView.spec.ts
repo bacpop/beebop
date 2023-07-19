@@ -1,4 +1,4 @@
-import { mount } from "@vue/test-utils";
+import { mount, shallowMount } from "@vue/test-utils";
 import ProjectView from "@/views/ProjectView.vue";
 import Vuex, { Store } from "vuex";
 import { RootState } from "@/store/state";
@@ -25,7 +25,7 @@ describe("Project", () => {
     });
 
     const getWrapper = (store: Store<RootState>) => {
-        return mount(ProjectView, {
+        return shallowMount(ProjectView, {
             global: {
                 plugins: [store],
                 mocks: {
@@ -46,7 +46,14 @@ describe("Project", () => {
                 getUser
             }
         });
-        const wrapper = getWrapper(store);
+        const wrapper = mount(ProjectView, {
+            global: {
+                plugins: [store],
+                mocks: {
+                    $router: mockRouter
+                }
+            }
+        });
 
         expect(wrapper.find("h2").text()).toBe("Project: test project");
         expect(wrapper.findComponent(EditProjectName).props()).toStrictEqual({

@@ -1,6 +1,6 @@
 import Vuex from "vuex";
 import { RootState } from "@/store/state";
-import {mount, VueWrapper} from "@vue/test-utils";
+import { mount, VueWrapper } from "@vue/test-utils";
 import EditProjectName from "@/components/projects/EditProjectName.vue";
 import { mockRootState } from "../../../mocks";
 

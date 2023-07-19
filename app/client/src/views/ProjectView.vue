@@ -85,7 +85,7 @@ export default defineComponent({
     data() {
         return {
             selectedTab: "table",
-            editingProjectName: false,
+            editingProjectName: false
         };
     },
     mounted() {

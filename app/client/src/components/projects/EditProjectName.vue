@@ -13,6 +13,7 @@
                class="project-name-input"
                type="text"
                style="display:inline"
+               aria-label="New project name"
                v-on:keyup.enter="saveProjectName"
                :value="projectName" />
         <button @click="saveProjectName" id="save-project-name" class="btn ms-2" :class="buttonClass">
@@ -26,7 +27,8 @@
 <script lang="ts">
 import { VBTooltip } from "bootstrap-vue-3";
 import { defineComponent } from "vue";
-import {mapActions} from "vuex";
+import { mapActions } from "vuex";
+
 export default defineComponent({
     name: "EditProjectName",
     directives: {
@@ -40,7 +42,7 @@ export default defineComponent({
     data() {
         return {
             editingProjectName: false
-        }
+        };
     },
     methods: {
         ...mapActions(["renameProject"]),
@@ -55,7 +57,7 @@ export default defineComponent({
             this.renameProject({ projectId: this.projectId, name });
             this.editingProjectName = false;
         }
-        //TODO: prevent rename for empty name or existing name or name unchanged
+        // TODO: prevent rename for empty name or existing name or name unchanged
     }
 });
 </script>
