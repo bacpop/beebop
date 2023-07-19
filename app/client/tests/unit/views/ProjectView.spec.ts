@@ -1,4 +1,4 @@
-import { mount, shallowMount } from "@vue/test-utils";
+import { mount } from "@vue/test-utils";
 import ProjectView from "@/views/ProjectView.vue";
 import Vuex, { Store } from "vuex";
 import { RootState } from "@/store/state";
@@ -6,6 +6,7 @@ import LoadingProject from "@/components/projects/LoadingProject.vue";
 import StartButton from "@/components/StartButton.vue";
 import ResultsTable from "@/components/ResultsTable.vue";
 import { mockRootState } from "../../mocks";
+import EditProjectName from "@/components/projects/EditProjectName.vue";
 
 describe("Project", () => {
     const getUser = jest.fn();
@@ -24,7 +25,7 @@ describe("Project", () => {
     });
 
     const getWrapper = (store: Store<RootState>) => {
-        return shallowMount(ProjectView, {
+        return mount(ProjectView, {
             global: {
                 plugins: [store],
                 mocks: {
@@ -48,6 +49,11 @@ describe("Project", () => {
         const wrapper = getWrapper(store);
 
         expect(wrapper.find("h2").text()).toBe("Project: test project");
+        expect(wrapper.findComponent(EditProjectName).props()).toStrictEqual({
+            projectId: "ABC-123",
+            projectName: "test project",
+            buttonClass: "btn-standard"
+        });
         expect(wrapper.findAll(".dropzone-component").length).toBe(1);
 
         expect(wrapper.findComponent(StartButton).exists()).toBe(true);
