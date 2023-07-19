@@ -50,6 +50,7 @@ export default defineComponent({
             this.renameProject({ projectId: this.projectId, name });
             this.editingProjectName = false;
         }
+        //TODO: prevent rename for empty name or existing name
     }
 });
 </script>
