@@ -3,7 +3,7 @@
         <slot></slot>
         <i class="bi bi-pencil edit-icon clickable"
            v-b-tooltip.hover
-           title="Edit Project name"
+           title="Edit Project Name"
            @click="editProjectName"
            v-on:keyup.enter="editProjectName"
         ></i>
