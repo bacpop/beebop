@@ -55,7 +55,7 @@ describe("Project", () => {
             }
         });
 
-        expect(wrapper.find("h3").text()).toBe("Project: test project");
+        expect(wrapper.find("h4").text()).toBe("Project: test project");
         expect(wrapper.findComponent(EditProjectName).props()).toStrictEqual({
             projectId: "ABC-123",
             projectName: "test project",
