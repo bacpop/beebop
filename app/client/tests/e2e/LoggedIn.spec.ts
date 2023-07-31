@@ -40,7 +40,7 @@ test.describe("Logged in Tests", () => {
     test("should display dropzone in Project view", async ({ page }) => {
         await createProject("test project", page);
         await expect(page.locator(".dropzone")).toBeVisible();
-        await expect(page.locator("h2")).toContainText("Project: test project");
+        await expect(page.locator("h4")).toContainText("Project: test project");
     });
 
     test("should redirect from project page to home page if name has not been provided", async ({ page }) => {
@@ -131,10 +131,10 @@ test.describe("Logged in Tests", () => {
     test("can rename project", async ({ page }) => {
         // rename project in Project view
         await createProject("old project name", page);
-        await page.click("h2 i");
-        await page.fill("h2 input", "new project name");
+        await page.click("h4 i");
+        await page.fill("h4 input", "new project name");
         await page.click("#save-project-name");
-        expect(await page.innerText("h2")).toBe("Project: new project name");
+        expect(await page.innerText("h4")).toBe("Project: new project name");
 
         // browse back to Home page and check project has been renamed
         await page.goto(config.clientUrl());
