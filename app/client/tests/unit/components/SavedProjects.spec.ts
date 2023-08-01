@@ -61,12 +61,14 @@ describe("SavedProjects", () => {
         const wrapper = getWrapper();
         expect(wrapper.find("h4").text()).toBe("Load a previously saved project");
         const headers = wrapper.findAll(".saved-project-headers div");
-        expect(headers.length).toBe(2);
+        expect(headers.length).toBe(3);
         expect(headers.at(0)!.text()).toBe("Project name");
-        expect(headers.at(1)!.text()).toBe("Date");
+        expect(headers.at(1)!.text()).toBe("Samples");
+        expect(headers.at(2)!.text()).toBe("Date");
         const projectRows = wrapper.findAll(".saved-project-row");
         expect(projectRows.length).toBe(2);
         expect(projectRows.at(0)!.find(".saved-project-name").text()).toBe("project one");
+        expect(projectRows.at(0)!.find(".saved-project-samples-count").text()).toBe("2");
         expect(projectRows.at(0)!.findComponent(EditProjectName).props()).toStrictEqual({
             projectId: "ABC-123",
             projectName: "project one",
@@ -74,6 +76,7 @@ describe("SavedProjects", () => {
         });
         expect(projectRows.at(0)!.find(".saved-project-date").text()).toBe("27/06/2023 15:31");
         expect(projectRows.at(1)!.find(".saved-project-name").text()).toBe("project two");
+        expect(projectRows.at(1)!.find(".saved-project-samples-count").text()).toBe("3");
         expect(projectRows.at(1)!.findComponent(EditProjectName).props()).toStrictEqual({
             projectId: "DEF-123",
             projectName: "project two",
