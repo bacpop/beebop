@@ -2,7 +2,7 @@ import SelectAction from "@/components/SelectAction.vue";
 import { mount, VueWrapper } from "@vue/test-utils";
 import { RootState } from "@/store/state";
 import Vuex from "vuex";
-import SavedProjects from "@/components/SavedProjects.vue";
+import SavedProjects from "@/components/projects/SavedProjects.vue";
 import { mockRootState } from "../../mocks";
 
 describe("SelectAction", () => {

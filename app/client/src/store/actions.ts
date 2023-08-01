@@ -10,9 +10,9 @@ import {
     ClusterInfo,
     Dict,
     SavedProject,
-    NewProjectRequest,
+    ProjectNameRequest,
     ProjectResponse,
-    IsolateValue, ValueTypes, AMR, AnalysisType
+    IsolateValue, ValueTypes, AMR, AnalysisType, RenameProjectPayload
 } from "@/types";
 import { api } from "@/apiService";
 import { emptyState } from "@/utils";
@@ -43,7 +43,18 @@ export default {
         await api(context)
             .withSuccess("setProjectId")
             .withError("addError")
-            .post<NewProjectRequest>(`${serverUrl}/project`, { name });
+            .post<ProjectNameRequest>(`${serverUrl}/project`, { name });
+    },
+    async renameProject(context: ActionContext<RootState, RootState>, payload: RenameProjectPayload) {
+        const { commit } = context;
+        const { projectId, name } = payload;
+        const response = await api(context)
+            .ignoreSuccess()
+            .withError("addError")
+            .post<ProjectNameRequest>(`${serverUrl}/project/${projectId}/rename`, { name });
+        if (response) {
+            commit("projectRenamed", payload);
+        }
     },
     async getSavedProjects(context: ActionContext<RootState, RootState>) {
         await api(context)

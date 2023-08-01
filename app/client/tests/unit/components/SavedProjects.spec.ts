@@ -1,4 +1,6 @@
 /* eslint-disable import/first */
+import EditProjectName from "@/components/projects/EditProjectName.vue";
+
 const { toLocaleString } = Date.prototype;
 // eslint-disable-next-line no-extend-native
 Date.prototype.toLocaleString = function (locale: any = undefined, ...args: any) {
@@ -8,11 +10,11 @@ Date.prototype.toLocaleString = function (locale: any = undefined, ...args: any)
 
 import Vuex from "vuex";
 import { RootState } from "@/store/state";
-import { shallowMount } from "@vue/test-utils";
+import { mount } from "@vue/test-utils";
 import { mockRootState } from "../../mocks";
 // We need to import SavedProjects after mocking the router
 // eslint-disable-next-line import/order
-import SavedProjects from "@/components/SavedProjects.vue";
+import SavedProjects from "@/components/projects/SavedProjects.vue";
 
 const mockRouter = {
     push: jest.fn()
@@ -22,8 +24,12 @@ jest.mock("vue-router", () => ({
 }));
 
 const savedProjects = [
-    { name: "project one", hash: "123abc", id: "ABC-123", timestamp: 1687879913811 },
-    { name: "project two", hash: "456def", id: "DEF-123", timestamp: 1687879927224 }
+    {
+        name: "project one", hash: "123abc", id: "ABC-123", timestamp: 1687879913811
+    },
+    {
+        name: "project two", hash: "456def", id: "DEF-123", timestamp: 1687879927224
+    }
 ];
 
 describe("SavedProjects", () => {
@@ -40,7 +46,7 @@ describe("SavedProjects", () => {
                 loadProject: mockLoadProject
             }
         });
-        return shallowMount(SavedProjects, {
+        return mount(SavedProjects, {
             global: {
                 plugins: [store]
             }
@@ -61,8 +67,18 @@ describe("SavedProjects", () => {
         const projectRows = wrapper.findAll(".saved-project-row");
         expect(projectRows.length).toBe(2);
         expect(projectRows.at(0)!.find(".saved-project-name").text()).toBe("project one");
+        expect(projectRows.at(0)!.findComponent(EditProjectName).props()).toStrictEqual({
+            projectId: "ABC-123",
+            projectName: "project one",
+            buttonClass: "btn-sm"
+        });
         expect(projectRows.at(0)!.find(".saved-project-date").text()).toBe("27/06/2023 15:31");
         expect(projectRows.at(1)!.find(".saved-project-name").text()).toBe("project two");
+        expect(projectRows.at(1)!.findComponent(EditProjectName).props()).toStrictEqual({
+            projectId: "DEF-123",
+            projectName: "project two",
+            buttonClass: "btn-sm"
+        });
         expect(projectRows.at(1)!.find(".saved-project-date").text()).toBe("27/06/2023 15:32");
     });
 

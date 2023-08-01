@@ -113,6 +113,29 @@ describe("Actions", () => {
         expect(commit.mock.calls[1][1]).toStrictEqual(error);
     });
 
+    it("renameProject makes axios calls and commits on success", async () => {
+        const url = `${serverUrl}/project/testProjectId/rename`;
+        mockAxios.onPost(url).reply(200, mockSuccess(null));
+        const commit = jest.fn();
+        const payload = { projectId: "testProjectId", name: "new name" };
+        await actions.renameProject({ commit } as any, payload);
+        expect(mockAxios.history.post[0].url).toBe(url);
+        expect(JSON.parse(mockAxios.history.post[0].data)).toStrictEqual({ name: "new name" });
+        expect(commit).toHaveBeenCalledTimes(1);
+        expect(commit).toHaveBeenCalledWith("projectRenamed", payload);
+    });
+
+    it("renameProject commits error", async () => {
+        const url = `${serverUrl}/project/testProjectId/rename`;
+        const error = { error: "test", detail: "test detail" };
+        mockAxios.onPost(url).reply(500, responseError(error));
+        const commit = jest.fn();
+        const payload = { projectId: "testProjectId", name: "new name" };
+        await actions.renameProject({ commit } as any, payload);
+        expect(commit).toHaveBeenCalledTimes(1);
+        expect(commit).toHaveBeenCalledWith("addError", error);
+    });
+
     it("logoutUser makes axios call", async () => {
         mockAxios.onGet(`${serverUrl}/logout`).reply(200);
         await actions.logoutUser();

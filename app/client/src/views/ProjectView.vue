@@ -5,7 +5,12 @@
         <DropZone v-if="user && !submitted" class="dropzone-component"/>
       </div>
       <div class="overview">
-        <h2 class="left">Project: {{projectName}}</h2>
+        <h4 class="left">
+            Project:
+            <edit-project-name :project-id="projectId" :project-name="projectName" :button-class="'btn-standard'">
+                {{ projectName }}
+            </edit-project-name>
+        </h4>
         <StartButton v-if="user" />
         <ProgressBar v-if="submitted" class="progress-bar-component" />
 
@@ -58,16 +63,18 @@
 <script lang='ts'>
 import { defineComponent } from "vue";
 import { mapState, mapActions, mapGetters } from "vuex";
+import EditProjectName from "@/components/projects/EditProjectName.vue";
 import DropZone from "@/components/DropZone.vue";
 import StartButton from "@/components/StartButton.vue";
 import ProgressBar from "@/components/ProgressBar.vue";
 import ResultsTable from "@/components/ResultsTable.vue";
-import LoadingProject from "@/components/LoadingProject.vue";
+import LoadingProject from "@/components/projects/LoadingProject.vue";
 import NetworkVisualisations from "@/components/NetworkVisualisations.vue";
 
 export default defineComponent({
     name: "ProjectView",
     components: {
+        EditProjectName,
         DropZone,
         StartButton,
         ProgressBar,
@@ -77,7 +84,8 @@ export default defineComponent({
     },
     data() {
         return {
-            selectedTab: "table"
+            selectedTab: "table",
+            editingProjectName: false
         };
     },
     mounted() {

@@ -27,8 +27,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@import "./scss/style.scss";
-@import "./scss/myStyles.scss";
+@import "./scss/imported.scss";
+@import "./scss/beebop.scss";
 
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;

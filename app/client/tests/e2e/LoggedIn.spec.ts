@@ -40,7 +40,7 @@ test.describe("Logged in Tests", () => {
     test("should display dropzone in Project view", async ({ page }) => {
         await createProject("test project", page);
         await expect(page.locator(".dropzone")).toBeVisible();
-        await expect(page.locator("h2")).toContainText("Project: test project");
+        await expect(page.locator("h4")).toContainText("Project: test project");
     });
 
     test("should redirect from project page to home page if name has not been provided", async ({ page }) => {
@@ -126,5 +126,24 @@ test.describe("Logged in Tests", () => {
         await expect(page.locator(":nth-match(.tab-content tr, 2)"))
             .toContainText(["6930_8_11.fa", "✔", "PCETE SXT"]);
         await expectDownloadButtons("6930_8_13.fa", page);
+    });
+
+    test("can rename project", async ({ page }) => {
+        // rename project in Project view
+        await createProject("old project name", page);
+        await page.click("h4 i");
+        await page.fill("h4 input", "new project name");
+        await page.click("#save-project-name");
+        expect(await page.innerText("h4")).toBe("Project: new project name");
+
+        // browse back to Home page and check project has been renamed
+        await page.goto(config.clientUrl());
+        expect(await page.innerText(".saved-project-row .saved-project-name")).toBe("new project name");
+
+        // rename project in Home view
+        await page.click(".saved-project-name i");
+        await page.fill(".saved-project-name input", "another new project name");
+        await page.click("#save-project-name");
+        expect(await page.innerText(".saved-project-name")).toBe("another new project name");
     });
 });

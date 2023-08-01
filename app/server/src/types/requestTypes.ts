@@ -8,6 +8,6 @@ export interface BeebopRunRequest extends PoppunkRequest {
     projectId: string,
 }
 
-export interface NewProjectRequest {
+export interface ProjectNameRequest {
     name: string
 }
