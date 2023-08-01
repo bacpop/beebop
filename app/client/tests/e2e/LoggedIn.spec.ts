@@ -115,6 +115,8 @@ test.describe("Logged in Tests", () => {
             .toHaveText("test project", { timeout });
         expect(await (await page.locator(".saved-project-row .saved-project-date").last()).innerText())
             .toMatch(/^[0-3][0-9]\/[0-1][0-9]\/20[2-9][0-9] [0-2][0-9]:[0-5][0-9]$/);
+        await expect(await page.locator(".saved-project-row .saved-project-samples-count").last())
+            .toHaveText("2", { timeout });
         const lastProjectIndex = await page.locator(".saved-project-row").count();
         // can create a new empty project
         await createProject("another test project", page);
