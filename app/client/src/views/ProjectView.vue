@@ -5,12 +5,12 @@
         <DropZone v-if="user && !submitted" class="dropzone-component"/>
       </div>
       <div class="overview">
-        <h2 class="left">
+        <h4 class="left">
             Project:
             <edit-project-name :project-id="projectId" :project-name="projectName" :button-class="'btn-standard'">
                 {{ projectName }}
             </edit-project-name>
-        </h2>
+        </h4>
         <StartButton v-if="user" />
         <ProgressBar v-if="submitted" class="progress-bar-component" />
 
@@ -85,7 +85,7 @@ export default defineComponent({
     data() {
         return {
             selectedTab: "table",
-            editingProjectName: false,
+            editingProjectName: false
         };
     },
     mounted() {

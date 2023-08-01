@@ -3,8 +3,9 @@
         <slot></slot>
         <i class="bi bi-pencil edit-icon clickable"
            v-b-tooltip.hover
-           :title="'Edit Project name'"
+           title="Edit Project Name"
            @click="editProjectName"
+           v-on:keyup.enter="editProjectName"
         ></i>
     </span>
     <span v-else>
@@ -12,16 +13,22 @@
                class="project-name-input"
                type="text"
                style="display:inline"
+               aria-label="New project name"
                v-on:keyup.enter="saveProjectName"
                :value="projectName" />
-        <button @click="saveProjectName" class="btn ms-2" :class="buttonClass">Save</button>
-        <button @click="cancelEditProjectName" class="btn ms-1" :class="buttonClass">Cancel</button>
+        <button @click="saveProjectName" id="save-project-name" class="btn ms-2" :class="buttonClass">
+            Save
+        </button>
+        <button @click="cancelEditProjectName" id="cancel-project-name" class="btn ms-1" :class="buttonClass">
+            Cancel
+        </button>
     </span>
 </template>
 <script lang="ts">
 import { VBTooltip } from "bootstrap-vue-3";
 import { defineComponent } from "vue";
-import {mapActions} from "vuex";
+import { mapActions } from "vuex";
+
 export default defineComponent({
     name: "EditProjectName",
     directives: {
@@ -35,7 +42,7 @@ export default defineComponent({
     data() {
         return {
             editingProjectName: false
-        }
+        };
     },
     methods: {
         ...mapActions(["renameProject"]),
@@ -50,6 +57,7 @@ export default defineComponent({
             this.renameProject({ projectId: this.projectId, name });
             this.editingProjectName = false;
         }
+        // TODO: prevent rename for empty name or existing name or name unchanged
     }
 });
 </script>
@@ -59,7 +67,7 @@ export default defineComponent({
     margin-left: 0.3em;
 }
 
-/* Re-use some properties of bootstrap's form control, but without its display properties*/
+/* Re-use some properties of bootstrap's form control, but without its display box properties*/
 .project-name-input {
     border: 1px solid #ced4da;
     border-radius: 0.375em;

@@ -5,6 +5,7 @@ import { RootState } from "@/store/state";
 import LoadingProject from "@/components/projects/LoadingProject.vue";
 import StartButton from "@/components/StartButton.vue";
 import ResultsTable from "@/components/ResultsTable.vue";
+import EditProjectName from "@/components/projects/EditProjectName.vue";
 import { mockRootState } from "../../mocks";
 
 describe("Project", () => {
@@ -45,9 +46,21 @@ describe("Project", () => {
                 getUser
             }
         });
-        const wrapper = getWrapper(store);
+        const wrapper = mount(ProjectView, {
+            global: {
+                plugins: [store],
+                mocks: {
+                    $router: mockRouter
+                }
+            }
+        });
 
-        expect(wrapper.find("h2").text()).toBe("Project: test project");
+        expect(wrapper.find("h4").text()).toBe("Project: test project");
+        expect(wrapper.findComponent(EditProjectName).props()).toStrictEqual({
+            projectId: "ABC-123",
+            projectName: "test project",
+            buttonClass: "btn-standard"
+        });
         expect(wrapper.findAll(".dropzone-component").length).toBe(1);
 
         expect(wrapper.findComponent(StartButton).exists()).toBe(true);
