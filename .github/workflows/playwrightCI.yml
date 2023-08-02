@@ -40,6 +40,7 @@ jobs:
       working-directory: ./app/client
       run: npx playwright test --reporter=github
     - name: Stop all components
+      if: always()
       working-directory: .
       run: ./scripts/stop_test
     - uses: actions/upload-artifact@v3
