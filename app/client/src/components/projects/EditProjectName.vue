@@ -15,49 +15,77 @@
                style="display:inline"
                aria-label="New project name"
                v-on:keyup.enter="saveProjectName"
-               :value="projectName" />
-        <button @click="saveProjectName" id="save-project-name" class="btn ms-2" :class="buttonClass">
+               v-model="inputModel"
+               />
+        <button @click="saveProjectName" id="save-project-name" class="btn ms-2" :class="buttonClass" :disabled="!canSave">
             Save
         </button>
         <button @click="cancelEditProjectName" id="cancel-project-name" class="btn ms-1" :class="buttonClass">
             Cancel
         </button>
+        <br/>
+        <project-name-check-message :check-result="checkResult"></project-name-check-message>
     </span>
 </template>
 <script lang="ts">
 import { VBTooltip } from "bootstrap-vue-3";
 import { defineComponent } from "vue";
-import { mapActions } from "vuex";
+import {mapActions, mapGetters} from "vuex";
+import ProjectNameCheckMessage from "@/components/projects/ProjectNameCheckMessage.vue";
+import {ProjectNameCheckResult} from "@/types";
 
 export default defineComponent({
     name: "EditProjectName",
+    components: {ProjectNameCheckMessage},
     directives: {
         "b-tooltip": VBTooltip
     },
     props: {
         projectId: String,
-        projectName: String,
+        projectName: {type: String, required: true},
         buttonClass: String
     },
     data() {
         return {
-            editingProjectName: false
+            editingProjectName: false,
+            checkResult: null,
+            inputText: ""
         };
+    },
+    computed: {
+        canSave() {
+            return this.checkResult === ProjectNameCheckResult.OK || this.checkResult === ProjectNameCheckResult.Unchanged;
+        },
+        inputModel: {
+            get(){
+                return this.inputText;
+            },
+            set(value: string) {
+                this.inputText = value;
+                this.checkResult = this.checkProjectName()(this.inputText, this.projectName);
+                console.log("change: " + this.checkResult)
+            }
+        }
     },
     methods: {
         ...mapActions(["renameProject"]),
+        ...mapGetters(["checkProjectName"]),
         editProjectName() {
             this.editingProjectName = true;
+            this.checkResult = null;
+            this.inputText = this.projectName;
         },
         cancelEditProjectName() {
             this.editingProjectName = false;
         },
         saveProjectName() {
-            const name = (this.$refs.renameProject as HTMLInputElement).value;
-            this.renameProject({ projectId: this.projectId, name });
-            this.editingProjectName = false;
+            if (this.canSave) {
+                if (this.checkResult !== ProjectNameCheckResult.Unchanged) {
+                    this.renameProject({projectId: this.projectId, name: this.inputText});
+                }
+                this.editingProjectName = false;
+            }
         }
-        // TODO: prevent rename for empty name or existing name or name unchanged
     }
 });
 </script>

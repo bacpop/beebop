@@ -1,14 +1,17 @@
-import { AnalysisType } from "@/types";
+import { AnalysisType, ProjectNameCheckResult, SavedProject } from "@/types";
 import { Getter, GetterTree } from "vuex";
 import { RootState } from "@/store/state";
+import store from "@/store/index";
 
 export enum BeebopGetter {
   analysisProgress = "analysisProgress",
-  uniqueClusters = "uniqueClusters"
+  uniqueClusters = "uniqueClusters",
+  checkProjectName = "checkProjectName"
 }
 
 export interface BeebopGetters {
-  [BeebopGetter.analysisProgress]: Getter<RootState, RootState>
+  [BeebopGetter.analysisProgress]: Getter<RootState, RootState>,
+  [BeebopGetter.checkProjectName]: Getter<RootState, RootState>
 }
 
 export const getters: BeebopGetters & GetterTree<RootState, RootState> = {
@@ -33,5 +36,22 @@ export const getters: BeebopGetters & GetterTree<RootState, RootState> = {
             clusters.push(state.results.perIsolate[element].cluster as number);
         });
         return [...new Set(clusters)].sort((a, b) => a - b);
+    },
+
+    [BeebopGetter.checkProjectName]: (
+        state: RootState
+    ): ((name: string, oldName?: string) => ProjectNameCheckResult) => {
+        return (name: string, oldName?: string) => {
+            if (name.trim() === "") {
+                return ProjectNameCheckResult.Empty;
+            }
+            if (oldName && oldName === name) {
+                return ProjectNameCheckResult.Unchanged;
+            }
+            if (state.savedProjects.find((p) => p.name === name)) {
+                return ProjectNameCheckResult.Duplicate;
+            }
+            return ProjectNameCheckResult.OK;
+        };
     }
 };

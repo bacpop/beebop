@@ -96,3 +96,10 @@ export interface ProjectResponse {
     samples: Isolate[],
     status: AnalysisStatus
 }
+
+export enum ProjectNameCheckResult {
+    OK,
+    Duplicate,
+    Empty,
+    Unchanged
+}
