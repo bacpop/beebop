@@ -53,7 +53,7 @@ export default defineComponent({
     },
     computed: {
         canSave() {
-            return this.checkResult === ProjectNameCheckResult.OK || this.checkResult === ProjectNameCheckResult.Unchanged;
+            return [ProjectNameCheckResult.OK, ProjectNameCheckResult.Unchanged].includes(this.checkResult);
         },
         inputModel: {
             get() {
@@ -79,7 +79,7 @@ export default defineComponent({
         saveProjectName() {
             if (this.canSave) {
                 if (this.checkResult !== ProjectNameCheckResult.Unchanged) {
-                    this.renameProject({ projectId: this.projectId, name: this.inputText });
+                    this.renameProject({ projectId: this.projectId, name: this.inputText.trim() });
                 }
                 this.editingProjectName = false;
             }
