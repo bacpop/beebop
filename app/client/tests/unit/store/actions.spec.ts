@@ -547,14 +547,15 @@ describe("Actions", () => {
     it("loadProject commits error on error response", async () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
-        const state = mockRootState();
         const savedProject = {
             hash: "123",
             id: "abc",
             name: "test project",
             timestamp: 1687879927224
         };
-        const projectResponse = { test: "value" };
+        const state = mockRootState({
+            savedProjects: [savedProject]
+        });
         const url = `${serverUrl}/project/abc`;
         mockAxios.onGet(url).reply(500, responseError({ error: "test error" }));
         await actions.loadProject({ commit, dispatch, state } as any, savedProject);
@@ -572,6 +573,7 @@ describe("Actions", () => {
         expect(commit.mock.calls[4][1]).toBe("Loading complete");
         expect(commit.mock.calls[5][0]).toBe("setLoadingProject");
         expect(commit.mock.calls[5][1]).toBe(false);
+        expect(state.savedProjects).toStrictEqual([savedProject]);
     });
 
     it("postAMR posts amr data", async () => {
