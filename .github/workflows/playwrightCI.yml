@@ -42,7 +42,10 @@ jobs:
     - name: Stop all components
       working-directory: .
       run: ./scripts/stop_test
-      
+    - uses: actions/upload-artifact@v3
+      with:
+          name: screenshots
+          path: app/client/test-results
 #     - name: tmate session
 #       if: ${{ failure() }}
 #       uses: mxschmitt/action-tmate@v3
