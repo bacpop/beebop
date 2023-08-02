@@ -71,7 +71,8 @@ export default {
             loadingProject: true,
             projectId: project.id,
             projectHash: project.hash,
-            projectName: project.name
+            projectName: project.name,
+            savedProjects: state.savedProjects
         });
         commit("addLoadingProjectMessage", "Fetching sketches");
         await api(context)

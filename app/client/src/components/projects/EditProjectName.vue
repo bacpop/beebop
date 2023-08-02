@@ -1,5 +1,5 @@
 <template>
-  <span v-if="!editingProjectName">
+  <template v-if="!editingProjectName">
         <slot></slot>
         <i class="bi bi-pencil edit-icon clickable"
            v-b-tooltip.hover
@@ -7,8 +7,8 @@
            @click="editProjectName"
            v-on:keyup.enter="editProjectName"
         ></i>
-    </span>
-    <span v-else>
+    </template>
+    <template v-else>
         <input ref="renameProject"
                class="project-name-input"
                type="text"
@@ -23,32 +23,31 @@
         <button @click="cancelEditProjectName" id="cancel-project-name" class="btn ms-1" :class="buttonClass">
             Cancel
         </button>
-        <br/>
         <project-name-check-message :check-result="checkResult"></project-name-check-message>
-    </span>
+    </template>
 </template>
 <script lang="ts">
 import { VBTooltip } from "bootstrap-vue-3";
 import { defineComponent } from "vue";
-import {mapActions, mapGetters} from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import ProjectNameCheckMessage from "@/components/projects/ProjectNameCheckMessage.vue";
-import {ProjectNameCheckResult} from "@/types";
+import { ProjectNameCheckResult } from "@/types";
 
 export default defineComponent({
     name: "EditProjectName",
-    components: {ProjectNameCheckMessage},
+    components: { ProjectNameCheckMessage },
     directives: {
         "b-tooltip": VBTooltip
     },
     props: {
         projectId: String,
-        projectName: {type: String, required: true},
+        projectName: { type: String, required: true },
         buttonClass: String
     },
     data() {
         return {
             editingProjectName: false,
-            checkResult: null,
+            checkResult: ProjectNameCheckResult.Unchanged,
             inputText: ""
         };
     },
@@ -57,13 +56,12 @@ export default defineComponent({
             return this.checkResult === ProjectNameCheckResult.OK || this.checkResult === ProjectNameCheckResult.Unchanged;
         },
         inputModel: {
-            get(){
+            get() {
                 return this.inputText;
             },
             set(value: string) {
                 this.inputText = value;
                 this.checkResult = this.checkProjectName()(this.inputText, this.projectName);
-                console.log("change: " + this.checkResult)
             }
         }
     },
@@ -72,7 +70,7 @@ export default defineComponent({
         ...mapGetters(["checkProjectName"]),
         editProjectName() {
             this.editingProjectName = true;
-            this.checkResult = null;
+            this.checkResult = ProjectNameCheckResult.Unchanged;
             this.inputText = this.projectName;
         },
         cancelEditProjectName() {
@@ -81,7 +79,7 @@ export default defineComponent({
         saveProjectName() {
             if (this.canSave) {
                 if (this.checkResult !== ProjectNameCheckResult.Unchanged) {
-                    this.renameProject({projectId: this.projectId, name: this.inputText});
+                    this.renameProject({ projectId: this.projectId, name: this.inputText });
                 }
                 this.editingProjectName = false;
             }

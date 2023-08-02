@@ -1,5 +1,5 @@
 <template>
-    <div class="small text-danger">
+    <div class="text-danger message">
         {{ message }}
     </div>
 </template>
@@ -22,3 +22,10 @@ const message = computed(() => {
     }
 });
 </script>
+<style scoped>
+.message {
+    height: 1em;
+    font-size: small;
+    margin-bottom: 0.7em;
+}
+</style>
