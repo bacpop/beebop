@@ -19,7 +19,7 @@ const expectDownloadButtons = async (fileName: string, page: Page) => {
 };
 
 test.describe("Logged in Tests", () => {
-    const { timeout } = PlaywrightConfig;
+    const timeout = PlaywrightConfig.expect?.timeout;
 
     test.beforeEach(async ({ page }) => {
         await page.goto(`${config.serverUrl()}/login/mock`);
@@ -75,17 +75,17 @@ test.describe("Logged in Tests", () => {
         // Expect table to appear
         await expect(page.locator("table")).toHaveCount(1);
         // Expect files, hashes, AMR and Sketch appearing in table
-        await page.waitForTimeout(10000);
-        await expect(page.locator('tr:has-text("6930_8_13.fa")')).toContainText(["6930_8_13.fa", "✔", "PCETE SXT"]);
-        await expect(page.locator('tr:has-text("6930_8_11.fa")')).toContainText(["6930_8_11.fa", "✔", "PCETE SXT"]);
+        await expect(page.locator('tr:has-text("6930_8_13.fa")'))
+            .toHaveText("6930_8_13.fa✔PCETE SXT", { timeout });
+        await expect(page.locator('tr:has-text("6930_8_11.fa")'))
+            .toHaveText("6930_8_11.fa✔PCETE SXT", { timeout });
         // expect to have a 'start analysis' button
         await expect(page.locator(".start-analysis")).toContainText("Start Analysis");
         // Expect to see ProgressBar once button was pressed
         await page.click("text=Start Analysis");
         await expect(page.locator(".progress-bar")).toHaveCount(1);
-        // Expect all jobs to finish
-        await page.waitForTimeout(20000);
-        await expect(page.locator(".progress-bar")).toContainText("100.00%");
+        // Expect all jobs to finish within 3 minutes
+        await expect(page.locator(".progress-bar")).toHaveText("100.00%", { timeout: 1000 * 60 * 3 });
         // Expect clusters appearing in table
         await expect(page.locator('tr:has-text("6930_8_13.fa")'))
             .toContainText(["6930_8_13.fa", "✔", "PCETE SXT", "7"]);
@@ -111,11 +111,11 @@ test.describe("Logged in Tests", () => {
         await expect(page.locator("#cy canvas")).toHaveCount(3);
         // can browse back to Home page and see new project in history
         await page.goto(config.clientUrl());
-        await expect(await page.locator(".saved-project-row .saved-project-name").last())
+        await expect(await page.locator(".saved-project-row .saved-project-name").first())
             .toHaveText("test project", { timeout });
-        expect(await (await page.locator(".saved-project-row .saved-project-date").last()).innerText())
+        expect(await (await page.locator(".saved-project-row .saved-project-date").first()).innerText())
             .toMatch(/^[0-3][0-9]\/[0-1][0-9]\/20[2-9][0-9] [0-2][0-9]:[0-5][0-9]$/);
-        await expect(await page.locator(".saved-project-row .saved-project-samples-count").last())
+        await expect(await page.locator(".saved-project-row .saved-project-samples-count").first())
             .toHaveText("2", { timeout });
         const lastProjectIndex = await page.locator(".saved-project-row").count();
         // can create a new empty project
