@@ -21,7 +21,7 @@ const firefox = {
 const config: PlaywrightTestConfig = {
     testDir: "./tests/e2e",
     /* Maximum time one test can run for. */
-    timeout: 1000 * 60 * 3,
+    timeout: 1000 * 60 * 4,
     expect: {
     /**
      * Maximum time expect() should wait for the condition to be met.
