@@ -17,7 +17,11 @@
                v-on:keyup.enter="saveProjectName"
                v-model="inputModel"
                />
-        <button @click="saveProjectName" id="save-project-name" class="btn ms-2" :class="buttonClass" :disabled="!canSave">
+        <button @click="saveProjectName"
+                id="save-project-name"
+                class="btn ms-2"
+                :class="buttonClass"
+                :disabled="!canSave">
             Save
         </button>
         <button @click="cancelEditProjectName" id="cancel-project-name" class="btn ms-1" :class="buttonClass">
@@ -40,7 +44,7 @@ export default defineComponent({
         "b-tooltip": VBTooltip
     },
     props: {
-        projectId: String,
+        projectId: { type: String, required: true },
         projectName: { type: String, required: true },
         buttonClass: String
     },

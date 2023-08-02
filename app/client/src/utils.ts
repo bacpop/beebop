@@ -1,6 +1,4 @@
 import { RootState } from "@/store/state";
-import {SavedProject} from "@/types";
-import store from "@/store";
 
 export const emptyState = (): RootState => ({
     errors: [],

@@ -1,7 +1,6 @@
-import { AnalysisType, ProjectNameCheckResult, SavedProject } from "@/types";
+import { AnalysisType, ProjectNameCheckResult } from "@/types";
 import { Getter, GetterTree } from "vuex";
 import { RootState } from "@/store/state";
-import store from "@/store/index";
 
 export enum BeebopGetter {
   analysisProgress = "analysisProgress",
