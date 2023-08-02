@@ -132,6 +132,10 @@ test.describe("Logged in Tests", () => {
         // rename project in Project view
         await createProject("old project name", page);
         await page.click("h4 i");
+        // should be prevented from saving empty project name
+        await page.fill("h4 input", "");
+        await expect(page.locator("#save-project-name")).not.toBeEnabled();
+        await expect(page.locator(".message")).toHaveText("Name cannot be empty");
         await page.fill("h4 input", "new project name");
         await page.click("#save-project-name");
         expect(await page.innerText("h4")).toBe("new project name");
