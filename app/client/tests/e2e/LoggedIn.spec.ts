@@ -111,16 +111,16 @@ test.describe("Logged in Tests", () => {
         await expect(page.locator("#cy canvas")).toHaveCount(3);
         // can browse back to Home page and see new project in history
         await page.goto(config.clientUrl());
-        await expect(await page.locator(".saved-project-row .saved-project-name").last())
+        await expect(await page.locator(".saved-project-row .saved-project-name").first())
             .toHaveText("test project", { timeout });
-        expect(await (await page.locator(".saved-project-row .saved-project-date").last()).innerText())
+        expect(await (await page.locator(".saved-project-row .saved-project-date").first()).innerText())
             .toMatch(/^[0-3][0-9]\/[0-1][0-9]\/20[2-9][0-9] [0-2][0-9]:[0-5][0-9]$/);
         const lastProjectIndex = await page.locator(".saved-project-row").count();
         // can create a new empty project
         await createProject("another test project", page);
-        // can browse back to Home page ad load previous project
+        // can browse back to Home page and load previous project
         await page.goto(config.clientUrl());
-        await page.click(`:nth-match(.saved-project-row button, ${lastProjectIndex})`);
+        await page.click(":nth-match(.saved-project-row button, 2)");
         await expect(page.locator(":nth-match(.tab-content tr, 1)"))
             .toContainText(["6930_8_13.fa", "✔", "PCETE SXT"], { timeout });
         await expect(page.locator(":nth-match(.tab-content tr, 2)"))
@@ -146,8 +146,10 @@ test.describe("Logged in Tests", () => {
 
         // rename project in Home view
         await page.click(".saved-project-name i");
-        await page.fill(".saved-project-name input", "another new project name");
+        const newProjectName = `another new project name ${Date.now()}`;
+        await page.fill(".saved-project-name input", newProjectName);
+        await expect(page.locator("#save-project-name")).toBeEnabled();
         await page.click("#save-project-name");
-        expect(await page.innerText(".saved-project-name")).toBe("another new project name");
+        expect(await page.innerText(".saved-project-name")).toBe(newProjectName);
     });
 });
