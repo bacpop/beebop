@@ -161,14 +161,14 @@ test.describe("Logged in Tests", () => {
         await createProject("name test 2", page);
         await page.goto(config.clientUrl());
 
-        // Click edit icon for first project and confirm editing
+        // Click edit icon for most recent project and confirm editing
         await page.click(":nth-match(.edit-project-name i, 1)");
         await expect(page.locator(".edit-project-name input")).toHaveCount(1);
 
-        // Click edit icon for next project and confirm editing one project name only
-        const secondProjectName = await page.locator(":nth-match(.saved-project-name, 2)").innerText();
-        await page.click(":nth-match(.edit-project-name i, 2)");
+        // Click edit icon for second most recent project and confirm editing one project name only
+        const projectName = await page.locator(":nth-match(.saved-project-name, 2)").innerText();
+        await page.click(":nth-match(.edit-project-name i, 1)");
         await expect(page.locator(".edit-project-name input")).toHaveCount(1);
-        await expect(page.locator(".edit-project-name input")).toHaveValue(secondProjectName);
+        await expect(page.locator(".edit-project-name input")).toHaveValue(projectName);
     });
 });
