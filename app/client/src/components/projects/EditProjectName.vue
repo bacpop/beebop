@@ -18,7 +18,7 @@
                    v-on:keyup.enter="saveProjectName"
                    v-model="inputModel"
                    />
-            <button @click="saveProjectName"
+            <button @mousedown="saveProjectName"
                     id="save-project-name"
                     class="btn ms-2"
                     :class="buttonClass"

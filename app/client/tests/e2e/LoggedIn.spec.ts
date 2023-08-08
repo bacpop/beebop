@@ -7,7 +7,7 @@ import config from "../../src/settings/development/config";
 import PlaywrightConfig from "../../playwright.config";
 
 const createProject = async (projectName: string, page: Page) => {
-    await page.fill("input#create-project-name", "test project");
+    await page.fill("input#create-project-name", projectName);
     await page.click("button#create-project-btn");
     expect(await page.locator("#no-results").innerText()).toBe("No data uploaded yet");
 };
@@ -136,22 +136,23 @@ test.describe("Logged in Tests", () => {
         await page.fill("h4 input", "");
         await expect(page.locator("#save-project-name")).not.toBeEnabled();
         await expect(page.locator(".message")).toHaveText("Name cannot be empty");
-        await page.fill("h4 input", "new project name");
+        const newProjectName = `new project name ${Date.now()}`;
+        await page.fill("h4 input", newProjectName);
         await page.click("#save-project-name");
-        expect(await page.innerText("h4")).toBe("new project name");
+        await expect(page.locator("h4")).toHaveText(newProjectName, { timeout });
 
         // browse back to Home page and check project has been renamed
         await page.goto(config.clientUrl());
         expect(await page.innerText(":nth-match(.saved-project-row .saved-project-name, 1)"))
-            .toBe("new project name");
+            .toBe(newProjectName);
 
         // rename project in Home view
         await page.click(".saved-project-name i");
-        const newProjectName = `another new project name ${Date.now()}`;
-        await page.fill(".saved-project-name input", newProjectName);
+        const anotherNewProjectName = `another new project name ${Date.now()}`;
+        await page.fill(".saved-project-name input", anotherNewProjectName);
         await expect(page.locator("#save-project-name")).toBeEnabled();
         await page.click("#save-project-name");
-        expect(await page.innerText(".saved-project-name")).toBe(newProjectName);
+        expect(await page.innerText(".saved-project-name")).toBe(anotherNewProjectName);
     });
 
     test("can only edit one project name at a time in Home page", async ({ page }) => {

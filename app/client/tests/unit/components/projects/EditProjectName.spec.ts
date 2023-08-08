@@ -109,7 +109,7 @@ describe("EditProjectName", () => {
         const wrapper = getWrapper();
         await wrapper.setData({ editingProjectName: true });
         await wrapper.find("input").setValue("new project name");
-        await wrapper.find("button#save-project-name").trigger("click");
+        await wrapper.find("button#save-project-name").trigger("mousedown");
         expectSavedProject(wrapper);
     });
 
@@ -145,7 +145,7 @@ describe("EditProjectName", () => {
         const wrapper = getWrapper();
         await wrapper.setData({ editingProjectName: true });
         await wrapper.find("input").setValue("old project name");
-        await wrapper.find("button#save-project-name").trigger("click");
+        await wrapper.find("button#save-project-name").trigger("mousedown");
         expect(mockRenameProject).not.toHaveBeenCalled();
         // stops editing
         expect(wrapper.vm.$data.editingProjectName).toBe(false);
@@ -156,7 +156,7 @@ describe("EditProjectName", () => {
         const wrapper = getWrapper();
         await wrapper.setData({ editingProjectName: true });
         await wrapper.find("input").setValue("  new project name ");
-        await wrapper.find("button#save-project-name").trigger("click");
+        await wrapper.find("button#save-project-name").trigger("mousedown");
         expectSavedProject(wrapper);
     });
 
