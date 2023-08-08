@@ -98,7 +98,7 @@ export default defineComponent({
 </script>
 <style scoped>
 .edit-project-name {
-    height: 2em;
+    height: 2.6em;
 }
 
 .edit-icon {
