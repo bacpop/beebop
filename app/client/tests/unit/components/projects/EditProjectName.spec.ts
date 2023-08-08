@@ -82,7 +82,6 @@ describe("EditProjectName", () => {
         await nextTick();
         const input = wrapper.find("input").element;
         expect(input).toBe(document.activeElement);
-
     });
 
     it("clicking Cancel button stops editing", async () => {

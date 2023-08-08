@@ -142,7 +142,8 @@ test.describe("Logged in Tests", () => {
 
         // browse back to Home page and check project has been renamed
         await page.goto(config.clientUrl());
-        expect(await page.innerText(".saved-project-row .saved-project-name")).toBe("new project name");
+        expect(await page.innerText(":nth-match(.saved-project-row .saved-project-name, 1)"))
+            .toBe("new project name");
 
         // rename project in Home view
         await page.click(".saved-project-name i");

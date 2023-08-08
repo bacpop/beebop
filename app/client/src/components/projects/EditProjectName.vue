@@ -34,7 +34,7 @@
 </template>
 <script lang="ts">
 import { VBTooltip } from "bootstrap-vue-3";
-import {defineComponent} from "vue";
+import { defineComponent } from "vue";
 import { mapActions, mapGetters } from "vuex";
 import ProjectNameCheckMessage from "@/components/projects/ProjectNameCheckMessage.vue";
 import { ProjectNameCheckResult } from "@/types";
