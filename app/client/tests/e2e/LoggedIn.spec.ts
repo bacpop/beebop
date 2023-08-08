@@ -152,4 +152,21 @@ test.describe("Logged in Tests", () => {
         await page.click("#save-project-name");
         expect(await page.innerText(".saved-project-name")).toBe(newProjectName);
     });
+
+    test("can only edit one project name at a time in Home page", async ({ page }) => {
+        await createProject("name test 1", page);
+        await page.goto(config.clientUrl());
+        await createProject("name test 2", page);
+        await page.goto(config.clientUrl());
+
+        // Click edit icon for first project and confirm editing
+        await page.click(":nth-match(.edit-project-name i, 1)");
+        await expect(page.locator(".edit-project-name input")).toHaveCount(1);
+
+        // Click edit icon for next project and confirm editing one project name only
+        const secondProjectName = await page.locator(":nth-match(.saved-project-name, 2)").innerText();
+        await page.click(":nth-match(.edit-project-name i, 2)");
+        await expect(page.locator(".edit-project-name input")).toHaveCount(1);
+        await expect(page.locator(".edit-project-name input")).toHaveValue(secondProjectName);
+    });
 });

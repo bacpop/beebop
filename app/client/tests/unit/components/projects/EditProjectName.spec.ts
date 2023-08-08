@@ -6,6 +6,7 @@ import ProjectNameCheckMessage from "@/components/projects/ProjectNameCheckMessa
 import { ProjectNameCheckResult } from "@/types";
 import { getters } from "@/store/getters";
 import { mockRootState } from "../../../mocks";
+import {nextTick} from "vue";
 
 describe("EditProjectName", () => {
     const mockRenameProject = jest.fn();
@@ -33,7 +34,8 @@ describe("EditProjectName", () => {
             },
             global: {
                 plugins: [store]
-            }
+            },
+            attachTo: document.body
         });
     };
 
@@ -76,6 +78,11 @@ describe("EditProjectName", () => {
         expect(wrapper.findComponent(ProjectNameCheckMessage).props("checkResult"))
             .toBe(ProjectNameCheckResult.Unchanged);
         expect(wrapper.find("button#save-project-name").exists()).toBe(true);
+
+        await nextTick();
+        const input = wrapper.find("input").element;
+        expect(input).toBe(document.activeElement);
+
     });
 
     it("clicking Cancel button stops editing", async () => {
@@ -152,5 +159,14 @@ describe("EditProjectName", () => {
         await wrapper.find("input").setValue("  new project name ");
         await wrapper.find("button#save-project-name").trigger("click");
         expectSavedProject(wrapper);
+    });
+
+    it("losing focus from enclosing div cancels edit", async () => {
+        const wrapper = getWrapper();
+        await wrapper.setData({ editingProjectName: true });
+        await wrapper.find("div.edit-project-name").trigger("focusout");
+        expect(wrapper.vm.$data.editingProjectName).toBe(false);
+        expect(wrapper.find("span#test-slot").exists()).toBe(true);
+        expect(wrapper.find("i").exists()).toBe(true);
     });
 });

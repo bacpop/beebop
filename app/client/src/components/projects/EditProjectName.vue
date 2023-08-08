@@ -1,38 +1,40 @@
 <template>
-  <template v-if="!editingProjectName">
-        <slot></slot>
-        <i class="bi bi-pencil edit-icon clickable"
-           v-b-tooltip.hover
-           title="Edit Project Name"
-           @click="editProjectName"
-           v-on:keyup.enter="editProjectName"
-        ></i>
-    </template>
-    <template v-else>
-        <input ref="renameProject"
-               class="project-name-input"
-               type="text"
-               style="display:inline"
-               aria-label="New project name"
-               v-on:keyup.enter="saveProjectName"
-               v-model="inputModel"
-               />
-        <button @click="saveProjectName"
-                id="save-project-name"
-                class="btn ms-2"
-                :class="buttonClass"
-                :disabled="!canSave">
-            Save
-        </button>
-        <button @click="cancelEditProjectName" id="cancel-project-name" class="btn ms-1" :class="buttonClass">
-            Cancel
-        </button>
-        <project-name-check-message :check-result="checkResult"></project-name-check-message>
-    </template>
+    <div @focusout="cancelEditProjectName" class="edit-project-name">
+        <template v-if="!editingProjectName">
+            <slot></slot>
+            <i class="bi bi-pencil edit-icon clickable"
+               v-b-tooltip.hover
+               title="Edit Project Name"
+               @click="editProjectName"
+               v-on:keyup.enter="editProjectName"
+            ></i>
+        </template>
+        <template v-else>
+            <input ref="renameProject"
+                   class="project-name-input"
+                   type="text"
+                   style="display:inline"
+                   aria-label="New project name"
+                   v-on:keyup.enter="saveProjectName"
+                   v-model="inputModel"
+                   />
+            <button @click="saveProjectName"
+                    id="save-project-name"
+                    class="btn ms-2"
+                    :class="buttonClass"
+                    :disabled="!canSave">
+                Save
+            </button>
+            <button @click="cancelEditProjectName" id="cancel-project-name" class="btn ms-1" :class="buttonClass">
+                Cancel
+            </button>
+            <project-name-check-message :check-result="checkResult"></project-name-check-message>
+        </template>
+    </div>
 </template>
 <script lang="ts">
 import { VBTooltip } from "bootstrap-vue-3";
-import { defineComponent } from "vue";
+import {defineComponent} from "vue";
 import { mapActions, mapGetters } from "vuex";
 import ProjectNameCheckMessage from "@/components/projects/ProjectNameCheckMessage.vue";
 import { ProjectNameCheckResult } from "@/types";
@@ -76,6 +78,9 @@ export default defineComponent({
             this.editingProjectName = true;
             this.checkResult = ProjectNameCheckResult.Unchanged;
             this.inputText = this.projectName;
+            this.$nextTick(() => {
+                (this.$refs.renameProject as HTMLInputElement).focus();
+            });
         },
         cancelEditProjectName() {
             this.editingProjectName = false;
@@ -92,6 +97,10 @@ export default defineComponent({
 });
 </script>
 <style scoped>
+.edit-project-name {
+    height: 2em;
+}
+
 .edit-icon {
     color: #a1abb3;
     margin-left: 0.3em;
