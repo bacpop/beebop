@@ -490,7 +490,8 @@ describe("Actions", () => {
             hash: "123",
             id: "abc",
             name: "test project",
-            timestamp: 1687879927224
+            timestamp: 1687879927224,
+            samplesCount: 2
         };
         const projectResponse = { test: "value" };
         const url = `${serverUrl}/project/abc`;
@@ -528,7 +529,8 @@ describe("Actions", () => {
             hash: "123",
             id: "abc",
             name: "test project",
-            timestamp: 1687879927224
+            timestamp: 1687879927224,
+            samplesCount: 3
         };
         const projectResponse = {
             status: {
@@ -552,7 +554,8 @@ describe("Actions", () => {
             hash: "123",
             id: "abc",
             name: "test project",
-            timestamp: 1687879927224
+            timestamp: 1687879927224,
+            samplesCount: 3
         };
         const projectResponse = { test: "value" };
         const url = `${serverUrl}/project/abc`;

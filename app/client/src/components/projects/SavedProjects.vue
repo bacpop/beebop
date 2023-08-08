@@ -4,7 +4,8 @@
       <div class="container">
           <div class="row fw-bold saved-project-headers">
             <div class="col-6">Project name</div>
-            <div class="col-6">Date</div>
+            <div class="col-3">Samples</div>
+            <div class="col-3">Date</div>
           </div>
           <hr/>
           <div v-for="project in savedProjects" :key="project.hash" class="row saved-project-row">
@@ -17,7 +18,10 @@
                       </button>
                   </edit-project-name>
               </div>
-              <div class="col-6 saved-project-date">
+              <div class="col-3 saved-project-samples-count">
+                  {{ project.samplesCount }}
+              </div>
+              <div class="col-3 saved-project-date">
                   {{ displayDateFromTimestamp(project.timestamp) }}
               </div>
           </div>

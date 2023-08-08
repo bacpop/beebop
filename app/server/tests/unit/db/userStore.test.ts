@@ -8,7 +8,8 @@ describe("UserStore", () => {
         lrange: jest.fn().mockImplementation(() => ["123", "456"]),
         hmget: jest.fn().mockImplementation((key: string, ...valueNames: string[]) => {
             return valueNames.map((valueName) => valueName === "timestamp" ? 1687879913811 : `${valueName} for ${key}`);
-        })
+        }),
+        scard: jest.fn().mockImplementation(() => 2)
     } as any;
 
     const mockRequest = {
@@ -65,14 +66,29 @@ describe("UserStore", () => {
         const sut = new UserStore(mockRedis);
         const result = await sut.getUserProjects(mockRequest);
         expect(result).toStrictEqual([
-            {id: "123", name: "name for beebop:project:123", hash: "hash for beebop:project:123", timestamp: 1687879913811},
-            {id: "456", name: "name for beebop:project:456", hash: "hash for beebop:project:456", timestamp: 1687879913811}
+            {
+                id: "123",
+                name: "name for beebop:project:123",
+                hash: "hash for beebop:project:123",
+                timestamp: 1687879913811,
+                samplesCount: 2
+            },
+            {
+                id: "456",
+                name: "name for beebop:project:456",
+                hash: "hash for beebop:project:456",
+                timestamp: 1687879913811,
+                samplesCount: 2
+            }
         ]);
 
         expect(mockRedis.lrange).toHaveBeenCalledTimes(1);
         expect(mockRedis.lrange.mock.calls[0][0]).toBe("beebop:userprojects:testProvider:testId");
         expect(mockRedis.lrange.mock.calls[0][1]).toBe(0);
         expect(mockRedis.lrange.mock.calls[0][2]).toBe(-1);
+        expect(mockRedis.scard).toHaveBeenCalledTimes(2);
+        expect(mockRedis.scard).toHaveBeenNthCalledWith(1, "beebop:project:123:samples");
+        expect(mockRedis.scard).toHaveBeenNthCalledWith(2, "beebop:project:456:samples");
     });
 
     it("saves amr data", async () => {

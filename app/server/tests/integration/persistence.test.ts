@@ -56,14 +56,16 @@ describe("User persistence", () => {
         await saveRedisList("beebop:userprojects:mock:1234", ["abcd", "efgh"]);
         await saveRedisHash("beebop:project:abcd", {name: "test save 1", timestamp: "1689070004473"});
         await saveRedisHash("beebop:project:efgh", {name: "test save 2", hash: "1234", timestamp: "1689070004573"});
+        await saveRedisSet("beebop:project:abcd:samples", ["a1b1"]);
+        await saveRedisSet("beebop:project:efgh:samples", ["c2d2", "e3f3"]);
 
         const response = await get("projects", connectionCookie);
         expect(response.status).toBe(200);
         expect(response.data).toStrictEqual({
             status: "success",
             data: [
-                {id: "abcd", name: "test save 1", hash: null, timestamp: 1689070004473},
-                {id: "efgh", name: "test save 2", hash: "1234", timestamp: 1689070004573}
+                {id: "abcd", name: "test save 1", hash: null, timestamp: 1689070004473, samplesCount: 1},
+                {id: "efgh", name: "test save 2", hash: "1234", timestamp: 1689070004573, samplesCount: 2}
             ],
             errors: []
         });
@@ -72,6 +74,7 @@ describe("User persistence", () => {
     it("renames project", async () => {
         await saveRedisList("beebop:userprojects:mock:1234", ["abcd"]);
         await saveRedisHash("beebop:project:abcd", {name: "old name", timestamp: "1689070004473"});
+        await saveRedisSet("beebop:project:abcd:samples", ["a1b1"]);
         const response = await post("project/abcd/rename", {name: "new name"}, connectionCookie);
         expect(response.status).toBe(200);
         // can get user projects with new name
@@ -79,7 +82,7 @@ describe("User persistence", () => {
         expect(projectsResponse.data).toStrictEqual({
             status: "success",
             data: [
-                {id: "abcd", name: "new name", hash: null, timestamp: 1689070004473},
+                {id: "abcd", name: "new name", hash: null, timestamp: 1689070004473, samplesCount: 1},
             ],
             errors: []
         });
