@@ -6,7 +6,6 @@
       </div>
       <div class="overview">
         <h4 class="left">
-            Project:
             <edit-project-name :project-id="projectId" :project-name="projectName" :button-class="'btn-standard'">
                 {{ projectName }}
             </edit-project-name>

@@ -11,7 +11,7 @@
           <div v-for="project in savedProjects" :key="project.hash" class="row saved-project-row">
               <div class="col-6 saved-project-name">
                   <edit-project-name :project-name="project.name" :project-id="project.id" :button-class="'btn-sm'">
-                      <button class="clickable brand-text"
+                      <button class="clickable brand-text saved-project-name"
                               @click="loadProject(project)"
                               @keydown="loadProjectFromKey(project, $event.keyCode)">
                           {{ project.name }}

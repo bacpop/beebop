@@ -7,7 +7,7 @@ import config from "../../src/settings/development/config";
 import PlaywrightConfig from "../../playwright.config";
 
 const createProject = async (projectName: string, page: Page) => {
-    await page.fill("input#create-project-name", "test project");
+    await page.fill("input#create-project-name", projectName);
     await page.click("button#create-project-btn");
     expect(await page.locator("#no-results").innerText()).toBe("No data uploaded yet");
 };
@@ -40,7 +40,7 @@ test.describe("Logged in Tests", () => {
     test("should display dropzone in Project view", async ({ page }) => {
         await createProject("test project", page);
         await expect(page.locator(".dropzone")).toBeVisible();
-        await expect(page.locator("h4")).toContainText("Project: test project");
+        await expect(page.locator("h4")).toContainText("test project");
     });
 
     test("should redirect from project page to home page if name has not been provided", async ({ page }) => {
@@ -120,9 +120,9 @@ test.describe("Logged in Tests", () => {
         const lastProjectIndex = await page.locator(".saved-project-row").count();
         // can create a new empty project
         await createProject("another test project", page);
-        // can browse back to Home page ad load previous project
+        // can browse back to Home page and load previous project
         await page.goto(config.clientUrl());
-        await page.click(`:nth-match(.saved-project-row button, ${lastProjectIndex})`);
+        await page.click(":nth-match(.saved-project-row button, 2)");
         await expect(page.locator(":nth-match(.tab-content tr, 1)"))
             .toContainText(["6930_8_13.fa", "✔", "PCETE SXT"], { timeout });
         await expect(page.locator(":nth-match(.tab-content tr, 2)"))
@@ -134,18 +134,43 @@ test.describe("Logged in Tests", () => {
         // rename project in Project view
         await createProject("old project name", page);
         await page.click("h4 i");
-        await page.fill("h4 input", "new project name");
+        // should be prevented from saving empty project name
+        await page.fill("h4 input", "");
+        await expect(page.locator("#save-project-name")).not.toBeEnabled();
+        await expect(page.locator(".message")).toHaveText("Name cannot be empty");
+        const newProjectName = `new project name ${Date.now()}`;
+        await page.fill("h4 input", newProjectName);
         await page.click("#save-project-name");
-        expect(await page.innerText("h4")).toBe("Project: new project name");
+        await expect(page.locator("h4")).toHaveText(newProjectName, { timeout });
 
         // browse back to Home page and check project has been renamed
         await page.goto(config.clientUrl());
-        expect(await page.innerText(".saved-project-row .saved-project-name")).toBe("new project name");
+        expect(await page.innerText(":nth-match(.saved-project-row .saved-project-name, 1)"))
+            .toBe(newProjectName);
 
         // rename project in Home view
         await page.click(".saved-project-name i");
-        await page.fill(".saved-project-name input", "another new project name");
+        const anotherNewProjectName = `another new project name ${Date.now()}`;
+        await page.fill(".saved-project-name input", anotherNewProjectName);
+        await expect(page.locator("#save-project-name")).toBeEnabled();
         await page.click("#save-project-name");
-        expect(await page.innerText(".saved-project-name")).toBe("another new project name");
+        expect(await page.innerText(".saved-project-name")).toBe(anotherNewProjectName);
+    });
+
+    test("can only edit one project name at a time in Home page", async ({ page }) => {
+        await createProject("name test 1", page);
+        await page.goto(config.clientUrl());
+        await createProject("name test 2", page);
+        await page.goto(config.clientUrl());
+
+        // Click edit icon for most recent project and confirm editing
+        await page.click(":nth-match(.edit-project-name i, 1)");
+        await expect(page.locator(".edit-project-name input")).toHaveCount(1);
+
+        // Click edit icon for second most recent project and confirm editing one project name only
+        const projectName = await page.locator(":nth-match(.saved-project-name, 2)").innerText();
+        await page.click(":nth-match(.edit-project-name i, 1)");
+        await expect(page.locator(".edit-project-name input")).toHaveCount(1);
+        await expect(page.locator(".edit-project-name input")).toHaveValue(projectName);
     });
 });

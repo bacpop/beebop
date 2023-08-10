@@ -1,67 +1,106 @@
 <template>
-  <span v-if="!editingProjectName">
-        <slot></slot>
-        <i class="bi bi-pencil edit-icon clickable"
-           v-b-tooltip.hover
-           title="Edit Project Name"
-           @click="editProjectName"
-           v-on:keyup.enter="editProjectName"
-        ></i>
-    </span>
-    <span v-else>
-        <input ref="renameProject"
-               class="project-name-input"
-               type="text"
-               style="display:inline"
-               aria-label="New project name"
-               v-on:keyup.enter="saveProjectName"
-               :value="projectName" />
-        <button @click="saveProjectName" id="save-project-name" class="btn ms-2" :class="buttonClass">
-            Save
-        </button>
-        <button @click="cancelEditProjectName" id="cancel-project-name" class="btn ms-1" :class="buttonClass">
-            Cancel
-        </button>
-    </span>
+    <div @focusout="cancelEditProjectName" class="edit-project-name">
+        <template v-if="!editingProjectName">
+            <slot></slot>
+            <i class="bi bi-pencil edit-icon clickable"
+               v-b-tooltip.hover
+               title="Edit Project Name"
+               @click="editProjectName"
+               v-on:keyup.enter="editProjectName"
+            ></i>
+        </template>
+        <template v-else>
+            <input ref="renameProject"
+                   class="project-name-input"
+                   type="text"
+                   style="display:inline"
+                   aria-label="New project name"
+                   v-on:keyup.enter="saveProjectName"
+                   v-model="inputModel"
+                   />
+            <button @mousedown="saveProjectName"
+                    id="save-project-name"
+                    class="btn ms-2"
+                    :class="buttonClass"
+                    :disabled="!canSave">
+                Save
+            </button>
+            <button @click="cancelEditProjectName" id="cancel-project-name" class="btn ms-1" :class="buttonClass">
+                Cancel
+            </button>
+            <project-name-check-message :check-result="checkResult"></project-name-check-message>
+        </template>
+    </div>
 </template>
 <script lang="ts">
 import { VBTooltip } from "bootstrap-vue-3";
 import { defineComponent } from "vue";
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
+import ProjectNameCheckMessage from "@/components/projects/ProjectNameCheckMessage.vue";
+import { ProjectNameCheckResult } from "@/types";
 
 export default defineComponent({
     name: "EditProjectName",
+    components: { ProjectNameCheckMessage },
     directives: {
         "b-tooltip": VBTooltip
     },
     props: {
-        projectId: String,
-        projectName: String,
+        projectId: { type: String, required: true },
+        projectName: { type: String, required: true },
         buttonClass: String
     },
     data() {
         return {
-            editingProjectName: false
+            editingProjectName: false,
+            checkResult: ProjectNameCheckResult.Unchanged,
+            inputText: ""
         };
+    },
+    computed: {
+        canSave() {
+            return [ProjectNameCheckResult.OK, ProjectNameCheckResult.Unchanged].includes(this.checkResult);
+        },
+        inputModel: {
+            get() {
+                return this.inputText;
+            },
+            set(value: string) {
+                this.inputText = value;
+                this.checkResult = this.checkProjectName()(this.inputText, this.projectName);
+            }
+        }
     },
     methods: {
         ...mapActions(["renameProject"]),
+        ...mapGetters(["checkProjectName"]),
         editProjectName() {
             this.editingProjectName = true;
+            this.checkResult = ProjectNameCheckResult.Unchanged;
+            this.inputText = this.projectName;
+            this.$nextTick(() => {
+                (this.$refs.renameProject as HTMLInputElement).focus();
+            });
         },
         cancelEditProjectName() {
             this.editingProjectName = false;
         },
         saveProjectName() {
-            const name = (this.$refs.renameProject as HTMLInputElement).value;
-            this.renameProject({ projectId: this.projectId, name });
-            this.editingProjectName = false;
+            if (this.canSave) {
+                if (this.checkResult !== ProjectNameCheckResult.Unchanged) {
+                    this.renameProject({ projectId: this.projectId, name: this.inputText.trim() });
+                }
+                this.editingProjectName = false;
+            }
         }
-        // TODO: prevent rename for empty name or existing name or name unchanged
     }
 });
 </script>
 <style scoped>
+.edit-project-name {
+    height: 2.6em;
+}
+
 .edit-icon {
     color: #a1abb3;
     margin-left: 0.3em;

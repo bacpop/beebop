@@ -1,5 +1,6 @@
 import { getters } from "@/store/getters";
 import { mockRootState } from "../../mocks";
+import {ProjectNameCheckResult} from "@/types";
 
 describe("getters", () => {
     it("calculates analysisProgress", () => {
@@ -50,5 +51,35 @@ describe("getters", () => {
             state,
             "uniqueClusters"
         )).toStrictEqual([2, 4, 7, 31]);
+    });
+
+    it("checkProjectName returns Empty", () => {
+        const check = (getters.checkProjectName as any)(mockRootState());
+        expect(check(" ")).toBe(ProjectNameCheckResult.Empty);
+    });
+
+    it("checkProjectName returns Unchanged", () => {
+        const check = (getters.checkProjectName as any)(mockRootState());
+        expect(check("project 1", "project 1")).toBe(ProjectNameCheckResult.Unchanged);
+    });
+
+    it("checkProjectName returns Duplicate", () => {
+        const check = (getters.checkProjectName as any)(mockRootState({
+            savedProjects: [
+                { id: "1", name: "project 1" },
+                { id: "2", name: "project 2" }
+            ] as any
+        }));
+        expect(check("project 2", "project 3")).toBe(ProjectNameCheckResult.Duplicate);
+    });
+
+    it("checkProjectName returns OK", () => {
+        const check = (getters.checkProjectName as any)(mockRootState({
+            savedProjects: [
+                { id: "1", name: "project 1" },
+                { id: "2", name: "project 2" }
+            ] as any
+        }));
+        expect(check("project 4", "project 3")).toBe(ProjectNameCheckResult.OK);
     });
 });
