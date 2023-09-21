@@ -2,7 +2,7 @@ import axios from "axios";
 import asyncHandler from "../errors/asyncHandler";
 import {BeebopRunRequest, PoppunkRequest} from "../types/requestTypes";
 import {userStore} from "../db/userStore";
-import {handleAPIError} from "../utils";
+import {handleAPIError, sendSuccess} from "../utils";
 
 export default (config) => {
     return {
@@ -101,5 +101,17 @@ export default (config) => {
                     handleAPIError(request, response, error);
                 });
         },
+
+        async saveMicroreactToken(request, response) {
+            const {redis} = request.app.locals;
+            await userStore(redis).saveMicroreactToken(request, request.body);
+            sendSuccess(response, null);
+        },
+
+        async getMicroreactToken(request, response) {
+            const {redis} = request.app.locals;
+            const token = await userStore(redis).getMicroreactToken(request);
+            sendSuccess(response, token);
+        }
     }
 }

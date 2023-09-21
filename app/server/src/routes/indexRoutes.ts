@@ -30,5 +30,12 @@ export default {
             controller.microreactURL);
         app.post('/downloadGraphml',
             controller.downloadGraphml);
+        app.post('/microreactToken',
+            authCheck,
+            controller.saveMicroreactToken);
+        app.get('/microreactToken',
+            authCheck,
+            controller.getMicroreactToken);
+
     }
 } as BeebopRoutes;

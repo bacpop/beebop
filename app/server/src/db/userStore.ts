@@ -1,6 +1,7 @@
 import Redis from "ioredis";
 import {uid} from "uid";
 import {AMR} from "../types/models";
+import {Request} from "express";
 
 const BEEBOP_PREFIX = "beebop:";
 
@@ -16,6 +17,7 @@ export class UserStore {
     private _projectKey = (projectId: string) => `${BEEBOP_PREFIX}project:${projectId}`;
     private _projectSamplesKey = (projectId: string) => `${this._projectKey(projectId)}:samples`;
     private _projectSampleKey = (projectId: string, sampleId: string) => `${this._projectKey(projectId)}:sample:${sampleId}`;
+    private _userKey = (userId: string) => `${BEEBOP_PREFIX}user:${userId}`;
 
     private _newProjectId = () => uid(32);
     private _sampleId = (sampleHash: string, fileName: string) => `${sampleHash}:${fileName}`;
@@ -93,6 +95,16 @@ export class UserStore {
 
     async getProjectSampleCount(projectId: string) {
         return this._redis.scard(this._projectSamplesKey(projectId));
+    }
+
+    async saveMicroreactToken(request: Request, token: string) {
+        const user = this._userIdFromRequest(request);
+        await this._redis.hset(this._userKey(user), "microreactToken", token);
+    }
+
+    async getMicroreactToken(request: Request) {
+        const user = this._userIdFromRequest(request);
+        return this._redis.hget(this._userKey(user), "microreactToken");
     }
 }
 
