@@ -75,6 +75,7 @@ export default {
         };
     },
     setToken(state: RootState, token: string | null) {
+        console.log("setting token to: " + token)
         state.microreactToken = token;
     },
     addGraphml(state: RootState, graphInfo: Record<string, string>) {

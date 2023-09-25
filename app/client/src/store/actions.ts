@@ -28,10 +28,14 @@ export default {
             .get<Versions>(`${serverUrl}/version`);
     },
     async getUser(context: ActionContext<RootState, RootState>) {
-        await api(context)
+        const { state, dispatch } = context;
+        const response = await api(context)
             .withSuccess("setUser")
             .withError("addError")
             .get<User>(`${serverUrl}/user`);
+        if (response && !state.microreactToken) {
+            dispatch("getMicroreactToken");
+        }
     },
     async newProject(context: ActionContext<RootState, RootState>, name: string) {
         const { commit, state } = context;
@@ -235,8 +239,13 @@ export default {
         context: ActionContext<RootState, RootState>,
         data: Record<string, string | number>
     ) {
-        const { state, commit } = context;
-        commit("setToken", data.token);
+        const { state, commit, dispatch } = context;
+
+        if (data.token !== state.microreactToken) {
+            commit("setToken", data.token);
+            dispatch("persistMicroreactToken", data.token);
+        }
+
         await api(context)
             .withSuccess("addMicroreactURL")
             .withError("addError")
@@ -245,6 +254,23 @@ export default {
                 projectHash: state.projectHash,
                 apiToken: state.microreactToken
             });
+    },
+    async persistMicroreactToken(
+        context: ActionContext<RootState, RootState>,
+        token: string) {
+        console.log("persisting token " + token)
+        await api(context)
+            .ignoreSuccess()
+            .withError("addError")
+            .post<string>(`${serverUrl}/microreactToken`, { token });
+    },
+    async getMicroreactToken(
+        context: ActionContext<RootState, RootState>
+    ) {
+        await api(context)
+            .withSuccess("setToken")
+            .withError("addError")
+            .get(`${serverUrl}/microreactToken`);
     },
     async getGraphml(
         context: ActionContext<RootState, RootState>,

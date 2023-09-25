@@ -104,7 +104,9 @@ export default (config) => {
 
         async saveMicroreactToken(request, response) {
             const {redis} = request.app.locals;
-            await userStore(redis).saveMicroreactToken(request, request.body);
+            const { token } = request.body;
+            console.log("persisting microreact token: " + token)
+            await userStore(redis).saveMicroreactToken(request, token);
             sendSuccess(response, null);
         },
 
