@@ -3,6 +3,7 @@ import asyncHandler from "../errors/asyncHandler";
 import {BeebopRunRequest, PoppunkRequest} from "../types/requestTypes";
 import {userStore} from "../db/userStore";
 import {handleAPIError, sendSuccess} from "../utils";
+import encryption from "../encryption";
 
 export default (config) => {
     return {
@@ -105,14 +106,15 @@ export default (config) => {
         async saveMicroreactToken(request, response) {
             const {redis} = request.app.locals;
             const { token } = request.body;
-            console.log("persisting microreact token: " + token)
-            await userStore(redis).saveMicroreactToken(request, token);
+            const encryptedToken = encryption.encrypt(token, request);
+            await userStore(redis).saveEncryptedMicroreactToken(request, encryptedToken);
             sendSuccess(response, null);
         },
 
         async getMicroreactToken(request, response) {
             const {redis} = request.app.locals;
-            const token = await userStore(redis).getMicroreactToken(request);
+            const encryptedToken = await userStore(redis).getEncryptedMicroreactToken(request);
+            const token = encryptedToken ? encryption.decrypt(encryptedToken, request) : null;
             sendSuccess(response, token);
         }
     }

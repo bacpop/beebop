@@ -57,4 +57,6 @@ export const configureApp = ((app, config) => {
     app.use(express.urlencoded({
         extended: true
     }));
+
+    app.locals.encryptKey = config.ENCRYPT_KEY;
 })

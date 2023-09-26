@@ -97,14 +97,14 @@ export class UserStore {
         return this._redis.scard(this._projectSamplesKey(projectId));
     }
 
-    async saveMicroreactToken(request: Request, token: string) {
+    async saveEncryptedMicroreactToken(request: Request, encryptedToken: Buffer) {
         const user = this._userIdFromRequest(request);
-        await this._redis.hset(this._userKey(user), "microreactToken", token);
+        await this._redis.hset(this._userKey(user), "microreactToken", encryptedToken);
     }
 
-    async getMicroreactToken(request: Request) {
+    async getEncryptedMicroreactToken(request: Request) {
         const user = this._userIdFromRequest(request);
-        return this._redis.hget(this._userKey(user), "microreactToken");
+        return this._redis.hgetBuffer(this._userKey(user), "microreactToken");
     }
 }
 
