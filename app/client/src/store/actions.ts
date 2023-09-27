@@ -258,7 +258,6 @@ export default {
     async persistMicroreactToken(
         context: ActionContext<RootState, RootState>,
         token: string) {
-        console.log("persisting token " + token)
         await api(context)
             .ignoreSuccess()
             .withError("addError")

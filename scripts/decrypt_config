@@ -16,9 +16,11 @@ export PROD_GITHUB_SECRET=$(vault read -field=secret secret/beebop/auth/producti
 export PROD_GOOGLE_ID=$(vault read -field=clientid secret/beebop/auth/production/google)
 export PROD_GOOGLE_SECRET=$(vault read -field=secret secret/beebop/auth/production/google)
 export PROD_EXPRESS_SESSION_SECRET=$(vault read -field=secret secret/beebop/express-session/production)
+export PROD_ENCRYPT_KEY=$(vault read -field=secret secret/beebop/encrypt-key/production)
 export GOOGLE_ID=$(vault read -field=clientid secret/beebop/auth/google)
 export GOOGLE_SECRET=$(vault read -field=secret secret/beebop/auth/google)
 export EXPRESS_SESSION_SECRET=$(vault read -field=secret secret/beebop/express-session)
+export ENCRYPT_KEY=$(vault read -field=secret secret/beebop/encrypt-key)
 
 mkdir proxy/ssl/production -p
 vault read -field=key secret/beebop/ssl > proxy/ssl/production/key.pem

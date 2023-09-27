@@ -25,6 +25,14 @@ function responseError(error: BeebopError) {
     };
 }
 
+const failureResponse = mockFailure("TEST ERROR");
+const expectFailureResponseCommitted = (commit: jest.Mock, idx = 0) => {
+    expect(commit.mock.calls[idx]).toEqual([
+        "addError",
+        { error: "OTHER_ERROR", detail: "TEST ERROR" }
+    ]);
+};
+
 let mockWorkerResultType = "sketch";
 class MockWorker implements Partial<Worker> {
   url: string
@@ -66,16 +74,35 @@ describe("Actions", () => {
         );
     });
 
-    it("getUser fetches and commits user info", async () => {
+    it("getUser fetches and commits user info and dispatches get Microreact token", async () => {
         mockAxios.onGet(`${serverUrl}/user`)
             .reply(200, responseSuccess({ id: "12345", name: "Beebop", provider: "google" }));
         const commit = jest.fn();
-        await actions.getUser({ commit } as any);
+        const dispatch = jest.fn();
+        const state = { microreactToken: null };
+        await actions.getUser({ commit, dispatch, state } as any);
 
         expect(commit).toHaveBeenCalledWith(
             "setUser",
             { id: "12345", name: "Beebop", provider: "google" }
         );
+
+        expect(dispatch).toHaveBeenCalledWith("getMicroreactToken");
+    });
+
+    it("getUser does not dispatch get Microreact token if token is already present", async () => {
+        mockAxios.onGet(`${serverUrl}/user`)
+            .reply(200, responseSuccess({ id: "12345", name: "Beebop", provider: "google" }));
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const state = { microreactToken: "abcd" };
+        await actions.getUser({ commit, dispatch, state } as any);
+
+        expect(commit).toHaveBeenCalledWith(
+            "setUser",
+            { id: "12345", name: "Beebop", provider: "google" }
+        );
+        expect(dispatch).not.toHaveBeenCalled();
     });
 
     it("newProject clears state, posts project name and commits returned id", async () => {
@@ -417,14 +444,15 @@ describe("Actions", () => {
         expect(global.URL.createObjectURL).toHaveBeenCalledTimes(1);
     });
 
-    it("buildMicroreactURL makes axios call and updates results", async () => {
+    it("buildMicroreactURL makes axios call and updates results, and dispatchest persist Microreacth token", async () => {
         const commit = jest.fn();
+        const dispatch = jest.fn();
         const state = mockRootState({
             projectHash: "randomHash"
         });
         const expResponse = responseSuccess({ cluster: 7, url: "microreact.org/mock" });
         mockAxios.onPost(`${serverUrl}/microreactURL`).reply(200, expResponse);
-        await actions.buildMicroreactURL({ commit, state } as any, { cluster: 7, token: "some_token" });
+        await actions.buildMicroreactURL({ commit, state, dispatch } as any, { cluster: 7, token: "some_token" });
         expect(mockAxios.history.post[0].url).toEqual(`${serverUrl}/microreactURL`);
         expect(commit.mock.calls[0]).toEqual([
             "setToken",
@@ -434,6 +462,25 @@ describe("Actions", () => {
             "addMicroreactURL",
             expResponse.data
         ]);
+        expect(dispatch).toHaveBeenCalledWith("persistMicroreactToken", "some_token");
+    });
+
+    it("buildMicroreacthURL does not commit or persist token if already present in state", async () => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const state = mockRootState({
+            projectHash: "randomHash",
+            microreactToken: "some_token"
+        });
+        const expResponse = responseSuccess({ cluster: 7, url: "microreact.org/mock" });
+        mockAxios.onPost(`${serverUrl}/microreactURL`).reply(200, expResponse);
+        await actions.buildMicroreactURL({ commit, state, dispatch } as any, { cluster: 7, token: "some_token" });
+        expect(commit.mock.calls.length).toBe(1);
+        expect(commit.mock.calls[0]).toEqual([
+            "addMicroreactURL",
+            expResponse.data
+        ]);
+        expect(dispatch).not.toHaveBeenCalled();
     });
 
     it("getGraphml makes axios call and updates results", async () => {
@@ -612,11 +659,45 @@ describe("Actions", () => {
             type: ValueTypes.AMR
         };
         const url = `${serverUrl}/project/testProjectId/amr/1234`;
-        mockAxios.onPost(url).reply(500, mockFailure("TEST ERROR"));
+        mockAxios.onPost(url).reply(500, failureResponse);
         await actions.postAMR({ commit, state } as any, amrData);
+        expectFailureResponseCommitted(commit);
+    });
+
+    it("persistMicroreactToken posts token to api", async () => {
+        const url = `${serverUrl}/microreactToken`;
+        mockAxios.onPost(url).reply(200, mockSuccess(null));
+        const commit = jest.fn();
+        await actions.persistMicroreactToken({commit} as any, "some_token");
+        expect(mockAxios.history.post[0].url).toBe(url);
+        expect(JSON.parse(mockAxios.history.post[0].data)).toStrictEqual({ token: "some_token" });
+        expect(commit).not.toHaveBeenCalled();
+    });
+
+    it("persistMicroreactToken commits error", async () => {
+        const url = `${serverUrl}/microreactToken`;
+        mockAxios.onPost(url).reply(500, failureResponse);
+        const commit = jest.fn();
+        await actions.persistMicroreactToken({commit} as any, "some_token");
+        expectFailureResponseCommitted(commit);
+    });
+
+    it("getMicroreactToken commits token response", async () => {
+        const url = `${serverUrl}/microreactToken`;
+        mockAxios.onGet(url).reply(200, mockSuccess("token_from_api"));
+        const commit = jest.fn();
+        await actions.getMicroreactToken({ commit } as any);
         expect(commit.mock.calls[0]).toEqual([
-            "addError",
-            { error: "OTHER_ERROR", detail: "TEST ERROR" }
+            "setToken",
+            "token_from_api"
         ]);
+    });
+
+    it("getMicroreactToken commits error", async () => {
+        const url = `${serverUrl}/microreactToken`;
+        mockAxios.onGet(url).reply(500, failureResponse);
+        const commit = jest.fn();
+        await actions.getMicroreactToken({ commit } as any);
+        expectFailureResponseCommitted(commit);
     });
 });

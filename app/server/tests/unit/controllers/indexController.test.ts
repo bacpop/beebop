@@ -1,23 +1,21 @@
-const mockUserStoreConstructor = jest.fn();
-const mockUserStore = {
-    saveProjectHash: jest.fn()
-};
-jest.mock("../../../src/db/userStore", () => ({
-    userStore: mockUserStoreConstructor.mockReturnValue(mockUserStore)
-}));
-
+import {mockUserStoreConstructor, mockUserStore, mockEncryptedToken} from "../utils";
 import {mockApp, mockRedis, mockResponse} from "../utils";
 import config from "../../../src/resources/config.json";
 import versionInfo from "../../../resources/versionInfo.json";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import indexController from "../../../src/controllers/indexController";
+import encryption from "../../../src/encryption";
 
 describe("indexController", () => {
     const mockRequest: any = { };
 
     const mockAxios = new MockAdapter(axios);
     mockAxios.onGet(`${config.api_url}/version`).reply(200, versionInfo);
+
+    const mockEncrypted = Buffer.alloc(20, "test");
+    const encryptSpy = jest.spyOn(encryption, "encrypt").mockReturnValue(mockEncrypted);
+    const decryptSpy = jest.spyOn(encryption, "decrypt").mockReturnValue("decrypted");
 
     beforeEach(() => {
         jest.clearAllMocks();
@@ -61,5 +59,45 @@ describe("indexController", () => {
 
         expect(mockAxios.history.post[0].url).toBe("http://localhost:5000/poppunk");
         expect(JSON.parse(mockAxios.history.post[0].data)).toStrictEqual(expectedPoppunkReq);
+    });
+
+    it("saves microreact token", async () => {
+        const req = {
+            body: {
+                token: "1234"
+            },
+            app: mockApp
+        };
+        const res = mockResponse();
+        await indexController(config).saveMicroreactToken(req, res);
+        expect(encryptSpy).toHaveBeenCalledWith("1234", req);
+        expect(mockUserStoreConstructor).toHaveBeenCalledTimes(1);
+        expect(mockUserStoreConstructor.mock.calls[0][0]).toBe(mockRedis);
+        expect(mockUserStore.saveEncryptedMicroreactToken).toHaveBeenCalledWith(req, mockEncrypted);
+        expect(res.json).toHaveBeenCalledWith({status: "success", data: null, errors: []});
+    });
+
+    it("gets microreact token", async () => {
+        const req = { app: mockApp };
+        const res = mockResponse();
+        await indexController(config).getMicroreactToken(req, res);
+        expect(mockUserStoreConstructor).toHaveBeenCalledTimes(1);
+        expect(mockUserStoreConstructor.mock.calls[0][0]).toBe(mockRedis);
+        expect(mockUserStore.getEncryptedMicroreactToken).toHaveBeenCalledWith(req);
+        expect(decryptSpy).toHaveBeenCalledWith(mockEncryptedToken, req);
+        expect(res.json).toHaveBeenCalledWith({status: "success", data: "decrypted", errors: []});
+    });
+
+    it("does not attempt to decrypt null microreact token", async () => {
+        const req = { app: mockApp };
+        const res = mockResponse();
+        const oldMockGetEncryptedToken = mockUserStore.getEncryptedMicroreactToken;
+        const emptyMockGetEncryptedToken = jest.fn().mockImplementation(() => null);
+        mockUserStore.getEncryptedMicroreactToken = emptyMockGetEncryptedToken;
+        await indexController(config).getMicroreactToken(req, res);
+        mockUserStore.getEncryptedMicroreactToken = oldMockGetEncryptedToken;
+        expect(emptyMockGetEncryptedToken).toHaveBeenCalledWith(req);
+        expect(decryptSpy).not.toHaveBeenCalled();
+        expect(res.json).toHaveBeenCalledWith({status: "success", data: null, errors: []});
     });
 });

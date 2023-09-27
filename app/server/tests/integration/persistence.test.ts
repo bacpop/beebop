@@ -120,4 +120,23 @@ describe("User persistence", () => {
             ]);
         });
     });
+
+    it("saves and retrieves microreact token", async () => {
+        const initialResponse = await get("microreactToken", connectionCookie);
+        expect(initialResponse.data).toStrictEqual({
+            data: null,
+            status: "success",
+            errors: []
+        });
+        const token = "123456789";
+        const payload = { token };
+        await post("microreactToken", payload, connectionCookie);
+
+        const response = await get("microreactToken", connectionCookie);
+        expect(response.data).toStrictEqual({
+            data: token,
+            status: "success",
+            errors: []
+        });
+    });
 });

@@ -1,25 +1,4 @@
-const mockUserStoreConstructor = jest.fn();
-const mockUserProjects = [{name: "p1", hash: "123"}];
-const mockProjectSamples = [
-    {hash: "5678", filename: "test1.fa"},
-    {hash: "1234", filename: "test2.fa"},
-    {hash: "1234", filename: "test3.fa"}
-];
-const mockUserStore = {
-    saveNewProject: jest.fn().mockImplementation(() => "test-project-id"),
-    getUserProjects: jest.fn().mockImplementation(() => mockUserProjects),
-    getProjectHash: jest.fn().mockImplementation(() => "123"),
-    saveAMR: jest.fn(),
-    getProjectSamples: jest.fn().mockImplementation(() => mockProjectSamples),
-    getAMR: jest.fn().mockImplementation((projectId: string, sampleHash: string, fileName: string) =>
-        `AMR for ${projectId}-${sampleHash}-${fileName}`),
-    renameProject: jest.fn()
-};
-jest.mock("../../../src/db/userStore", () => ({
-    userStore: mockUserStoreConstructor.mockReturnValue(mockUserStore)
-}));
-
-import {mockApp, mockRedis, mockResponse} from "../utils";
+import {mockApp, mockRedis, mockResponse, mockUserStoreConstructor, mockUserStore, mockUserProjects} from "../utils";
 import config from "../../../src/resources/config.json";
 import projectController from "../../../src/controllers/projectController";
 import MockAdapter from "axios-mock-adapter";

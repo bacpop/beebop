@@ -1,6 +1,7 @@
 import {UserStore} from "../../../src/db/userStore";
 
 describe("UserStore", () => {
+    const mockBufferResult = Buffer.alloc(10);
     const mockRedis = {
         hset: jest.fn(),
         lpush: jest.fn(),
@@ -9,6 +10,7 @@ describe("UserStore", () => {
         hmget: jest.fn().mockImplementation((key: string, ...valueNames: string[]) => {
             return valueNames.map((valueName) => valueName === "timestamp" ? 1687879913811 : `${valueName} for ${key}`);
         }),
+        hgetBuffer: jest.fn().mockImplementation(() => mockBufferResult),
         scard: jest.fn().mockImplementation(() => 2)
     } as any;
 
@@ -130,5 +132,19 @@ describe("UserStore", () => {
             { hash: "1234", filename: "test1.fa" },
             { hash: "5678", filename: "test2.fa" }
         ]);
+    });
+
+    it("saves encrypted Microreact token", async () => {
+        const sut = new UserStore(mockRedis);
+        const mockToken = Buffer.alloc(20, "test");
+        await sut.saveEncryptedMicroreactToken(mockRequest, mockToken);
+        expect(mockRedis.hset).toHaveBeenCalledWith("beebop:user:testProvider:testId", "microreactToken", mockToken);
+    });
+
+    it("gets encrypted Microreact token", async () => {
+        const sut = new UserStore(mockRedis);
+        const result = await sut.getEncryptedMicroreactToken(mockRequest);
+        expect(result).toBe(mockBufferResult);
+        expect(mockRedis.hgetBuffer).toHaveBeenCalledWith("beebop:user:testProvider:testId", "microreactToken");
     });
 });
