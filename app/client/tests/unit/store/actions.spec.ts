@@ -444,7 +444,7 @@ describe("Actions", () => {
         expect(global.URL.createObjectURL).toHaveBeenCalledTimes(1);
     });
 
-    it("buildMicroreactURL makes axios call and updates results, and dispatchest persist Microreacth token", async () => {
+    it("buildMicroreactURL makes axios call and updates results, and dispatches persist token", async () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const state = mockRootState({
@@ -668,7 +668,7 @@ describe("Actions", () => {
         const url = `${serverUrl}/microreactToken`;
         mockAxios.onPost(url).reply(200, mockSuccess(null));
         const commit = jest.fn();
-        await actions.persistMicroreactToken({commit} as any, "some_token");
+        await actions.persistMicroreactToken({ commit } as any, "some_token");
         expect(mockAxios.history.post[0].url).toBe(url);
         expect(JSON.parse(mockAxios.history.post[0].data)).toStrictEqual({ token: "some_token" });
         expect(commit).not.toHaveBeenCalled();
@@ -678,7 +678,7 @@ describe("Actions", () => {
         const url = `${serverUrl}/microreactToken`;
         mockAxios.onPost(url).reply(500, failureResponse);
         const commit = jest.fn();
-        await actions.persistMicroreactToken({commit} as any, "some_token");
+        await actions.persistMicroreactToken({ commit } as any, "some_token");
         expectFailureResponseCommitted(commit);
     });
 

@@ -257,7 +257,8 @@ export default {
     },
     async persistMicroreactToken(
         context: ActionContext<RootState, RootState>,
-        token: string) {
+        token: string
+    ) {
         await api(context)
             .ignoreSuccess()
             .withError("addError")

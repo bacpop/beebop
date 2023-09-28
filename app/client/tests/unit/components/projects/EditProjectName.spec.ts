@@ -5,8 +5,8 @@ import EditProjectName from "@/components/projects/EditProjectName.vue";
 import ProjectNameCheckMessage from "@/components/projects/ProjectNameCheckMessage.vue";
 import { ProjectNameCheckResult } from "@/types";
 import { getters } from "@/store/getters";
+import { nextTick } from "vue";
 import { mockRootState } from "../../../mocks";
-import {nextTick} from "vue";
 
 describe("EditProjectName", () => {
     const mockRenameProject = jest.fn();
@@ -127,7 +127,8 @@ describe("EditProjectName", () => {
         const expectComponentValuesForInputText = async (
             inputText: string,
             checkResult: ProjectNameCheckResult,
-            saveButtonEnabled: boolean) => {
+            saveButtonEnabled: boolean
+        ) => {
             await wrapper.find("input").setValue(inputText);
             expect(wrapper.findComponent(ProjectNameCheckMessage).props("checkResult")).toBe(checkResult);
             expect((wrapper.find("button#save-project-name").element as HTMLButtonElement).disabled)

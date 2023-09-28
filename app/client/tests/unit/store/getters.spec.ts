@@ -1,6 +1,6 @@
 import { getters } from "@/store/getters";
+import { ProjectNameCheckResult } from "@/types";
 import { mockRootState } from "../../mocks";
-import {ProjectNameCheckResult} from "@/types";
 
 describe("getters", () => {
     it("calculates analysisProgress", () => {

@@ -39,7 +39,8 @@ export const getters: BeebopGetters & GetterTree<RootState, RootState> = {
 
     [BeebopGetter.checkProjectName]: (
         state: RootState
-    ): ((name: string, oldName?: string) => ProjectNameCheckResult) => {
+    ): ((name: string, oldName?: string) => ProjectNameCheckResult
+) => {
         return (name: string, oldName?: string) => {
             if (name.trim() === "") {
                 return ProjectNameCheckResult.Empty;
