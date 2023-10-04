@@ -94,13 +94,18 @@ test.describe("Logged in Tests", () => {
         // Expect download buttons and button to generate microreact URL to appear
         await expectDownloadButtons("6930_8_13.fa", page);
 
-        // on clicking Generate Microreact URL button, modal appears
         await page.click("text=Generate Microreact URL");
-        await expect(page.locator(".modalFlex")).toContainText("No token submitted yet");
-        await expect(page.locator(".modalFlex .btn")).toContainText("Save token");
-        // after submitting microreact token, button turns into link to microreact.org
-        await page.locator("input").fill(process.env.MICROREACT_TOKEN as string);
-        await page.click("text=Save token");
+
+        // Token be saved for user after first run of the test
+        const modalText = await page.innerText(".modalFlex");
+        if (modalText.includes("No token submitted yet")) {
+            await expect(page.locator(".modalFlex")).toContainText("No token submitted yet");
+            await expect(page.locator(".modalFlex .btn")).toContainText("Save token");
+            // after submitting microreact token, button turns into link to microreact.org
+            await page.locator("input").fill(process.env.MICROREACT_TOKEN as string);
+            await page.click("text=Save token");
+        }
+
         await expect(page.locator('tr:has-text("6930_8_13.fa") a')).toContainText("Visit Microreact URL");
         await expect(page.locator('tr:has-text("6930_8_13.fa") a'))
             .toHaveAttribute("href", /https:\/\/microreact.org\/project\/.*-poppunk.*/);
