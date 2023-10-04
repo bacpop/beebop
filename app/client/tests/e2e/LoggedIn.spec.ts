@@ -96,9 +96,9 @@ test.describe("Logged in Tests", () => {
 
         await page.click("text=Generate Microreact URL");
 
-        // Token be saved for user after first run of the test
-        const modalText = await page.innerText(".modalFlex");
-        if (modalText.includes("No token submitted yet")) {
+        // Token will be saved for user after first run of the test
+        const modal = await page.isVisible(".modalFlex");
+        if (modal) {
             await expect(page.locator(".modalFlex")).toContainText("No token submitted yet");
             await expect(page.locator(".modalFlex .btn")).toContainText("Save token");
             // after submitting microreact token, button turns into link to microreact.org
