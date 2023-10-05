@@ -94,11 +94,11 @@ test.describe("Logged in Tests", () => {
         // Expect download buttons and button to generate microreact URL to appear
         await expectDownloadButtons("6930_8_13.fa", page);
 
+        // Token will be saved for user after first run of the test
+        const tokenAvailable = await page.isVisible("#generate-microreact-url-token-btn");
         await page.click("text=Generate Microreact URL");
 
-        // Token will be saved for user after first run of the test
-        const modal = await page.isVisible(".modalFlex");
-        if (modal) {
+        if (!tokenAvailable) {
             await expect(page.locator(".modalFlex")).toContainText("No token submitted yet");
             await expect(page.locator(".modalFlex .btn")).toContainText("Save token");
             // after submitting microreact token, button turns into link to microreact.org

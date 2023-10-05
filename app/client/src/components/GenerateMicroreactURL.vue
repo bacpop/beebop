@@ -3,6 +3,7 @@
     <div>
       <button
         v-if='!microreactToken'
+        id="generate-microreact-url-no-token-btn"
         @click='showModal()'
         class='btn btn-block btn-standard btn-download'
       >
@@ -11,6 +12,7 @@
 
       <button
         v-if='tokenAvailable'
+        id="generate-microreact-url-token-btn"
         @click='buildMicroreactURL({cluster, token: microreactToken})'
         class='btn btn-block btn-standard btn-download'
       >
