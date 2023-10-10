@@ -2,7 +2,7 @@ NETWORK=beebop_nw
 VOLUME=beebop-storage
 NAME_REDIS=beebop-redis
 NAME_API=beebop-py-api
-API_BRANCH=main
+API_BRANCH=bacpop-25
 NAME_WORKER=beebop-py-worker
 PORT=5000
 
@@ -20,7 +20,7 @@ docker run -d --rm --name $NAME_API --network=$NETWORK \
        --pull always \
        --env=REDIS_HOST="$NAME_REDIS" \
        --env=STORAGE_LOCATION="./storage" \
-       --env=DB_LOCATION="./storage/GPS_v4_references" \
+       --env=DB_LOCATION="./storage/GPS_v6_references" \
        -v $VOLUME:/beebop/storage \
        -p $PORT:5000 \
        mrcide/beebop-py:$API_BRANCH
