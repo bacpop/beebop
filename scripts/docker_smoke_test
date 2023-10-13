@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+set -ex
+
+HERE=$(realpath "$(dirname $0)")
+
+function cleanup() {
+  $HERE/stop_docker
+}
+trap cleanup EXIT
+
+$HERE/run_docker
+
+URL=https://localhost
+
+STATUS=$(curl -k -s --write-out %{http_code} --output /dev/null $URL)
+if (test $STATUS -ne 200;) then
+  echo "Unexpected status code: $STATUS"
+  exit 1
+fi
+
+CONTENT=$(curl -k -s $URL)
+if (! echo "$CONTENT" | grep "<title>Beebopx</title>") then
+  echo "Unexpected home page content:"
+  echo $CONTENT
+  exit 1
+fi
