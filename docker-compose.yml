@@ -13,6 +13,7 @@ services:
     image: mrcide/beebop-server:${GIT_SHA}
     depends_on:
       - beebop-py-api
+      - beebop-redis
   beebop-py-api:
     image: mrcide/beebop-py:main
     depends_on:
