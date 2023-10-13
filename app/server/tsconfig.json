@@ -5,6 +5,6 @@
         "esModuleInterop": true,
         "resolveJsonModule": true,
         "outDir": "dist",
-        "moduleResolution": "nodenext"
+        "moduleResolution": "node"
     }
 }
