@@ -19,7 +19,7 @@ if (test $STATUS -ne 200;) then
 fi
 
 CONTENT=$(curl -k -s $URL)
-if (! echo "$CONTENT" | grep "<title>Beebopx</title>") then
+if (! echo "$CONTENT" | grep "<title>Beebop</title>") then
   echo "Unexpected home page content:"
   echo $CONTENT
   exit 1
