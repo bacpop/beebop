@@ -111,7 +111,7 @@ describe("Error handling", () => {
 
         // get project data - should get error
         const projectRes = await get(`project/${projectId}`, connectionCookie);
-        expect(projectRes.status).toBe(500);
+        expect(projectRes.status).toBe(404);
         expect(projectRes.data.data).toBe(null);
         expect(projectRes.data.errors).toStrictEqual([{
             error: "Invalid data",
