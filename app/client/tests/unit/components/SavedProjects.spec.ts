@@ -1,5 +1,5 @@
 /* eslint-disable import/first */
-import EditProjectName from "@/components/projects/EditProjectName.vue"
+import EditProjectName from "@/components/projects/EditProjectName.vue";
 
 const { toLocaleString } = Date.prototype;
 // eslint-disable-next-line no-extend-native, func-names
