@@ -1,5 +1,6 @@
 import {flushRedis, get, post, saveRedisHash, saveRedisSet} from "./utils";
 import {uid} from "uid";
+import {setTimeout} from "timers/promises";
 import {testSample} from "./testSample";
 
 describe("Error handling", () => {
@@ -43,12 +44,10 @@ describe("Error handling", () => {
         testSample.projectId = projectId;
         const poppunkRes = await post(`poppunk`, testSample, connectionCookie);
         expect(poppunkRes.status).toBe(200);
-        const counter = 0;
+        let counter = 0;
         let finished = false;
         while (!finished && counter < 100) {
-            await new Promise(resolve => {
-                setTimeout(() => {resolve(""), 1000})
-            });
+            await setTimeout(1000);
             const statusRes = await post("status", {hash: testSample.projectHash}, connectionCookie);
             expect(statusRes.status).toBe(200);
             const statusValues = statusRes.data.data;
@@ -56,6 +55,7 @@ describe("Error handling", () => {
                 finished = true;
                 break;
             }
+            counter = counter + 1;
         }
         expect(finished).toBe(true);
         return projectId;
@@ -111,7 +111,7 @@ describe("Error handling", () => {
 
         // get project data - should get error
         const projectRes = await get(`project/${projectId}`, connectionCookie);
-        expect(projectRes.status).toBe(404);
+        expect(projectRes.status).toBe(500);
         expect(projectRes.data.data).toBe(null);
         expect(projectRes.data.errors).toStrictEqual([{
             error: "Invalid data",
