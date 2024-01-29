@@ -38,6 +38,7 @@ export default (config) => {
                 const {redis} = request.app.locals;
                 const store = userStore(redis);
                 const projectHash = await store.getProjectHash(request, projectId);
+                console.log(`PROJECT HASH IS ${projectHash}`)
                 const res = await axios.get<APIResponse<ProjectResponse>>(`${config.api_url}/project/${projectHash}`)
                     .catch(function (error) {
                         handleAPIError(request, response, error);
