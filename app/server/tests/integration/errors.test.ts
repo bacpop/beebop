@@ -58,8 +58,8 @@ describe("Error handling", () => {
                     break;
                 }
             } else {
-                console.log("GOT ERROR RESPONSE");
-                console.log(JSON.stringify(statusRes))
+                console.log(`GOT ERROR RESPONSE for counter ${counter}`);
+                console.log(JSON.stringify(statusRes.data))
             }
             counter = counter + 1;
         }
