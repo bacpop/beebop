@@ -49,9 +49,6 @@ describe("Error handling", () => {
         while (!finished && counter < 100) {
             await setTimeout(2000);
             const statusRes = await post("status", {hash: testSample.projectHash}, connectionCookie);
-            if (statusRes.status !== 200) {
-                throw new Error(`Unexpected status ${statusRes.status} for response: ${JSON.stringify(statusRes.data)}`);
-            }
             expect(statusRes.status).toBe(200);
             const statusValues = statusRes.data.data;
             if (statusValues.assign === "finished" && statusValues.microreact === "finished" && statusValues.network === "finished") {
