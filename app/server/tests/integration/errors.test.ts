@@ -45,6 +45,7 @@ describe("Error handling", () => {
         const poppunkRes = await post(`poppunk`, testSample, connectionCookie);
         expect(poppunkRes.status).toBe(200);
         let counter = 0;
+        let errors = 0;
         let finished = false;
         while (!finished && counter < 100) {
             await setTimeout(2000);
@@ -59,11 +60,13 @@ describe("Error handling", () => {
                 }
             } else {
                 console.log(`GOT ERROR RESPONSE for counter ${counter}`);
-                console.log(JSON.stringify(statusRes.data))
+                console.log(JSON.stringify(statusRes.data));
+                errors = errors + 1;
             }
             counter = counter + 1;
         }
         expect(finished).toBe(true);
+        expect(errors).toBe(0);
         return projectId;
     };
 
