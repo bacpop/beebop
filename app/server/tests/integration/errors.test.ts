@@ -45,28 +45,22 @@ describe("Error handling", () => {
         const poppunkRes = await post(`poppunk`, testSample, connectionCookie);
         expect(poppunkRes.status).toBe(200);
         let counter = 0;
-        let errors = 0;
         let finished = false;
         while (!finished && counter < 100) {
             await setTimeout(2000);
             const statusRes = await post("status", {hash: testSample.projectHash}, connectionCookie);
-            // TODO: reinstate
-            //expect(statusRes.status).toBe(200);
-            if (statusRes.status === 200) {
-                const statusValues = statusRes.data.data;
-                if (statusValues.assign === "finished" && statusValues.microreact === "finished" && statusValues.network === "finished") {
-                    finished = true;
-                    break;
-                }
-            } else {
-                console.log(`GOT ERROR RESPONSE for counter ${counter}`);
-                console.log(JSON.stringify(statusRes.data));
-                errors = errors + 1;
+            if (statusRes.status !== 200) {
+                throw new Error(`Unexpected status ${statusRes.status} for response: ${JSON.stringify(statusRes.data)}`);
+            }
+            expect(statusRes.status).toBe(200);
+            const statusValues = statusRes.data.data;
+            if (statusValues.assign === "finished" && statusValues.microreact === "finished" && statusValues.network === "finished") {
+                finished = true;
+                break;
             }
             counter = counter + 1;
         }
         expect(finished).toBe(true);
-        expect(errors).toBe(0);
         return projectId;
     };
 
