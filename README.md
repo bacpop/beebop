@@ -5,17 +5,11 @@
 Run the dockerised app along with proxy and all dependencies
 
 ```
-    ./scripts/run_docker
+    ./scripts/run_docker decrypt
 ```
 
-This will generate the correct server config file if it does not already exist. 
-
-By default this will configure the nginx proxy for host `localhost`. To deploy with a different hostname, pass
-it as an argument, e.g.
-
-```
-    ./scripts/run_docker beebop.dide.ic.ac.uk
-```
+If you are running the script for the first for the first time, or for the first time since running the app outside 
+docker, you need to include the `decrypt` arg, otherwise it can be omitted.
 
 Bring down the app with
 ```
@@ -26,6 +20,9 @@ Docker images are built on CI using `./proxy/docker/build`, `./app/server/docker
 to generate them from changed local sources you can run those same scripts locally to build images.
 
 To target a branch of `beebop_py`, set `API_BRANCH` in `scripts/common`.
+
+When running locally in docker, the backend is serving from `beebop_beebop-server_1`, and the front end from the proxy
+container `beebop_proxy_1`.
 
 ## Local development
 
