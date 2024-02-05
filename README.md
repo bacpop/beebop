@@ -42,7 +42,8 @@ docker --version
 ```
 
 
-If you run the application for the first time, you need to replace the secrets in the config file in `app/server/src/resources` first. 
+If you run the application for the first time (or for the first time after running in docker), you need to replace the 
+secrets in the config file in `app/server/src/resources` first. 
 Login to the vault:
 ```
 export VAULT_ADDR=https://vault.dide.ic.ac.uk:8200

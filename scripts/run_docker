@@ -7,7 +7,7 @@ HERE=$(realpath "$(dirname $0)")
 if [ ! -d "$HERE/../proxy/ssl/production" ]; then
   export VAULT_ADDR=https://vault.dide.ic.ac.uk:8200
   vault login -method=github
-  . $HERE/decrypt_config
+  . $HERE/decrypt_config docker
 fi
 
 export GIT_SHA=$(git -C . rev-parse --short=7 HEAD)
