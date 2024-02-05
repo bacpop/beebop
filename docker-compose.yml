@@ -14,7 +14,7 @@ services:
     depends_on:
       - beebop-py-api
   beebop-py-api:
-    image: mrcide/beebop-py:${API_BRANCH}
+    image: mrcide/beebop-py:main
     depends_on:
       - beebop-redis
     volumes:
@@ -22,11 +22,11 @@ services:
     environment:
       - REDIS_HOST=beebop-redis
       - STORAGE_LOCATION=./storage
-      - DB_LOCATION=${DB_LOCATION}
+      - DB_LOCATION=./storage/GPS_v6_references
   beebop-redis:
     image: redis:5.0
   beebop-py-worker:
-    image: mrcide/beebop-py:${API_BRANCH}
+    image: mrcide/beebop-py:main
     depends_on:
       - beebop-redis
     command:

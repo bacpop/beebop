@@ -1,14 +1,5 @@
 #!/usr/bin/env bash
-set -ex
-
-HERE=$(realpath "$(dirname $0)")
-. $HERE/common
-
-if [ ! -d "$HERE/../proxy/ssl/production" ]; then
-  export VAULT_ADDR=https://vault.dide.ic.ac.uk:8200
-  vault login -method=github
-  . $HERE/decrypt_config
-fi
+set -e
 
 export GIT_SHA=$(git -C . rev-parse --short=7 HEAD)
 
@@ -25,5 +16,5 @@ docker cp app/server/src/resources/config.json beebop_beebop-server_1:/app/src/r
 docker cp proxy/ssl/dhparam.pem beebop_proxy_1:/run/proxy/
 docker cp proxy/$SSL_PATH/certificate.pem beebop_proxy_1:/run/proxy/
 docker cp proxy/$SSL_PATH/key.pem beebop_proxy_1:/run/proxy/
-docker run --rm -v beebop_beebop-storage:/beebop/storage mrcide/beebop-py:${API_BRANCH} \
+docker run --rm -v beebop_beebop-storage:/beebop/storage mrcide/beebop-py:main \
        ./scripts/download_db --small storage
