@@ -2,14 +2,19 @@
 
 ## Docker Quick Start
 
-Run the dockerised app along with proxy and all dependencies
+Run the dockerised app along with proxy and all dependencies:
 
 ```
-    ./scripts/run_docker decrypt
+    ./scripts/run_docker_decrypt
 ```
 
-If you are running the script for the first for the first time, or for the first time since running the app outside 
-docker, you need to include the `decrypt` arg, otherwise it can be omitted.
+By default this will configure the nginx proxy for host localhost. To deploy with a different hostname, pass it as an argument, e.g.
+```
+./scripts/run_docker_decrypt beebop.dide.ic.ac.uk
+```
+
+This will also populate app config with secrets from the vault. If you are not running the script for the first time,
+or not for the first time since running the app outside docker, you can omit this step by running the `run_docker` script.
 
 Bring down the app with
 ```

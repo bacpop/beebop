@@ -11,8 +11,8 @@ FILE_CLEAR_SERVER=app/server/src/resources/config.json
 
 export GITHUB_ID=$(vault read -field=clientid secret/beebop/auth/github)
 export GITHUB_SECRET=$(vault read -field=secret secret/beebop/auth/github)
-export DOCKER_GITHUB_ID=5678
-export DOCKER_GITHUB_SECRET=5678
+export DOCKER_GITHUB_ID=$(vault read -field=clientid secret/beebop/auth/devdocker/github)
+export DOCKER_GITHUB_SECRET=$(vault read -field=secret secret/beebop/auth/devdocker/github)
 export PROD_GITHUB_ID=$(vault read -field=clientid secret/beebop/auth/production/github)
 export PROD_GITHUB_SECRET=$(vault read -field=secret secret/beebop/auth/production/github)
 export PROD_GOOGLE_ID=$(vault read -field=clientid secret/beebop/auth/production/google)

@@ -4,15 +4,16 @@ set -ex
 HERE=$(realpath "$(dirname $0)")
 . $HERE/common
 
-if [ "$1" == "decrypt" ]; then
-  export VAULT_ADDR=https://vault.dide.ic.ac.uk:8200
-  vault login -method=github
-  . $HERE/decrypt_config docker
+if [ "$#" -eq 1 ]; then
+  HOST=$1
+  SSL_PATH=ssl/production
+else
+  HOST="localhost"
+  SSL_PATH=ssl
 fi
+export HOST
 
 export GIT_SHA=$(git -C . rev-parse --short=7 HEAD)
-
-export HOST="localhost"
 
 docker-compose up -d
 docker cp app/server/src/resources/config.json beebop_beebop-server_1:/app/src/resources/config.json
