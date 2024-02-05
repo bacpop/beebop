@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
-set -e
+set -ex
 
+HERE=$(realpath "$(dirname $0)")
+. $HERE/common
 docker-compose down

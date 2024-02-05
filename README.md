@@ -1,5 +1,32 @@
 # beebop
 
+## Docker Quick Start
+
+Run the dockerised app along with proxy and all dependencies
+
+```
+    ./scripts/run_docker
+```
+
+This will generate the correct server config file if it does not already exist. 
+
+By default this will configure the nginx proxy for host `localhost`. To deploy with a different hostname, pass
+it as an argument, e.g.
+
+```
+    ./scripts/run_docker beebop.dide.ic.ac.uk
+```
+
+Bring down the app with
+```
+    ./scripts/stop_docker
+```
+
+Docker images are built on CI using `./proxy/docker/build`, `./app/server/docker/build`. If you want
+to generate them from changed local sources you can run those same scripts locally to build images.
+
+To target a branch of `beebop_py`, set `API_BRANCH` in `scripts/common`.
+
 ## Local development
 
 Clone the repository to your computer with
@@ -51,34 +78,6 @@ defined in `./app/client/src/settings/development`; this gets overriden by setti
 
 Config for the back-end lives in `./app/server/src/resources`. When deploying using a docker image this file has to be 
 copied into the running container before the app will start - see `./app/server/docker/entrypoint.sh`.
-
-## Deploying with docker
-
-Docker images are built on CI using `./proxy/docker/build`, `./app/server/docker/build`. If you want 
-to generate them from changed local sources you can run those same scripts locally to build images. 
-
-Generate the correct server config file with
-```
-    ./scripts/decrypt_config docker
-```
-
-Then run the dockerised app with
-
-```
-    ./scripts/run_docker
-```
-
-By default this will configure the nginx proxy for host `localhost`. To deploy with a different hostname, pass
-it as an argument, e.g. 
-
-```
-    ./scripts/run_docker beebop.dide.ic.ac.uk
-```
-
-Bring down the app with
-```
-    ./scripts/stop_docker
-```
 
 ### Self-signed certificate
 For testing it is useful to use a self-signed certificate. These are not in any way secure.
