@@ -51,6 +51,9 @@ describe("Error handling", () => {
             const statusRes = await post("status", {hash: testSample.projectHash}, connectionCookie);
             // This is occasionally mysteriously flaky on CI because hash is not yet registered - throw error if any other
             // reason
+            if (statusRes.status !== 200) {
+                console.log(`Got error on status poll number ${counter}`)
+            }
             if (statusRes.status !== 200 && statusRes.data.errors[0].error !== "Unknown project hash") {
                 throw new Error(`Unexpected status ${statusRes.status} for response: ${JSON.stringify(statusRes.data)}`);
             }
