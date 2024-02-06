@@ -20,5 +20,5 @@ docker cp app/server/src/resources/config.json beebop_beebop-server_1:/app/src/r
 docker cp proxy/ssl/dhparam.pem beebop_proxy_1:/run/proxy/
 docker cp proxy/$SSL_PATH/certificate.pem beebop_proxy_1:/run/proxy/
 docker cp proxy/$SSL_PATH/key.pem beebop_proxy_1:/run/proxy/
-docker run --rm -v beebop_beebop-storage:/beebop/storage mrcide/beebop-py:${API_BRANCH} \
+docker run --rm -v beebop_beebop-storage:/beebop/storage mrcide/beebop-py:main \
        ./scripts/download_db --small storage
