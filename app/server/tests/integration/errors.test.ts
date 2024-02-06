@@ -52,12 +52,15 @@ describe("Error handling", () => {
             const statusRes = await post("status", {hash: testSample.projectHash}, connectionCookie);
             // This is occasionally mysteriously flaky on CI because hash is not yet registered - throw error if any other
             // reason
-            if (statusRes.status !== 200 && statusRes.data.errors[0].error !== "Unknown project hash") {
-                throw new Error(`Unexpected status ${statusRes.status} for response: ${JSON.stringify(statusRes.data)}`);
-            }
-            consecutiveErrors = statusRes.status === 200 ? 0 : consecutiveErrors + 1;
-            if (consecutiveErrors > 5) {
-                throw new Error("Too many consecutive errors");
+            if (statusRes.status !== 200) {
+                const stringResponse = JSON.stringify(statusRes.data);
+                if (statusRes.data.errors[0].error !== "Unknown project hash") {
+                    throw new Error(`Unexpected status ${statusRes.status} for response: ${stringResponse}`);
+                }
+                consecutiveErrors = consecutiveErrors + 1;
+                if (consecutiveErrors > 10) {
+                    throw new Error(`Too many consecutive errors. Latest response is: ${stringResponse}`);
+                }
             }
             const statusValues = statusRes.data.data;
             if (statusValues && statusValues.assign === "finished" && statusValues.microreact === "finished" && statusValues.network === "finished") {
