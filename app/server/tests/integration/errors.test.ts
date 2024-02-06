@@ -55,7 +55,7 @@ describe("Error handling", () => {
                 throw new Error(`Unexpected status ${statusRes.status} for response: ${JSON.stringify(statusRes.data)}`);
             }
             const statusValues = statusRes.data.data;
-            if (statusValues.assign === "finished" && statusValues.microreact === "finished" && statusValues.network === "finished") {
+            if (statusValues && statusValues.assign === "finished" && statusValues.microreact === "finished" && statusValues.network === "finished") {
                 finished = true;
                 break;
             }
