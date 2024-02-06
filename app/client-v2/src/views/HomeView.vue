@@ -149,7 +149,8 @@ const onRowEditSave = async (event: DataTableRowEditSaveEvent) => {
       </Column>
       <Column :rowEditor="true" bodyStyle="text-align:center" class="w-1"></Column>
       <Column field="samplesCount" header="# Samples" sortable class="w-3"></Column>
-      <Column field="timestamp" header="Date" sortable class="w-3">
+      <!-- todo update to date modified -->
+      <Column field="timestamp" header="Date Created" sortable class="w-3">
         <template #body="{ data }">
           {{ useDateFormat(data.timestamp, 'DD/MM/YYYY HH:mm').value }}
         </template>
