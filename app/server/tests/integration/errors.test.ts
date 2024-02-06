@@ -45,6 +45,7 @@ describe("Error handling", () => {
         const poppunkRes = await post(`poppunk`, testSample, connectionCookie);
         expect(poppunkRes.status).toBe(200);
         let counter = 0;
+        let consecutiveErrors = 0;
         let finished = false;
         while (!finished && counter < 100) {
             await setTimeout(2000);
@@ -53,6 +54,10 @@ describe("Error handling", () => {
             // reason
             if (statusRes.status !== 200 && statusRes.data.errors[0].error !== "Unknown project hash") {
                 throw new Error(`Unexpected status ${statusRes.status} for response: ${JSON.stringify(statusRes.data)}`);
+            }
+            consecutiveErrors = statusRes.status === 200 ? 0 : consecutiveErrors + 1;
+            if (consecutiveErrors > 5) {
+                throw new Error("Too many consecutive errors");
             }
             const statusValues = statusRes.data.data;
             if (statusValues && statusValues.assign === "finished" && statusValues.microreact === "finished" && statusValues.network === "finished") {
