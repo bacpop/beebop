@@ -8,6 +8,8 @@ Run the dockerised app along with proxy and all dependencies:
     ./scripts/run_docker_decrypt
 ```
 
+You may need to update your version of Docker and Docker Compose: see [here](https://docs.docker.com/engine/install/ubuntu/) for instructions on updating on Ubuntu. 
+
 By default this will configure the nginx proxy for host localhost. To deploy with a different hostname, pass it as an argument, e.g.
 ```
 ./scripts/run_docker_decrypt beebop.dide.ic.ac.uk
