@@ -57,9 +57,9 @@
         </button>
       </template>
       <template v-else v-slot:body>
-        <p>You have not submitted a your Microreact token yet.</p>
+        <p>You have not submitted your Microreact token yet.</p>
         <p>
-          This is needed to generate a microreact URL for you.<br />
+          This is needed to generate a Microreact URL for you.<br />
           You can find your token in your
           <a href='https://microreact.org/my-account/settings' target='_blank'>
             Microreact Account Settings</a
