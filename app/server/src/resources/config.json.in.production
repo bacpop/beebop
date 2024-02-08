@@ -10,5 +10,4 @@
     "GITHUB_CLIENT_ID":"$PROD_GITHUB_ID",
     "GITHUB_CLIENT_SECRET":"$PROD_GITHUB_SECRET",
     "ENCRYPT_KEY": "$PROD_ENCRYPT_KEY",
-    "skip_auth": false
 }

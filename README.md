@@ -1,5 +1,36 @@
 # beebop
 
+## Docker Quick Start
+
+Run the dockerised app along with proxy and all dependencies:
+
+```
+    ./scripts/run_docker_decrypt
+```
+
+You may need to update your version of Docker and Docker Compose: see [here](https://docs.docker.com/engine/install/ubuntu/) for instructions on updating on Ubuntu. 
+
+By default this will configure the nginx proxy for host localhost. To deploy with a different hostname, pass it as an argument, e.g.
+```
+./scripts/run_docker_decrypt beebop.dide.ic.ac.uk
+```
+
+This will also populate app config with secrets from the vault. If you are not running the script for the first time,
+or not for the first time since running the app outside docker, you can omit this step by running the `run_docker` script.
+
+Bring down the app with
+```
+    ./scripts/stop_docker
+```
+
+Docker images are built on CI using `./proxy/docker/build`, `./app/server/docker/build`. If you want
+to generate them from changed local sources you can run those same scripts locally to build images.
+
+To target a branch of `beebop_py`, set `API_BRANCH` in `scripts/common`.
+
+When running locally in docker, the backend is serving from `beebop_beebop-server_1`, and the front end from the proxy
+container `beebop_proxy_1`.
+
 ## Local development
 
 Clone the repository to your computer with
@@ -15,7 +46,8 @@ docker --version
 ```
 
 
-If you run the application for the first time, you need to replace the secrets in the config file in `app/server/src/resources` first. 
+If you run the application for the first time (or for the first time after running in docker), you need to replace the 
+secrets in the config file in `app/server/src/resources` first. 
 Login to the vault:
 ```
 export VAULT_ADDR=https://vault.dide.ic.ac.uk:8200

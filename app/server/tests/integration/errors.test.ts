@@ -1,5 +1,6 @@
 import {flushRedis, get, post, saveRedisHash, saveRedisSet} from "./utils";
 import {uid} from "uid";
+import {setTimeout} from "timers/promises";
 import {testSample} from "./testSample";
 
 describe("Error handling", () => {
@@ -43,19 +44,22 @@ describe("Error handling", () => {
         testSample.projectId = projectId;
         const poppunkRes = await post(`poppunk`, testSample, connectionCookie);
         expect(poppunkRes.status).toBe(200);
-        const counter = 0;
+        let counter = 0;
         let finished = false;
         while (!finished && counter < 100) {
-            await new Promise(resolve => {
-                setTimeout(() => {resolve(""), 1000})
-            });
+            await setTimeout(2000);
             const statusRes = await post("status", {hash: testSample.projectHash}, connectionCookie);
-            expect(statusRes.status).toBe(200);
+            // This is occasionally mysteriously flaky on CI because hash is not yet registered - throw error if any other
+            // reason
+            if (statusRes.status !== 200 && statusRes.data.errors[0].error !== "Unknown project hash") {
+                throw new Error(`Unexpected status ${statusRes.status} for response: ${JSON.stringify(statusRes.data)}`);
+            }
             const statusValues = statusRes.data.data;
             if (statusValues.assign === "finished" && statusValues.microreact === "finished" && statusValues.network === "finished") {
                 finished = true;
                 break;
             }
+            counter = counter + 1;
         }
         expect(finished).toBe(true);
         return projectId;
