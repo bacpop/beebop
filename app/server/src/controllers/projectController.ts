@@ -37,8 +37,8 @@ export default (config) => {
                 const {projectId} = request.params;
                 const {redis} = request.app.locals;
                 const store = userStore(redis);
-                const projectHash = await store.getProjectHash(request, projectId);
-                const res = await axios.get<APIResponse<ProjectResponse>>(`${config.api_url}/project/${projectHash}`)
+                const projectInfo = await store.getAllProjectInfo(projectId);
+                const res = await axios.get<APIResponse<ProjectResponse>>(`${config.api_url}/project/${projectInfo?.hash}`)
                     .catch(function (error) {
                         handleAPIError(request, response, error);
                     });
@@ -62,8 +62,8 @@ export default (config) => {
                         });
                     }
                     apiData.samples = responseSamples;
-                    sendSuccess(response, apiData);
-                }
+                    sendSuccess(response, { apiData, ...projectInfo });
+                } 
             });
         },
 
