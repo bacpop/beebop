@@ -107,9 +107,11 @@ describe("User persistence", () => {
       { name: "new name" },
       connectionCookie
     );
+    
     expect(response.status).toBe(200);
     // can get user projects with new name
     const projectsResponse = await get("projects", connectionCookie);
+    
     expect(projectsResponse.data).toStrictEqual({
       status: "success",
       data: [
