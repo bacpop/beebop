@@ -124,7 +124,7 @@ describe("UserStore", () => {
             smembers: jest.fn().mockImplementation(() => ["1234:test1.fa", "5678:test2.fa"])
         } as any;
         const sut = new UserStore(mockProjectRedis);
-        const result = await sut.getProjectSamples("testProjectId");
+        const result = await sut.getProjectSplitSampleIds("testProjectId");
         expect(mockProjectRedis.smembers).toHaveBeenCalledWith("beebop:project:testProjectId:samples");
         expect(result).toStrictEqual([
             { hash: "1234", filename: "test1.fa" },

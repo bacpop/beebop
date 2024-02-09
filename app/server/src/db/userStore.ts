@@ -1,6 +1,6 @@
 import Redis from "ioredis";
 import {uid} from "uid";
-import {AMR} from "../types/models";
+import {AMR, SplitSampleId} from "../types/models";
 import { JSONUtils } from "../utils/jsonUtils";
 
 const BEEBOP_PREFIX = "beebop:";
@@ -105,7 +105,7 @@ export class UserStore {
         return { sketch: JSONUtils.safeParseJSON(samples.sketch), amr: JSONUtils.safeParseJSON(samples.amr) };
     }
 
-    async getProjectSamples(projectId: string) {
+    async getProjectSplitSampleIds(projectId: string): Promise<SplitSampleId[]> {
          const sampleIds = await this._redis.smembers(this._projectSamplesKey(projectId));
          return sampleIds.map((sampleId) => {
              const [hash, filename] = sampleId.split(":");

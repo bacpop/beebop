@@ -8,3 +8,8 @@ export interface AMR {
     length: boolean,
     species: boolean
 }
+
+export interface SplitSampleId {
+    hash: string;
+    filename: string;
+}
