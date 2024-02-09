@@ -87,6 +87,7 @@ export class UserStore {
         await this._redis.sadd(this._projectSamplesKey(projectId), sampleId);
         await this._redis.hset(this._projectSampleKey(projectId, sampleId), "amr", JSONUtils.safeStringify(amr));
     }
+    
     async getSketch(projectId: string, sampleHash: string, filename: string): Promise<Record<string, unknown>> {
         const sampleId = this._sampleId(sampleHash, filename);
         const sketchString = await this._redis.hget(this._projectSampleKey(projectId, sampleId), "sketch");
@@ -99,7 +100,7 @@ export class UserStore {
         return JSONUtils.safeParseJSON(amrString);
     }
 
-    async getSampleData(projectId: string, sampleHash: string, filename: string): Promise<{ sketch: Record<string, unknown>; amr: AMR }> {
+    async getSample(projectId: string, sampleHash: string, filename: string): Promise<{ sketch: Record<string, unknown>; amr: AMR }> {
         const sampleId = this._sampleId(sampleHash, filename);
         const samples = await this._redis.hgetall(this._projectSampleKey(projectId, sampleId));
         return { sketch: JSONUtils.safeParseJSON(samples.sketch), amr: JSONUtils.safeParseJSON(samples.amr) };

@@ -1,6 +1,6 @@
 
 export class JSONUtils {
-    public static safeParseJSON(jsonString: string) {
+    public static safeParseJSON(jsonString?: string) {
         try {
             return JSON.parse(jsonString);
         } catch (error) {

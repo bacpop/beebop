@@ -4,7 +4,7 @@ import { userStore } from "../db/userStore";
 import { handleAPIError, sendSuccess } from "../utils";
 import asyncHandler from "../errors/asyncHandler";
 import axios, { AxiosResponse } from "axios";
-import { APIResponse, ProjectResponse } from "../types/responseTypes";
+import { APIResponse, RanProjectServer } from "../types/responseTypes";
 import { AMR } from "../types/models";
 
 export default (config) => {
@@ -38,23 +38,24 @@ export default (config) => {
         const { redis } = request.app.locals;
         const store = userStore(redis);
         const baseProjectInfo = await store.getBaseProjectInfo(projectId);
-        const projectSamples = await store.getProjectSplitSampleIds(projectId);
+        const projectSplitSampleIds = await store.getProjectSplitSampleIds(projectId);
 
         if (!baseProjectInfo.hash) {
+
           const responseSamples = await ProjectUtils.getResponseSamples(
             store,
             projectId,
-            projectSamples
+            projectSplitSampleIds
           );
           return sendSuccess(response, {
             ...baseProjectInfo,
             samples: responseSamples,
           });
         }
-
-        let ranProjectResponse: AxiosResponse<APIResponse<ProjectResponse>>;
+        
+        let ranProjectResponse: AxiosResponse<APIResponse<RanProjectServer>>;
         try {
-          ranProjectResponse = await axios.get<APIResponse<ProjectResponse>>(
+          ranProjectResponse = await axios.get(
             `${config.api_url}/project/${baseProjectInfo?.hash}`
           );
         } catch (error) {
@@ -65,10 +66,14 @@ export default (config) => {
         const responseSamples = await ProjectUtils.getResponseSamples(
           store,
           projectId,
-          projectSamples,
+          projectSplitSampleIds,
           apiData
         );
-        return sendSuccess(response, { ...apiData, samples: responseSamples, ...baseProjectInfo });
+        return sendSuccess(response, {
+          ...baseProjectInfo,
+          ...apiData,
+          samples: responseSamples,
+        });
       });
     },
 

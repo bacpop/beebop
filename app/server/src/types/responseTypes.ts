@@ -9,7 +9,7 @@ export interface APIResponse<T> {
   }[];
 }
 
-export interface ProjectResponse {
+export interface RanProjectServer {
   samples: {
     hash: string;
     amr?: AMR;
@@ -20,6 +20,5 @@ export interface ProjectResponse {
     assign: string;
     microreact: string;
     network: string;
-  },
-
+  };
 }
