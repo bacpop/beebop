@@ -50,7 +50,7 @@ export class UserStore {
          return await this._redis.hget(this._projectKey(projectId), "hash")
     }
     
-    async getAllProjectInfo(projectId: string) {
+    async getBaseProjectInfo(projectId: string) {
         return await this._redis.hgetall(this._projectKey(projectId));
     }
 
