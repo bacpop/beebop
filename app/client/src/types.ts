@@ -82,7 +82,7 @@ export interface ProjectNameRequest {
 export interface SavedProject {
     id: string,
     name: string,
-    hash: string,
+    hash?: string,
     timestamp: number,
     samplesCount: number
 }

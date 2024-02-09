@@ -83,6 +83,8 @@ export default {
         // we may need to change this to happen later when other loading steps are implemented
         commit("setLoadingProject", false);
         // start polling if response indicated project has not yet completed
+        if (!state.analysisStatus) return;
+
         const complete = Object.keys(state.analysisStatus).every((key) => {
             const status = state.analysisStatus[key as AnalysisType];
             return status && ["finished", "failed"].includes(status);
@@ -109,6 +111,8 @@ export default {
                         commit("setIsolateValue", event.data);
                         if (event.data.type === ValueTypes.AMR) {
                             dispatch("postAMR", event.data);
+                        } else {
+                            dispatch("postSketch", { hash: fileHash, filename: file.name, sketch: event.data?.result });
                         }
                     };
                     worker.postMessage({ hash: fileHash, fileObject: file });
@@ -268,5 +272,16 @@ export default {
             .ignoreSuccess()
             .withError("addError")
             .post<AMR>(url, amr);
+    },
+    async postSketch(
+        context: ActionContext<RootState, RootState>,
+        { hash, filename, sketch }: { hash: string, filename: string, sketch: string }
+    ) {
+        const { state } = context;
+        const url = `${serverUrl}/project/${state.projectId}/sketch/${hash}`;
+        await api(context)
+            .ignoreSuccess()
+            .withError("addError")
+            .post(url, { sketch: JSON.parse(sketch), filename });
     }
 };

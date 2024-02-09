@@ -2,7 +2,7 @@ import {ProjectNameRequest} from "../types/requestTypes";
 import {userStore} from "../db/userStore";
 import {handleAPIError, sendSuccess} from "../utils";
 import asyncHandler from "../errors/asyncHandler";
-import axios, {AxiosResponse} from "axios";
+import axios, { AxiosResponse} from "axios";
 import {APIResponse, ProjectResponse} from "../types/responseTypes";
 import {BeebopError} from "../errors/beebopError";
 import {AMR} from "../types/models";
@@ -37,33 +37,50 @@ export default (config) => {
                 const {projectId} = request.params;
                 const {redis} = request.app.locals;
                 const store = userStore(redis);
-                const projectInfo = await store.getAllProjectInfo(projectId);
-                const res = await axios.get<APIResponse<ProjectResponse>>(`${config.api_url}/project/${projectInfo?.hash}`)
-                    .catch(function (error) {
-                        handleAPIError(request, response, error);
-                    });
-                if (res) {
-                    const apiData = (res as AxiosResponse<APIResponse<ProjectResponse>>).data.data;
-                    // Get each project sample (sample hash and filename) from redis and find the
-                    // corresponding sample (by hash) in the response from beebop_py api (containing cluster info etc) -
-                    // combine data from both in response to client
+                const baseProjectInfo = await store.getBaseProjectInfo(projectId);
+
+                if (!baseProjectInfo.hash) {              
                     const projectSamples = await store.getProjectSamples(projectId);
                     const responseSamples = [];
                     for (const sample of projectSamples) {
-                        const apiSample = apiData.samples.find(s => s.hash === sample.hash);
-                        if (!apiSample) {
-                            throw new BeebopError("Invalid data",`Sample with hash ${sample.hash} was not in API response`);
-                        }
-                        const amr = await store.getAMR(projectId, sample.hash, sample.filename);
+                        const { amr, sketch} = await store.getSampleData(projectId, sample.hash, sample.filename);
                         responseSamples.push({
-                            ...apiSample,
+                            hash: sample.hash,
                             filename: sample.filename,
-                            amr
+                            amr,
+                            sketch
                         });
                     }
-                    apiData.samples = responseSamples;
-                    sendSuccess(response, { apiData, ...projectInfo });
-                } 
+                    sendSuccess(response, { ...baseProjectInfo, samples: responseSamples }); 
+                }
+
+                let ranProjectResponse;
+                try {
+                    ranProjectResponse = await axios.get<APIResponse<ProjectResponse>>(`${config.api_url}/project/${baseProjectInfo?.hash}`);
+                } catch (error) {
+                    return handleAPIError(request, response, error);
+                }
+                const apiData = (ranProjectResponse as AxiosResponse<APIResponse<ProjectResponse>>).data.data;
+                // Get each project sample (sample hash and filename) from redis and find the
+                // corresponding sample (by hash) in the response from beebop_py api (containing cluster info etc) -
+                // combine data from both in response to client
+                const projectSamples = await store.getProjectSamples(projectId);
+                const responseSamples = [];
+                for (const sample of projectSamples) {
+                    const apiSample = apiData.samples.find(s => s.hash === sample.hash);
+                    if (!apiSample) {
+                        throw new BeebopError("Invalid data",`Sample with hash ${sample.hash} was not in API response`);
+                    }
+                    const amr = await store.getAMR(projectId, sample.hash, sample.filename);
+                    responseSamples.push({
+                        ...apiSample,
+                        filename: sample.filename,
+                        amr,
+                    });
+                }
+                apiData.samples = responseSamples;
+                return sendSuccess(response, { ...apiData, ...baseProjectInfo });
+                                    
             });
         },
 
@@ -73,6 +90,15 @@ export default (config) => {
                 const {projectId, sampleHash} = request.params;
                 const {redis} = request.app.locals;
                 await userStore(redis).saveAMR(projectId, sampleHash, amr);
+                sendSuccess(response, null);
+            });
+        },
+        async postSketch(request, response, next) {
+            await asyncHandler(next, async () => {
+                const { sketch, filename } = request.body as {sketch: Record<string, unknown>, filename: string};
+                const {projectId, sampleHash} = request.params;
+                const {redis} = request.app.locals;
+                await userStore(redis).saveSketch(projectId, sampleHash, filename, sketch);
                 sendSuccess(response, null);
             });
         }
