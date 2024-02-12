@@ -44,6 +44,7 @@ describe("Error handling", () => {
         testSample.projectId = projectId;
         const poppunkRes = await post(`poppunk`, testSample, connectionCookie);
         expect(poppunkRes.status).toBe(200);
+        expect(poppunkRes.data.data.assign).not.toBe("")
         let counter = 0;
         let consecutiveErrors = 0;
         let finished = false;
