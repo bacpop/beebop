@@ -1,6 +1,7 @@
 import Redis from "ioredis";
 import {uid} from "uid";
-import {AMR} from "../types/models";
+import {AMR, SplitSampleId} from "../types/models";
+import { JSONUtils } from "../utils/jsonUtils";
 
 const BEEBOP_PREFIX = "beebop:";
 
@@ -48,6 +49,10 @@ export class UserStore {
     async getProjectHash(request, projectId: string) {
          return await this._redis.hget(this._projectKey(projectId), "hash")
     }
+    
+    async getBaseProjectInfo(projectId: string) {
+        return await this._redis.hgetall(this._projectKey(projectId));
+    }
 
     async getUserProjects(request) {
         // Get all project ids for the user
@@ -71,19 +76,37 @@ export class UserStore {
         return result;
     }
 
+    async saveSketch(projectId: string, sampleHash: string, filename: string, sketch: Record<string,unknown> ) {
+        const sampleId = this._sampleId(sampleHash, filename);
+        await this._redis.sadd(this._projectSamplesKey(projectId), sampleId);
+        await this._redis.hset(this._projectSampleKey(projectId, sampleId), "sketch", JSONUtils.safeStringify(sketch));
+    }
+
     async saveAMR(projectId: string, sampleHash: string, amr: AMR) {
         const sampleId = this._sampleId(sampleHash, amr.filename);
         await this._redis.sadd(this._projectSamplesKey(projectId), sampleId);
-        await this._redis.hset(this._projectSampleKey(projectId, sampleId), "amr", JSON.stringify(amr));
+        await this._redis.hset(this._projectSampleKey(projectId, sampleId), "amr", JSONUtils.safeStringify(amr));
+    }
+    
+    async getSketch(projectId: string, sampleHash: string, filename: string): Promise<Record<string, unknown>> {
+        const sampleId = this._sampleId(sampleHash, filename);
+        const sketchString = await this._redis.hget(this._projectSampleKey(projectId, sampleId), "sketch");
+        return JSONUtils.safeParseJSON(sketchString);
     }
 
-    async getAMR(projectId: string, sampleHash: string, fileName: string) {
-         const sampleId = this._sampleId(sampleHash, fileName);
-         const amrString = await this._redis.hget(this._projectSampleKey(projectId, sampleId), "amr");
-         return JSON.parse(amrString) as AMR;
+    async getAMR(projectId: string, sampleHash: string, fileName: string): Promise<AMR> {
+        const sampleId = this._sampleId(sampleHash, fileName);
+        const amrString = await this._redis.hget(this._projectSampleKey(projectId, sampleId), "amr");
+        return JSONUtils.safeParseJSON(amrString);
     }
 
-    async getProjectSamples(projectId: string) {
+    async getSample(projectId: string, sampleHash: string, filename: string): Promise<{ sketch: Record<string, unknown>; amr: AMR }> {
+        const sampleId = this._sampleId(sampleHash, filename);
+        const samples = await this._redis.hgetall(this._projectSampleKey(projectId, sampleId));
+        return { sketch: JSONUtils.safeParseJSON(samples.sketch), amr: JSONUtils.safeParseJSON(samples.amr) };
+    }
+
+    async getProjectSplitSampleIds(projectId: string): Promise<SplitSampleId[]> {
          const sampleIds = await this._redis.smembers(this._projectSamplesKey(projectId));
          return sampleIds.map((sampleId) => {
              const [hash, filename] = sampleId.split(":");

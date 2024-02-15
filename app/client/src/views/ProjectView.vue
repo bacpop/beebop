@@ -24,7 +24,7 @@
               </li>
               <li class="nav-item">
                 <button class="nav-link no-transition"
-                :class="(analysisStatus.network == 'finished' ?
+                :class="(analysisStatus?.network == 'finished' ?
                 'network' == selectedTab ? 'active' :'' :
                 'disabled')"
                 :aria-selected="'network' == selectedTab"
@@ -46,7 +46,7 @@
           class="tab-pane fade m-3"
           :class="'network' == selectedTab ? 'active show' : ''">
             <NetworkVisualisations
-            v-if="user && analysisStatus.network === 'finished' && 'network' == selectedTab"
+            v-if="user && analysisStatus?.network === 'finished' && 'network' == selectedTab"
             :firstCluster="uniqueClusters[0]"
             />
           </div>
