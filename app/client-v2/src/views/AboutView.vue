@@ -1,13 +1,7 @@
-<script setup lang="ts">
-import { ref } from 'vue'
-const date = ref(new Date())
-</script>
+<script setup lang="ts"></script>
 
 <template>
-  <div class="p-5 mb-3 border-round-sm surface-card">
-    <Calendar v-model="date" />
-    <div>{{ date }}</div>
-  </div>
+  <div class="p-5 mb-3 border-round-sm surface-card">About Page</div>
 </template>
 
 <style scoped>

@@ -1,5 +1,5 @@
-import { getApiUrl } from '@/config';
-import { defineStore } from 'pinia';
+import { getApiUrl } from "@/config";
+import { defineStore } from "pinia";
 
 export interface UserResponse {
   data: {
@@ -11,7 +11,7 @@ export interface UserResponse {
   status: string;
 }
 
-export const useUserStore = defineStore('user', {
+export const useUserStore = defineStore("user", {
   state: () => ({
     id: undefined as undefined | string,
     name: undefined as undefined | string,
@@ -27,7 +27,7 @@ export const useUserStore = defineStore('user', {
     async getUser() {
       try {
         const res = await fetch(`${getApiUrl()}/user`, {
-          credentials: 'include'
+          credentials: "include"
         });
         const data: UserResponse = await res.json();
         this.id = data.data?.id;

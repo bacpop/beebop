@@ -1,20 +1,22 @@
 <script setup lang="ts">
-import { getApiUrl } from '@/config';
-import { useFetch, useDateFormat } from '@vueuse/core';
-import { ref } from 'vue';
-import InputGroup from 'primevue/inputgroup';
-import { FilterMatchMode } from 'primevue/api';
-import type { DataTableRowEditSaveEvent } from 'primevue/datatable';
-import type { ProjectsResponse } from '@/types/projectTypes';
-import { useToast } from 'primevue/usetoast';
-import Toast from 'primevue/toast';
+import { getApiUrl } from "@/config";
+import { useFetch, useDateFormat } from "@vueuse/core";
+import { ref } from "vue";
+import InputGroup from "primevue/inputgroup";
+import { FilterMatchMode } from "primevue/api";
+import type { DataTableRowEditSaveEvent } from "primevue/datatable";
+import type { ProjectsResponse } from "@/types/projectTypes";
+import { useToast } from "primevue/usetoast";
+import Toast from "primevue/toast";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const toast = useToast();
 const showSuccessToast = (msg: string) => {
-  toast.add({ severity: 'success', summary: 'Success', detail: msg, life: 3000 });
+  toast.add({ severity: "success", summary: "Success", detail: msg, life: 3000 });
 };
 const showErrorToast = (msg: string) => {
-  toast.add({ severity: 'error', summary: 'Error', detail: msg, life: 3000 });
+  toast.add({ severity: "error", summary: "Error", detail: msg, life: 3000 });
 };
 const apiUrl = getApiUrl();
 const {
@@ -22,28 +24,26 @@ const {
   error: projectsError,
   isFetching,
   execute: refetchProjects
-} = useFetch(apiUrl + '/projects', { credentials: 'include' }).json<ProjectsResponse>();
+} = useFetch(apiUrl + "/projects", { credentials: "include" }).json<ProjectsResponse>();
 
 const filters = ref({
   name: { value: null, matchMode: FilterMatchMode.CONTAINS }
 });
 
-const newProjectName = ref('');
+const newProjectName = ref("");
 const addProject = async () => {
   if (!newProjectName.value) return;
-  const { error } = await useFetch(apiUrl + '/project', {
-    credentials: 'include'
+  const { error, data: project } = await useFetch(apiUrl + "/project", {
+    credentials: "include"
   })
     .post({ name: newProjectName.value })
     .json();
 
   if (error.value) {
-    showErrorToast('Error creating project');
+    showErrorToast("Error creating project");
     return;
   }
-  newProjectName.value = '';
-  showSuccessToast('Project created successfully');
-  refetchProjects();
+  router.push(`/project/${project.value?.data}`);
 };
 
 const editingRows = ref([]);
@@ -52,16 +52,16 @@ const onRowEditSave = async (event: DataTableRowEditSaveEvent) => {
 
   if (data.value !== null && data.value.data[index].name !== newData.name) {
     const { error } = await useFetch(apiUrl + `/project/${data?.value?.data[index].id}/rename`, {
-      credentials: 'include'
+      credentials: "include"
     })
       .post({ name: newData.name })
       .json();
     if (error.value) {
-      showErrorToast('Error renaming project');
+      showErrorToast("Error renaming project");
       return;
     }
-    data.value.data[index] = newData;
-    showSuccessToast('Project renamed successfully');
+
+    showSuccessToast("Project renamed successfully");
     refetchProjects();
   }
 };
@@ -71,9 +71,7 @@ const onRowEditSave = async (event: DataTableRowEditSaveEvent) => {
   <Toast />
   <div class="flex flex-column gap-1 mb-3">
     <span class="text-3xl font-bold">Projects</span>
-    <span class="text-color-secondary"
-      >View and navigate to existing projects or create new ones</span
-    >
+    <span class="text-color-secondary">View and navigate to existing projects or create new ones</span>
   </div>
   <div class="surface-card p-4 shadow-2 border-round">
     <DataTable
@@ -113,11 +111,7 @@ const onRowEditSave = async (event: DataTableRowEditSaveEvent) => {
           </span>
           <div>
             <InputGroup>
-              <InputText
-                placeholder="Create new Project"
-                v-model="newProjectName"
-                @keydown.enter="addProject"
-              />
+              <InputText placeholder="Create new Project" v-model="newProjectName" @keydown.enter="addProject" />
               <Button icon="pi pi-plus-circle" @click="addProject" />
             </InputGroup>
           </div>
@@ -135,10 +129,7 @@ const onRowEditSave = async (event: DataTableRowEditSaveEvent) => {
       </template>
       <Column field="name" header="Name" sortable class="w-2">
         <template #body="{ data }">
-          <RouterLink
-            :to="`/project/${data.id}`"
-            class="text-primary no-underline hover:underline font-semibold"
-          >
+          <RouterLink :to="`/project/${data.id}`" class="text-primary no-underline hover:underline font-semibold">
             {{ data.name }}
           </RouterLink>
         </template>
@@ -151,7 +142,7 @@ const onRowEditSave = async (event: DataTableRowEditSaveEvent) => {
       <!-- todo update to date modified -->
       <Column field="timestamp" header="Date Created" sortable class="w-3">
         <template #body="{ data }">
-          {{ useDateFormat(data.timestamp, 'DD/MM/YYYY HH:mm').value }}
+          {{ useDateFormat(data.timestamp, "DD/MM/YYYY HH:mm").value }}
         </template>
       </Column>
     </DataTable>

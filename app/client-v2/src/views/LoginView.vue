@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import { getApiUrl } from '@/config';
-import { useUserStore } from '@/stores/userStore';
-import { useRouter } from 'vue-router';
+import { getApiUrl } from "@/config";
+import { useUserStore } from "@/stores/userStore";
+import { useRouter } from "vue-router";
 const apiUrl = getApiUrl();
 const loginUrls = {
   google: `${apiUrl}/login/google`,
@@ -10,7 +10,7 @@ const loginUrls = {
 const userStore = useUserStore();
 const router = useRouter();
 if (userStore.isAuthenticated) {
-  router.push('/');
+  router.push("/");
 }
 </script>
 
@@ -26,22 +26,10 @@ if (userStore.isAuthenticated) {
           </div>
           <div class="flex flex-column gap-3">
             <a :href="loginUrls.google">
-              <Button
-                label="Sign In With Google"
-                icon="pi pi-google"
-                size="large"
-                class="w-full p-3"
-                outlined
-              ></Button>
+              <Button label="Sign In With Google" icon="pi pi-google" size="large" class="w-full p-3" outlined></Button>
             </a>
             <a :href="loginUrls.github">
-              <Button
-                label="Sign In With Github"
-                icon="pi pi-github"
-                size="large"
-                class="w-full p-3"
-                outlined
-              ></Button>
+              <Button label="Sign In With Github" icon="pi pi-github" size="large" class="w-full p-3" outlined></Button>
             </a>
           </div>
         </div>

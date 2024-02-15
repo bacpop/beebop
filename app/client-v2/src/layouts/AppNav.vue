@@ -1,24 +1,21 @@
 <script setup lang="ts">
-import { RouterLink } from 'vue-router';
-import { computed, ref } from 'vue';
-import { getApiUrl } from '@/config';
-import { useUserStore } from '@/stores/userStore';
-import { usePrimeVue } from 'primevue/config';
-import { useStorage } from '@vueuse/core';
-import { useTheme } from '@/composables/useTheme';
+import { RouterLink } from "vue-router";
+import { computed, ref } from "vue";
+import { getApiUrl } from "@/config";
+import { useUserStore } from "@/stores/userStore";
+import { useTheme } from "@/composables/useTheme";
 
 const { toggleTheme, themeIcon } = useTheme();
-const PrimeVue = usePrimeVue();
 const userStore = useUserStore();
-const logoutUrl = getApiUrl() + '/logout';
+const logoutUrl = getApiUrl() + "/logout";
 const menu = ref();
 const menuItems = computed(() => [
   {
     label: userStore.name,
     items: [
       {
-        label: 'Logout',
-        icon: 'pi pi-fw pi-sign-out',
+        label: "Logout",
+        icon: "pi pi-fw pi-sign-out",
         url: logoutUrl
       }
     ]
@@ -26,9 +23,9 @@ const menuItems = computed(() => [
 ]);
 const items = ref([
   {
-    label: 'About',
-    route: '/about',
-    icon: 'pi pi-fw pi-info-circle'
+    label: "About",
+    route: "/about",
+    icon: "pi pi-fw pi-info-circle"
   }
 ]);
 
@@ -42,7 +39,7 @@ const toggle = (event: MouseEvent) => {
     <Menubar :model="items" class="fixed z-5 top-0 left-0 w-full h-4rem border-noround">
       <template #start>
         <RouterLink to="/" class="mr-2">
-          <img src="@/assets/log2o.svg" alt="logo with name" class="h-2rem" />
+          <img src="@/assets/log2o.svg" alt="Beebop home" class="h-2rem" />
         </RouterLink>
       </template>
       <template #item="{ item, props }">
@@ -68,8 +65,8 @@ const toggle = (event: MouseEvent) => {
             <Menu ref="menu" id="overlay_menu" :model="menuItems" :popup="true">
               <template #item="{ item, props }">
                 <a v-ripple :href="item.url" :target="item.target" v-bind="props.action">
-                  <span :class="item.icon" class="text-red-500" />
-                  <span class="ml-2 text-red-500">{{ item.label }}</span>
+                  <span :class="item.icon" class="text-red-400" />
+                  <span class="ml-2 text-red-400">{{ item.label }}</span>
                 </a>
               </template>
             </Menu>

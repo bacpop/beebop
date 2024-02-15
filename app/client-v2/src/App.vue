@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppNav from '@/layouts/AppNav.vue';
-import { useTheme } from '@/composables/useTheme';
+import AppNav from "@/layouts/AppNav.vue";
+import { useTheme } from "@/composables/useTheme";
 
 const { setInitialTheme } = useTheme();
 setInitialTheme();

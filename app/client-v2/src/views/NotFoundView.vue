@@ -9,13 +9,8 @@
         >
           <span class="text-blue-500 font-bold text-3xl">404</span>
           <h1 class="text-900 font-bold text-3xl lg:text-5xl mb-2">Not Found</h1>
-          <div class="text-600 mb-5">
-            Requested resource is not available. See below for places to be redirected to
-          </div>
-          <router-link
-            to="/"
-            class="w-full flex align-items-center py-5 border-300 border-bottom-1 no-underline"
-          >
+          <div class="text-600 mb-5">Requested resource is not available. See below for places to be redirected to</div>
+          <router-link to="/" class="w-full flex align-items-center py-5 border-300 border-bottom-1 no-underline">
             <span
               class="flex justify-content-center align-items-center bg-cyan-400 border-round"
               style="height: 3.5rem; width: 3.5rem"
@@ -26,10 +21,7 @@
               <span class="text-900 lg:text-xl font-medium mb-0 block">Home Page</span>
             </span>
           </router-link>
-          <router-link
-            to="/about"
-            class="w-full flex align-items-center py-5 border-300 border-bottom-1 no-underline"
-          >
+          <router-link to="/about" class="w-full flex align-items-center py-5 border-300 border-bottom-1 no-underline">
             <span
               class="flex justify-content-center align-items-center bg-orange-400 border-round"
               style="height: 3.5rem; width: 3.5rem"
