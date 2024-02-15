@@ -1,10 +1,10 @@
 <template>
   <div class="flex align-items-center justify-content-center min-h-screen">
     <div class="flex flex-column align-items-center justify-content-center">
-      <img src="@/assets/log1o.svg" alt="Sakai logo" class="mb-5 w-6rem flex-shrink-0" />
+      <img src="@/assets/log1o.svg" alt="Beebop logo" class="mb-5 w-6rem flex-shrink-0" />
       <div class="not-found-card">
         <div
-          class="w-full surface-card py-8 px-5 sm:px-8 flex flex-column align-items-center"
+          class="w-full surface-card shadow-1 py-8 px-5 sm:px-8 flex flex-column align-items-center"
           style="border-radius: 53px"
         >
           <span class="text-blue-500 font-bold text-3xl">404</span>
