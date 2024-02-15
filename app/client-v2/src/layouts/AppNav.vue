@@ -17,7 +17,7 @@ const menuItems = computed(() => [
     label: userStore.name,
     items: [
       {
-        label: 'logout',
+        label: 'Logout',
         icon: 'pi pi-fw pi-sign-out',
         url: logoutUrl
       }
@@ -42,7 +42,7 @@ const toggle = (event: MouseEvent) => {
     <Menubar :model="items" class="fixed z-5 top-0 left-0 w-full h-4rem border-noround">
       <template #start>
         <RouterLink to="/" class="mr-2">
-          <img src="@/assets/log2o.svg" alt="logo" class="h-2rem" />
+          <img src="@/assets/log2o.svg" alt="logo with name" class="h-2rem" />
         </RouterLink>
       </template>
       <template #item="{ item, props }">

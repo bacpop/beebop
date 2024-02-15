@@ -95,7 +95,6 @@ const onRowEditSave = async (event: DataTableRowEditSaveEvent) => {
       @row-edit-save="onRowEditSave"
       :loading="isFetching"
       :rows="10"
-      :rowsPerPageOptions="[10, 20, 50, 100]"
     >
       <template #header>
         <div class="flex flex-wrap align-items-center justify-content-between gap-2">
