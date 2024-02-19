@@ -7,6 +7,7 @@ import "primeicons/primeicons.css";
 import "primeflex/primeflex.css";
 import Ripple from "primevue/ripple";
 import ToastService from "primevue/toastservice";
+import "./assets/main.css";
 
 const app = createApp(App);
 

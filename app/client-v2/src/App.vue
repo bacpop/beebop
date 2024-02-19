@@ -16,10 +16,10 @@ setInitialTheme();
 
 <style scoped>
 .layout-main-container {
-  /* display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  justify-content: space-between; */
+  display: flex;
+  max-width: 1536px;
+  margin: 0 auto;
   padding: 5rem 2rem 2rem 2rem;
+  min-height: 100vh;
 }
 </style>

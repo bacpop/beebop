@@ -38,21 +38,23 @@ export default (config) => {
         const { redis } = request.app.locals;
         const store = userStore(redis);
         const baseProjectInfo = await store.getBaseProjectInfo(projectId);
-        const projectSplitSampleIds = await store.getProjectSplitSampleIds(projectId);
+        const projectSplitSampleIds = await store.getProjectSplitSampleIds(
+          projectId
+        );
 
         if (!baseProjectInfo.hash) {
-
           const responseSamples = await ProjectUtils.getResponseSamples(
             store,
             projectId,
             projectSplitSampleIds
           );
           return sendSuccess(response, {
+            id: projectId,
             ...baseProjectInfo,
             samples: responseSamples,
           });
         }
-        
+
         let ranProjectResponse: AxiosResponse<APIResponse<RanProjectServer>>;
         try {
           ranProjectResponse = await axios.get(
@@ -70,6 +72,7 @@ export default (config) => {
           apiData
         );
         return sendSuccess(response, {
+          id: projectId,
           ...baseProjectInfo,
           ...apiData,
           samples: responseSamples,

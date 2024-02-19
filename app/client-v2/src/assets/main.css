@@ -1,0 +1,12 @@
+body {
+    min-height: 100vh;
+    margin: 0;
+}
+
+@media (min-width: 800px) {
+    #app {
+      display: flex;
+      min-height: 100vh;
+    }
+  }
+  
