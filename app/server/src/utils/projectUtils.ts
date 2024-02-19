@@ -15,7 +15,7 @@ export class ProjectUtils {
         const apiSample = apiData
           ? apiData.samples.find((s) => s.hash === sample.hash)
           : null;
-        if (apiData && !apiSample) {  
+        if (apiData && !apiSample) {
           throw new BeebopError(
             "Invalid data",
             `Sample with hash ${sample.hash} was not in API response`
@@ -27,7 +27,7 @@ export class ProjectUtils {
           sample.filename
         );
         return {
-          ...apiSample,
+          cluster: apiSample.cluster,
           hash: sample.hash,
           filename: sample.filename,
           amr,

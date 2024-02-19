@@ -15,7 +15,7 @@ if (userStore.isAuthenticated) {
 </script>
 
 <template>
-  <div class="flex align-items-center justify-content-center min-h-screen">
+  <div class="flex align-items-center justify-content-center">
     <div class="flex flex-column align-items-center justify-content-center">
       <img src="@/assets/log1o.svg" alt="Sakai logo" class="mb-5 w-6rem flex-shrink-0" />
       <div class="login-card">
