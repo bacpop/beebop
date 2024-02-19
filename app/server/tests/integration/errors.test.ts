@@ -12,8 +12,9 @@ describe("Error handling", () => {
         connectionCookie = response.headers["set-cookie"][0];
     });
 
-    const sampleHash = Object.keys(testSample.names)[0];
-    const sampleFileName = testSample.names[sampleHash] ;
+    const names = testSample("" ,"").names;
+    const sampleHash = Object.keys(names)[0];
+    const sampleFileName = names[sampleHash] ;
     const sampleId = `${sampleHash}:${sampleFileName}`;
 
     const newProject = async () => {
@@ -41,8 +42,9 @@ describe("Error handling", () => {
         expect(amrRes.status).toBe(200);
 
         // 3. Run poppunk and wait til it finishes
-        testSample.projectId = projectId;
-        const poppunkRes = await post(`poppunk`, testSample, connectionCookie);
+        const fakeProjectHash = `${projectId}ABC`;
+        const projectData = testSample(fakeProjectHash, projectId);
+        const poppunkRes = await post(`poppunk`, projectData, connectionCookie);
         expect(poppunkRes.status).toBe(200);
         expect(poppunkRes.data.data.assign).not.toBe("")
         let counter = 0;
@@ -50,7 +52,7 @@ describe("Error handling", () => {
         let finished = false;
         while (!finished && counter < 100) {
             await setTimeout(2000);
-            const statusRes = await post("status", {hash: testSample.projectHash}, connectionCookie);
+            const statusRes = await post("status", {hash: fakeProjectHash}, connectionCookie);
             // This is occasionally mysteriously flaky on CI because hash is not yet registered - throw error if any other
             // reason
             if (statusRes.status !== 200) {
