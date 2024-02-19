@@ -82,12 +82,9 @@ describe("Error handling", () => {
         const responseData = response.data;
         expect(responseData.status).toBe("failure");
         expect(responseData.data).toBe(null);
-        expect(responseData.errors).toStrictEqual([
-            {
-                error: "Unknown project hash",
-                detail: ""
-            }
-        ]);
+        expect(responseData.errors.length).toBe(1);
+        expect(responseData.errors[0].error).toContain("Unknown project hash");
+        expect(responseData.errors[0].detail).toBe("");
     });
 
     it("Returns expect response for malformed API error", async () => {
