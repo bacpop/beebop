@@ -64,3 +64,6 @@ jobs:
     - name: Stop all components
       working-directory: .
       run: ./scripts/stop_test
+    - name: tmate session
+      if: ${{ failure() }}
+      uses: mxschmitt/action-tmate@v3
