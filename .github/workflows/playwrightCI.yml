@@ -48,6 +48,6 @@ jobs:
       with:
           name: screenshots
           path: app/client/test-results
-#     - name: tmate session
-#       if: ${{ failure() }}
-#       uses: mxschmitt/action-tmate@v3
+    - name: tmate session
+      if: ${{ failure() }}
+      uses: mxschmitt/action-tmate@v3
