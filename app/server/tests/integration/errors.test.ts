@@ -48,23 +48,11 @@ describe("Error handling", () => {
         expect(poppunkRes.status).toBe(200);
         expect(poppunkRes.data.data.assign).not.toBe("")
         let counter = 0;
-        let consecutiveErrors = 0;
         let finished = false;
         while (!finished && counter < 100) {
             await setTimeout(2000);
             const statusRes = await post("status", {hash: fakeProjectHash}, connectionCookie);
-            // This is occasionally mysteriously flaky on CI because hash is not yet registered - throw error if any other
-            // reason
-            if (statusRes.status !== 200) {
-                const stringResponse = JSON.stringify(statusRes.data);
-                if (statusRes.data.errors[0].error !== "Unknown project hash") {
-                    throw new Error(`Unexpected status ${statusRes.status} for response: ${stringResponse}`);
-                }
-                consecutiveErrors = consecutiveErrors + 1;
-                if (consecutiveErrors > 10) {
-                    throw new Error(`Too many consecutive errors. Latest response is: ${stringResponse}`);
-                }
-            }
+            expect(statusRes.status).toBe(200);
             const statusValues = statusRes.data.data;
             if (statusValues && statusValues.assign === "finished" && statusValues.microreact === "finished" && statusValues.network === "finished") {
                 finished = true;
@@ -84,9 +72,12 @@ describe("Error handling", () => {
         const responseData = response.data;
         expect(responseData.status).toBe("failure");
         expect(responseData.data).toBe(null);
-        expect(responseData.errors.length).toBe(1);
-        expect(responseData.errors[0].error).toContain("Unknown project hash");
-        expect(responseData.errors[0].detail).toBe("");
+        expect(responseData.errors).toStrictEqual([
+            {
+                error: "Unknown project hash",
+                detail: ""
+            }
+        ]);
     });
 
     it("Returns expect response for malformed API error", async () => {
