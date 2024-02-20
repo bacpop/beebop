@@ -1,1 +1,5 @@
+#!/usr/bin/env bash
+set -ex
+
+npm ci --prefix app/server
 BEEBOP_TEST="true" npm run --prefix app/server express
