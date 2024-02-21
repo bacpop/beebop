@@ -17,7 +17,7 @@ if (userStore.isAuthenticated) {
 <template>
   <div class="flex align-items-center justify-content-center">
     <div class="flex flex-column align-items-center justify-content-center">
-      <img src="@/assets/log1o.svg" alt="Sakai logo" class="mb-5 w-6rem flex-shrink-0" />
+      <img src="@/assets/log1o.svg" alt="Beebop logo" class="mb-5 w-6rem flex-shrink-0" />
       <div class="login-card">
         <div class="w-full surface-card py-8 px-5 sm:px-8" style="border-radius: 53px">
           <div class="text-center mb-5">

@@ -23,8 +23,8 @@ export interface AMR {
 export interface ProjectSample {
   hash: string;
   filename: string;
-  amr: AMR;
-  sketch: Record<string, unknown>;
+  amr?: AMR;
+  sketch?: Record<string, unknown>;
   cluster?: number;
 }
 
@@ -35,13 +35,44 @@ export interface Project {
   timestamp: string;
   hash?: string;
   status?: {
-    assign: string;
-    microreact: string;
-    network: string;
+    assign: StatusTypes;
+    microreact: StatusTypes;
+    network: StatusTypes;
   };
 }
-export interface ProjectResponse {
-  data: Project[];
+export type StatusTypes = "finished" | "failed" | "started" | "waiting" | "deferred" | "submitted";
+export const COMPLETE_STATUS_TYPES: StatusTypes[] = ["finished", "failed"];
+
+export interface AnalysisStatus {
+  assign: StatusTypes;
+  microreact: StatusTypes;
+  network: StatusTypes;
+}
+export interface ApiResponse<T> {
+  data: T;
   errors: string[];
   status: string;
+}
+export interface AssignCluster {
+  [key: number]: ClusterInfo;
+}
+export interface ClusterInfo {
+  cluster: number;
+  hash: string;
+}
+export enum WorkerResponseValueTypes {
+  AMR = "amr",
+  SKETCH = "sketch"
+}
+
+export interface WorkerResponse {
+  hash: string;
+  type: WorkerResponseValueTypes;
+  result: string;
+}
+
+export enum AnalysisType {
+  ASSIGN = "assign",
+  MICROREACT = "microreact",
+  NETWORK = "network"
 }

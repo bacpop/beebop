@@ -155,7 +155,7 @@ const onRowEditSave = async (event: DataTableRowEditSaveEvent) => {
 <style scoped>
 @media (min-width: 1200px) {
   .home-page {
-    min-width: 1200px;
+    width: 1100px;
   }
 }
 </style>

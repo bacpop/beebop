@@ -27,7 +27,7 @@ export class ProjectUtils {
           sample.filename
         );
         return {
-          cluster: apiSample.cluster,
+          cluster: apiSample?.cluster,
           hash: sample.hash,
           filename: sample.filename,
           amr,
