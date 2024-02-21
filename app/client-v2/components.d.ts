@@ -28,6 +28,8 @@ declare module 'vue' {
     Menubar: typeof import('primevue/menubar')['default']
     ProgressBar: typeof import('primevue/progressbar')['default']
     ProgressSpinner: typeof import('primevue/progressspinner')['default']
+    Project: typeof import('./src/components/Project.vue')['default']
+    ProjectPage: typeof import('./src/components/ProjectPage.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Tag: typeof import('primevue/tag')['default']

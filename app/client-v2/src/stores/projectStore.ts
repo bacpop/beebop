@@ -1,3 +1,4 @@
+import { AnalysisType } from "./../types/projectTypes";
 import { getApiUrl } from "@/config";
 import {
   COMPLETE_STATUS_TYPES,
@@ -27,7 +28,8 @@ export const useProjectStore = defineStore("project", {
     pollingIntervalId: null as ReturnType<typeof setInterval> | null
   }),
   getters: {
-    isReadyToRun: (state) => state.fileSamples.every((sample: ProjectSample) => sample.sketch && sample.amr),
+    isReadyToRun: (state) =>
+      state.fileSamples.length > 0 && state.fileSamples.every((sample: ProjectSample) => sample.sketch && sample.amr),
     isProjectComplete: (state) =>
       Object.values(state.analysisStatus).every((value) => COMPLETE_STATUS_TYPES.includes(value)),
     numOfStatus: (state) => Object.keys(state.analysisStatus).length,
@@ -60,9 +62,10 @@ export const useProjectStore = defineStore("project", {
         if (this.isRun && !this.isProjectComplete) {
           this.pollAnalysisStatus();
         }
-      } catch (e) {
+      } catch (error) {
         // handle error
-        console.error(e);
+        console.error(error);
+        return error;
       }
     },
     pollAnalysisStatus() {
@@ -195,6 +198,32 @@ export const useProjectStore = defineStore("project", {
       const projectHash = Md5.hashStr(projectHashKey);
 
       return { projectHash, names, sketches, projectId: this.basicInfo.id };
+    },
+    async downloadZip(type: AnalysisType, cluster: number) {
+      try {
+        const res = await baseApi.post<Response, "response">(
+          "downloadZip",
+          {
+            type,
+            cluster,
+            projectHash: this.projectHash
+          },
+          { responseAs: "response", headers: { "Content-Type": "application/json" } }
+        );
+        const blob = await res.blob().catch(() => {
+          throw new Error("Error retrieving data from response");
+        });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `${type}_cluster${cluster}.zip`;
+        link.click();
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async onMicroReactVisit() {
+      // TODO
+      console.log("Microreact visit");
     }
   }
 });
