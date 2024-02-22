@@ -27,7 +27,7 @@ export EXPRESS_SESSION_SECRET=$(vault read -field=secret secret/beebop/express-s
 export ENCRYPT_KEY=$(vault read -field=secret secret/beebop/encrypt-key)
 
 mkdir proxy/ssl/production -p
-vault read -field=key secret/beebop/ssl > proxy/ssl/production/key.pem
-vault read -field=cert secret/beebop/ssl > proxy/ssl/production/certificate.pem
+vault read -field=key secret/beebop/ssl/production > proxy/ssl/production/key.pem
+vault read -field=cert secret/beebop/ssl/production > proxy/ssl/production/certificate.pem
 
 envsubst < $FILE_IN_SERVER > $FILE_CLEAR_SERVER
