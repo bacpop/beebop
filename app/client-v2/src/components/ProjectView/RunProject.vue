@@ -1,9 +1,8 @@
 <script setup lang="ts">
+import MicroReactColumn from "@/components/ProjectView/MicroReactColumn.vue";
+import ProjectDataTable from "@/components/ProjectView/ProjectDataTable.vue";
 import { useProjectStore } from "@/stores/projectStore";
 import { AnalysisType } from "@/types/projectTypes";
-import ProjectDataTable from "@/components/ProjectView/ProjectDataTable.vue";
-import MicroReactColumn from "@/components/ProjectView/MicroReactColumn.vue";
-import { reactive } from "vue";
 
 const store = useProjectStore();
 </script>
@@ -12,7 +11,7 @@ const store = useProjectStore();
   <ProjectDataTable>
     <template #table-header>
       <div v-if="store.analysisProgressPercentage !== 100">
-        <div class="mb-2">Running Analysis...</div>
+        <div class="mb-2 fadein animation-duration-1000 animation-iteration-infinite">Running Analysis...</div>
         <ProgressBar :value="store.analysisProgressPercentage"></ProgressBar>
       </div>
       <!-- TODO: update with network tab too -->

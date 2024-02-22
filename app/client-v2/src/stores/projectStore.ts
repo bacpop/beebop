@@ -67,7 +67,7 @@ export const useProjectStore = defineStore("project", {
           this.analysisStatus = projectRes.data.status;
         }
 
-        if (!this.isProjectComplete) {
+        if (this.isRun && !this.isProjectComplete) {
           this.pollAnalysisStatus();
         }
       } catch (error) {
@@ -174,7 +174,7 @@ export const useProjectStore = defineStore("project", {
         });
       });
     },
-    // todo update to remove from api as well
+    // TODO: update to remove from api as well
     removeUploadedFile(index: number) {
       this.fileSamples.splice(index, 1);
     },
