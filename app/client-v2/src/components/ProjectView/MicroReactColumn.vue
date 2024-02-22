@@ -17,7 +17,13 @@ const props = defineProps<{
       :disabled="!props.data.cluster || store.hadDownloadedZip.microreact"
     />
     <!-- TODO: implement to microreact site -->
-    <Button outlined icon="pi pi-arrow-right" label="Visit" @click="store.onMicroReactVisit" />
+    <Button
+      outlined
+      icon="pi pi-arrow-right"
+      label="Visit"
+      @click="props.data.cluster && store.onMicroReactVisit(props.data.cluster)"
+      :disabled="!props.data.cluster"
+    />
   </div>
   <Tag v-else-if="store.analysisStatus.microreact === 'failed'" value="failed" severity="danger" />
   <Tag v-else :value="store.analysisStatus.microreact" severity="warning" />

@@ -6,26 +6,13 @@ import MicroReactColumn from "@/components/ProjectView/MicroReactColumn.vue";
 import { reactive } from "vue";
 
 const store = useProjectStore();
-const hasDownloadedFiles = reactive({
-  network: false,
-  microreact: false
-});
-
-const onDownloadZip = async (type: AnalysisType, cluster?: number) => {
-  if (type === AnalysisType.NETWORK) {
-    hasDownloadedFiles.network = true;
-  } else {
-    hasDownloadedFiles.microreact = true;
-  }
-  cluster && (await store.downloadZip(type, cluster));
-};
 </script>
 
 <template>
   <ProjectDataTable>
     <template #table-header>
       <div v-if="store.analysisProgressPercentage !== 100">
-        <div class="mb-2">Completed {{ store.analysisProgressPercentage }} % of analysis</div>
+        <div class="mb-2">Running Analysis...</div>
         <ProgressBar :value="store.analysisProgressPercentage"></ProgressBar>
       </div>
       <!-- TODO: update with network tab too -->

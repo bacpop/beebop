@@ -34,8 +34,12 @@ export const useProjectStore = defineStore("project", {
   getters: {
     isReadyToRun: (state) =>
       state.fileSamples.length > 0 && state.fileSamples.every((sample: ProjectSample) => sample.sketch && sample.amr),
-    isProjectComplete: (state) =>
-      Object.values(state.analysisStatus).every((value) => COMPLETE_STATUS_TYPES.includes(value)),
+    isProjectComplete: (state) => {
+      const analysisStatusValues = Object.values(state.analysisStatus);
+      return (
+        analysisStatusValues.length > 0 && analysisStatusValues.every((value) => COMPLETE_STATUS_TYPES.includes(value))
+      );
+    },
     numOfStatus: (state) => Object.keys(state.analysisStatus).length,
     analysisProgressPercentage(state): number {
       return Math.round(
@@ -63,7 +67,7 @@ export const useProjectStore = defineStore("project", {
           this.analysisStatus = projectRes.data.status;
         }
 
-        if (this.isRun && !this.isProjectComplete) {
+        if (!this.isProjectComplete) {
           this.pollAnalysisStatus();
         }
       } catch (error) {
@@ -227,8 +231,8 @@ export const useProjectStore = defineStore("project", {
         console.error(error);
       }
     },
-    async onMicroReactVisit() {
-      // TODO
+    // TODO
+    async onMicroReactVisit(cluster: number) {
       console.log("Microreact visit");
     }
   }
