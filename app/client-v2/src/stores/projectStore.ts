@@ -25,7 +25,11 @@ export const useProjectStore = defineStore("project", {
     projectHash: "",
     isRun: false,
     analysisStatus: {} as AnalysisStatus,
-    pollingIntervalId: null as ReturnType<typeof setInterval> | null
+    pollingIntervalId: null as ReturnType<typeof setInterval> | null,
+    hadDownloadedZip: {
+      microreact: false,
+      network: false
+    } as Record<AnalysisType, boolean>
   }),
   getters: {
     isReadyToRun: (state) =>
@@ -217,6 +221,8 @@ export const useProjectStore = defineStore("project", {
         link.href = URL.createObjectURL(blob);
         link.download = `${type}_cluster${cluster}.zip`;
         link.click();
+
+        this.hadDownloadedZip[type] = true;
       } catch (error) {
         console.error(error);
       }

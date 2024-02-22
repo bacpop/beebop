@@ -1,0 +1,61 @@
+<script setup lang="ts">
+import { useProjectStore } from "@/stores/projectStore";
+import { AnalysisType } from "@/types/projectTypes";
+import ProjectDataTable from "@/components/ProjectView/ProjectDataTable.vue";
+import MicroReactColumn from "@/components/ProjectView/MicroReactColumn.vue";
+import { reactive } from "vue";
+
+const store = useProjectStore();
+const hasDownloadedFiles = reactive({
+  network: false,
+  microreact: false
+});
+
+const onDownloadZip = async (type: AnalysisType, cluster?: number) => {
+  if (type === AnalysisType.NETWORK) {
+    hasDownloadedFiles.network = true;
+  } else {
+    hasDownloadedFiles.microreact = true;
+  }
+  cluster && (await store.downloadZip(type, cluster));
+};
+</script>
+
+<template>
+  <ProjectDataTable>
+    <template #table-header>
+      <div v-if="store.analysisProgressPercentage !== 100">
+        <div class="mb-2">Completed {{ store.analysisProgressPercentage }} % of analysis</div>
+        <ProgressBar :value="store.analysisProgressPercentage"></ProgressBar>
+      </div>
+      <!-- TODO: update with network tab too -->
+      <div v-else class="h-1rem"></div>
+    </template>
+    <template #extra-cols>
+      <Column field="cluster" header="Cluster #">
+        <template #body="{ data }">
+          <span v-if="data.cluster"> {{ data.cluster }}</span>
+          <Tag v-else value="pending" severity="warning" /> </template
+      ></Column>
+      <!-- tooltips and dont allow click after first download -->
+      <Column header="Network">
+        <template #body="{ data }">
+          <Button
+            v-if="store.analysisStatus.network === 'finished'"
+            outlined
+            icon="pi pi-download"
+            @click="data.cluster && store.downloadZip(AnalysisType.NETWORK, data.cluster)"
+            :disabled="!data.cluster || store.hadDownloadedZip.network"
+          />
+          <Tag v-else-if="store.analysisStatus.network === 'failed'" value="failed" severity="danger" />
+          <Tag v-else :value="store.analysisStatus.network" severity="warning" />
+        </template>
+      </Column>
+      <Column header="Microreact">
+        <template #body="{ data }">
+          <MicroReactColumn :data="data" />
+        </template>
+      </Column>
+    </template>
+  </ProjectDataTable>
+</template>
