@@ -1,4 +1,4 @@
-FROM node:16
+FROM node:20
 
 COPY ./package.json /app/package.json
 COPY ./package-lock.json /app/package-lock.json
@@ -8,4 +8,5 @@ RUN npm ci
 COPY . /app
 EXPOSE 4000
 RUN npm run build
+RUN npm install -g ts-node
 ENTRYPOINT ["docker/entrypoint.sh"]
