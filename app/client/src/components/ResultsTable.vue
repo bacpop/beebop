@@ -98,13 +98,13 @@ export default defineComponent({
         },
         getCluster(sample: string) {
             return (this.results.perIsolate[sample].cluster
-                ? this.results.perIsolate[sample].cluster : this.analysisStatus.assign);
+                ? this.results.perIsolate[sample].cluster : this.analysisStatus?.assign);
         },
         getMicroreact() {
-            return (this.analysisStatus.microreact === "finished") ? "showButton" : this.analysisStatus.microreact;
+            return (this.analysisStatus?.microreact === "finished") ? "showButton" : this.analysisStatus?.microreact;
         },
         getNetwork() {
-            return (this.analysisStatus.network === "finished") ? "showButton" : this.analysisStatus.network;
+            return (this.analysisStatus?.network === "finished") ? "showButton" : this.analysisStatus?.network;
         }
     },
     computed: {
@@ -124,7 +124,7 @@ export default defineComponent({
                 });
             });
             const tableSorted = items.sort((a, b) => Number(a.Cluster) - Number(b.Cluster));
-            if (this.analysisStatus.assign === "finished") {
+            if (this.analysisStatus?.assign === "finished") {
                 // adding a rowspan property to merge microreact/ network cells from same cluster
                 const tableRowspan = addRowspan(tableSorted);
                 return tableRowspan;
