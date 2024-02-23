@@ -1,5 +1,4 @@
 import {UserStore} from "../../../src/db/userStore";
-import { JSONUtils } from "../../../src/utils/jsonUtils";
 
 describe("UserStore", () => {
     const mockRedis = {
