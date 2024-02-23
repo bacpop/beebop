@@ -16,7 +16,7 @@ const store = useProjectStore();
         <Tag v-else value="pending" severity="warning" />
       </template>
     </Column>
-    <Column field="amr" header="AMR">
+    <Column field="amr" header="Antimicrobial resistance">
       <template #body="{ data }">
         <AmrColumn :amr="data.amr" />
       </template>
