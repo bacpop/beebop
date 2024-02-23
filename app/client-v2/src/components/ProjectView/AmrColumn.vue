@@ -49,9 +49,9 @@ const getPercent = (value: number) => Math.round(value * 100);
 <template>
   <div v-if="amr" class="flex gap-2 flex-wrap">
     <Tag v-tooltip.top="key" :severity="value.severity" v-for="(value, key) in displayAMR" :key="key">
-      <div class="flex align-items-center gap-2 px-1 w-4rem justify-content-between">
+      <div class="flex align-items-center gap-2 px-1">
         <span class="text-base">{{ value.label }}</span>
-        <span>{{ value.value }}%</span>
+        <span style="width: 26px">{{ value.value }}%</span>
       </div>
     </Tag>
   </div>
