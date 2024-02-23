@@ -227,7 +227,7 @@ describe("projectController", () => {
 
         const response = res.json.mock.calls[0][0];
 
-        // does not include api data sdields from beebop py 
+        // does not include api data from beebop py 
         expect(response).toStrictEqual({
             status: "success",
             errors: [],

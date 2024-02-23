@@ -1,6 +1,6 @@
 import Redis from "ioredis";
 import {uid} from "uid";
-import {AMR, SplitSampleId} from "../types/models";
+import {AMR, BaseProjectInfo, SplitSampleId} from "../types/models";
 import { JSONUtils } from "../utils/jsonUtils";
 
 const BEEBOP_PREFIX = "beebop:";
@@ -50,8 +50,8 @@ export class UserStore {
          return await this._redis.hget(this._projectKey(projectId), "hash")
     }
     
-    async getBaseProjectInfo(projectId: string) {
-        return await this._redis.hgetall(this._projectKey(projectId));
+    async getBaseProjectInfo(projectId: string): Promise<BaseProjectInfo> {
+        return await this._redis.hgetall(this._projectKey(projectId)) as unknown as BaseProjectInfo;
     }
 
     async getUserProjects(request) {
