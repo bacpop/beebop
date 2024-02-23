@@ -12,7 +12,6 @@ const {
 } = useFetch(getApiUrl() + `/project/${route.params?.id}`, {
   credentials: "include"
 }).json();
-const samples = ref(project.value.data?.samples);
 
 const isRun = computed(() => {
   return project.value?.data?.status !== undefined;
