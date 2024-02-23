@@ -31,4 +31,10 @@ const projectFetchError = await store.getProject(route.params.id as string);
     width: 1100px;
   }
 }
+
+@media (min-width: 1500px) {
+  .single-project-card {
+    width: 1300px;
+  }
+}
 </style>

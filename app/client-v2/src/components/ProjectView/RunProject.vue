@@ -18,12 +18,11 @@ const store = useProjectStore();
       <div v-else class="h-1rem"></div>
     </template>
     <template #extra-cols>
-      <Column field="cluster" header="Cluster #">
+      <Column field="cluster" header="Cluster">
         <template #body="{ data }">
           <span v-if="data.cluster"> {{ data.cluster }}</span>
           <Tag v-else value="pending" severity="warning" /> </template
       ></Column>
-      <!-- tooltips and dont allow click after first download -->
       <Column header="Network">
         <template #body="{ data }">
           <Button

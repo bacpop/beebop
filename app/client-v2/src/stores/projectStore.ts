@@ -17,7 +17,7 @@ import { Md5 } from "ts-md5";
 
 const baseApi = mande(getApiUrl(), { credentials: "include" });
 
-// TODO: add proper error handling
+// TODO: add proper error handling. Maybe best to add error state attribute and watch accordingly cos of nested things interval/workers
 export const useProjectStore = defineStore("project", {
   state: () => ({
     basicInfo: {} as Pick<Project, "id" | "name" | "timestamp">,
@@ -78,8 +78,8 @@ export const useProjectStore = defineStore("project", {
     },
     pollAnalysisStatus() {
       if (!this.pollingIntervalId) {
-        const intervalId = setInterval(() => {
-          this.getAnalysisStatus();
+        const intervalId = setInterval(async () => {
+          await this.getAnalysisStatus();
         }, 1500);
         this.pollingIntervalId = intervalId;
       }

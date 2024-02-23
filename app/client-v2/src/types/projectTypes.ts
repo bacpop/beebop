@@ -16,10 +16,11 @@ export interface AMR {
   Chloramphenicol: number;
   Erythromycin: number;
   Tetracycline: number;
-  Trim_sulfa: number;
+  Trim_sulfa: number; // Cotrim
   length: boolean;
   species: boolean;
 }
+
 export interface ProjectSample {
   hash: string;
   filename: string;
