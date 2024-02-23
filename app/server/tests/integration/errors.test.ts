@@ -119,15 +119,14 @@ describe("Error handling", () => {
         }]);
     });
 
-    it.only("Omits unexpected error detail from response", async () => {
+    it("Omits unexpected error detail from response", async () => {
         // Run a project then sabotage its AMR in the database so we get an unexpected JSON parse error
         const projectId = await runProjectToCompletion();
         const redisKey = `beebop:project:${projectId}:sample:${sampleId}`
         await saveRedisHash(redisKey, {"amr": "{{{{nope"});
 
         const projectRes = await get(`project/${projectId}`, connectionCookie);
-        console.log(projectRes.data.data);
-        
+                
         expect(projectRes.status).toBe(500);
         expect(projectRes.data.data).toBe(null);
         expect(projectRes.data.errors.length).toBe(1);
