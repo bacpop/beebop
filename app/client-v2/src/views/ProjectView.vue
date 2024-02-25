@@ -2,7 +2,7 @@
 import { getApiUrl } from "@/config";
 import { useFetch } from "@vueuse/core";
 import type { FileUploadUploaderEvent } from "primevue/fileupload";
-import { computed, ref } from "vue";
+import { computed } from "vue";
 import { useRoute } from "vue-router";
 const route = useRoute();
 const {

@@ -9,6 +9,7 @@ const loginUrls = {
 };
 const userStore = useUserStore();
 const router = useRouter();
+
 if (userStore.isAuthenticated) {
   router.push("/");
 }

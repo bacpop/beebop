@@ -52,7 +52,7 @@ const toggle = (event: MouseEvent) => {
       </template>
       <template #end>
         <div class="flex gap-3">
-          <div><Button :icon="themeIcon" @click="toggleTheme" outlined /></div>
+          <div><Button aria-label="theme-switcher" :icon="themeIcon" @click="toggleTheme" outlined /></div>
           <div v-if="userStore.isAuthenticated">
             <Button
               type="button"
@@ -61,6 +61,7 @@ const toggle = (event: MouseEvent) => {
               @click="toggle"
               aria-haspopup="true"
               aria-controls="overlay_menu"
+              aria-label="user-menu"
             />
             <Menu ref="menu" id="overlay_menu" :model="menuItems" :popup="true">
               <template #item="{ item, props }">
