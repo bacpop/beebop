@@ -117,7 +117,7 @@ describe("UserStore", () => {
         const expectedSampleId = (sut as any)._sampleId(sampleHash, fileName);
         const expectedProjectSampleKey = (sut as any)._projectSampleKey(projectId, expectedSampleId);
         const expectedAMRString = JSON.stringify({ key: "value" });
-        const expectedAMR = JSONUtils.safeParseJSON(expectedAMRString);
+        const expectedAMR = JSON.parse(expectedAMRString);
     
         mockRedis.hget.mockImplementation(() => expectedAMRString);
     
@@ -170,7 +170,7 @@ describe("UserStore", () => {
         const sampleId = (sut as any)._sampleId(sampleHash, filename);
         const expectedProjectSamplesKey = (sut as any)._projectSamplesKey(projectId);
         const expectedProjectSampleKey = (sut as any)._projectSampleKey(projectId, sampleId);
-        const expectedSketchString = JSONUtils.safeStringify(sketch);
+        const expectedSketchString = JSON.stringify(sketch);
     
         await sut.saveSketch(projectId, sampleHash, filename, sketch);
     
@@ -192,7 +192,7 @@ describe("UserStore", () => {
         const expectedSampleId = (sut as any)._sampleId(sampleHash, fileName);
         const expectedProjectSampleKey = (sut as any)._projectSampleKey(projectId, expectedSampleId);
         const expectedSketchString = JSON.stringify({ key: "value" });
-        const expectedSketch = JSONUtils.safeParseJSON(expectedSketchString);
+        const expectedSketch = JSON.parse(expectedSketchString);
     
         mockRedis.hget.mockImplementation(() => expectedSketchString);
     
@@ -213,8 +213,8 @@ describe("UserStore", () => {
         const expectedProjectSampleKey = (sut as any)._projectSampleKey(projectId, expectedSampleId);
         const expectedSketchString = JSON.stringify({ key: "value" });
         const expectedAMRString = JSON.stringify({ key: "value" });
-        const expectedSketch = JSONUtils.safeParseJSON(expectedSketchString);
-        const expectedAMR = JSONUtils.safeParseJSON(expectedAMRString);
+        const expectedSketch = JSON.parse(expectedSketchString);
+        const expectedAMR = JSON.parse(expectedAMRString);
     
         mockRedis.hgetall.mockImplementation(() => ({ sketch: expectedSketchString, amr: expectedAMRString }));
     
