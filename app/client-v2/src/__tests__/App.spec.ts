@@ -1,6 +1,6 @@
 import AppVue from "@/App.vue";
 import { createTestingPinia } from "@pinia/testing";
-import { fireEvent, render, screen } from "@testing-library/vue";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/vue";
 import { defineComponent } from "vue";
 import { createRouter, createWebHistory } from "vue-router";
 import PrimeVue from "primevue/config";
@@ -26,7 +26,7 @@ const renderApp = async (userState = {}) => {
   router.push("/about");
   await router.isReady();
 
-  render(AppVue, {
+  return render(AppVue, {
     global: {
       plugins: [
         router,
@@ -68,6 +68,11 @@ describe("App", () => {
 
     expect(screen.getByText("LeBron")).toBeInTheDocument();
 
-    expect(screen.getByRole("menuitem", { name: /logout/i })).toBeVisible();
+    const logoutButton = screen.getByRole("menuitem", { name: /logout/i });
+
+    expect(within(logoutButton).getByRole("link", { hidden: true })).toHaveAttribute(
+      "href",
+      expect.stringContaining("/logout")
+    );
   });
 });

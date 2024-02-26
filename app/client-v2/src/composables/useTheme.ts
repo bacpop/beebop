@@ -2,29 +2,30 @@ import { useStorage } from "@vueuse/core";
 import { usePrimeVue } from "primevue/config";
 import { computed } from "vue";
 
+export const LIGHT_THEME = "aura-light-teal";
+export const DARK_THEME = "aura-dark-teal";
+
 export const useTheme = () => {
-  const lightThemeName = "aura-light-teal";
-  const darkThemeName = "aura-dark-teal";
-  const themeState = useStorage("theme", lightThemeName);
+  const themeState = useStorage("theme", LIGHT_THEME);
   const PrimeVue = usePrimeVue();
 
-  const themeIcon = computed(() => (themeState.value === lightThemeName ? "pi pi-sun" : "pi pi-moon"));
+  const themeIcon = computed(() => (themeState.value === LIGHT_THEME ? "pi pi-sun" : "pi pi-moon"));
 
   const toggleTheme = () => {
-    if (themeState.value === lightThemeName) {
-      themeState.value = darkThemeName;
-      PrimeVue.changeTheme(lightThemeName, darkThemeName, "theme-link", () => {});
+    if (themeState.value === LIGHT_THEME) {
+      themeState.value = DARK_THEME;
+      PrimeVue.changeTheme(LIGHT_THEME, DARK_THEME, "theme-link", () => {});
     } else {
-      themeState.value = lightThemeName;
-      PrimeVue.changeTheme(darkThemeName, lightThemeName, "theme-link", () => {});
+      themeState.value = LIGHT_THEME;
+      PrimeVue.changeTheme(DARK_THEME, LIGHT_THEME, "theme-link", () => {});
     }
   };
 
   const setInitialTheme = () => {
-    if (themeState.value === lightThemeName) {
-      PrimeVue.changeTheme(darkThemeName, lightThemeName, "theme-link", () => {});
+    if (themeState.value === LIGHT_THEME) {
+      PrimeVue.changeTheme(DARK_THEME, LIGHT_THEME, "theme-link", () => {});
     } else {
-      PrimeVue.changeTheme(lightThemeName, darkThemeName, "theme-link", () => {});
+      PrimeVue.changeTheme(LIGHT_THEME, DARK_THEME, "theme-link", () => {});
     }
   };
 
