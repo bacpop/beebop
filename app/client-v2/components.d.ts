@@ -7,6 +7,7 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    AmrColumn: typeof import('./src/components/ProjectView/AmrColumn.vue')['default']
     AutoComplete: typeof import('primevue/autocomplete')['default']
     Avatar: typeof import('primevue/avatar')['default']
     Badge: typeof import('primevue/badge')['default']
@@ -26,10 +27,15 @@ declare module 'vue' {
     InputText: typeof import('primevue/inputtext')['default']
     Menu: typeof import('primevue/menu')['default']
     Menubar: typeof import('primevue/menubar')['default']
+    NotRunProject: typeof import('./src/components/ProjectView/NotRunProject.vue')['default']
     ProgressBar: typeof import('primevue/progressbar')['default']
     ProgressSpinner: typeof import('primevue/progressspinner')['default']
+    ProjectDataTable: typeof import('./src/components/ProjectView/ProjectDataTable.vue')['default']
+    ProjectPage: typeof import('./src/components/ProjectView/ProjectPage.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    RunProject: typeof import('./src/components/ProjectView/RunProject.vue')['default']
+    Tag: typeof import('primevue/tag')['default']
     TheWelcome: typeof import('./src/components/TheWelcome.vue')['default']
     WelcomeItem: typeof import('./src/components/WelcomeItem.vue')['default']
   }
