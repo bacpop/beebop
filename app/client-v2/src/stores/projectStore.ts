@@ -6,7 +6,10 @@ import {
   type Project,
   type ProjectSample,
   type WorkerResponse,
-  WorkerResponseValueTypes
+  WorkerResponseValueTypes,
+  AnalysisType,
+  type AssignCluster,
+  type ClusterInfo
 } from "@/types/projectTypes";
 import { mande } from "mande";
 import { defineStore } from "pinia";
@@ -115,18 +118,121 @@ export const useProjectStore = defineStore("project", {
         this.fileSamples.splice(matchedHashIndex, 1);
       }
     },
-    // TODO: next PR to add this
     pollAnalysisStatus() {
-      console.log("Polling");
+      if (!this.pollingIntervalId) {
+        const intervalId = setInterval(async () => {
+          await this.getAnalysisStatus();
+        }, 1500);
+        this.pollingIntervalId = intervalId;
+      }
+    },
+    async getAnalysisStatus() {
+      const prevClusterAssign = this.analysisStatus.assign;
+      let stopPolling = false;
+      try {
+        const statusRes = await baseApi.post<ApiResponse<AnalysisStatus>>("/status", { hash: this.projectHash });
+        this.analysisStatus = statusRes.data;
+        if (statusRes.data.assign === "finished" && prevClusterAssign !== "finished") {
+          await this.getClusterAssignResult();
+        }
+        if (
+          COMPLETE_STATUS_TYPES.includes(statusRes.data.network) &&
+          COMPLETE_STATUS_TYPES.includes(statusRes.data.microreact)
+        ) {
+          stopPolling = true;
+        }
+      } catch (error) {
+        console.error(error);
+        stopPolling = true;
+      } finally {
+        if (stopPolling) {
+          this.stopPollingStatus();
+        }
+      }
+    },
+
+    async getClusterAssignResult() {
+      try {
+        const assignClusterRes = await baseApi.post<ApiResponse<AssignCluster>>("/assignResult", {
+          projectHash: this.projectHash
+        });
+
+        Object.values(assignClusterRes.data).forEach((clusterInfo: ClusterInfo) => {
+          const matchedHashIndex = this.fileSamples.findIndex(
+            (sample: ProjectSample) => clusterInfo.hash === sample.hash
+          );
+          if (matchedHashIndex !== -1) {
+            this.fileSamples[matchedHashIndex].cluster = clusterInfo.cluster;
+          }
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    stopPollingStatus() {
+      if (this.pollingIntervalId) {
+        clearInterval(this.pollingIntervalId);
+        this.pollingIntervalId = null;
+      }
     },
     // TODO: update to remove from api as well
     removeUploadedFile(index: number) {
       this.fileSamples.splice(index, 1);
     },
-    // TODO: next PR to add this
     async runAnalysis() {
-      console.log("Run");
-      this.isRun = true;
+      const body = this.buildRunAnalysisPostBody();
+      try {
+        await baseApi.post("/poppunk", body);
+        this.projectHash = body.projectHash;
+        this.isRun = true;
+      } catch (error) {
+        console.error("Error running analysis", error);
+        return;
+      }
+
+      this.analysisStatus = { assign: "submitted", microreact: "submitted", network: "submitted" };
+      this.pollAnalysisStatus();
+    },
+    buildRunAnalysisPostBody() {
+      const sketches: Record<string, unknown> = {};
+      const names: Record<string, unknown> = {};
+      let projectHashKey = "";
+      this.fileSamples
+        .sort((a, b) => a.filename.localeCompare(b.filename))
+        .forEach((sample: ProjectSample) => {
+          projectHashKey += sample.hash + sample.filename;
+          sketches[sample.hash] = sample.sketch;
+          names[sample.hash] = sample.filename;
+        }, "");
+      const projectHash = Md5.hashStr(projectHashKey);
+
+      return { projectHash, names, sketches, projectId: this.basicInfo.id };
+    },
+    async downloadZip(type: AnalysisType, cluster: number) {
+      try {
+        const res = await baseApi.post<Response, "response">(
+          "downloadZip",
+          {
+            type,
+            cluster,
+            projectHash: this.projectHash
+          },
+          { responseAs: "response", headers: { "Content-Type": "application/json" } }
+        );
+        const blob = await res.blob().catch(() => {
+          throw new Error("Error retrieving data from response");
+        });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `${type}_cluster${cluster}.zip`;
+        link.click();
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    // TODO
+    async onMicroReactVisit(cluster: number) {
+      console.log("Microreact visit", cluster);
     }
   }
 });

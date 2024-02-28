@@ -5,7 +5,6 @@ import { computed } from "vue";
 const props = defineProps<{
   amr?: AMR;
 }>();
-console.log(props.amr);
 
 const tagSeverity = (percent: number) => {
   if (percent < 33) return "danger";
