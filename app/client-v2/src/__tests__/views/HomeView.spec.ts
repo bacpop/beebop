@@ -1,7 +1,7 @@
 import ToastService from "primevue/toastservice";
 import PrimeVue from "primevue/config";
 import HomeViewVue from "@/views/HomeView.vue";
-import { fireEvent, render, screen, waitFor, within } from "@testing-library/vue";
+import { render, screen, waitFor, within } from "@testing-library/vue";
 import Ripple from "primevue/ripple";
 import { MOCK_PROJECTS } from "@/mocks/mockObjects";
 import { createRouter, createWebHistory } from "vue-router";
@@ -11,6 +11,7 @@ import { server } from "@/mocks/server";
 import { HttpResponse, http } from "msw";
 import { projectIndexUri } from "@/mocks/handlers/projectHandlers";
 import { flushPromises } from "@vue/test-utils";
+import userEvent from "@testing-library/user-event";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -63,7 +64,7 @@ describe("HomeView ", () => {
     await flushPromises();
 
     const searchInput = screen.getByPlaceholderText(/search/i);
-    await fireEvent.update(searchInput, "Test");
+    await userEvent.type(searchInput, "Test");
 
     await waitFor(() => {
       expect(screen.getByRole("link", { name: MOCK_PROJECTS[0].name })).toBeVisible();
@@ -78,11 +79,11 @@ describe("HomeView ", () => {
     const createButton = screen.getByRole("button", { name: /add-project/i });
     const createInput = screen.getByPlaceholderText(/create/i);
 
-    await fireEvent.click(createButton);
+    await userEvent.click(createButton);
     expect(push).not.toHaveBeenCalled();
 
-    await fireEvent.update(createInput, "New Project");
-    await fireEvent.click(createButton);
+    await userEvent.type(createInput, "New Project");
+    await userEvent.click(createButton);
 
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(`/project/${MOCK_PROJECTS[0].id}`);
@@ -95,8 +96,8 @@ describe("HomeView ", () => {
     const createButton = screen.getByRole("button", { name: /add-project/i });
     const createInput = screen.getByPlaceholderText(/create/i);
 
-    await fireEvent.update(createInput, "New Project");
-    await fireEvent.click(createButton);
+    await userEvent.type(createInput, "New Project");
+    await userEvent.click(createButton);
 
     await waitFor(() => {
       expect(screen.getByText(/Error creating project/i)).toBeVisible();
@@ -111,11 +112,11 @@ describe("HomeView ", () => {
     });
     const firstEditButton = screen.getAllByRole("button", { name: /edit/i })[0];
 
-    await fireEvent.click(firstEditButton);
+    await userEvent.click(firstEditButton);
 
-    await fireEvent.update(within(firstNameCell).getByRole("textbox"), "New Name");
+    await userEvent.type(within(firstNameCell).getByRole("textbox"), "New Name");
 
-    await fireEvent.click(
+    await userEvent.click(
       screen.getByRole("button", {
         name: /save edit/i
       })
@@ -134,11 +135,11 @@ describe("HomeView ", () => {
     });
     const firstEditButton = screen.getAllByRole("button", { name: /edit/i })[0];
 
-    await fireEvent.click(firstEditButton);
+    await userEvent.click(firstEditButton);
 
-    await fireEvent.update(within(firstNameCell).getByRole("textbox"), "New Name");
+    await userEvent.type(within(firstNameCell).getByRole("textbox"), "New Name");
 
-    await fireEvent.click(
+    await userEvent.click(
       screen.getByRole("button", {
         name: /save edit/i
       })

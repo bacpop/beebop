@@ -1,10 +1,11 @@
 import AppVue from "@/App.vue";
 import { createTestingPinia } from "@pinia/testing";
-import { fireEvent, render, screen, waitFor, within } from "@testing-library/vue";
+import { render, screen, within } from "@testing-library/vue";
 import { defineComponent } from "vue";
 import { createRouter, createWebHistory } from "vue-router";
 import PrimeVue from "primevue/config";
 import Ripple from "primevue/ripple";
+import userEvent from "@testing-library/user-event";
 
 const mockedThemeValues = {
   setInitialTheme: vitest.fn(),
@@ -57,14 +58,14 @@ describe("App", () => {
     await renderApp();
 
     const themeIcon = screen.getByRole("button", { name: /theme-switcher/i });
-    await fireEvent.click(themeIcon);
+    await userEvent.click(themeIcon);
 
     expect(mockedThemeValues.toggleTheme).toHaveBeenCalled();
   });
   it("should show user menu and and be able to logout when authenticated", async () => {
     await renderApp({ id: "1", name: "LeBron" });
 
-    await fireEvent.click(screen.getByRole("button", { name: "user-menu" }));
+    await userEvent.click(screen.getByRole("button", { name: "user-menu" }));
 
     expect(screen.getByText("LeBron")).toBeInTheDocument();
 
