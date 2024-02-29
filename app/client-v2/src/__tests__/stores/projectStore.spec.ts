@@ -353,6 +353,7 @@ describe("projectStore", () => {
       } as any;
       document.createElement = () => mockFileLink;
       URL.createObjectURL = vitest.fn(() => fakeObjectUrl);
+      URL.revokeObjectURL = vitest.fn();
       const mockBufferRes = new ArrayBuffer(10);
 
       server.use(
@@ -373,6 +374,7 @@ describe("projectStore", () => {
       expect(mockFileLink.href).toBe(fakeObjectUrl);
       expect(mockFileLink.download).toBe(`${AnalysisType.MICROREACT}_cluster1.zip`);
       expect(mockFileLink.click).toHaveBeenCalled();
+      expect(URL.revokeObjectURL).toHaveBeenCalledWith(fakeObjectUrl);
     });
     it("should not download if downloadZip fetch errors", async () => {
       const store = useProjectStore();

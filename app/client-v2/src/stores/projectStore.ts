@@ -90,7 +90,7 @@ export const useProjectStore = defineStore("project", {
         worker.postMessage({ hash: fileHash, fileObject: file });
 
         worker.onmessage = async (event: MessageEvent<WorkerResponse>) => {
-          await this.handleWorkerResponse(file.name, event);
+          this.handleWorkerResponse(file.name, event);
         };
       }
     },
@@ -227,6 +227,7 @@ export const useProjectStore = defineStore("project", {
         link.href = URL.createObjectURL(blob);
         link.download = `${type}_cluster${cluster}.zip`;
         link.click();
+        URL.revokeObjectURL(link.href);
       } catch (error) {
         console.error(error);
       }
