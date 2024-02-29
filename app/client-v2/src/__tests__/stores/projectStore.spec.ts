@@ -1,8 +1,9 @@
-import { projectIndexUri } from "@/mocks/handlers/projectHandlers";
-import { MOCK_PROJECT } from "@/mocks/mockObjects";
+import { getApiUrl } from "@/config";
+import { assignResultUri, projectIndexUri, statusUri } from "@/mocks/handlers/projectHandlers";
+import { MOCK_PROJECT, MOCK_PROJECT_SAMPLES, MOCK_PROJECT_SAMPLES_BEFORE_RUN } from "@/mocks/mockObjects";
 import { server } from "@/mocks/server";
 import { useProjectStore } from "@/stores/projectStore";
-import { WorkerResponseValueTypes, type ProjectSample } from "@/types/projectTypes";
+import { WorkerResponseValueTypes, type ProjectSample, AnalysisType } from "@/types/projectTypes";
 import { flushPromises } from "@vue/test-utils";
 import { HttpResponse, http } from "msw";
 import { createPinia, setActivePinia } from "pinia";
@@ -49,7 +50,6 @@ describe("projectStore", () => {
     it("analysisProgressPercentage returns the correct percentage of complete analysisStatus", () => {
       const store = useProjectStore();
       store.analysisStatus = { assign: "started", microreact: "finished", network: "finished" };
-
       expect(store.analysisProgressPercentage).toBe(Math.round((2 / 3) * 100));
     });
   });
@@ -198,6 +198,191 @@ describe("projectStore", () => {
       await store.handleWorkerResponse("sample1.fasta", { data: eventData } as any);
 
       expect(store.fileSamples).toEqual(mockFilesWithHashes.slice(1));
+    });
+
+    it("should set pollingIntervalId when pollAnalysisStatus is called & not already set", async () => {
+      const store = useProjectStore();
+      store.pollingIntervalId = null;
+
+      store.pollAnalysisStatus();
+
+      await flushPromises();
+
+      expect(store.pollingIntervalId).not.toBeNull();
+    });
+    it("should not set pollingIntervalId when pollAnalysisStatus is called & already set", async () => {
+      const store = useProjectStore();
+      const interval = setInterval(() => {}, 1000);
+      store.pollingIntervalId = interval;
+
+      store.pollAnalysisStatus();
+
+      await flushPromises();
+
+      expect(store.pollingIntervalId).toEqual(interval);
+    });
+    it("should clear pollingIntervalId when stopPollingStatus is called and is set", async () => {
+      const store = useProjectStore();
+      const interval = setInterval(() => {}, 1000);
+      store.pollingIntervalId = interval;
+
+      store.stopPollingStatus();
+
+      await flushPromises();
+
+      expect(store.pollingIntervalId).toBeNull();
+    });
+    it("should set cluster values correctly when getClusterAssignResult is called", async () => {
+      const store = useProjectStore();
+      store.fileSamples = structuredClone(MOCK_PROJECT_SAMPLES_BEFORE_RUN);
+
+      await store.getClusterAssignResult();
+
+      store.fileSamples.forEach((sample, index) => {
+        expect(sample.cluster).toBe(MOCK_PROJECT_SAMPLES[index].cluster);
+      });
+    });
+    it("should not set cluster values when getClusterAssignResult fails", async () => {
+      const store = useProjectStore();
+      store.fileSamples = structuredClone(MOCK_PROJECT_SAMPLES_BEFORE_RUN);
+
+      server.use(http.post(assignResultUri, () => HttpResponse.error()));
+
+      await store.getClusterAssignResult();
+
+      store.fileSamples.forEach((sample) => {
+        expect(sample.cluster).toBeUndefined();
+      });
+    });
+    it("should stop polling if status request returns complete status & sets stores analysisStatus", async () => {
+      const store = useProjectStore();
+      store.stopPollingStatus = vitest.fn();
+
+      await store.getAnalysisStatus();
+
+      expect(store.analysisStatus).toEqual(MOCK_PROJECT.status);
+      expect(store.stopPollingStatus).toHaveBeenCalled();
+    });
+    it("should stop polling if status request fails", async () => {
+      const store = useProjectStore();
+      store.stopPollingStatus = vitest.fn();
+      server.use(http.post(statusUri, () => HttpResponse.error()));
+
+      await store.getAnalysisStatus();
+
+      expect(store.pollingIntervalId).toBeNull();
+      expect(store.stopPollingStatus).toHaveBeenCalled();
+    });
+    it("should not stop polling if status request returns incomplete status", async () => {
+      const store = useProjectStore();
+      store.stopPollingStatus = vitest.fn();
+      server.use(
+        http.post(statusUri, () => HttpResponse.json({ data: { assign: "started" }, errors: [], status: "success" }))
+      );
+
+      await store.getAnalysisStatus();
+
+      expect(store.stopPollingStatus).not.toHaveBeenCalled();
+    });
+    it("should call getClusterAssignResult when assign status changes to finished", async () => {
+      const store = useProjectStore();
+      store.getClusterAssignResult = vitest.fn();
+      store.analysisStatus = { assign: "started", microreact: "finished", network: "finished" };
+
+      await store.getAnalysisStatus();
+
+      expect(store.getClusterAssignResult).toHaveBeenCalled();
+    });
+    it("should set state, call buildRunAnalysisPostBody and pollAnalysisStatus when runAnalysis is called", async () => {
+      const store = useProjectStore();
+      store.buildRunAnalysisPostBody = vitest.fn().mockReturnValue({ projectHash: "test-hash" });
+      store.pollAnalysisStatus = vitest.fn();
+
+      await store.runAnalysis();
+
+      expect(store.buildRunAnalysisPostBody).toHaveBeenCalled();
+      expect(store.pollAnalysisStatus).toHaveBeenCalled();
+      expect(store.isRun).toBe(true);
+      expect(store.projectHash).toBe("test-hash");
+      expect(store.analysisStatus).toEqual({ assign: "submitted", microreact: "submitted", network: "submitted" });
+    });
+    it("should not call pollAnalysisStatus & not change status when runAnalysis fails", () => {
+      const store = useProjectStore();
+      store.buildRunAnalysisPostBody = vitest.fn().mockReturnValue({ projectHash: "test-hash" });
+      store.pollAnalysisStatus = vitest.fn();
+      server.use(http.post("*", () => HttpResponse.error()));
+
+      store.runAnalysis();
+
+      expect(store.pollAnalysisStatus).not.toHaveBeenCalled();
+      expect(store.analysisStatus).toEqual({});
+      expect(store.isRun).toBe(false);
+      expect(store.projectHash).toBe("");
+    });
+    it("should correctly create post body when buildRunAnalysisPostBody is called", () => {
+      const store = useProjectStore();
+      const projectHash = "2b4829de7ce1dc69265f3468bd247005";
+      store.basicInfo.id = "1";
+      store.fileSamples = MOCK_PROJECT_SAMPLES;
+
+      const postBody = store.buildRunAnalysisPostBody();
+
+      expect(postBody).toEqual({
+        projectHash: projectHash,
+        projectId: "1",
+        names: {
+          [MOCK_PROJECT_SAMPLES[0].hash]: MOCK_PROJECT_SAMPLES[0].filename,
+          [MOCK_PROJECT_SAMPLES[1].hash]: MOCK_PROJECT_SAMPLES[1].filename,
+          [MOCK_PROJECT_SAMPLES[2].hash]: MOCK_PROJECT_SAMPLES[2].filename
+        },
+        sketches: {
+          [MOCK_PROJECT_SAMPLES[0].hash]: MOCK_PROJECT_SAMPLES[0].sketch,
+          [MOCK_PROJECT_SAMPLES[1].hash]: MOCK_PROJECT_SAMPLES[1].sketch,
+          [MOCK_PROJECT_SAMPLES[2].hash]: MOCK_PROJECT_SAMPLES[2].sketch
+        }
+      });
+    });
+    it("should get download url & download when downloadZip is called", async () => {
+      const store = useProjectStore();
+      store.projectHash = "test-hash";
+      const fakeObjectUrl = "fake-object-url";
+      const mockFileLink = {
+        href: "",
+        download: vitest.fn(),
+        click: vitest.fn()
+      } as any;
+      document.createElement = () => mockFileLink;
+      URL.createObjectURL = vitest.fn(() => fakeObjectUrl);
+      const mockBufferRes = new ArrayBuffer(10);
+
+      server.use(
+        http.post(`${getApiUrl()}/downloadZip`, async ({ request }) => {
+          const body = await request.json();
+          expect(body).toEqual({ type: AnalysisType.MICROREACT, cluster: 1, projectHash: store.projectHash });
+
+          return HttpResponse.arrayBuffer(mockBufferRes, {
+            status: 201,
+            headers: { "Content-Type": "application/zip" }
+          });
+        })
+      );
+
+      await store.downloadZip(AnalysisType.MICROREACT, 1);
+
+      expect(URL.createObjectURL).toHaveBeenCalledWith(expect.objectContaining({ size: 10, type: "application/zip" }));
+      expect(mockFileLink.href).toBe(fakeObjectUrl);
+      expect(mockFileLink.download).toBe(`${AnalysisType.MICROREACT}_cluster1.zip`);
+      expect(mockFileLink.click).toHaveBeenCalled();
+    });
+    it("should not download if downloadZip fetch errors", async () => {
+      const store = useProjectStore();
+      URL.createObjectURL = vitest.fn();
+
+      server.use(http.post(`${getApiUrl()}/downloadZip`, () => HttpResponse.error()));
+
+      await store.downloadZip(AnalysisType.MICROREACT, 1);
+
+      expect(URL.createObjectURL).not.toHaveBeenCalled();
     });
   });
 });

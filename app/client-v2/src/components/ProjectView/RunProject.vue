@@ -3,6 +3,7 @@ import MicroReactColumn from "@/components/ProjectView/MicroReactColumn.vue";
 import ProjectDataTable from "@/components/ProjectView/ProjectDataTable.vue";
 import { useProjectStore } from "@/stores/projectStore";
 import { AnalysisType } from "@/types/projectTypes";
+import NetworkTab from "./NetworkTab.vue";
 
 const store = useProjectStore();
 </script>
@@ -29,6 +30,7 @@ const store = useProjectStore();
                 icon="pi pi-download"
                 @click="data.cluster && store.downloadZip(AnalysisType.NETWORK, data.cluster)"
                 :disabled="!data.cluster"
+                aria-label="Download network zip"
                 v-tooltip.top="'Download zip'"
               />
               <Tag v-else-if="store.analysisStatus.network === 'failed'" value="failed" severity="danger" />
@@ -44,8 +46,7 @@ const store = useProjectStore();
       </ProjectDataTable>
     </TabPanel>
     <TabPanel header="Network" :disabled="!store.isProjectComplete">
-      <!-- TODO -->
-      Network tab TODO
+      <NetworkTab />
     </TabPanel>
   </TabView>
 </template>

@@ -100,4 +100,23 @@ describe("Project Page", () => {
 
     expect(wrapper.text()).toContain("Error fetching project");
   });
+  it("should render completed tag if project is complete", async () => {
+    const testPinia = createTestingPinia();
+    const store = useProjectStore(testPinia);
+    // @ts-expect-error: getter is read-only
+    store.isProjectComplete = true;
+    const wrapper = mount(AsyncProjectPage, {
+      global: {
+        plugins: [testPinia],
+        stubs: {
+          RunProject: stubRunProject,
+          NotRunProject: stubNotRunProject
+        }
+      }
+    });
+
+    await flushPromises();
+
+    expect(wrapper.text()).toContain("Completed");
+  });
 });

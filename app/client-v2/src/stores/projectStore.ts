@@ -150,7 +150,6 @@ export const useProjectStore = defineStore("project", {
         }
       }
     },
-
     async getClusterAssignResult() {
       try {
         const assignClusterRes = await baseApi.post<ApiResponse<AssignCluster>>("/assignResult", {
@@ -177,7 +176,7 @@ export const useProjectStore = defineStore("project", {
     },
     // TODO: update to remove from api as well
     removeUploadedFile(index: number) {
-      this.fileSamples.splice(index, 1);
+      // this.fileSamples.splice(index, 1);
     },
     async runAnalysis() {
       const body = this.buildRunAnalysisPostBody();
@@ -219,9 +218,11 @@ export const useProjectStore = defineStore("project", {
           },
           { responseAs: "response", headers: { "Content-Type": "application/json" } }
         );
+
         const blob = await res.blob().catch(() => {
           throw new Error("Error retrieving data from response");
         });
+
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
         link.download = `${type}_cluster${cluster}.zip`;

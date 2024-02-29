@@ -13,6 +13,7 @@ const props = defineProps<{
     <Button
       outlined
       icon="pi pi-download"
+      aria-label="Download microreact zip"
       @click="props.data.cluster && store.downloadZip(AnalysisType.MICROREACT, props.data.cluster)"
       :disabled="!props.data.cluster"
       v-tooltip.top="'Download zip'"
