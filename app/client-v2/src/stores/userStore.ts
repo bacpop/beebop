@@ -26,7 +26,7 @@ export const useUserStore = defineStore("user", {
     // todo: proper error handling
     async getUser() {
       try {
-        const res = await fetch(`${getApiUrl()}/user`, {
+            const res = await fetch(`${getApiUrl()}/user`, {
           credentials: "include"
         });
         const data: UserResponse = await res.json();
