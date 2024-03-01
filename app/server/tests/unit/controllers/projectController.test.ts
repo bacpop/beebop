@@ -1,6 +1,6 @@
 const mockUserStoreConstructor = jest.fn();
 const mockUserProjects = [{name: "p1", hash: "123"}];
-const mockProjectSamples = [
+const getProjectSplitSampleIds = [
     {hash: "5678", filename: "test1.fa"},
     {hash: "1234", filename: "test2.fa"},
     {hash: "1234", filename: "test3.fa"}
@@ -10,13 +10,36 @@ const mockUserStore = {
     getUserProjects: jest.fn().mockImplementation(() => mockUserProjects),
     getProjectHash: jest.fn().mockImplementation(() => "123"),
     saveAMR: jest.fn(),
-    getProjectSamples: jest.fn().mockImplementation(() => mockProjectSamples),
+    saveSketch: jest.fn(),
+    getProjectSplitSampleIds: jest.fn().mockImplementation(() => getProjectSplitSampleIds),
+    getSketch: jest.fn().mockImplementation((projectId: string, sampleHash: string, fileName: string) =>
+        ({ sketch: `sketch for ${projectId}-${sampleHash}-${fileName}` })),
     getAMR: jest.fn().mockImplementation((projectId: string, sampleHash: string, fileName: string) =>
         `AMR for ${projectId}-${sampleHash}-${fileName}`),
-    renameProject: jest.fn()
+    renameProject: jest.fn(),
+    getBaseProjectInfo: jest.fn().mockImplementation(() => ({
+        hash: "123",
+        timestamp: 12321,
+        name: "test project"
+    })),
+    getSample: jest.fn().mockImplementation(() => ({
+        sketch: "test sketch",
+        amr: "test amr"
+    }))
 };
 jest.mock("../../../src/db/userStore", () => ({
     userStore: mockUserStoreConstructor.mockReturnValue(mockUserStore)
+}));
+const mockProjectSampleData = [
+    {hash: "1234", sketch: "AAAA", filename: "test1.fa", amr: "AMR for testProjectId-5678-test1.fa", cluster: 420 },
+    {hash: "1235", sketch: "BBBB", filename: "test2.fa", amr: "AMR for testProjectId-1234-test2.fa", cluster: 421 },
+    {hash: "1236", sketch: "CCCC", filename: "test3.fa", amr: "AMR for testProjectId-1234-test3.fa", cluster: 423 }
+];
+const mockGetResponseSamples = jest.fn(() => mockProjectSampleData); 
+jest.mock("../../../src/utils/projectUtils", () => ({
+    ProjectUtils: {
+        getResponseSamples: () => mockGetResponseSamples()
+    }
 }));
 
 import {mockApp, mockRedis, mockResponse} from "../utils";
@@ -24,6 +47,7 @@ import config from "../../../src/resources/config.json";
 import projectController from "../../../src/controllers/projectController";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
+import { BeebopError } from "../../../src/errors/beebopError";
 
 const mockAxios = new MockAdapter(axios);
 
@@ -113,7 +137,41 @@ describe("projectController", () => {
         expect(mockUserStore.saveAMR).toHaveBeenCalledWith("testProjectId", "1234", req.body);
     });
 
-    it("gets project", async () => {
+    it("saves sketch data", async () => {
+        const req = {
+            body: {
+                sketch: { key: "value" },
+                filename: "test.fa"
+            },
+            params: {
+                projectId: "testProjectId",
+                sampleHash: "testSampleHash"
+            },
+            app: mockApp
+        };
+        const res = mockResponse();
+        await projectController(config).postSketch(req, res, jest.fn());
+        expect(mockUserStoreConstructor).toHaveBeenCalledTimes(1);
+        expect(mockUserStoreConstructor.mock.calls[0][0]).toBe(mockRedis);
+        expect(mockUserStore.saveSketch).toHaveBeenCalledTimes(1);
+        expect(mockUserStore.saveSketch.mock.calls[0][0]).toBe(req.params.projectId);
+        expect(mockUserStore.saveSketch.mock.calls[0][1]).toBe(req.params.sampleHash);
+        expect(mockUserStore.saveSketch.mock.calls[0][2]).toBe(req.body.filename);
+        expect(mockUserStore.saveSketch.mock.calls[0][3]).toBe(req.body.sketch);
+        expect(res.json).toHaveBeenCalledTimes(1);
+        expect(res.json.mock.calls[0][0]).toStrictEqual({
+            status: "success",
+            errors: [],
+            data: null
+        });
+    });
+
+    it("gets a ran project that has hash", async () => {
+        const mockRunStatus = {
+            assign: "finished",
+            microreact: "started",
+            network: "deffered"
+        };
         const req = {
             app: mockApp,
             params: {
@@ -122,11 +180,12 @@ describe("projectController", () => {
         };
         const res = mockResponse();
         const projectData = {
-            hash: "abcd",
+            hash: "123",
             samples: [
-                {hash: "1234", sketch: "AGTC"},
-                {hash: "5678", sketch: "CTGA"}
-            ]};
+                {hash: "1234", sketch: "AAAA", cluster: 420},
+                {hash: "1235", sketch: "BBBB", cluster: 421}
+            ],
+            status: mockRunStatus};
 
         mockAxios.onGet(`${config.api_url}/project/123`).reply(200, {data: projectData});
 
@@ -137,19 +196,17 @@ describe("projectController", () => {
             status: "success",
             errors: [],
             data: {
-                hash: "abcd",
-                samples: [
-                    {hash: "5678", sketch: "CTGA", filename: "test1.fa", amr: "AMR for testProjectId-5678-test1.fa"},
-                    {hash: "1234", sketch: "AGTC", filename: "test2.fa", amr: "AMR for testProjectId-1234-test2.fa"},
-                    {hash: "1234", sketch: "AGTC", filename: "test3.fa", amr: "AMR for testProjectId-1234-test3.fa"}
-                ]
+                hash: "123",
+                samples: mockProjectSampleData,
+                timestamp: 12321,
+                name: "test project",
+                status: mockRunStatus
             }
         });
-        expect(mockUserStore.getProjectHash).toHaveBeenCalledWith(req, "testProjectId");
-        expect(mockUserStore.getProjectSamples).toHaveBeenCalledWith("testProjectId");
     });
-
-    it("getProject throws expected error when sample is missing in API response", async () => {
+    
+    it("gets an unrun project with no hash and does not include api data from py", async () => {
+        mockUserStore.getBaseProjectInfo.mockReturnValueOnce({hash: null, timestamp: 1111111, name: "test project"})
         const req = {
             app: mockApp,
             params: {
@@ -157,13 +214,46 @@ describe("projectController", () => {
             }
         };
         const res = mockResponse();
+        
+        await projectController(config).getProject(req, res, jest.fn());
         const projectData = {
             hash: "abcd",
             samples: [
-                {hash: "5678", sketch: "CTGA"}
-            ]};
-
+                {hash: "1234", sketch: "AAAA", cluster: 420},
+                {hash: "1235", sketch: "BBBB", cluster: 421}
+            ],
+        status: {assign: "finished", microreact: "started", network: "deffered"}};
         mockAxios.onGet(`${config.api_url}/project/123`).reply(200, {data: projectData});
+
+        const response = res.json.mock.calls[0][0];
+
+        // does not include api data from beebop py 
+        expect(response).toStrictEqual({
+            status: "success",
+            errors: [],
+            data: {
+                hash: null,
+                samples: mockProjectSampleData,
+                timestamp: 1111111,
+                name: "test project"
+            }
+        });
+    });
+
+    it("getProject throws expected error when getResponseSamples throws", async () => {
+        mockGetResponseSamples.mockImplementationOnce(() => {
+            throw new BeebopError(
+                "Invalid data",
+                `Sample with hash 1234 was not in API response`
+              );
+        });
+        const req = {
+            app: mockApp,
+            params: {
+                projectId: "testProjectId"
+            }
+        };
+        const res = mockResponse();
         const next = jest.fn();
 
         await projectController(config).getProject(req, res, next);

@@ -129,6 +129,7 @@ describe("Error handling", () => {
         await saveRedisHash(redisKey, {"amr": "{{{{nope"});
 
         const projectRes = await get(`project/${projectId}`, connectionCookie);
+                
         expect(projectRes.status).toBe(500);
         expect(projectRes.data.data).toBe(null);
         expect(projectRes.data.errors.length).toBe(1);

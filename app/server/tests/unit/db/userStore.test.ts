@@ -5,6 +5,8 @@ describe("UserStore", () => {
         hset: jest.fn(),
         lpush: jest.fn(),
         sadd: jest.fn(),
+        hget: jest.fn(),
+        hgetall: jest.fn(),
         lrange: jest.fn().mockImplementation(() => ["123", "456"]),
         hmget: jest.fn().mockImplementation((key: string, ...valueNames: string[]) => {
             return valueNames.map((valueName) => valueName === "timestamp" ? 1687879913811 : `${valueName} for ${key}`);
@@ -107,16 +109,24 @@ describe("UserStore", () => {
         expect(mockRedis.hset).toHaveBeenCalledWith(expectedSampleKey, "amr", JSON.stringify(testAMR));
     });
 
-    it("gets amr data", async () => {
-        const mockAMR = {Pencicillin: 0.5};
-        const mockAMRRedis = {
-            hget: jest.fn().mockImplementation(() => JSON.stringify(mockAMR))
-        } as any;
-
-        const sut = new UserStore(mockAMRRedis);
-        const result = await sut.getAMR("testProjectId", "1234", "test.fa");
-        expect(mockAMRRedis.hget).toHaveBeenCalledWith("beebop:project:testProjectId:sample:1234:test.fa", "amr");
-        expect(result).toStrictEqual(mockAMR);
+    it("gets AMR data", async () => {
+        const sut = new UserStore(mockRedis);
+        const projectId = "testProjectId";
+        const sampleHash = "testSampleHash";
+        const fileName = "test.fa";
+        const expectedSampleId = (sut as any)._sampleId(sampleHash, fileName);
+        const expectedProjectSampleKey = (sut as any)._projectSampleKey(projectId, expectedSampleId);
+        const expectedAMRString = JSON.stringify({ key: "value" });
+        const expectedAMR = JSON.parse(expectedAMRString);
+    
+        mockRedis.hget.mockImplementation(() => expectedAMRString);
+    
+        const result = await sut.getAMR(projectId, sampleHash, fileName);
+    
+        expect(mockRedis.hget).toHaveBeenCalledTimes(1);
+        expect(mockRedis.hget.mock.calls[0][0]).toBe(expectedProjectSampleKey);
+        expect(mockRedis.hget.mock.calls[0][1]).toBe("amr");
+        expect(result).toStrictEqual(expectedAMR);
     });
 
     it("gets project samples", async() => {
@@ -124,11 +134,94 @@ describe("UserStore", () => {
             smembers: jest.fn().mockImplementation(() => ["1234:test1.fa", "5678:test2.fa"])
         } as any;
         const sut = new UserStore(mockProjectRedis);
-        const result = await sut.getProjectSamples("testProjectId");
+        const result = await sut.getProjectSplitSampleIds("testProjectId");
         expect(mockProjectRedis.smembers).toHaveBeenCalledWith("beebop:project:testProjectId:samples");
         expect(result).toStrictEqual([
             { hash: "1234", filename: "test1.fa" },
             { hash: "5678", filename: "test2.fa" }
         ]);
+    });
+
+    it("gets base project info", async () => {
+        const sut = new UserStore(mockRedis);
+        const projectId = "testProjectId";
+        const expectedProjectKey = `beebop:project:${projectId}`;
+        const expectedProjectInfo = {
+            name: "Test Project",
+            hash: "testHash",
+            timestamp: "1687879913811"
+        };
+    
+        mockRedis.hgetall.mockImplementation(() => expectedProjectInfo);
+    
+        const result = await sut.getBaseProjectInfo(projectId);
+    
+        expect(mockRedis.hgetall).toHaveBeenCalledTimes(1);
+        expect(mockRedis.hgetall.mock.calls[0][0]).toBe(expectedProjectKey);
+        expect(result).toStrictEqual(expectedProjectInfo);
+    });
+
+    it("saves sketch data", async () => {
+        const sut = new UserStore(mockRedis);
+        const projectId = "testProjectId";
+        const sampleHash = "testSampleHash";
+        const filename = "test.fa";
+        const sketch = { key: "value" };
+        const sampleId = (sut as any)._sampleId(sampleHash, filename);
+        const expectedProjectSamplesKey = (sut as any)._projectSamplesKey(projectId);
+        const expectedProjectSampleKey = (sut as any)._projectSampleKey(projectId, sampleId);
+        const expectedSketchString = JSON.stringify(sketch);
+    
+        await sut.saveSketch(projectId, sampleHash, filename, sketch);
+    
+        expect(mockRedis.sadd).toHaveBeenCalledTimes(1);
+        expect(mockRedis.sadd.mock.calls[0][0]).toBe(expectedProjectSamplesKey);
+        expect(mockRedis.sadd.mock.calls[0][1]).toBe(sampleId);
+    
+        expect(mockRedis.hset).toHaveBeenCalledTimes(1);
+        expect(mockRedis.hset.mock.calls[0][0]).toBe(expectedProjectSampleKey);
+        expect(mockRedis.hset.mock.calls[0][1]).toBe("sketch");
+        expect(mockRedis.hset.mock.calls[0][2]).toBe(expectedSketchString);
+    });
+
+    it("gets sketch data", async () => {
+        const sut = new UserStore(mockRedis);
+        const projectId = "testProjectId";
+        const sampleHash = "testSampleHash";
+        const fileName = "test.fa";
+        const expectedSampleId = (sut as any)._sampleId(sampleHash, fileName);
+        const expectedProjectSampleKey = (sut as any)._projectSampleKey(projectId, expectedSampleId);
+        const expectedSketchString = JSON.stringify({ key: "value" });
+        const expectedSketch = JSON.parse(expectedSketchString);
+    
+        mockRedis.hget.mockImplementation(() => expectedSketchString);
+    
+        const result = await sut.getSketch(projectId, sampleHash, fileName);
+    
+        expect(mockRedis.hget).toHaveBeenCalledTimes(1);
+        expect(mockRedis.hget.mock.calls[0][0]).toBe(expectedProjectSampleKey);
+        expect(mockRedis.hget.mock.calls[0][1]).toBe("sketch");
+        expect(result).toStrictEqual(expectedSketch);
+    });
+
+    it("gets sample data", async () => {
+        const sut = new UserStore(mockRedis);
+        const projectId = "testProjectId";
+        const sampleHash = "testSampleHash";
+        const fileName = "test.fa";
+        const expectedSampleId = (sut as any)._sampleId(sampleHash, fileName);
+        const expectedProjectSampleKey = (sut as any)._projectSampleKey(projectId, expectedSampleId);
+        const expectedSketchString = JSON.stringify({ key: "value" });
+        const expectedAMRString = JSON.stringify({ key: "value" });
+        const expectedSketch = JSON.parse(expectedSketchString);
+        const expectedAMR = JSON.parse(expectedAMRString);
+    
+        mockRedis.hgetall.mockImplementation(() => ({ sketch: expectedSketchString, amr: expectedAMRString }));
+    
+        const result = await sut.getSample(projectId, sampleHash, fileName);
+    
+        expect(mockRedis.hgetall).toHaveBeenCalledTimes(1);
+        expect(mockRedis.hgetall.mock.calls[0][0]).toBe(expectedProjectSampleKey);
+        expect(result).toStrictEqual({ sketch: expectedSketch, amr: expectedAMR });
     });
 });

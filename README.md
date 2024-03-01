@@ -135,9 +135,9 @@ inside `app/client/`.
 
 ### Backend tests
 
-The backend can be tested with 
+The backend can be tested in watch mode with 
 ```
-npm run test
+npm run test:dev
 ```
 from `app/server`.
 

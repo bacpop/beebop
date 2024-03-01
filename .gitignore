@@ -5,3 +5,4 @@ app/server/src/resources/config.json
 app/server/coverage
 .idea
 proxy/ssl/production
+.vscode
