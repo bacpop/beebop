@@ -4,25 +4,25 @@ on:
   push:
     branches: [ main ]
   pull_request:
-    branches: [ main ]
+    branches: [ main,"bacpop-*" ]
+    
 
 jobs:
   e2e:
-
+    timeout-minutes: 60
     runs-on: ubuntu-latest
-        
     strategy:
       matrix:
         node-version: [20.x]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-        cache-dependency-path: ./app/client/package-lock.json
+        cache-dependency-path: ./app/client-v2/package-lock.json
     - name: get config file
       run: |
         pwd
@@ -31,23 +31,21 @@ jobs:
       working-directory: .
       run: ./scripts/run_test
     - name: Install playwright and dependencies
-      working-directory: ./app/client
-      run: |
-        npx playwright install
+      working-directory: ./app/client-v2
+      run: npx playwright install --with-deps
     - name: Run e2e tests
       env:
         MICROREACT_TOKEN: ${{ secrets.MICROREACT_TOKEN }}
-      working-directory: ./app/client
-      run: npx playwright test --reporter=github
+      working-directory: ./app/client-v2
+      run: npm run test:e2e
     - name: Stop all components
       if: always()
       working-directory: .
       run: ./scripts/stop_test
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       if: failure()
       with:
-          name: screenshots
-          path: app/client/test-results
-#     - name: tmate session
-#       if: ${{ failure() }}
-#       uses: mxschmitt/action-tmate@v3
+          name: playwright-report
+          path: app/client-v2/playwright-report/
+          retention-days: 30
+
