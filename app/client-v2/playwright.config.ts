@@ -105,6 +105,6 @@ export default defineConfig({
      */
     command: process.env.CI ? "vite preview --port 5173" : "vite dev",
     port: 5173,
-    reuseExistingServer: true
+    reuseExistingServer: !process.env.CI
   }
 });

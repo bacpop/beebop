@@ -31,10 +31,10 @@ jobs:
       run: |
         pwd
         cp ./app/server/src/resources/config.json.in.development ./app/server/src/resources/config.json
-    - name: Run all components
+    - name: Run dependencies & server
       working-directory: .
-      run: ./scripts/run_test
-    - name: Install playwright and dependencies
+      run: ./scripts/run_test server-only
+    - name: Install playwright
       working-directory: ./app/client-v2
       run: npx playwright install --with-deps
     - name: Run e2e tests
@@ -42,10 +42,10 @@ jobs:
         MICROREACT_TOKEN: ${{ secrets.MICROREACT_TOKEN }}
       working-directory: ./app/client-v2
       run: npm run test:e2e
-    - name: Stop all components
+    - name: Stop dependencies & server
       if: always()
       working-directory: .
-      run: ./scripts/stop_test
+      run: ./scripts/stop_test server-only
     - uses: actions/upload-artifact@v4
       if: failure()
       with:
