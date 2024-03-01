@@ -200,6 +200,7 @@ describe("projectController", () => {
                 samples: mockProjectSampleData,
                 timestamp: 12321,
                 name: "test project",
+                id: "testProjectId",
                 status: mockRunStatus
             }
         });
@@ -235,7 +236,8 @@ describe("projectController", () => {
                 hash: null,
                 samples: mockProjectSampleData,
                 timestamp: 1111111,
-                name: "test project"
+                name: "test project",
+                id: "testProjectId"
             }
         });
     });
