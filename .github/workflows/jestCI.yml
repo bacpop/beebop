@@ -4,7 +4,9 @@ on:
   push:
     branches: [ main ]
   pull_request:
-    branches: [ main, "bacpop-*" ]
+    branches: 
+      - main
+      - "bacpop-*"
 
 jobs:
   unit_frontend:
