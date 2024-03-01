@@ -1,11 +1,5 @@
 import { DARK_THEME, LIGHT_THEME, useTheme } from "@/composables/useTheme";
-import { usePrimeVue } from "primevue/config";
-import { ref } from "vue";
-import { useStorage } from "@vueuse/core";
 
-// vitest.mock("@vueuse/core", () => ({
-//   useStorage: vitest.fn().mockReturnValue(ref(LIGHT_THEME))
-// }));
 const mockChangeTheme = vitest.fn();
 vitest.mock("primevue/config", () => ({
   // replace with actual import path
