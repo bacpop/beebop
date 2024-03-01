@@ -1,2 +1,1 @@
-npm --prefix app/server ci
 BEEBOP_TEST="true" npm run --prefix app/server express

@@ -1,2 +1,1 @@
-npm --prefix app/client-v2 ci
-npm run --prefix app/client-v2 dev
+npm run --prefix app/client serve
