@@ -2,11 +2,14 @@ name: jest CI
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: 
+    branches:
       - main
-      - "bacpop-*"
+      - 'bacpop*'
+  pull_request:
+    branches:
+      - main
+      - 'bacpop*'
+      
 
 jobs:
   unit_frontend:
