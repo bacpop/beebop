@@ -3,10 +3,15 @@ import { useProjectStore } from "@/stores/projectStore";
 import { useRoute } from "vue-router";
 import RunProject from "@/components/ProjectView/RunProject.vue";
 import NotRunProject from "@/components/ProjectView/NotRunProject.vue";
+import { onUnmounted } from "vue";
 
 const route = useRoute();
 const store = useProjectStore();
 const projectFetchError = await store.getProject(route.params.id as string);
+
+onUnmounted(() => {
+  store.stopPollingStatus();
+});
 </script>
 
 <template>

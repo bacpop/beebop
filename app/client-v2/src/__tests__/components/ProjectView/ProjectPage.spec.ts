@@ -22,7 +22,7 @@ const stubNotRunProject = defineComponent({
 });
 const AsyncProjectPage = defineComponent({
   components: { ProjectPageVue },
-  template: "<Suspense><ProjectPageVue /></Suspense>"
+  template: "<Suspense> <ProjectPageVue /> </Suspense>"
 });
 
 describe("Project Page", () => {
@@ -118,5 +118,22 @@ describe("Project Page", () => {
     await flushPromises();
 
     expect(wrapper.text()).toContain("Completed");
+  });
+  it("should call stopPollingStatus on unmount", async () => {
+    const wrapper = mount(AsyncProjectPage, {
+      global: {
+        plugins: [createTestingPinia()]
+      },
+      stubs: {
+        RunProject: stubRunProject,
+        NotRunProject: stubNotRunProject
+      }
+    });
+    const store = useProjectStore();
+
+    await flushPromises();
+    wrapper.unmount();
+
+    expect(store.stopPollingStatus).toHaveBeenCalled();
   });
 });
