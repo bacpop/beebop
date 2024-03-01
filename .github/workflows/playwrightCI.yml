@@ -18,7 +18,6 @@ jobs:
     strategy:
       matrix:
         node-version: [20.x]
-
     steps:
     - uses: actions/checkout@v4
     - name: Use Node.js ${{ matrix.node-version }}
@@ -34,6 +33,9 @@ jobs:
     - name: Run dependencies & server
       working-directory: .
       run: ./scripts/run_test server-only
+    - name: Install client dependencies
+      working-directory: ./app/client-v2
+      run: npm ci
     - name: Install playwright
       working-directory: ./app/client-v2
       run: npx playwright install --with-deps
