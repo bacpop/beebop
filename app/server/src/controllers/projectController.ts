@@ -4,7 +4,7 @@ import { userStore } from "../db/userStore";
 import { handleAPIError, sendSuccess } from "../utils";
 import asyncHandler from "../errors/asyncHandler";
 import axios, { AxiosResponse } from "axios";
-import { APIResponse, RanProjectServer } from "../types/responseTypes";
+import { APIResponse, APIProjectResponse } from "../types/responseTypes";
 import { AMR } from "../types/models";
 
 export default (config) => {
@@ -42,6 +42,7 @@ export default (config) => {
           projectId
         );
 
+        // If there is no project hash, then the project has not been submitted so will have no poppunk result data available from beebop_py yet        
         if (!baseProjectInfo.hash) {
           const responseSamples = await ProjectUtils.getResponseSamples(
             store,
@@ -54,8 +55,8 @@ export default (config) => {
             samples: responseSamples,
           });
         }
-
-        let ranProjectResponse: AxiosResponse<APIResponse<RanProjectServer>>;
+        
+        let ranProjectResponse: AxiosResponse<APIResponse<APIProjectResponse>>;
         try {
           ranProjectResponse = await axios.get(
             `${config.api_url}/project/${baseProjectInfo?.hash}`
