@@ -17,7 +17,6 @@ export const useUserStore = defineStore("user", {
     name: undefined as undefined | string,
     provider: undefined as undefined | string
   }),
-
   getters: {
     isAuthenticated(state) {
       return !!state.id;
