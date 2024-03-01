@@ -4,11 +4,11 @@ on:
   push:
     branches:
       - main
-      - 'bacpop*'
+      - 'bacpop-*'
   pull_request:
     branches:
       - main
-      - 'bacpop*'
+      - 'bacpop-*'
       
 
 jobs:

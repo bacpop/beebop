@@ -2,9 +2,13 @@ name: playwright CI
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+      - 'bacpop-*'
   pull_request:
-    branches: [ main,"bacpop-*" ]
+    branches:
+      - main
+      - 'bacpop-*'
     
 
 jobs:
