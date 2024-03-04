@@ -1,5 +1,6 @@
 import {flushRedis, get, post, saveRedisHash, saveRedisSet} from "./utils";
 import {uid} from "uid";
+import {setTimeout} from "timers/promises";
 import {testSample} from "./testSample";
 
 describe("Error handling", () => {
@@ -11,8 +12,9 @@ describe("Error handling", () => {
         connectionCookie = response.headers["set-cookie"][0];
     });
 
-    const sampleHash = Object.keys(testSample.names)[0];
-    const sampleFileName = testSample.names[sampleHash] ;
+    const names = testSample("" ,"").names;
+    const sampleHash = Object.keys(names)[0];
+    const sampleFileName = names[sampleHash] ;
     const sampleId = `${sampleHash}:${sampleFileName}`;
 
     const newProject = async () => {
@@ -40,22 +42,23 @@ describe("Error handling", () => {
         expect(amrRes.status).toBe(200);
 
         // 3. Run poppunk and wait til it finishes
-        testSample.projectId = projectId;
-        const poppunkRes = await post(`poppunk`, testSample, connectionCookie);
+        const fakeProjectHash = `${projectId}ABC`;
+        const projectData = testSample(fakeProjectHash, projectId);
+        const poppunkRes = await post(`poppunk`, projectData, connectionCookie);
         expect(poppunkRes.status).toBe(200);
-        const counter = 0;
+        expect(poppunkRes.data.data.assign).not.toBe("")
+        let counter = 0;
         let finished = false;
         while (!finished && counter < 100) {
-            await new Promise(resolve => {
-                setTimeout(() => {resolve(""), 1000})
-            });
-            const statusRes = await post("status", {hash: testSample.projectHash}, connectionCookie);
+            await setTimeout(2000);
+            const statusRes = await post("status", {hash: fakeProjectHash}, connectionCookie);
             expect(statusRes.status).toBe(200);
             const statusValues = statusRes.data.data;
-            if (statusValues.assign === "finished" && statusValues.microreact === "finished" && statusValues.network === "finished") {
+            if (statusValues && statusValues.assign === "finished" && statusValues.microreact === "finished" && statusValues.network === "finished") {
                 finished = true;
                 break;
             }
+            counter = counter + 1;
         }
         expect(finished).toBe(true);
         return projectId;
@@ -119,4 +122,19 @@ describe("Error handling", () => {
         }]);
     });
 
+    it("Omits unexpected error detail from response", async () => {
+        // Run a project then sabotage its AMR in the database so we get an unexpected JSON parse error
+        const projectId = await runProjectToCompletion();
+        const redisKey = `beebop:project:${projectId}:sample:${sampleId}`
+        await saveRedisHash(redisKey, {"amr": "{{{{nope"});
+
+        const projectRes = await get(`project/${projectId}`, connectionCookie);
+                
+        expect(projectRes.status).toBe(500);
+        expect(projectRes.data.data).toBe(null);
+        expect(projectRes.data.errors.length).toBe(1);
+        const error = projectRes.data.errors[0];
+        expect(error.error).toBe("Unexpected error");
+        expect(error.detail).toMatch(/An unexpected error occurred. Please contact support and quote error code [a-z0-9]{11}/);
+    });
 });

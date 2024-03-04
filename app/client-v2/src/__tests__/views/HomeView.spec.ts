@@ -76,7 +76,7 @@ describe("HomeView ", () => {
     const push = vitest.spyOn(router, "push");
     renderComponent();
 
-    const createButton = screen.getByRole("button", { name: /add-project/i });
+    const createButton = screen.getByRole("button", { name: /new project/i });
     const createInput = screen.getByPlaceholderText(/create/i);
 
     await userEvent.click(createButton);
@@ -93,7 +93,7 @@ describe("HomeView ", () => {
     server.use(http.post(projectIndexUri, () => HttpResponse.error()));
     renderComponent();
 
-    const createButton = screen.getByRole("button", { name: /add-project/i });
+    const createButton = screen.getByRole("button", { name: /new project/i });
     const createInput = screen.getByPlaceholderText(/create/i);
 
     await userEvent.type(createInput, "New Project");

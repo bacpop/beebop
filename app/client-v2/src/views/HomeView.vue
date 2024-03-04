@@ -115,7 +115,7 @@ const onRowEditSave = async (event: DataTableRowEditSaveEvent) => {
             <div>
               <InputGroup>
                 <InputText placeholder="Create new Project" v-model="newProjectName" @keydown.enter="addProject" />
-                <Button aria-label="add-project" icon="pi pi-plus-circle" @click="addProject" />
+                <Button aria-label="New project" icon="pi pi-plus-circle" @click="addProject" />
               </InputGroup>
             </div>
           </div>

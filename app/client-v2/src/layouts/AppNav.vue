@@ -52,7 +52,7 @@ const toggle = (event: MouseEvent) => {
       </template>
       <template #end>
         <div class="flex gap-3">
-          <div><Button aria-label="theme-switcher" :icon="themeIcon" @click="toggleTheme" outlined /></div>
+          <div><Button aria-label="Switch theme" :icon="themeIcon" @click="toggleTheme" outlined /></div>
           <div v-if="userStore.isAuthenticated">
             <Button
               type="button"
