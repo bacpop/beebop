@@ -200,6 +200,7 @@ describe("projectController", () => {
                 samples: mockProjectSampleData,
                 timestamp: 12321,
                 name: "test project",
+                id: "testProjectId",
                 status: mockRunStatus
             }
         });
@@ -227,7 +228,7 @@ describe("projectController", () => {
 
         const response = res.json.mock.calls[0][0];
 
-        // does not include api data sdields from beebop py 
+        // does not include api data from beebop py 
         expect(response).toStrictEqual({
             status: "success",
             errors: [],
@@ -235,7 +236,8 @@ describe("projectController", () => {
                 hash: null,
                 samples: mockProjectSampleData,
                 timestamp: 1111111,
-                name: "test project"
+                name: "test project",
+                id: "testProjectId"
             }
         });
     });

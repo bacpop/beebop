@@ -9,7 +9,7 @@ export interface APIResponse<T> {
   }[];
 }
 
-export interface RanProjectServer {
+export interface APIProjectResponse {
   samples: {
     hash: string;
     amr?: AMR;

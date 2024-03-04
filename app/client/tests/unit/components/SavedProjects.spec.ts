@@ -2,7 +2,7 @@
 import EditProjectName from "@/components/projects/EditProjectName.vue";
 
 const { toLocaleString } = Date.prototype;
-// eslint-disable-next-line no-extend-native
+// eslint-disable-next-line no-extend-native, func-names
 Date.prototype.toLocaleString = function (locale: any = undefined, ...args: any) {
     const options = args[0];
     return toLocaleString.call(this, "en-GB", { ...options, timeZone: "UTC" });

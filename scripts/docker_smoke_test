@@ -8,6 +8,7 @@ function cleanup() {
 }
 trap cleanup EXIT
 
+cp app/server/src/resources/config.json.in.docker app/server/src/resources/config.json
 $HERE/run_docker
 
 URL=https://localhost

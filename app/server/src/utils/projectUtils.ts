@@ -1,14 +1,14 @@
 import { UserStore } from "../db/userStore";
 import { BeebopError } from "../errors/beebopError";
 import { ProjectSample, SplitSampleId } from "../types/models";
-import { RanProjectServer } from "../types/responseTypes";
+import { APIProjectResponse } from "../types/responseTypes";
 
 export class ProjectUtils {
   public static async getResponseSamples(
     store: UserStore,
     projectId: string,
     projectSamples: SplitSampleId[],
-    apiData?: RanProjectServer
+    apiData?: APIProjectResponse
   ): Promise<ProjectSample[]> {
     return await Promise.all(
       projectSamples.map(async (sample) => {
@@ -30,7 +30,7 @@ export class ProjectUtils {
           ...apiSample,
           ...sample,
           amr,
-          sketch,
+          sketch,/*  */
         };
       })
     );

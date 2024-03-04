@@ -1,0 +1,6 @@
+HERE=$(realpath "$(dirname $0)")
+
+export VAULT_ADDR=https://vault.dide.ic.ac.uk:8200
+vault login -method=github
+. $HERE/decrypt_config docker
+. $HERE/run_docker
