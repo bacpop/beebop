@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 set -ex
 
-npm ci --prefix app/client
-npm run --prefix app/client serve
+npm ci --prefix app/client-v2
+npm run --prefix app/client-v2 dev

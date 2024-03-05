@@ -61,7 +61,7 @@ const toggle = (event: MouseEvent) => {
               @click="toggle"
               aria-haspopup="true"
               aria-controls="overlay_menu"
-              aria-label="user-menu"
+              aria-label="User menu"
             />
             <Menu ref="menu" id="overlay_menu" :model="menuItems" :popup="true">
               <template #item="{ item, props }">

@@ -30,7 +30,7 @@ export class ProjectUtils {
           ...apiSample,
           ...sample,
           amr,
-          sketch,/*  */
+          sketch,
         };
       })
     );
