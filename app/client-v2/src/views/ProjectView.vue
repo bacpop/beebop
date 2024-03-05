@@ -63,9 +63,7 @@ const runPopPunk = () => {
                   :key="file.name + file.type + file.size"
                   class="card m-0 px-6 flex flex-column border-1 surface-border align-items-center gap-3"
                 >
-                  <div>
-                    <img role="presentation" :alt="file.name" :src="file.objectURL" width="100" height="50" />
-                  </div>
+                  <div></div>
                   <span class="font-semibold">{{ file.name }}</span>
                   <Badge value="Completed" class="mt-3" severity="success" />
                   <Button
