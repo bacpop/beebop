@@ -1,10 +1,10 @@
 FROM node:16
 
-COPY app/client/package.json /app/package.json
+COPY app/client-v2/package.json /app/package.json
 WORKDIR /app
 RUN npm install
 
-COPY app/client /app
+COPY app/client-v2 /app
 ENV BUILD_TARGET docker
 RUN npm install && npm run build
 

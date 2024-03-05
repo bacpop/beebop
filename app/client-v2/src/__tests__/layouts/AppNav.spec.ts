@@ -42,12 +42,12 @@ const renderApp = async (userState = {}) => {
   });
 };
 describe("App Nav", () => {
-  it("should render nav bar with links to home and about and no user-menu", async () => {
+  it("should render nav bar with links to home and about and no user menu", async () => {
     await renderApp();
 
     expect(screen.getByRole("link", { name: /home/i })).toHaveAttribute("href", "/");
     expect(screen.getByRole("menuitem", { name: /about/i })).toBeVisible();
-    expect(screen.queryByRole("button", { name: "user-menu" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "User menu" })).not.toBeInTheDocument();
   });
   it("should toggle theme when theme icon is clicked", async () => {
     await renderApp();
@@ -60,7 +60,7 @@ describe("App Nav", () => {
   it("should show user menu and and be able to logout when authenticated", async () => {
     await renderApp({ id: "1", name: "LeBron" });
 
-    await userEvent.click(screen.getByRole("button", { name: "user-menu" }));
+    await userEvent.click(screen.getByRole("button", { name: "User menu" }));
 
     expect(screen.getByText("LeBron")).toBeInTheDocument();
 
