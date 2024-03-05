@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { useProjectStore } from "@/stores/projectStore";
 import ProjectDataTable from "@/components/ProjectView/ProjectDataTable.vue";
+import { ref } from "vue";
 
 const store = useProjectStore();
+const tableIsHovered = ref(false);
 </script>
 
 <template>
@@ -21,7 +23,13 @@ const store = useProjectStore();
       </div>
     </template>
     <template #content>
-      <div v-if="store.fileSamples.length > 0">
+      <div
+        v-if="store.fileSamples.length > 0"
+        @dragover="tableIsHovered = true"
+        @dragleave="tableIsHovered = false"
+        @drop="tableIsHovered = false"
+        :class="{ 'opacity-20': tableIsHovered }"
+      >
         <ProjectDataTable>
           <template #extra-cols>
             <Column>
