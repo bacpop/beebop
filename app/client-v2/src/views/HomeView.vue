@@ -33,6 +33,7 @@ const filters = ref({
 const newProjectName = ref("");
 const addProject = async () => {
   if (!newProjectName.value) return;
+
   const { error, data: project } = await useFetch(apiUrl + "/project", {
     credentials: "include"
   })
@@ -114,7 +115,7 @@ const onRowEditSave = async (event: DataTableRowEditSaveEvent) => {
             <div>
               <InputGroup>
                 <InputText placeholder="Create new Project" v-model="newProjectName" @keydown.enter="addProject" />
-                <Button icon="pi pi-plus-circle" @click="addProject" />
+                <Button aria-label="New project" icon="pi pi-plus-circle" @click="addProject" />
               </InputGroup>
             </div>
           </div>

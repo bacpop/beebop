@@ -3,9 +3,13 @@ set -e
 HERE=$(realpath "$(dirname $0)")
 . $HERE/run_dependencies
 
-npm --prefix app/server install
-npm --prefix app/client install
+
+npm --prefix app/server ci
 npm install pm2
 
 node ./node_modules/pm2/bin/pm2 --name beebop_server start "BEEBOP_TEST="true" npm run --prefix app/server express"
-node ./node_modules/pm2/bin/pm2 --name beebop_client start "npm run --prefix app/client serve"
+
+if [ "$1" != "server-only" ]; then
+    npm --prefix app/client-v2 ci
+    node ./node_modules/pm2/bin/pm2 --name beebop_client start "npm run --prefix app/client-v2 dev"
+fi

@@ -1,7 +1,9 @@
 export const getApiUrl = () => {
   if (import.meta.env.MODE === "development") {
     return "http://localhost:4000";
-  } else {
-    return "https://${window.location.host}/api";
   }
+  if (import.meta.env.MODE === "test") {
+    return "";
+  }
+  return `https://${window.location.host}/api`;
 };
