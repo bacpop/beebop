@@ -1,4 +1,4 @@
-import RunProjectVue from "@/components/ProjectView/RunProject.vue";
+import ProjectPostRun from "@/components/ProjectView/ProjectPostRun.vue";
 import { MOCK_PROJECT_SAMPLES } from "@/mocks/mockObjects";
 import { useProjectStore } from "@/stores/projectStore";
 import { createTestingPinia } from "@pinia/testing";
@@ -13,7 +13,7 @@ describe("RunProject", () => {
     const store = useProjectStore(testingPinia);
     // @ts-expect-error: Getter is read only
     store.analysisProgressPercentage = 50;
-    render(RunProjectVue, {
+    render(ProjectPostRun, {
       global: {
         plugins: [PrimeVue, testingPinia],
         stubs: {
@@ -42,7 +42,7 @@ describe("RunProject", () => {
     const store = useProjectStore(testingPinia);
     // @ts-expect-error: Getter is read only
     store.isProjectComplete = true;
-    render(RunProjectVue, {
+    render(ProjectPostRun, {
       global: {
         plugins: [PrimeVue, testingPinia],
         stubs: {
@@ -72,7 +72,7 @@ describe("RunProject", () => {
     expect(dataTable).not.toBeVisible();
   });
   it("should enable network tab on project complete", async () => {
-    render(RunProjectVue, {
+    render(ProjectPostRun, {
       global: {
         plugins: [PrimeVue, createTestingPinia()],
         stubs: {
@@ -103,7 +103,7 @@ describe("RunProject", () => {
     });
   });
   it("should render extra columns for data table slot  when project complete", async () => {
-    render(RunProjectVue, {
+    render(ProjectPostRun, {
       global: {
         plugins: [
           PrimeVue,
@@ -136,7 +136,7 @@ describe("RunProject", () => {
   });
   it("should render pending for cluster cells if no cluster assigned ", async () => {
     const copyMockSamples = structuredClone(MOCK_PROJECT_SAMPLES).map((sample) => ({ ...sample, cluster: undefined }));
-    render(RunProjectVue, {
+    render(ProjectPostRun, {
       global: {
         plugins: [
           PrimeVue,
@@ -158,7 +158,7 @@ describe("RunProject", () => {
     expect(screen.getAllByText(/pending/i).length).toBe(copyMockSamples.length);
   });
   it("should render failed network status if network analysis failed", async () => {
-    render(RunProjectVue, {
+    render(ProjectPostRun, {
       global: {
         plugins: [
           PrimeVue,
@@ -184,7 +184,7 @@ describe("RunProject", () => {
     expect(screen.queryAllByText(/failed/i).length).toBe(MOCK_PROJECT_SAMPLES.length);
   });
   it("should render network status if not failed or finished", async () => {
-    render(RunProjectVue, {
+    render(ProjectPostRun, {
       global: {
         plugins: [
           PrimeVue,
