@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useProjectStore } from "@/stores/projectStore";
 import { useRoute } from "vue-router";
-import RunProject from "@/components/ProjectView/RunProject.vue";
-import NotRunProject from "@/components/ProjectView/NotRunProject.vue";
+import ProjectPostRun from "@/components/ProjectView/ProjectPostRun.vue";
+import ProjectPreRun from "@/components/ProjectView/ProjectPreRun.vue";
 import { onUnmounted } from "vue";
 
 const route = useRoute();
@@ -33,8 +33,8 @@ onUnmounted(() => {
       <span class="text-color-secondary">Upload genomics data and run analysis on them</span>
     </div>
     <div class="surface-card p-4 shadow-2 border-round">
-      <RunProject v-if="store.isRun" />
-      <NotRunProject v-else />
+      <ProjectPostRun v-if="store.isRun" />
+      <ProjectPreRun v-else />
     </div>
   </div>
 </template>

@@ -1,4 +1,4 @@
-import NotRunProjectVue from "@/components/ProjectView/NotRunProject.vue";
+import NotRunProjectVue from "@/components/ProjectView/ProjectPreRun.vue";
 import { MOCK_PROJECT_SAMPLES_BEFORE_RUN } from "@/mocks/mockObjects";
 import { useProjectStore } from "@/stores/projectStore";
 import { createTestingPinia } from "@pinia/testing";
@@ -16,7 +16,7 @@ describe("ProjectView ", () => {
 
     expect(screen.getByText(/drag and drop/i)).toBeVisible();
   });
-  it("should call store.runanalysis on run analysis click and not disabled", async () => {
+  it("should call store.RunAnalysis on run analysis click and not disabled", async () => {
     const testPinia = createTestingPinia();
     const store = useProjectStore(testPinia);
     // @ts-expect-error: Getter is read only

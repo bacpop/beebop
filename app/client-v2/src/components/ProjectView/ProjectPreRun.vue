@@ -1,19 +1,14 @@
 <script setup lang="ts">
 import { useProjectStore } from "@/stores/projectStore";
 import ProjectDataTable from "@/components/ProjectView/ProjectDataTable.vue";
+import { ref } from "vue";
 
 const store = useProjectStore();
+const tableIsHovered = ref(false);
 </script>
 
 <template>
-  <FileUpload
-    name="genomics[]"
-    custom-upload
-    auto
-    @uploader="store.onFilesUpload($event.files)"
-    :multiple="true"
-    accept=".fa, .fasta"
-  >
+  <FileUpload custom-upload auto @uploader="store.onFilesUpload($event.files)" :multiple="true" accept=".fa, .fasta">
     <template #header="{ chooseCallback }">
       <div class="flex flex-wrap justify-content-between align-items-center flex-1 gap-2">
         <Button label="Upload" outlined icon="pi pi-upload" @click="chooseCallback()" />
@@ -21,7 +16,13 @@ const store = useProjectStore();
       </div>
     </template>
     <template #content>
-      <div v-if="store.fileSamples.length > 0">
+      <div
+        v-if="store.fileSamples.length > 0"
+        @dragover="tableIsHovered = true"
+        @dragleave="tableIsHovered = false"
+        @drop="tableIsHovered = false"
+        :class="{ 'opacity-20': tableIsHovered }"
+      >
         <ProjectDataTable>
           <template #extra-cols>
             <Column>

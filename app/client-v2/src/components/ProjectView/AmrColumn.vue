@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { AMR } from "@/types/projectTypes";
+import { convertToRoundedPercent } from "@/utils/math";
 import { computed } from "vue";
 
 const props = defineProps<{
@@ -12,37 +13,21 @@ const tagSeverity = (percent: number) => {
   if (percent > 66) return "success";
   return "secondary";
 };
-const getPercent = (value: number) => Math.round(value * 100);
+
+const getDisplayAMR = (label: string, decimalValue: number) => ({
+  label,
+  value: convertToRoundedPercent(decimalValue),
+  severity: tagSeverity(convertToRoundedPercent(decimalValue))
+});
 
 const displayAMR = computed(() => {
   if (!props.amr) return;
   return {
-    Penicillin: {
-      label: "P",
-      value: getPercent(props.amr.Penicillin),
-      severity: tagSeverity(getPercent(props.amr.Penicillin))
-    },
-
-    Chloramphenicol: {
-      label: "C",
-      value: getPercent(props.amr.Chloramphenicol),
-      severity: tagSeverity(getPercent(props.amr.Chloramphenicol))
-    },
-    Erythromycin: {
-      label: "E",
-      value: getPercent(props.amr.Erythromycin),
-      severity: tagSeverity(getPercent(props.amr.Erythromycin))
-    },
-    Tetracycline: {
-      label: "Te",
-      value: getPercent(props.amr.Tetracycline),
-      severity: tagSeverity(getPercent(props.amr.Tetracycline))
-    },
-    Cotrim: {
-      label: "Sxt",
-      value: getPercent(props.amr.Trim_sulfa),
-      severity: tagSeverity(getPercent(props.amr.Trim_sulfa))
-    }
+    Penicillin: getDisplayAMR("P", props.amr.Penicillin),
+    Chloramphenicol: getDisplayAMR("C", props.amr.Chloramphenicol),
+    Erythromycin: getDisplayAMR("E", props.amr.Erythromycin),
+    Tetracycline: getDisplayAMR("Te", props.amr.Tetracycline),
+    Cotrim: getDisplayAMR("Sxt", props.amr.Trim_sulfa)
   };
 });
 </script>

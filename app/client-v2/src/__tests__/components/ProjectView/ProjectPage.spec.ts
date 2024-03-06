@@ -42,8 +42,8 @@ describe("Project Page", () => {
           })
         ],
         stubs: {
-          RunProject: stubRunProject,
-          NotRunProject: stubNotRunProject
+          ProjectPostRun: stubRunProject,
+          ProjectPreRun: stubNotRunProject
         }
       }
     });
@@ -72,8 +72,8 @@ describe("Project Page", () => {
           })
         ],
         stubs: {
-          RunProject: stubRunProject,
-          NotRunProject: stubNotRunProject
+          ProjectPostRun: stubRunProject,
+          ProjectPreRun: stubNotRunProject
         }
       }
     });
@@ -90,8 +90,8 @@ describe("Project Page", () => {
       global: {
         plugins: [testPinia],
         stubs: {
-          RunProject: stubRunProject,
-          NotRunProject: stubNotRunProject
+          ProjectPostRun: stubRunProject,
+          ProjectPreRun: stubNotRunProject
         }
       }
     });
