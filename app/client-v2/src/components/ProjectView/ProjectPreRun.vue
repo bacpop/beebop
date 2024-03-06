@@ -21,7 +21,7 @@ const tableIsHovered = ref(false);
         @dragover="tableIsHovered = true"
         @dragleave="tableIsHovered = false"
         @drop="tableIsHovered = false"
-        :class="{ 'opacity-20': tableIsHovered }"
+        :class="['mb-2', { 'opacity-20': tableIsHovered }]"
       >
         <ProjectDataTable>
           <template #extra-cols>
@@ -44,6 +44,17 @@ const tableIsHovered = ref(false);
       <div v-else class="flex align-items-center justify-content-center flex-column p-5">
         <i class="pi pi-upload border-2 border-circle p-5 text-8xl text-400 border-400" />
         <p class="mt-4 mb-0">Drag and drop files to here to upload.</p>
+      </div>
+      <div
+        :class="[
+          'justify-content-center align-items-center text-primary',
+          {
+            flex: tableIsHovered,
+            hidden: !tableIsHovered
+          }
+        ]"
+      >
+        <Tag icon="pi pi-upload" severity="info" value="Drop files to upload"></Tag>
       </div>
     </template>
   </FileUpload>
