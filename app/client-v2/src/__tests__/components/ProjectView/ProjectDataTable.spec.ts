@@ -16,7 +16,9 @@ describe("Project data table", () => {
           createTestingPinia({
             initialState: {
               project: {
-                fileSamples: MOCK_PROJECT_SAMPLES_BEFORE_RUN
+                project: {
+                  samples: MOCK_PROJECT_SAMPLES_BEFORE_RUN
+                }
               }
             }
           }),

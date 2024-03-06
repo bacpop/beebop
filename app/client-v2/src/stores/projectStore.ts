@@ -20,50 +20,39 @@ const baseApi = mande(getApiUrl(), { credentials: "include" });
 // TODO: add proper error handling. Maybe best to add error state attribute and watch accordingly cos of nested things interval/workers
 export const useProjectStore = defineStore("project", {
   state: () => ({
-    basicInfo: {} as Pick<Project, "id" | "name" | "timestamp">,
-    fileSamples: [] as ProjectSample[],
-    projectHash: "",
-    isRun: false,
-    analysisStatus: {} as AnalysisStatus,
+    project: {} as Project,
     pollingIntervalId: null as ReturnType<typeof setInterval> | null
   }),
+
   getters: {
     isReadyToRun: (state) =>
-      state.fileSamples.length > 0 && state.fileSamples.every((sample: ProjectSample) => sample.sketch && sample.amr),
+      state.project.samples.length > 0 &&
+      state.project.samples.every((sample: ProjectSample) => sample.sketch && sample.amr),
     isProjectComplete: (state) => {
-      const analysisStatusValues = Object.values(state.analysisStatus);
+      const analysisStatusValues = Object.values(state.project.status || {});
       return (
         analysisStatusValues.length > 0 && analysisStatusValues.every((value) => COMPLETE_STATUS_TYPES.includes(value))
       );
     },
-    numOfStatus: (state) => Object.keys(state.analysisStatus).length,
+    numOfStatus: (state) => Object.keys(state.project.status || {}).length,
+    startedRun: (state) => !!state.project.status,
     analysisProgressPercentage(state): number {
       return Math.round(
-        (Object.values(state.analysisStatus).filter((value) => COMPLETE_STATUS_TYPES.includes(value)).length /
+        (Object.values(state.project.status || {}).filter((value) => COMPLETE_STATUS_TYPES.includes(value)).length /
           this.numOfStatus) *
           100
       );
     }
   },
+
   actions: {
     async getProject(id: string) {
       this.$reset();
       try {
         const projectRes = await baseApi.get<ApiResponse<Project>>(`/project/${id}`);
-        this.basicInfo = {
-          id: projectRes.data.id,
-          name: projectRes.data.name,
-          timestamp: projectRes.data.timestamp
-        };
-        this.fileSamples = projectRes.data.samples;
-        this.projectHash = projectRes.data.hash || "";
+        this.project = projectRes.data;
 
-        if (projectRes.data.status) {
-          this.isRun = true;
-          this.analysisStatus = projectRes.data.status;
-        }
-
-        if (this.isRun && !this.isProjectComplete) {
+        if (this.startedRun && !this.isProjectComplete) {
           this.pollAnalysisStatus();
         }
       } catch (error) {
@@ -72,18 +61,20 @@ export const useProjectStore = defineStore("project", {
         return error;
       }
     },
+
     onFilesUpload(files: File | File[]) {
       const arrayFiles = Array.isArray(files) ? files : [files];
       const nonDuplicateFiles = arrayFiles.filter(
-        (file: File) => !this.fileSamples.some((sample: ProjectSample) => sample.filename === file.name)
+        (file: File) => !this.project.samples.some((sample: ProjectSample) => sample.filename === file.name)
       );
       this.processFiles(nonDuplicateFiles);
     },
+
     async processFiles(files: File[]) {
       for (const file of files) {
         const content = await file.text();
         const fileHash = Md5.hashStr(content);
-        this.fileSamples.push({ hash: fileHash, filename: file.name });
+        this.project.samples.push({ hash: fileHash, filename: file.name });
 
         // run web worker to get sketch and amr data and then post to server
         const worker = new Worker("/worker.js");
@@ -94,18 +85,19 @@ export const useProjectStore = defineStore("project", {
         };
       }
     },
+
     async handleWorkerResponse(filename: string, event: MessageEvent<WorkerResponse>) {
       const { hash, result, type } = event.data;
       const parsedAmrOrSketch = JSON.parse(result);
 
-      const matchedHashIndex = this.fileSamples.findIndex((sample: ProjectSample) => hash === sample.hash);
+      const matchedHashIndex = this.project.samples.findIndex((sample: ProjectSample) => hash === sample.hash);
       if (matchedHashIndex !== -1) {
-        this.fileSamples[matchedHashIndex][type] = parsedAmrOrSketch;
+        this.project.samples[matchedHashIndex][type] = parsedAmrOrSketch;
       }
 
       try {
         await baseApi.post(
-          `/project/${this.basicInfo.id}/${type}/${hash}`,
+          `/project/${this.project.id}/${type}/${hash}`,
           type === WorkerResponseValueTypes.AMR
             ? parsedAmrOrSketch
             : {
@@ -115,23 +107,25 @@ export const useProjectStore = defineStore("project", {
         );
       } catch (error) {
         console.error(error);
-        this.fileSamples.splice(matchedHashIndex, 1);
+        this.project.samples.splice(matchedHashIndex, 1);
       }
     },
+
     pollAnalysisStatus() {
       if (!this.pollingIntervalId) {
         const intervalId = setInterval(async () => {
           await this.getAnalysisStatus();
-        }, 1500);
+        }, 2000);
         this.pollingIntervalId = intervalId;
       }
     },
+
     async getAnalysisStatus() {
-      const prevClusterAssign = this.analysisStatus.assign;
+      const prevClusterAssign = this.project.status?.assign;
       let stopPolling = false;
       try {
-        const statusRes = await baseApi.post<ApiResponse<AnalysisStatus>>("/status", { hash: this.projectHash });
-        this.analysisStatus = statusRes.data;
+        const statusRes = await baseApi.post<ApiResponse<AnalysisStatus>>("/status", { hash: this.project.hash });
+        this.project.status = statusRes.data;
         if (statusRes.data.assign === "finished" && prevClusterAssign !== "finished") {
           await this.getClusterAssignResult();
         }
@@ -150,24 +144,26 @@ export const useProjectStore = defineStore("project", {
         }
       }
     },
+
     async getClusterAssignResult() {
       try {
         const assignClusterRes = await baseApi.post<ApiResponse<AssignCluster>>("/assignResult", {
-          projectHash: this.projectHash
+          projectHash: this.project.hash
         });
 
         Object.values(assignClusterRes.data).forEach((clusterInfo: ClusterInfo) => {
-          const matchedHashIndex = this.fileSamples.findIndex(
+          const matchedHashIndex = this.project.samples.findIndex(
             (sample: ProjectSample) => clusterInfo.hash === sample.hash
           );
           if (matchedHashIndex !== -1) {
-            this.fileSamples[matchedHashIndex].cluster = clusterInfo.cluster;
+            this.project.samples[matchedHashIndex].cluster = clusterInfo.cluster;
           }
         });
       } catch (error) {
         console.error(error);
       }
     },
+
     stopPollingStatus() {
       if (this.pollingIntervalId) {
         clearInterval(this.pollingIntervalId);
@@ -178,25 +174,26 @@ export const useProjectStore = defineStore("project", {
     removeUploadedFile(index: number) {
       // this.fileSamples.splice(index, 1);
     },
+
     async runAnalysis() {
       const body = this.buildRunAnalysisPostBody();
       try {
         await baseApi.post("/poppunk", body);
-        this.projectHash = body.projectHash;
-        this.isRun = true;
+        this.project.hash = body.projectHash;
       } catch (error) {
         console.error("Error running analysis", error);
         return;
       }
 
-      this.analysisStatus = { assign: "submitted", microreact: "submitted", network: "submitted" };
+      this.project.status = { assign: "submitted", microreact: "submitted", network: "submitted" };
       this.pollAnalysisStatus();
     },
+
     buildRunAnalysisPostBody() {
       const sketches: Record<string, unknown> = {};
       const names: Record<string, unknown> = {};
       let projectHashKey = "";
-      this.fileSamples
+      this.project.samples
         .sort((a, b) => a.filename.localeCompare(b.filename))
         .forEach((sample: ProjectSample) => {
           projectHashKey += sample.hash + sample.filename;
@@ -205,8 +202,9 @@ export const useProjectStore = defineStore("project", {
         }, "");
       const projectHash = Md5.hashStr(projectHashKey);
 
-      return { projectHash, names, sketches, projectId: this.basicInfo.id };
+      return { projectHash, names, sketches, projectId: this.project.id };
     },
+
     async downloadZip(type: AnalysisType, cluster: number) {
       try {
         const res = await baseApi.post<Response, "response">(
@@ -214,7 +212,7 @@ export const useProjectStore = defineStore("project", {
           {
             type,
             cluster,
-            projectHash: this.projectHash
+            projectHash: this.project.hash
           },
           { responseAs: "response", headers: { "Content-Type": "application/json" } }
         );
@@ -232,6 +230,7 @@ export const useProjectStore = defineStore("project", {
         console.error(error);
       }
     },
+
     // TODO
     async onMicroReactVisit(cluster: number) {
       console.log("Microreact visit", cluster);

@@ -27,27 +27,20 @@ const AsyncProjectPage = defineComponent({
 
 describe("Project Page", () => {
   it("should render project data and run project component if is run", async () => {
+    const testPinia = createTestingPinia();
+    const store = useProjectStore(testPinia);
+    store.project.name = "Test Project";
+    // @ts-expect-error: getter is read-only
+    store.startedRun = true;
     const wrapper = mount(AsyncProjectPage, {
       global: {
-        plugins: [
-          createTestingPinia({
-            initialState: {
-              project: {
-                basicInfo: {
-                  name: "Test Project"
-                },
-                isRun: true
-              }
-            }
-          })
-        ],
+        plugins: [testPinia],
         stubs: {
           ProjectPostRun: stubRunProject,
           ProjectPreRun: stubNotRunProject
         }
       }
     });
-    const store = useProjectStore();
 
     await flushPromises();
 
@@ -57,20 +50,14 @@ describe("Project Page", () => {
   });
 
   it("should render not run project component if is not run", async () => {
+    const testPinia = createTestingPinia();
+    const store = useProjectStore(testPinia);
+    store.project.name = "Test Project";
+    // @ts-expect-error: getter is read-only
+    store.startedRun = false;
     const wrapper = mount(AsyncProjectPage, {
       global: {
-        plugins: [
-          createTestingPinia({
-            initialState: {
-              project: {
-                basicInfo: {
-                  name: "Test Project"
-                },
-                isRun: false
-              }
-            }
-          })
-        ],
+        plugins: [testPinia],
         stubs: {
           ProjectPostRun: stubRunProject,
           ProjectPreRun: stubNotRunProject
@@ -109,8 +96,8 @@ describe("Project Page", () => {
       global: {
         plugins: [testPinia],
         stubs: {
-          RunProject: stubRunProject,
-          NotRunProject: stubNotRunProject
+          ProjectPostRun: stubRunProject,
+          ProjectPreRun: stubNotRunProject
         }
       }
     });
@@ -122,11 +109,11 @@ describe("Project Page", () => {
   it("should call stopPollingStatus on unmount", async () => {
     const wrapper = mount(AsyncProjectPage, {
       global: {
-        plugins: [createTestingPinia()]
-      },
-      stubs: {
-        RunProject: stubRunProject,
-        NotRunProject: stubNotRunProject
+        plugins: [createTestingPinia()],
+        stubs: {
+          ProjectPostRun: stubRunProject,
+          ProjectPreRun: stubNotRunProject
+        }
       }
     });
     const store = useProjectStore();

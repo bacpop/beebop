@@ -17,40 +17,50 @@ describe("projectStore", () => {
   describe("getters", () => {
     it("isReadyToRun returns true when all samples have sketch and amr", () => {
       const store = useProjectStore();
-      store.fileSamples = [{ sketch: {}, amr: { Chloramphenicol: 0.24 } }] as ProjectSample[];
+      store.project.samples = [{ sketch: {}, amr: { Chloramphenicol: 0.24 } }] as ProjectSample[];
       expect(store.isReadyToRun).toBe(true);
     });
 
     it("isReadyToRun returns false when not all samples have sketch and amr", () => {
       const store = useProjectStore();
-      store.fileSamples = [{ sketch: {}, amr: undefined }] as ProjectSample[];
+      store.project.samples = [{ sketch: {}, amr: undefined }] as ProjectSample[];
       expect(store.isReadyToRun).toBe(false);
     });
 
     it("isProjectComplete returns true when all analysisStatus are complete", () => {
       const store = useProjectStore();
-      store.analysisStatus = { assign: "finished", microreact: "failed", network: "finished" };
+      store.project.status = { assign: "finished", microreact: "failed", network: "finished" };
       expect(store.isProjectComplete).toBe(true);
     });
 
     it("isProjectComplete returns false when not all analysisStatus are complete", () => {
       const store = useProjectStore();
-      store.analysisStatus = { assign: "started", microreact: "finished", network: "finished" };
+      store.project.status = { assign: "started", microreact: "finished", network: "finished" };
 
       expect(store.isProjectComplete).toBe(false);
     });
 
     it("numOfStatus returns the number of analysisStatus", () => {
       const store = useProjectStore();
-      store.analysisStatus = { assign: "started", microreact: "finished", network: "finished" };
+      store.project.status = { assign: "started", microreact: "finished", network: "finished" };
 
       expect(store.numOfStatus).toBe(3);
     });
 
     it("analysisProgressPercentage returns the correct percentage of complete analysisStatus", () => {
       const store = useProjectStore();
-      store.analysisStatus = { assign: "started", microreact: "finished", network: "finished" };
+      store.project.status = { assign: "started", microreact: "finished", network: "finished" };
       expect(store.analysisProgressPercentage).toBe(Math.round((2 / 3) * 100));
+    });
+    it("startedRun returns true when project status is set", () => {
+      const store = useProjectStore();
+      store.project.status = { assign: "started", microreact: "finished", network: "finished" };
+      expect(store.startedRun).toBe(true);
+    });
+    it("startedRun returns false when project status is not set", () => {
+      const store = useProjectStore();
+      store.project.status = undefined;
+      expect(store.startedRun).toBe(false);
     });
   });
 
@@ -84,39 +94,42 @@ describe("projectStore", () => {
 
     it("should reset & set correct status when getProject is called", async () => {
       const store = useProjectStore();
-      store.projectHash = "hash-will-be-overwritten";
+      store.project.hash = "hash-will-be-overwritten";
 
       await store.getProject("1");
 
-      expect(store.projectHash).toBe(MOCK_PROJECT.hash);
-      expect(store.basicInfo).toEqual({
+      expect(store.project.hash).toBe(MOCK_PROJECT.hash);
+      expect(store.project).toEqual({
         id: MOCK_PROJECT.id,
+        hash: MOCK_PROJECT.hash,
         name: MOCK_PROJECT.name,
-        timestamp: MOCK_PROJECT.timestamp
+        timestamp: MOCK_PROJECT.timestamp,
+        samples: MOCK_PROJECT.samples,
+        status: MOCK_PROJECT.status
       });
-      expect(store.fileSamples).toEqual(MOCK_PROJECT.samples);
-      expect(store.isRun).toBe(true);
-      expect(store.analysisStatus).toEqual(MOCK_PROJECT.status);
+      expect(store.startedRun).toBe(true);
     });
 
     it("should not upload duplicates when onFilesUpload is called", async () => {
       const store = useProjectStore();
+      store.project.samples = [];
 
       store.onFilesUpload(mockFilesWithHashes);
       await flushPromises();
       store.onFilesUpload(mockFilesWithHashes[0]);
       await flushPromises();
 
-      expect(store.fileSamples.length).toBe(3);
+      expect(store.project.samples.length).toBe(3);
     });
     it("should call worker and set fileSamples correctly when processFiles is called", async () => {
       const store = useProjectStore();
+      store.project.samples = [];
 
       const workerPostMessageSpy = vitest.spyOn(MockWorker.prototype, "postMessage");
 
       await store.processFiles(mockFilesWithHashes);
 
-      expect(store.fileSamples).toEqual([
+      expect(store.project.samples).toEqual([
         { hash: mockFilesWithHashes[0].hash, filename: mockFilesWithHashes[0].name },
         { hash: mockFilesWithHashes[1].hash, filename: mockFilesWithHashes[1].name },
         { hash: mockFilesWithHashes[2].hash, filename: mockFilesWithHashes[2].name }
@@ -130,74 +143,68 @@ describe("projectStore", () => {
     });
     it("should save & post amr data to server when handleWorkerResponse is called", async () => {
       const store = useProjectStore();
-      store.basicInfo.id = "1";
-      store.fileSamples = [...mockFilesWithHashes];
+      store.project.id = "1";
+      store.project.samples = [...mockFilesWithHashes];
       const eventData = {
         hash: mockFilesWithHashes[0].hash,
         result: JSON.stringify({ Penicillin: 0.24, Chloramphenicol: 0.24 }),
         type: WorkerResponseValueTypes.AMR
       };
       server.use(
-        http.post(
-          `${projectIndexUri}/${store.basicInfo.id}/${eventData.type}/${eventData.hash}`,
-          async ({ request }) => {
-            const body = await request.json();
-            expect(body).toEqual(JSON.parse(eventData.result));
-            return HttpResponse.text("");
-          }
-        )
+        http.post(`${projectIndexUri}/${store.project.id}/${eventData.type}/${eventData.hash}`, async ({ request }) => {
+          const body = await request.json();
+          expect(body).toEqual(JSON.parse(eventData.result));
+          return HttpResponse.text("");
+        })
       );
 
       await store.handleWorkerResponse("sample1.fasta", {
         data: eventData
       } as any);
 
-      expect(store.fileSamples[0].amr).toEqual({ Penicillin: 0.24, Chloramphenicol: 0.24 });
+      expect(store.project.samples[0].amr).toEqual({ Penicillin: 0.24, Chloramphenicol: 0.24 });
     });
     it("should save & post sketch data to server when handleWorkerResponse is called", async () => {
       const store = useProjectStore();
-      store.basicInfo.id = "1";
-      store.fileSamples = [...mockFilesWithHashes];
+      store.project.id = "1";
+      store.project.samples = [...mockFilesWithHashes];
       const eventData = {
         hash: mockFilesWithHashes[0].hash,
         result: JSON.stringify({ filename: "sample1.fasta", md5: "sample1-md5" }),
         type: WorkerResponseValueTypes.SKETCH
       };
       server.use(
-        http.post(
-          `${projectIndexUri}/${store.basicInfo.id}/${eventData.type}/${eventData.hash}`,
-          async ({ request }) => {
-            const body = await request.json();
-            expect(body).toEqual({ sketch: JSON.parse(eventData.result), filename: "sample1.fasta" });
-            return HttpResponse.text("");
-          }
-        )
+        http.post(`${projectIndexUri}/${store.project.id}/${eventData.type}/${eventData.hash}`, async ({ request }) => {
+          const body = await request.json();
+          expect(body).toEqual({ sketch: JSON.parse(eventData.result), filename: "sample1.fasta" });
+          return HttpResponse.text("");
+        })
       );
 
       await store.handleWorkerResponse("sample1.fasta", {
         data: eventData
       } as any);
 
-      expect(store.fileSamples[0].sketch).toEqual({ filename: "sample1.fasta", md5: "sample1-md5" });
+      expect(store.project.samples[0].sketch).toEqual({ filename: "sample1.fasta", md5: "sample1-md5" });
     });
     it("should remove sample from fileSamples when handleWorkerResponse fails", async () => {
       const store = useProjectStore();
-      store.basicInfo.id = "1";
-      store.fileSamples = [...mockFilesWithHashes];
+      store.project.id = "1";
+      store.project.samples = [...mockFilesWithHashes];
       const eventData = {
         hash: mockFilesWithHashes[0].hash,
         result: JSON.stringify({ Penicillin: 0.24, Chloramphenicol: 0.24 }),
         type: WorkerResponseValueTypes.AMR
       };
       server.use(
-        http.post(`${projectIndexUri}/${store.basicInfo.id}/${eventData.type}/${eventData.hash}`, () =>
+        http.post(`${projectIndexUri}/${store.project.id}/${eventData.type}/${eventData.hash}`, () =>
           HttpResponse.error()
         )
       );
 
       await store.handleWorkerResponse("sample1.fasta", { data: eventData } as any);
 
-      expect(store.fileSamples).toEqual(mockFilesWithHashes.slice(1));
+      expect(store.project.samples).toEqual(mockFilesWithHashes.slice(1));
     });
 
     it("should set pollingIntervalId when pollAnalysisStatus is called & not already set", async () => {
@@ -234,23 +241,23 @@ describe("projectStore", () => {
     });
     it("should set cluster values correctly when getClusterAssignResult is called", async () => {
       const store = useProjectStore();
-      store.fileSamples = structuredClone(MOCK_PROJECT_SAMPLES_BEFORE_RUN);
+      store.project.samples = structuredClone(MOCK_PROJECT_SAMPLES_BEFORE_RUN);
 
       await store.getClusterAssignResult();
 
-      store.fileSamples.forEach((sample, index) => {
+      store.project.samples.forEach((sample, index) => {
         expect(sample.cluster).toBe(MOCK_PROJECT_SAMPLES[index].cluster);
       });
     });
     it("should not set cluster values when getClusterAssignResult fails", async () => {
       const store = useProjectStore();
-      store.fileSamples = structuredClone(MOCK_PROJECT_SAMPLES_BEFORE_RUN);
+      store.project.samples = structuredClone(MOCK_PROJECT_SAMPLES_BEFORE_RUN);
 
       server.use(http.post(assignResultUri, () => HttpResponse.error()));
 
       await store.getClusterAssignResult();
 
-      store.fileSamples.forEach((sample) => {
+      store.project.samples.forEach((sample) => {
         expect(sample.cluster).toBeUndefined();
       });
     });
@@ -260,7 +267,7 @@ describe("projectStore", () => {
 
       await store.getAnalysisStatus();
 
-      expect(store.analysisStatus).toEqual(MOCK_PROJECT.status);
+      expect(store.project.status).toEqual(MOCK_PROJECT.status);
       expect(store.stopPollingStatus).toHaveBeenCalled();
     });
     it("should stop polling if status request fails", async () => {
@@ -287,7 +294,7 @@ describe("projectStore", () => {
     it("should call getClusterAssignResult when assign status changes to finished", async () => {
       const store = useProjectStore();
       store.getClusterAssignResult = vitest.fn();
-      store.analysisStatus = { assign: "started", microreact: "finished", network: "finished" };
+      store.project.status = { assign: "started", microreact: "finished", network: "finished" };
 
       await store.getAnalysisStatus();
 
@@ -302,9 +309,9 @@ describe("projectStore", () => {
 
       expect(store.buildRunAnalysisPostBody).toHaveBeenCalled();
       expect(store.pollAnalysisStatus).toHaveBeenCalled();
-      expect(store.isRun).toBe(true);
-      expect(store.projectHash).toBe("test-hash");
-      expect(store.analysisStatus).toEqual({ assign: "submitted", microreact: "submitted", network: "submitted" });
+      expect(store.startedRun).toBe(true);
+      expect(store.project.hash).toBe("test-hash");
+      expect(store.project.status).toEqual({ assign: "submitted", microreact: "submitted", network: "submitted" });
     });
     it("should not call pollAnalysisStatus & not change status when runAnalysis fails", () => {
       const store = useProjectStore();
@@ -315,15 +322,15 @@ describe("projectStore", () => {
       store.runAnalysis();
 
       expect(store.pollAnalysisStatus).not.toHaveBeenCalled();
-      expect(store.analysisStatus).toEqual({});
-      expect(store.isRun).toBe(false);
-      expect(store.projectHash).toBe("");
+      expect(store.project.status).toBeUndefined();
+      expect(store.startedRun).toBe(false);
+      expect(store.project.hash).toBeUndefined();
     });
     it("should correctly create post body when buildRunAnalysisPostBody is called", () => {
       const store = useProjectStore();
       const projectHash = "2b4829de7ce1dc69265f3468bd247005";
-      store.basicInfo.id = "1";
-      store.fileSamples = MOCK_PROJECT_SAMPLES;
+      store.project.id = "1";
+      store.project.samples = MOCK_PROJECT_SAMPLES;
 
       const postBody = store.buildRunAnalysisPostBody();
 
@@ -344,7 +351,7 @@ describe("projectStore", () => {
     });
     it("should get download url & download when downloadZip is called", async () => {
       const store = useProjectStore();
-      store.projectHash = "test-hash";
+      store.project.hash = "test-hash";
       const fakeObjectUrl = "fake-object-url";
       const mockFileLink = {
         href: "",
@@ -359,7 +366,7 @@ describe("projectStore", () => {
       server.use(
         http.post(`${getApiUrl()}/downloadZip`, async ({ request }) => {
           const body = await request.json();
-          expect(body).toEqual({ type: AnalysisType.MICROREACT, cluster: 1, projectHash: store.projectHash });
+          expect(body).toEqual({ type: AnalysisType.MICROREACT, cluster: 1, projectHash: store.project.hash });
 
           return HttpResponse.arrayBuffer(mockBufferRes, {
             status: 201,

@@ -110,11 +110,13 @@ describe("RunProject", () => {
           createTestingPinia({
             initialState: {
               project: {
-                fileSamples: MOCK_PROJECT_SAMPLES,
-                analysisStatus: {
-                  assign: "finished",
-                  microreact: "finished",
-                  network: "finished"
+                project: {
+                  samples: MOCK_PROJECT_SAMPLES,
+                  status: {
+                    assign: "finished",
+                    microreact: "finished",
+                    network: "finished"
+                  }
                 }
               }
             }
@@ -143,8 +145,10 @@ describe("RunProject", () => {
           createTestingPinia({
             initialState: {
               project: {
-                fileSamples: copyMockSamples,
-                analysisStatus: {}
+                project: {
+                  samples: copyMockSamples,
+                  analysisStatus: undefined
+                }
               }
             }
           })
@@ -165,11 +169,13 @@ describe("RunProject", () => {
           createTestingPinia({
             initialState: {
               project: {
-                fileSamples: MOCK_PROJECT_SAMPLES,
-                analysisStatus: {
-                  assign: "finished",
-                  microreact: "finished",
-                  network: "failed"
+                project: {
+                  samples: MOCK_PROJECT_SAMPLES,
+                  status: {
+                    assign: "finished",
+                    microreact: "finished",
+                    network: "failed"
+                  }
                 }
               }
             }
@@ -191,11 +197,13 @@ describe("RunProject", () => {
           createTestingPinia({
             initialState: {
               project: {
-                fileSamples: MOCK_PROJECT_SAMPLES,
-                analysisStatus: {
-                  assign: "finished",
-                  microreact: "finished",
-                  network: "started"
+                project: {
+                  samples: MOCK_PROJECT_SAMPLES,
+                  status: {
+                    assign: "finished",
+                    microreact: "finished",
+                    network: "started"
+                  }
                 }
               }
             }

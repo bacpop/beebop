@@ -19,8 +19,8 @@ const renderComponent = (status: string, cluster?: number) =>
         createTestingPinia({
           initialState: {
             project: {
-              analysisStatus: {
-                microreact: status
+              project: {
+                status: { microreact: status }
               }
             }
           }

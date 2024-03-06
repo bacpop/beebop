@@ -25,7 +25,7 @@ const store = useProjectStore();
           <Column header="Network">
             <template #body="{ data }">
               <Button
-                v-if="store.analysisStatus.network === 'finished'"
+                v-if="store.project.status?.network === 'finished'"
                 outlined
                 icon="pi pi-download"
                 @click="data.cluster && store.downloadZip(AnalysisType.NETWORK, data.cluster)"
@@ -33,8 +33,8 @@ const store = useProjectStore();
                 aria-label="Download network zip"
                 v-tooltip.top="'Download zip'"
               />
-              <Tag v-else-if="store.analysisStatus.network === 'failed'" value="failed" severity="danger" />
-              <Tag v-else :value="store.analysisStatus.network" severity="warning" />
+              <Tag v-else-if="store.project.status?.network === 'failed'" value="failed" severity="danger" />
+              <Tag v-else :value="store.project.status?.network" severity="warning" />
             </template>
           </Column>
           <Column header="Microreact">

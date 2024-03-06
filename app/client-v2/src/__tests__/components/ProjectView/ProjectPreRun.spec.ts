@@ -10,7 +10,18 @@ describe("ProjectView ", () => {
   it("should render drag and drop section no files uploaded", () => {
     render(NotRunProjectVue, {
       global: {
-        plugins: [createTestingPinia(), PrimeVue]
+        plugins: [
+          createTestingPinia({
+            initialState: {
+              project: {
+                project: {
+                  samples: []
+                }
+              }
+            }
+          }),
+          PrimeVue
+        ]
       }
     });
 
@@ -21,6 +32,7 @@ describe("ProjectView ", () => {
     const store = useProjectStore(testPinia);
     // @ts-expect-error: Getter is read only
     store.isReadyToRun = true;
+    store.project.samples = [];
     render(NotRunProjectVue, {
       global: {
         plugins: [testPinia, PrimeVue]
@@ -34,6 +46,7 @@ describe("ProjectView ", () => {
   it("should disable run analysis button when isReadyToRun is false", () => {
     const testPinia = createTestingPinia();
     const store = useProjectStore(testPinia);
+    store.project.samples = [];
     // @ts-expect-error: Getter is read only
     store.isReadyToRun = false;
     render(NotRunProjectVue, {
@@ -51,7 +64,9 @@ describe("ProjectView ", () => {
           createTestingPinia({
             initialState: {
               project: {
-                fileSamples: MOCK_PROJECT_SAMPLES_BEFORE_RUN
+                project: {
+                  samples: MOCK_PROJECT_SAMPLES_BEFORE_RUN
+                }
               }
             }
           }),
@@ -72,7 +87,18 @@ describe("ProjectView ", () => {
     const mockFile = { name: "sample1.fasta", text: () => Promise.resolve("sample1") } as File;
     const { container } = render(NotRunProjectVue, {
       global: {
-        plugins: [createTestingPinia(), PrimeVue]
+        plugins: [
+          createTestingPinia({
+            initialState: {
+              project: {
+                project: {
+                  samples: []
+                }
+              }
+            }
+          }),
+          PrimeVue
+        ]
       }
     });
     const store = useProjectStore();

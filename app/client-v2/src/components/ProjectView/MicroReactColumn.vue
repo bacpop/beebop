@@ -9,7 +9,7 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div v-if="store.analysisStatus.microreact === 'finished'" class="flex gap-2">
+  <div v-if="store.project.status?.microreact === 'finished'" class="flex gap-2">
     <Button
       outlined
       icon="pi pi-download"
@@ -27,6 +27,6 @@ const props = defineProps<{
       :disabled="!props.data.cluster"
     />
   </div>
-  <Tag v-else-if="store.analysisStatus.microreact === 'failed'" value="failed" severity="danger" />
-  <Tag v-else :value="store.analysisStatus.microreact" severity="warning" />
+  <Tag v-else-if="store.project.status?.microreact === 'failed'" value="failed" severity="danger" />
+  <Tag v-else :value="store.project.status?.microreact" severity="warning" />
 </template>

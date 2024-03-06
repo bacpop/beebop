@@ -5,7 +5,7 @@ const store = useProjectStore();
 </script>
 
 <template>
-  <DataTable :value="store.fileSamples" tableStyle="min-width: 50rem">
+  <DataTable :value="store.project.samples" tableStyle="min-width: 50rem">
     <template #header>
       <slot name="table-header" />
     </template>

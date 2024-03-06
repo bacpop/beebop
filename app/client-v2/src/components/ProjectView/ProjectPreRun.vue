@@ -17,7 +17,7 @@ const tableIsHovered = ref(false);
     </template>
     <template #content>
       <div
-        v-if="store.fileSamples.length > 0"
+        v-if="store.project.samples.length > 0"
         @dragover="tableIsHovered = true"
         @dragleave="tableIsHovered = false"
         @drop="tableIsHovered = false"
