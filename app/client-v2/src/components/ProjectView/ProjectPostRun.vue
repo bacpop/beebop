@@ -10,7 +10,7 @@ const store = useProjectStore();
 
 <template>
   <div v-if="store.analysisProgressPercentage !== 100">
-    <div class="mb-2 fadein animation-duration-1000 animation-iteration-infinite">Running Analysis...</div>
+    <div class="mb-2 fadein animation-duration-2000 animation-iteration-infinite">Running Analysis...</div>
     <ProgressBar :value="store.analysisProgressPercentage"></ProgressBar>
   </div>
   <TabView>

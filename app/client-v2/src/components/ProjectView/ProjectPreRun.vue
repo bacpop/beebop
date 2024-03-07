@@ -8,7 +8,7 @@ const tableIsHovered = ref(false);
 </script>
 
 <template>
-  <FileUpload custom-upload auto @uploader="store.onFilesUpload($event.files)" :multiple="true" accept=".fa, .fasta">
+  <FileUpload custom-upload auto @uploader="store.onFilesUpload($event.files)" :multiple="true" accept=".fa*, .fasta*">
     <template #header="{ chooseCallback }">
       <div class="flex flex-wrap justify-content-between align-items-center flex-1 gap-2">
         <Button label="Upload" outlined icon="pi pi-upload" @click="chooseCallback()" />
@@ -21,6 +21,7 @@ const tableIsHovered = ref(false);
         @dragover="tableIsHovered = true"
         @dragleave="tableIsHovered = false"
         @drop="tableIsHovered = false"
+        @dragenter.prevent
         :class="['mb-2', { 'opacity-20': tableIsHovered }]"
       >
         <ProjectDataTable>
