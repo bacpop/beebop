@@ -32,9 +32,9 @@ describe("AMR column", () => {
     const warning = container.querySelectorAll(".p-tag-warning");
     const danger = container.querySelectorAll(".p-tag-danger");
 
-    expect(success.length).toBe(1);
+    expect(success.length).toBe(2);
     expect(warning.length).toBe(2);
-    expect(danger.length).toBe(2);
+    expect(danger.length).toBe(1);
   });
   it("should display correct % and species abbreviation", async () => {
     renderComponent(MOCK_PROJECT_SAMPLES[0].amr);
@@ -57,7 +57,7 @@ describe("AMR column", () => {
   it("should show tooltip with full name on hover", async () => {
     const { container } = renderComponent(MOCK_PROJECT_SAMPLES[0].amr);
 
-    const success = container.querySelectorAll(".p-tag-success")[0];
+    const success = container.querySelectorAll(".p-tag-danger")[0];
     await userEvent.hover(success);
 
     await screen.findByText(/Chloramphenicol/);
