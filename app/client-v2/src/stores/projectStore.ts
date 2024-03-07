@@ -232,8 +232,8 @@ export const useProjectStore = defineStore("project", {
     }
 
     // TODO
-    // async onMicroReactVisit(cluster: number) {
-    //   console.log("Microreact visit", cluster);
-    // }
+    async onMicroReactVisit(cluster: number) {
+      console.log("Microreact visit", cluster);
+    }
   }
 });
