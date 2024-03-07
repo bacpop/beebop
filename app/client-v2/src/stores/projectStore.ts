@@ -171,9 +171,9 @@ export const useProjectStore = defineStore("project", {
       }
     },
     // TODO: update to remove from api as well
-    removeUploadedFile(index: number) {
-      // this.fileSamples.splice(index, 1);
-    },
+    // removeUploadedFile(index: number) {
+    //   // this.fileSamples.splice(index, 1);
+    // },
 
     async runAnalysis() {
       const body = this.buildRunAnalysisPostBody();
@@ -229,11 +229,11 @@ export const useProjectStore = defineStore("project", {
       } catch (error) {
         console.error(error);
       }
-    },
+    }
 
     // TODO
-    async onMicroReactVisit(cluster: number) {
-      console.log("Microreact visit", cluster);
-    }
+    // async onMicroReactVisit(cluster: number) {
+    //   console.log("Microreact visit", cluster);
+    // }
   }
 });

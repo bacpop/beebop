@@ -14,7 +14,7 @@ export default mergeConfig(
       coverage: {
         provider: "v8",
         include: ["src/**/*"],
-        exclude: ["src/types/**/*", "src/main.ts"]
+        exclude: ["src/types/**/*", "src/main.ts", "src/mocks/*"]
       }
     }
   })
