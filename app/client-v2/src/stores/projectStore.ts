@@ -17,7 +17,7 @@ import { Md5 } from "ts-md5";
 
 const baseApi = mande(getApiUrl(), { credentials: "include" });
 
-// TODO: add proper error handling. Maybe best to add error state attribute and watch accordingly cos of nested things interval/workers
+//TODO: add proper error handling. Maybe best to add error state attribute and watch accordingly cos of nested things interval/workers
 export const useProjectStore = defineStore("project", {
   state: () => ({
     project: {} as Project,
