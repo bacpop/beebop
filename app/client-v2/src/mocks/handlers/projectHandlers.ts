@@ -1,6 +1,6 @@
 import { getApiUrl } from "@/config";
 import { HttpHandler, HttpResponse, http } from "msw";
-import { MOCK_PROJECTS } from "../mockObjects";
+import { MOCK_PROJECT, MOCK_PROJECTS } from "../mockObjects";
 
 export const projectIndexUri = `${getApiUrl()}/project`;
 
@@ -19,5 +19,6 @@ export const projectHandlers: HttpHandler[] = [
       status: "success"
     })
   ),
-  http.post(`${projectIndexUri}/:id/rename`, () => HttpResponse.json({ data: null, errors: [], status: "success" }))
+  http.post(`${projectIndexUri}/:id/rename`, () => HttpResponse.json({ data: null, errors: [], status: "success" })),
+  http.get(`${projectIndexUri}/:id`, () => HttpResponse.json({ data: MOCK_PROJECT, errors: [], status: "success" }))
 ];
