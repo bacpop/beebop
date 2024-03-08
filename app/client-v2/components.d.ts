@@ -8,9 +8,6 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AmrColumn: typeof import('./src/components/ProjectView/AmrColumn.vue')['default']
-    AutoComplete: (typeof import("primevue/autocomplete"))["default"]
-    Avatar: (typeof import("primevue/avatar"))["default"]
-    Badge: (typeof import("primevue/badge"))["default"]
     Button: typeof import('primevue/button')['default']
     Column: typeof import('primevue/column')['default']
     DataTable: typeof import('primevue/datatable')['default']
@@ -20,7 +17,7 @@ declare module 'vue' {
     Menubar: typeof import('primevue/menubar')['default']
     MicroReactColumn: typeof import('./src/components/ProjectView/MicroReactColumn.vue')['default']
     NetworkTab: typeof import('./src/components/ProjectView/NetworkTab.vue')['default']
-    NotRunProject: typeof import('./src/components/ProjectView/NotRunProject.vue')['default']
+    NotRunProject: (typeof import("./src/components/ProjectView/NotRunProject.vue"))["default"]
     ProgressBar: typeof import('primevue/progressbar')['default']
     ProgressSpinner: typeof import('primevue/progressspinner')['default']
     ProjectDataTable: typeof import('./src/components/ProjectView/ProjectDataTable.vue')['default']
@@ -29,11 +26,9 @@ declare module 'vue' {
     ProjectPreRun: typeof import('./src/components/ProjectView/ProjectPreRun.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    RunProject: typeof import('./src/components/ProjectView/RunProject.vue')['default']
+    RunProject: (typeof import("./src/components/ProjectView/RunProject.vue"))["default"]
     TabPanel: typeof import('primevue/tabpanel')['default']
     TabView: typeof import('primevue/tabview')['default']
     Tag: typeof import('primevue/tag')['default']
-    TheWelcome: (typeof import("./src/components/TheWelcome.vue"))["default"]
-    WelcomeItem: (typeof import("./src/components/WelcomeItem.vue"))["default"]
   }
 }

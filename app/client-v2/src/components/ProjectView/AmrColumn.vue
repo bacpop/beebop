@@ -8,9 +8,9 @@ const props = defineProps<{
 }>();
 
 const tagSeverity = (percent: number) => {
-  if (percent < 33) return "danger";
+  if (percent < 33) return "success";
   if (percent < 66) return "warning";
-  if (percent > 66) return "success";
+  if (percent > 66) return "danger";
   return "secondary";
 };
 

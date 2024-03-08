@@ -132,9 +132,12 @@ const onRowEditSave = async (event: DataTableRowEditSaveEvent) => {
         </template>
         <Column field="name" header="Name" sortable class="w-2">
           <template #body="{ data }">
-            <RouterLink :to="`/project/${data.id}`" class="text-primary no-underline hover:underline font-semibold">
-              {{ data.name }}
-            </RouterLink>
+            <div class="flex gap-2">
+              <RouterLink :to="`/project/${data.id}`" class="text-primary no-underline hover:underline font-semibold">
+                {{ data.name }}
+              </RouterLink>
+              <Tag v-if="data.hash" severity="info" value="analysis ran" style="font-size: x-small" />
+            </div>
           </template>
           <template #editor="{ data, field }">
             <InputText v-model="data[field]" class="w-full" />
