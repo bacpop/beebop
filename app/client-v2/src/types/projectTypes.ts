@@ -1,3 +1,4 @@
+import cytoscape from "cytoscape";
 export interface ProjectOverview {
   id: string;
   name: string;
@@ -61,6 +62,7 @@ export interface ClusterInfo {
   cluster: number;
   hash: string;
 }
+
 export enum WorkerResponseValueTypes {
   AMR = "amr",
   SKETCH = "sketch"
@@ -77,3 +79,9 @@ export enum AnalysisType {
   MICROREACT = "microreact",
   NETWORK = "network"
 }
+
+interface GraphmlExtension {
+  graphml: (arg: Record<string, string> | string) => void;
+}
+
+export type CyGraphml = cytoscape.Core & GraphmlExtension;

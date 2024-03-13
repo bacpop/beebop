@@ -46,7 +46,7 @@ const store = useProjectStore();
       </ProjectDataTable>
     </TabPanel>
     <TabPanel header="Network" :disabled="!store.isProjectComplete">
-      <NetworkTab />
+      <NetworkTab v-if="store.isProjectComplete"/>
     </TabPanel>
   </TabView>
 </template>

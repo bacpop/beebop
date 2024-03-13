@@ -47,7 +47,7 @@ onUnmounted(() => {
 }
 @media (min-width: 1500px) {
   .single-project-card {
-    width: 1350px;
+    width: 1400px;
   }
 }
 </style>

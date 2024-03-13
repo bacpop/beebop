@@ -1,0 +1,34 @@
+diff --git a/node_modules/cytoscape-graphml/cytoscape-graphml.js b/node_modules/cytoscape-graphml/cytoscape-graphml.js
+index 0455d7c..f30623b 100644
+--- a/node_modules/cytoscape-graphml/cytoscape-graphml.js
++++ b/node_modules/cytoscape-graphml/cytoscape-graphml.js
+@@ -138,10 +138,9 @@ module.exports = function (cy, $, options, cyGraphML) {
+   }
+ 
+   cy.batch(function () {
+-    xml = $.parseXML(cyGraphML);
+-    $xml = $(xml);
++    var $xml = $($.parseXML(cyGraphML));
+ 
+-    $graphs = $xml.find("graph").first();
++    var $graphs = $xml.find("graph").first();
+ 
+     $graphs.each(function () {
+       var $graph = $(this);
+diff --git a/node_modules/cytoscape-graphml/src/importer.js b/node_modules/cytoscape-graphml/src/importer.js
+index 5d1117e..48c7297 100644
+--- a/node_modules/cytoscape-graphml/src/importer.js
++++ b/node_modules/cytoscape-graphml/src/importer.js
+@@ -33,10 +33,9 @@ module.exports = function (cy, $, options, cyGraphML) {
+   }
+ 
+   cy.batch(function () {
+-    xml = $.parseXML(cyGraphML);
+-    $xml = $(xml);
++    var $xml = $($.parseXML(cyGraphML));
+ 
+-    $graphs = $xml.find("graph").first();
++    var $graphs = $xml.find("graph").first();
+ 
+     $graphs.each(function () {
+       var $graph = $(this);
