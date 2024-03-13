@@ -12,7 +12,8 @@ const props = defineProps<{
 }>();
 
 const cyRef = ref<HTMLElement | null>(null);
-const loadGraph = async () => {
+
+onMounted(async () => {
   await graphml(cytoscape, jquery);
   cytoscape.use(graphml);
   const cy = cytoscape({
@@ -52,16 +53,13 @@ const loadGraph = async () => {
     (cy as CyGraphml).graphml({ layoutBy: "cose" });
     (cy as CyGraphml).graphml(props.graph);
   });
-};
-onMounted(async () => {
-  await loadGraph();
 });
 </script>
 
 <template>
   <div class="cytoscape-graph">
     <span class="text-color-secondary">Cluster: {{ props.cluster }}</span>
-    <div class="cy shadow-4" ref="cyRef"></div>
+    <div class="cy shadow-4 border-round" ref="cyRef"></div>
   </div>
 </template>
 
@@ -75,8 +73,7 @@ onMounted(async () => {
 }
 
 .cytoscape-graph {
-  padding: 0.5rem;
-  gap: 0.5rem;
+  gap: 0.25rem;
   max-height: 800px;
   min-height: 500px;
   min-width: 500px;
