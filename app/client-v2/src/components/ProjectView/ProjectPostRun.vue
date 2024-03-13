@@ -4,8 +4,15 @@ import ProjectDataTable from "@/components/ProjectView/ProjectDataTable.vue";
 import { useProjectStore } from "@/stores/projectStore";
 import { AnalysisType } from "@/types/projectTypes";
 import NetworkTab from "./NetworkTab.vue";
+import { ref } from "vue";
 
 const store = useProjectStore();
+const hasVisitedNetworkTab = ref(false);
+const tabChange = (num: number) => {
+  if (num == 1 && !hasVisitedNetworkTab.value) {
+    hasVisitedNetworkTab.value = true;
+  }
+};
 </script>
 
 <template>
@@ -13,7 +20,7 @@ const store = useProjectStore();
     <div class="mb-2 fadein animation-duration-2000 animation-iteration-infinite">Running Analysis...</div>
     <ProgressBar :value="store.analysisProgressPercentage"></ProgressBar>
   </div>
-  <TabView>
+  <TabView @update:active-index="tabChange">
     <TabPanel header="Samples">
       <ProjectDataTable>
         <template #extra-cols>
@@ -46,7 +53,7 @@ const store = useProjectStore();
       </ProjectDataTable>
     </TabPanel>
     <TabPanel header="Network" :disabled="!store.isProjectComplete">
-      <NetworkTab v-if="store.isProjectComplete"/>
+      <NetworkTab v-if="store.isProjectComplete && hasVisitedNetworkTab" />
     </TabPanel>
   </TabView>
 </template>
