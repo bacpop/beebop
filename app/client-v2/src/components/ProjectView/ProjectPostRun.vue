@@ -8,6 +8,7 @@ import { ref } from "vue";
 
 const store = useProjectStore();
 const hasVisitedNetworkTab = ref(false);
+
 const tabChange = (num: number) => {
   if (num == 1 && !hasVisitedNetworkTab.value) {
     hasVisitedNetworkTab.value = true;

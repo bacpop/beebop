@@ -1,11 +1,12 @@
 import { getApiUrl } from "@/config";
 import { HttpHandler, HttpResponse, http } from "msw";
-import { MOCK_PROJECT, MOCK_PROJECTS, MOCK_PROJECT_SAMPLES } from "../mockObjects";
+import { MOCK_CLUSTER_GRAPH_DICT, MOCK_PROJECT, MOCK_PROJECTS, MOCK_PROJECT_SAMPLES } from "../mockObjects";
 import type { ClusterInfo } from "@/types/projectTypes";
 
 export const projectIndexUri = `${getApiUrl()}/project`;
 export const assignResultUri = `${getApiUrl()}/assignResult`;
 export const statusUri = `${getApiUrl()}/status`;
+export const networkGraphsUri = `${getApiUrl()}/networkGraphs`;
 
 export const projectHandlers: HttpHandler[] = [
   http.get(`${projectIndexUri}s`, () =>
@@ -41,5 +42,8 @@ export const projectHandlers: HttpHandler[] = [
       errors: [],
       status: "success"
     })
+  ),
+  http.get(`${networkGraphsUri}/:projectHash`, () =>
+    HttpResponse.json({ data: MOCK_CLUSTER_GRAPH_DICT, errors: [], status: "success" })
   )
 ];

@@ -1,11 +1,6 @@
 <script setup lang="ts">
-import cytoscape from "cytoscape";
-// @ts-expect-error no types for this package
-import graphml from "cytoscape-graphml";
-import jquery from "jquery";
-import type { CyGraphml } from "@/types/projectTypes";
-import { onMounted, ref } from "vue";
-
+import { ref } from "vue";
+import CytoscapeCanvas from "./CytoscapeCanvas.vue";
 const props = defineProps<{
   graph: string;
   cluster: string;

@@ -5,6 +5,9 @@ import { createTestingPinia } from "@pinia/testing";
 import userEvent from "@testing-library/user-event";
 import { render, screen, waitFor } from "@testing-library/vue";
 import PrimeVue from "primevue/config";
+import TabPanel from "primevue/tabpanel";
+import TabView from "primevue/tabview";
+
 import Tooltip from "primevue/tooltip";
 
 describe("RunProject", () => {
@@ -61,14 +64,13 @@ describe("RunProject", () => {
     });
 
     const dataTable = screen.getByText(/data table/i);
-    const networkGraphs = screen.getByText(/network graphs/i);
 
-    expect(networkGraphs).not.toBeVisible();
+    expect(screen.queryByText(/network graphs/i)).not.toBeInTheDocument();
     expect(dataTable).toBeVisible();
 
     await userEvent.click(screen.getByRole("tab", { name: /network/i }));
 
-    expect(networkGraphs).toBeVisible();
+    expect(screen.getByText(/network graphs/i)).toBeVisible();
     expect(dataTable).not.toBeVisible();
   });
   it("should enable network tab on project complete", async () => {

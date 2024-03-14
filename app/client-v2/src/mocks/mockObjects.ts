@@ -116,3 +116,24 @@ export const MOCK_PROJECT: Project = {
     network: "failed"
   }
 };
+
+export const MOCK_NETWORK_GRAPH = `<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+<key id="key0" for="node" attr.name="id" attr.type="string" />
+<graph id="G" edgedefault="undirected" parse.nodeids="canonical" parse.edgeids="canonical" parse.order="nodesfirst">
+  <node id="n0">
+    <data key="key0">24775_1#252</data>
+    <data key="ref_query">ref</data>
+  </node>
+  <node id="n1">
+    <data key="key0">S_pneumoniae_ASP0581_GCF_003967155_2.fa</data>
+    <data key="ref_query">query</data>
+  </node>
+  <edge id="e0" source="n0" target="n1">
+  </edge>
+</graph>
+</graphml>`;
+export const MOCK_CLUSTER_GRAPH_DICT: Record<string, string> = {
+  "1": "graph1",
+  "2": "graph2",
+  "3": "graph3"
+};

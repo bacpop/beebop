@@ -14,7 +14,7 @@ const cyRef = ref<HTMLElement | null>(null);
 
 onMounted(async () => {
   await graphml(cytoscape, jquery);
-  cytoscape.use(graphml);
+
   const cy = cytoscape({
     container: cyRef.value as unknown as HTMLElement,
     style: [

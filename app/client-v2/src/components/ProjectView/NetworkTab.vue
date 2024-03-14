@@ -14,7 +14,7 @@ const { data, error, isFetching } = useFetch(`${apiUrl}/networkGraphs/${store.pr
 
 <template>
   <div v-if="error" class="text-red-500 text-center font-semibold">
-    Error fetching projects... Refresh or try again later
+    Error fetching network graphs... Refresh or try again later
   </div>
   <div v-else-if="isFetching" class="text-center">
     <ProgressSpinner strokeWidth="8" class="w-4rem h-4rem" animationDuration=".5s" />
