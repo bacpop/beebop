@@ -8,7 +8,6 @@ import { onMounted, ref } from "vue";
 
 const props = defineProps<{
   graph: string;
-  cluster: string;
 }>();
 
 const cyRef = ref<HTMLElement | null>(null);
@@ -26,7 +25,7 @@ onMounted(async () => {
           height: "10px",
           content: "data(key0)",
           "font-size": "7px",
-          color: "#777",
+          color: "#00CC66",
           "background-color": "rgba(45, 212, 191, 0.44)"
         }
       },
@@ -41,7 +40,8 @@ onMounted(async () => {
         selector: "edge",
         style: {
           width: "1px",
-          "line-color": "palegoldenrod"
+          "line-color": "palegoldenrod",
+          opacity: 0.5
         }
       }
     ],
@@ -57,27 +57,5 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="cytoscape-graph">
-    <span class="text-color-secondary">Cluster: {{ props.cluster }}</span>
-    <div class="cy shadow-4 border-round" ref="cyRef"></div>
-  </div>
+  <div class="shadow-5 border-round w-full h-full m-auto flex-grow-1 text-left" ref="cyRef"></div>
 </template>
-
-<style scoped>
-.cy {
-  width: 100%;
-  height: 100%;
-  flex-grow: 1;
-  text-align: start;
-  margin: auto;
-}
-
-.cytoscape-graph {
-  gap: 0.25rem;
-  max-height: 800px;
-  min-height: 500px;
-  min-width: 500px;
-  display: flex;
-  flex-direction: column;
-}
-</style>

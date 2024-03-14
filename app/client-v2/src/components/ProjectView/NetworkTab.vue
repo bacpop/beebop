@@ -3,7 +3,7 @@ import { getApiUrl } from "@/config";
 import { useProjectStore } from "@/stores/projectStore";
 import type { ApiResponse } from "@/types/projectTypes";
 import { useFetch } from "@vueuse/core";
-import CytoscapeGraph from "@/components/ProjectView/CytoscapeGraph.vue";
+import NetworkGraph from "./NetworkGraph.vue";
 
 const apiUrl = getApiUrl();
 const store = useProjectStore();
@@ -23,7 +23,7 @@ const { data, error, isFetching } = useFetch(`${apiUrl}/networkGraphs/${store.pr
   <div v-else-if="data?.data">
     <div class="grid">
       <div v-for="(value, key) in data.data" :key="key" class="col">
-        <CytoscapeGraph :cluster="key" :graph="value" />
+        <NetworkGraph :cluster="key" :graph="value" />
       </div>
     </div>
   </div>

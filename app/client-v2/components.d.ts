@@ -8,10 +8,14 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AmrColumn: typeof import('./src/components/ProjectView/AmrColumn.vue')['default']
+    Avatar: typeof import('primevue/avatar')['default']
     Button: typeof import('primevue/button')['default']
     Column: typeof import('primevue/column')['default']
+    Cytoscape: typeof import('./src/components/ProjectView/Cytoscape.vue')['default']
+    CytoscapeCanvas: typeof import('./src/components/ProjectView/CytoscapeCanvas.vue')['default']
     CytoscapeGraph: typeof import('./src/components/ProjectView/CytoscapeGraph.vue')['default']
     DataTable: typeof import('primevue/datatable')['default']
+    Dialog: typeof import('primevue/dialog')['default']
     FileUpload: typeof import('primevue/fileupload')['default']
     InputText: typeof import('primevue/inputtext')['default']
     Menu: typeof import('primevue/menu')['default']
