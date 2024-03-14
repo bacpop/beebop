@@ -10,7 +10,7 @@ const fullScreenVisible = ref(false);
 </script>
 
 <template>
-  <Dialog v-model:visible="fullScreenVisible" modal>
+  <Dialog v-model:visible="fullScreenVisible" modal :draggable="false">
     <template #header>
       <div class="inline-flex align-items-center justify-content-center gap-2">
         <span class="font-bold white-space-nowrap">Cluster: {{ props.cluster }}</span>
