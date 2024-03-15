@@ -16,44 +16,43 @@ export const useMicroreact = () => {
   const toast = useToast();
 
   const onMicroReactVisit = async (cluster: number) => {
-    if (userStore.microreactToken) {
-      try {
-        const res = await microReactApi.post<ApiResponse<{ cluster: string; url: string }>>({
-          cluster,
-          apiToken: userStore.microreactToken,
-          projectHash: projectStore.project.hash
-        });
-        window.open(res.data.url, "_blank");
-      } catch (error) {
-        console.error(error);
-        toast.add({
-          severity: "error",
-          summary: "Error Occurred",
-          detail: "Try again later or update your Microreact token.",
-          life: 3000
-        });
-      }
-    } else {
+    if (!userStore.microreactToken) {
       isMicroReactDialogVisible.value = true;
+      return;
+    }
+    try {
+      const res = await microReactApi.post<ApiResponse<{ cluster: string; url: string }>>({
+        cluster,
+        apiToken: userStore.microreactToken,
+        projectHash: projectStore.project.hash
+      });
+      window.open(res.data.url, "_blank");
+    } catch (error) {
+      console.error(error);
+
+      toast.add({
+        severity: "error",
+        summary: "Error Occurred",
+        detail: "Try again later or update your Microreact token.",
+        life: 3000
+      });
     }
   };
 
   const saveMicroreactToken = async (cluster: number) => {
-    if (microReactTokenInput.value) {
-      try {
-        const res = await microReactApi.post<ApiResponse<{ cluster: string; url: string }>>({
-          cluster,
-          apiToken: microReactTokenInput.value,
-          projectHash: projectStore.project.hash
-        });
+    try {
+      const res = await microReactApi.post<ApiResponse<{ cluster: string; url: string }>>({
+        cluster,
+        apiToken: microReactTokenInput.value,
+        projectHash: projectStore.project.hash
+      });
 
-        isMicroReactDialogVisible.value = false;
-        userStore.microreactToken = microReactTokenInput.value;
-        window.open(res.data.url, "_blank");
-      } catch (error) {
-        console.log(error);
-        hasMicroReactError.value = true;
-      }
+      isMicroReactDialogVisible.value = false;
+      userStore.microreactToken = microReactTokenInput.value;
+      window.open(res.data.url, "_blank");
+    } catch (error) {
+      console.log(error);
+      hasMicroReactError.value = true;
     }
   };
 

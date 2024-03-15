@@ -3,7 +3,7 @@ import { useMicroreact } from "@/composables/useMicroreact";
 import { useProjectStore } from "@/stores/projectStore";
 import { type ProjectSample, AnalysisType } from "@/types/projectTypes";
 import Toast from "primevue/toast";
-
+import Dialog from "primevue/dialog";
 const props = defineProps<{
   data: ProjectSample;
 }>();
@@ -36,15 +36,16 @@ const { hasMicroReactError, isMicroReactDialogVisible, microReactTokenInput, onM
       >.</span
     >
     <div class="flex flex-column gap-2 mb-3">
-      <label for="microreact token" class="font-medium">Token</label>
+      <label for="microreact-token-input" class="font-medium">Token</label>
       <InputText
         v-model="microReactTokenInput"
-        id="microreact token"
+        id="microreact-token-input"
         class="flex-auto"
         autocomplete="off"
         :invalid="hasMicroReactError"
         aria-errormessage="token-error"
         placeholder="Enter token..."
+        required
       />
       <small v-if="hasMicroReactError" id="token-error" class="text-red-500"
         >An error occurred, ensure the token is correct and try again</small
@@ -52,7 +53,12 @@ const { hasMicroReactError, isMicroReactDialogVisible, microReactTokenInput, onM
     </div>
     <div class="flex justify-content-end gap-2">
       <Button type="button" label="Cancel" severity="secondary" @click="isMicroReactDialogVisible = false"></Button>
-      <Button type="button" label="Save & Visit" @click="saveMicroreactToken(props.data.cluster)"></Button>
+      <Button
+        type="button"
+        label="Save & Visit"
+        :disabled="!microReactTokenInput"
+        @click="saveMicroreactToken(props.data.cluster)"
+      ></Button>
     </div>
   </Dialog>
   <div v-if="projectStore.project.status?.microreact === 'finished'" class="flex gap-2">

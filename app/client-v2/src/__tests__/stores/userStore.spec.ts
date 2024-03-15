@@ -22,7 +22,9 @@ describe("User Store", () => {
     const store = useUserStore();
     await store.getUser();
 
-    expect(store.$state).toEqual(MOCK_USER);
+    expect(store.id).toBe(MOCK_USER.id);
+    expect(store.name).toBe(MOCK_USER.name);
+    expect(store.provider).toBe(MOCK_USER.provider);
   });
   it("should set user state to undefined if getUser fails", async () => {
     const store = useUserStore();
@@ -30,10 +32,8 @@ describe("User Store", () => {
 
     await store.getUser();
 
-    expect(store.$state).toEqual({
-      id: undefined,
-      name: undefined,
-      provider: undefined
-    });
+    expect(store.id).toBe(undefined);
+    expect(store.name).toBe(undefined);
+    expect(store.provider).toBe(undefined);
   });
 });

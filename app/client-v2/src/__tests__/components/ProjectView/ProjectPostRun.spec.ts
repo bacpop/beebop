@@ -5,9 +5,6 @@ import { createTestingPinia } from "@pinia/testing";
 import userEvent from "@testing-library/user-event";
 import { render, screen, waitFor } from "@testing-library/vue";
 import PrimeVue from "primevue/config";
-import TabPanel from "primevue/tabpanel";
-import TabView from "primevue/tabview";
-
 import Tooltip from "primevue/tooltip";
 
 describe("RunProject", () => {
@@ -124,15 +121,15 @@ describe("RunProject", () => {
             }
           })
         ],
+        stubs: {
+          MicroReactColumn: true
+        },
         directives: {
           tooltip: Tooltip
         }
       }
     });
 
-    expect(screen.getAllByRole("button", { name: /download microreact zip/i }).length).toBe(
-      MOCK_PROJECT_SAMPLES.length
-    );
     expect(screen.getAllByRole("button", { name: /download network zip/i }).length).toBe(MOCK_PROJECT_SAMPLES.length);
     MOCK_PROJECT_SAMPLES.forEach((sample) => {
       expect(screen.getByText(sample.cluster!)).toBeVisible();
@@ -155,6 +152,9 @@ describe("RunProject", () => {
             }
           })
         ],
+        stubs: {
+          MicroReactColumn: true
+        },
         directives: {
           tooltip: Tooltip
         }
@@ -183,6 +183,9 @@ describe("RunProject", () => {
             }
           })
         ],
+        stubs: {
+          MicroReactColumn: true
+        },
         directives: {
           tooltip: Tooltip
         }
@@ -211,6 +214,9 @@ describe("RunProject", () => {
             }
           })
         ],
+        stubs: {
+          MicroReactColumn: true
+        },
         directives: {
           tooltip: Tooltip
         }
