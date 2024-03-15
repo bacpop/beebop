@@ -31,7 +31,7 @@ const {
     :class="{ 'border-red-500': hasMicroReactError }"
   >
     <span class="p-text-secondary block mb-4">
-      Please submit a Microreact token so a URL can be generated.<br />
+      Please submit a Microreact token so a URL can be generated and you can be directed.<br />
       You can find your token in your
       <a
         class="text-primary no-underline hover:underline font-semibold"
@@ -84,6 +84,7 @@ const {
       @click="props.data.cluster && onMicroReactVisit(props.data.cluster)"
       :loading="isFetchingMicroreactUrl"
       :disabled="!props.data.cluster"
+      v-tooltip.top="'Visit microreact'"
     />
   </div>
   <Tag v-else-if="projectStore.project.status?.microreact === 'failed'" value="failed" severity="danger" />
