@@ -30,17 +30,19 @@ const {
     :style="{ width: '30rem' }"
     :class="{ 'border-red-500': hasMicroReactError }"
   >
-    <span class="p-text-secondary block mb-4">
-      Please submit a Microreact token so a URL can be generated and you can be directed.<br />
-      You can find your token in your
-      <a
-        class="text-primary no-underline hover:underline font-semibold"
-        href="https://microreact.org/my-account/settings"
-        target="_blank"
-      >
-        Microreact Account Settings</a
-      >.</span
-    >
+    <div class="flex flex-column gap-2 p-text-secondary block mb-4">
+      <div>Please submit a Microreact token so a URL can be generated and you can be directed to Microreact.</div>
+      <div>
+        You can find your token in your
+        <a
+          class="text-primary no-underline hover:underline font-semibold"
+          href="https://microreact.org/my-account/settings"
+          target="_blank"
+        >
+          Microreact Account Settings</a
+        >.
+      </div>
+    </div>
     <div class="flex flex-column gap-2 mb-3">
       <label for="microreact-token-input" class="font-medium">Token</label>
       <InputText
