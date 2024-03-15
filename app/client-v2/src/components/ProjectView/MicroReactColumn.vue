@@ -9,8 +9,14 @@ const props = defineProps<{
 }>();
 // todo: make into composable & clean up logic
 const projectStore = useProjectStore();
-const { hasMicroReactError, isMicroReactDialogVisible, microReactTokenInput, onMicroReactVisit, saveMicroreactToken } =
-  useMicroreact();
+const {
+  hasMicroReactError,
+  isMicroReactDialogVisible,
+  microReactTokenInput,
+  onMicroReactVisit,
+  saveMicroreactToken,
+  isFetchingMicroreactUrl
+} = useMicroreact();
 </script>
 
 <template>
@@ -57,6 +63,7 @@ const { hasMicroReactError, isMicroReactDialogVisible, microReactTokenInput, onM
         type="button"
         label="Save & Visit"
         :disabled="!microReactTokenInput"
+        :loading="isFetchingMicroreactUrl"
         @click="saveMicroreactToken(props.data.cluster)"
       ></Button>
     </div>
@@ -70,12 +77,12 @@ const { hasMicroReactError, isMicroReactDialogVisible, microReactTokenInput, onM
       :disabled="!props.data.cluster"
       v-tooltip.top="'Download zip'"
     />
-    <!-- TODO: implement to microreact site -->
     <Button
       outlined
       icon="pi pi-arrow-right"
       label="Visit"
       @click="props.data.cluster && onMicroReactVisit(props.data.cluster)"
+      :loading="isFetchingMicroreactUrl"
       :disabled="!props.data.cluster"
     />
   </div>
