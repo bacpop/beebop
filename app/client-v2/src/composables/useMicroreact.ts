@@ -16,7 +16,7 @@ export const useMicroreact = () => {
   const isFetchingMicroreactUrl = ref(false);
   const toast = useToast();
 
-  const onMicroReactVisit = async (cluster: number) => {
+  const onMicroReactVisit = async (cluster: string) => {
     if (!userStore.microreactToken) {
       isMicroReactDialogVisible.value = true;
       return;
@@ -43,7 +43,7 @@ export const useMicroreact = () => {
     }
   };
 
-  const saveMicroreactToken = async (cluster: number) => {
+  const saveMicroreactToken = async (cluster: string) => {
     isFetchingMicroreactUrl.value = true;
     try {
       const res = await microReactApi.post<ApiResponse<{ cluster: string; url: string }>>({

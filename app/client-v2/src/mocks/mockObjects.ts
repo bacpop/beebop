@@ -44,7 +44,7 @@ export const MOCK_PROJECT_SAMPLES: ProjectSample[] = [
       filename: "sample1.fasta",
       md5: "sample1-md5"
     },
-    cluster: 1
+    cluster: "GPSC1"
   },
   {
     hash: "sample2-test-hash",
@@ -60,7 +60,7 @@ export const MOCK_PROJECT_SAMPLES: ProjectSample[] = [
       species: true
     },
     sketch: { filename: "sample2.fasta", md5: "sample2-md5" },
-    cluster: 2
+    cluster: "GPSC2"
   },
   {
     hash: "sample3-test-hash",
@@ -76,7 +76,7 @@ export const MOCK_PROJECT_SAMPLES: ProjectSample[] = [
       species: true
     },
     sketch: { filename: "sample3.fasta", md5: "sample3-md5" },
-    cluster: 3
+    cluster: "GPSC3"
   }
 ];
 export const MOCK_PROJECT_SAMPLES_BEFORE_RUN: ProjectSample[] = [
@@ -133,9 +133,9 @@ export const MOCK_NETWORK_GRAPH = `<graphml xmlns="http://graphml.graphdrawing.o
 </graph>
 </graphml>`;
 export const MOCK_CLUSTER_GRAPH_DICT: Record<string, string> = {
-  "1": "graph1",
-  "2": "graph2",
-  "3": "graph3"
+  GPSC1: "graph1",
+  GPSC2: "graph2",
+  GPSC3: "graph3"
 };
 
 export const MOCK_MICROREACT_DICT = {

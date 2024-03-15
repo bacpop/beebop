@@ -18,7 +18,7 @@ const mockUseMicroreact = {
 vitest.mock("@/composables/useMicroreact", () => ({
   useMicroreact: () => mockUseMicroreact
 }));
-const renderComponent = (status: string, cluster?: number) =>
+const renderComponent = (status: string, cluster?: string) =>
   render(MicroReactColumnVue, {
     props: {
       data: {
@@ -45,7 +45,7 @@ const renderComponent = (status: string, cluster?: number) =>
   });
 describe("MicroReactColumn", () => {
   it("should call correct actions on download and visit buttons if status finished and cluster assigned", async () => {
-    renderComponent("finished", 1);
+    renderComponent("finished", "GPSC1");
     const store = useProjectStore();
 
     const downloadButton = screen.getByRole("button", { name: /Download/ });
@@ -54,16 +54,16 @@ describe("MicroReactColumn", () => {
     await userEvent.click(downloadButton);
     await userEvent.click(visitButton);
 
-    expect(store.downloadZip).toHaveBeenCalledWith(AnalysisType.MICROREACT, 1);
-    expect(mockUseMicroreact.onMicroReactVisit).toHaveBeenCalledWith(1);
+    expect(store.downloadZip).toHaveBeenCalledWith(AnalysisType.MICROREACT, "GPSC1");
+    expect(mockUseMicroreact.onMicroReactVisit).toHaveBeenCalledWith("GPSC1");
   });
   it("should render failed tag if status is failed", () => {
-    renderComponent("failed", 1);
+    renderComponent("failed", "GPSC1");
 
     expect(screen.getByText(/failed/i)).toBeInTheDocument();
   });
   it("should render status tag if status is not finished or failed", () => {
-    renderComponent("started", 1);
+    renderComponent("started", "GPSC1");
 
     expect(screen.getByText(/started/i)).toBeInTheDocument();
   });
@@ -78,7 +78,7 @@ describe("MicroReactColumn", () => {
   describe("Save token Dialog", () => {
     it("should display dialog if isMicroReactDialogVisible is true & cluster is present", async () => {
       mockUseMicroreact.isMicroReactDialogVisible = true;
-      renderComponent("finished", 1);
+      renderComponent("finished", "GPSC1");
 
       await waitFor(() => {
         expect(screen.getByRole("dialog")).toBeVisible();
@@ -92,7 +92,7 @@ describe("MicroReactColumn", () => {
 
     it("should show error text & red border when hasMicroReactError is true", async () => {
       mockUseMicroreact.hasMicroReactError = true;
-      renderComponent("finished", 1);
+      renderComponent("finished", "GPSC1");
 
       await waitFor(() => {
         expect(screen.getByText(/error occurred/i)).toBeVisible();
@@ -104,12 +104,12 @@ describe("MicroReactColumn", () => {
     it("should call correct  on save button click", async () => {
       mockUseMicroreact.isMicroReactDialogVisible = true;
       mockUseMicroreact.microReactTokenInput = "token";
-      renderComponent("finished", 1);
+      renderComponent("finished", "GPSC1");
 
       const saveButton = await screen.findByRole("button", { name: /Save/ });
       await userEvent.click(saveButton);
 
-      expect(mockUseMicroreact.saveMicroreactToken).toHaveBeenCalledWith(1);
+      expect(mockUseMicroreact.saveMicroreactToken).toHaveBeenCalledWith("GPSC1");
     });
   });
 });

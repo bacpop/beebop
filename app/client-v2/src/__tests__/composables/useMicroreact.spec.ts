@@ -27,7 +27,7 @@ describe("useMicroreact", () => {
 
       expect(isMicroReactDialogVisible.value).toBe(false);
 
-      onMicroReactVisit(1);
+      onMicroReactVisit("GPSC1");
 
       expect(isMicroReactDialogVisible.value).toBe(true);
     });
@@ -39,7 +39,7 @@ describe("useMicroreact", () => {
       userStore.microreactToken = "token";
       const { onMicroReactVisit, isFetchingMicroreactUrl } = useMicroreact();
 
-      onMicroReactVisit(1);
+      onMicroReactVisit("GPSC1");
 
       await flushPromises();
 
@@ -56,7 +56,7 @@ describe("useMicroreact", () => {
         http.post(microreactUri, async ({ request }) => {
           const body = await request.json();
           expect(body).toEqual({
-            cluster: 1,
+            cluster: "GPSC1",
             apiToken: "token",
             projectHash: "hash"
           });
@@ -64,7 +64,7 @@ describe("useMicroreact", () => {
         })
       );
 
-      onMicroReactVisit(1);
+      onMicroReactVisit("GPSC1");
 
       await flushPromises();
 
@@ -83,7 +83,7 @@ describe("useMicroreact", () => {
       isMicroReactDialogVisible.value = true;
       microReactTokenInput.value = "token";
 
-      saveMicroreactToken(1);
+      saveMicroreactToken("GPSC1");
 
       await flushPromises();
 
@@ -105,7 +105,7 @@ describe("useMicroreact", () => {
         http.post(microreactUri, async ({ request }) => {
           const body = await request.json();
           expect(body).toEqual({
-            cluster: 1,
+            cluster: "GPSC1",
             apiToken: "token",
             projectHash: "hash"
           });
@@ -113,7 +113,7 @@ describe("useMicroreact", () => {
         })
       );
 
-      saveMicroreactToken(1);
+      saveMicroreactToken("GPSC1");
 
       await flushPromises();
 

@@ -27,7 +27,7 @@ export interface ProjectSample {
   filename: string;
   amr?: AMR;
   sketch?: Record<string, unknown>;
-  cluster?: number;
+  cluster?: string;
 }
 
 export interface Project {
@@ -59,7 +59,7 @@ export interface AssignCluster {
   [key: number]: ClusterInfo;
 }
 export interface ClusterInfo {
-  cluster: number;
+  cluster: string;
   hash: string;
 }
 
