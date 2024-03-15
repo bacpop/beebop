@@ -205,7 +205,7 @@ export const useProjectStore = defineStore("project", {
       return { projectHash, names, sketches, projectId: this.project.id };
     },
 
-    async downloadZip(type: AnalysisType, cluster: number) {
+    async downloadZip(type: AnalysisType, cluster: string) {
       try {
         const res = await baseApi.post<Response, "response">(
           "downloadZip",
@@ -232,7 +232,7 @@ export const useProjectStore = defineStore("project", {
     },
 
     // TODO
-    async onMicroReactVisit(cluster: number) {
+    async onMicroReactVisit(cluster: string) {
       console.log("Microreact visit", cluster);
     }
   }

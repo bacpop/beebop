@@ -7,7 +7,7 @@ import { render, screen } from "@testing-library/vue";
 import PrimeVue from "primevue/config";
 import Tooltip from "primevue/tooltip";
 
-const renderComponent = (status: string, cluster?: number) =>
+const renderComponent = (status: string, cluster?: string) =>
   render(MicroReactColumnVue, {
     props: {
       data: {
@@ -34,7 +34,7 @@ const renderComponent = (status: string, cluster?: number) =>
   });
 describe("MicroReactColumn", () => {
   it("should call correct actions on download and visit buttons if status finished and cluster assigned", async () => {
-    renderComponent("finished", 1);
+    renderComponent("finished", "GPSC1");
     const store = useProjectStore();
 
     const downloadButton = screen.getByRole("button", { name: /Download/ });
@@ -43,16 +43,16 @@ describe("MicroReactColumn", () => {
     await userEvent.click(downloadButton);
     await userEvent.click(visitButton);
 
-    expect(store.downloadZip).toHaveBeenCalledWith(AnalysisType.MICROREACT, 1);
-    expect(store.onMicroReactVisit).toHaveBeenCalledWith(1);
+    expect(store.downloadZip).toHaveBeenCalledWith(AnalysisType.MICROREACT, "GPSC1");
+    expect(store.onMicroReactVisit).toHaveBeenCalledWith("GPSC1");
   });
   it("should render failed tag if status is failed", () => {
-    renderComponent("failed", 1);
+    renderComponent("failed", "GPSC1");
 
     expect(screen.getByText(/failed/i)).toBeInTheDocument();
   });
   it("should render status tag if status is not finished or failed", () => {
-    renderComponent("started", 1);
+    renderComponent("started", "GPSC1");
 
     expect(screen.getByText(/started/i)).toBeInTheDocument();
   });
