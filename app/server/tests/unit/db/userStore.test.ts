@@ -11,7 +11,10 @@ describe("UserStore", () => {
         hmget: jest.fn().mockImplementation((key: string, ...valueNames: string[]) => {
             return valueNames.map((valueName) => valueName === "timestamp" ? 1687879913811 : `${valueName} for ${key}`);
         }),
-        scard: jest.fn().mockImplementation(() => 2)
+        scard: jest.fn().mockImplementation(() => 2),
+        smembers: jest.fn(),
+        srem: jest.fn(),
+        del: jest.fn()
     } as any;
 
     const mockRequest = {
@@ -224,4 +227,20 @@ describe("UserStore", () => {
         expect(mockRedis.hgetall.mock.calls[0][0]).toBe(expectedProjectSampleKey);
         expect(result).toStrictEqual({ sketch: expectedSketch, amr: expectedAMR });
     });
+
+    it("deletes sample ", async () => {
+        const sut = new UserStore(mockRedis);
+        const projectId = "testProjectId";
+        const sampleHash = "testSampleHash";
+        const expectedProjectSamplesKey = (sut as any)._projectSamplesKey(projectId);
+        const expectedSampleId = `${sampleHash}:filename`;
+        const expectedProjectSampleKey = (sut as any)._projectSampleKey(projectId, expectedSampleId);
+        mockRedis.smembers.mockImplementation(() => [expectedSampleId, "randomSampleId"]);
+    
+        await sut.deleteSample(projectId, sampleHash);
+    
+        expect(mockRedis.smembers).toHaveBeenCalledWith(expectedProjectSamplesKey);
+        expect(mockRedis.srem).toHaveBeenCalledWith(expectedProjectSamplesKey, expectedSampleId);
+        expect(mockRedis.del).toHaveBeenCalledWith(expectedProjectSampleKey);
+    })
 });

@@ -25,7 +25,7 @@ export default {
             authCheck,
             controller.renameProject);
         app.post(`/project/:projectId/sample/:sampleHash/delete`,
-        authCheck, 
-        controller.deleteSample);
+            authCheck, 
+            controller.deleteSample);
     }
 } as BeebopRoutes;

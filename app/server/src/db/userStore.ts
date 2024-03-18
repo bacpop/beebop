@@ -100,7 +100,7 @@ export class UserStore {
     }
     async deleteSample(projectId: string, sampleHash: string) {
         const sampleIds = await this._redis.smembers(this._projectSamplesKey(projectId));
-        const sampleId = sampleIds.find((id) => id.startsWith(sampleHash));
+        const sampleId = sampleIds?.find((id) => id.startsWith(sampleHash));
         await this._redis.srem(this._projectSamplesKey(projectId), sampleId);
         await this._redis.del(this._projectSampleKey(projectId, sampleId));
     }
