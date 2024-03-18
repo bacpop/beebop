@@ -18,7 +18,6 @@ import { Md5 } from "ts-md5";
 
 const baseApi = mande(getApiUrl(), { credentials: "include" });
 
-// TODO: add proper error handling. Maybe best to add error state attribute and watch accordingly cos of nested things interval/workers
 export const useProjectStore = defineStore("project", {
   state: () => ({
     project: {} as Project,
@@ -188,10 +187,15 @@ export const useProjectStore = defineStore("project", {
         this.pollingIntervalId = null;
       }
     },
-    // TODO: update to remove from api as well
-    // removeUploadedFile(index: number) {
-    //   // this.fileSamples.splice(index, 1);
-    // },
+    async removeUploadedFile(index: number) {
+      try {
+        await baseApi.post(`/project/${this.project.id}/sample/${this.project.samples[index].hash}/delete`);
+        this.project.samples.splice(index, 1);
+      } catch (error) {
+        console.error(error);
+        this.showErrorToast("Error removing file. Try again later.");
+      }
+    },
 
     async runAnalysis() {
       const body = this.buildRunAnalysisPostBody();

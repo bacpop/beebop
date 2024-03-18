@@ -30,7 +30,7 @@ const tableIsHovered = ref(false);
           <template #extra-cols>
             <Column>
               <!-- TODO: have to add endpoint to remove stored data as well -->
-              <!-- <template #body="props">
+              <template #body="props">
                 <Button
                   icon="pi pi-times"
                   @click="store.removeUploadedFile(props.index)"
@@ -39,7 +39,7 @@ const tableIsHovered = ref(false);
                   size="small"
                   severity="danger"
                 />
-              </template> -->
+              </template>
             </Column>
           </template>
         </ProjectDataTable>
