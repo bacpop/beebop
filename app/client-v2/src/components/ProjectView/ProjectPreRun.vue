@@ -35,6 +35,7 @@ const tableIsHovered = ref(false);
                   rounded
                   size="small"
                   severity="danger"
+                  aria-label="`Remove ${props.rowData.name}`"
                 />
               </template>
             </Column>
