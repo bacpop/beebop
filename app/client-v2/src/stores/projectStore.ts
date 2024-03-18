@@ -62,6 +62,7 @@ export const useProjectStore = defineStore("project", {
         return error;
       }
     },
+
     showErrorToast(msg: string) {
       this.toast.add({
         severity: "error",

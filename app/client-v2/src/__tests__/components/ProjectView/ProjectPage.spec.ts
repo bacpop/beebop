@@ -3,6 +3,8 @@ import { useProjectStore } from "@/stores/projectStore";
 import { createTestingPinia } from "@pinia/testing";
 import { flushPromises, mount } from "@vue/test-utils";
 import { defineComponent } from "vue";
+import ToastService from "primevue/toastservice";
+import PrimeVue from "primevue/config";
 
 vitest.mock("vue-router", () => ({
   useRoute: vitest.fn(() => ({
@@ -34,7 +36,7 @@ describe("Project Page", () => {
     store.startedRun = true;
     const wrapper = mount(AsyncProjectPage, {
       global: {
-        plugins: [testPinia],
+        plugins: [testPinia, PrimeVue, ToastService],
         stubs: {
           ProjectPostRun: stubRunProject,
           ProjectPreRun: stubNotRunProject
@@ -57,7 +59,7 @@ describe("Project Page", () => {
     store.startedRun = false;
     const wrapper = mount(AsyncProjectPage, {
       global: {
-        plugins: [testPinia],
+        plugins: [testPinia, PrimeVue, ToastService],
         stubs: {
           ProjectPostRun: stubRunProject,
           ProjectPreRun: stubNotRunProject
@@ -75,7 +77,7 @@ describe("Project Page", () => {
     store.getProject = vitest.fn().mockResolvedValue("error fetching projects");
     const wrapper = mount(AsyncProjectPage, {
       global: {
-        plugins: [testPinia],
+        plugins: [testPinia, ToastService],
         stubs: {
           ProjectPostRun: stubRunProject,
           ProjectPreRun: stubNotRunProject
@@ -94,7 +96,7 @@ describe("Project Page", () => {
     store.isProjectComplete = true;
     const wrapper = mount(AsyncProjectPage, {
       global: {
-        plugins: [testPinia],
+        plugins: [testPinia, PrimeVue, ToastService],
         stubs: {
           ProjectPostRun: stubRunProject,
           ProjectPreRun: stubNotRunProject
@@ -109,7 +111,7 @@ describe("Project Page", () => {
   it("should call stopPollingStatus on unmount", async () => {
     const wrapper = mount(AsyncProjectPage, {
       global: {
-        plugins: [createTestingPinia()],
+        plugins: [createTestingPinia(), PrimeVue, ToastService],
         stubs: {
           ProjectPostRun: stubRunProject,
           ProjectPreRun: stubNotRunProject

@@ -4,6 +4,7 @@ import { useRoute } from "vue-router";
 import ProjectPostRun from "@/components/ProjectView/ProjectPostRun.vue";
 import ProjectPreRun from "@/components/ProjectView/ProjectPreRun.vue";
 import { onUnmounted } from "vue";
+import Toast from "primevue/toast";
 
 const route = useRoute();
 const store = useProjectStore();
@@ -15,6 +16,7 @@ onUnmounted(() => {
 </script>
 
 <template>
+  <Toast />
   <div v-if="projectFetchError" class="text-red-500 text-center font-semibold flex align-items-center">
     Error fetching project... Refresh or try again later
   </div>
