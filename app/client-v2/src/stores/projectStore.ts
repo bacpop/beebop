@@ -153,6 +153,7 @@ export const useProjectStore = defineStore("project", {
           stopPolling = true;
         }
       } catch (error) {
+        this.showErrorToast("Error fetching analysis status. Try again later, or create a new project.");
         console.error(error);
         stopPolling = true;
       } finally {
@@ -246,6 +247,7 @@ export const useProjectStore = defineStore("project", {
         URL.revokeObjectURL(link.href);
       } catch (error) {
         console.error(error);
+        this.showErrorToast("Error downloading zip file. Try again later.");
       }
     }
   }
