@@ -2,12 +2,14 @@
 import { useProjectStore } from "@/stores/projectStore";
 import ProjectDataTable from "@/components/ProjectView/ProjectDataTable.vue";
 import { ref } from "vue";
+import Toast from "primevue/toast";
 
 const store = useProjectStore();
 const tableIsHovered = ref(false);
 </script>
 
 <template>
+  <Toast />
   <FileUpload custom-upload auto @uploader="store.onFilesUpload($event.files)" :multiple="true" accept=".fa, .fasta">
     <template #header="{ chooseCallback }">
       <div class="flex flex-wrap justify-content-between align-items-center flex-1 gap-2">
@@ -15,7 +17,7 @@ const tableIsHovered = ref(false);
         <Button label="Run Analysis" outlined @click="store.runAnalysis" :disabled="!store.isReadyToRun" />
       </div>
     </template>
-    <template #content>
+    <template #empty>
       <div
         v-if="store.project.samples.length > 0"
         @dragover="tableIsHovered = true"

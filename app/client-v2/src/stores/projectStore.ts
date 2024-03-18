@@ -13,6 +13,7 @@ import {
 } from "@/types/projectTypes";
 import { mande } from "mande";
 import { defineStore } from "pinia";
+import { useToast } from "primevue/usetoast";
 import { Md5 } from "ts-md5";
 
 const baseApi = mande(getApiUrl(), { credentials: "include" });
@@ -21,7 +22,8 @@ const baseApi = mande(getApiUrl(), { credentials: "include" });
 export const useProjectStore = defineStore("project", {
   state: () => ({
     project: {} as Project,
-    pollingIntervalId: null as ReturnType<typeof setInterval> | null
+    pollingIntervalId: null as ReturnType<typeof setInterval> | null,
+    toast: useToast() as ReturnType<typeof useToast>
   }),
 
   getters: {
@@ -61,6 +63,14 @@ export const useProjectStore = defineStore("project", {
         return error;
       }
     },
+    showErrorToast(msg: string) {
+      this.toast.add({
+        severity: "error",
+        summary: "Error Occurred",
+        detail: msg,
+        life: 3000
+      });
+    },
 
     onFilesUpload(files: File | File[]) {
       const arrayFiles = Array.isArray(files) ? files : [files];
@@ -82,6 +92,10 @@ export const useProjectStore = defineStore("project", {
 
         worker.onmessage = async (event: MessageEvent<WorkerResponse>) => {
           this.handleWorkerResponse(file.name, event);
+        };
+        worker.onerror = (error) => {
+          console.error(error);
+          this.showErrorToast("Ensure uploaded sample file is correct or try again later.");
         };
       }
     },
@@ -107,7 +121,10 @@ export const useProjectStore = defineStore("project", {
         );
       } catch (error) {
         console.error(error);
-        this.project.samples.splice(matchedHashIndex, 1);
+        this.showErrorToast("Ensure uploaded sample file is correct or try again later.");
+        if (matchedHashIndex !== -1) {
+          this.project.samples.splice(matchedHashIndex, 1);
+        }
       }
     },
 
@@ -179,14 +196,15 @@ export const useProjectStore = defineStore("project", {
       const body = this.buildRunAnalysisPostBody();
       try {
         await baseApi.post("/poppunk", body);
+
         this.project.hash = body.projectHash;
+        this.project.status = { assign: "submitted", microreact: "submitted", network: "submitted" };
+        this.pollAnalysisStatus();
       } catch (error) {
         console.error("Error running analysis", error);
+        this.showErrorToast("Error running analysis. Try again later.");
         return;
       }
-
-      this.project.status = { assign: "submitted", microreact: "submitted", network: "submitted" };
-      this.pollAnalysisStatus();
     },
 
     buildRunAnalysisPostBody() {
