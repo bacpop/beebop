@@ -7,6 +7,9 @@ import { render, screen, waitFor } from "@testing-library/vue";
 import PrimeVue from "primevue/config";
 import Tooltip from "primevue/tooltip";
 
+vitest.mock("primevue/usetoast", () => ({
+  useToast: vitest.fn()
+}));
 describe("RunProject", () => {
   it("should render progress bar if progress is not 100%", () => {
     const testingPinia = createTestingPinia();

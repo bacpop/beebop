@@ -27,7 +27,6 @@ const tableIsHovered = ref(false);
         <ProjectDataTable>
           <template #extra-cols>
             <Column>
-              <!-- TODO: have to add endpoint to remove stored data as well -->
               <template #body="props">
                 <Button
                   icon="pi pi-times"

@@ -3,9 +3,11 @@ import { useProjectStore } from "@/stores/projectStore";
 import { createTestingPinia } from "@pinia/testing";
 import { flushPromises, mount } from "@vue/test-utils";
 import { defineComponent } from "vue";
-import ToastService from "primevue/toastservice";
 import PrimeVue from "primevue/config";
 
+vitest.mock("primevue/usetoast", () => ({
+  useToast: vitest.fn()
+}));
 vitest.mock("vue-router", () => ({
   useRoute: vitest.fn(() => ({
     params: {
@@ -36,7 +38,7 @@ describe("Project Page", () => {
     store.startedRun = true;
     const wrapper = mount(AsyncProjectPage, {
       global: {
-        plugins: [testPinia, PrimeVue, ToastService],
+        plugins: [PrimeVue, testPinia],
         stubs: {
           ProjectPostRun: stubRunProject,
           ProjectPreRun: stubNotRunProject
@@ -59,7 +61,7 @@ describe("Project Page", () => {
     store.startedRun = false;
     const wrapper = mount(AsyncProjectPage, {
       global: {
-        plugins: [testPinia, PrimeVue, ToastService],
+        plugins: [PrimeVue, testPinia],
         stubs: {
           ProjectPostRun: stubRunProject,
           ProjectPreRun: stubNotRunProject
@@ -77,7 +79,7 @@ describe("Project Page", () => {
     store.getProject = vitest.fn().mockResolvedValue("error fetching projects");
     const wrapper = mount(AsyncProjectPage, {
       global: {
-        plugins: [testPinia, ToastService],
+        plugins: [PrimeVue, testPinia],
         stubs: {
           ProjectPostRun: stubRunProject,
           ProjectPreRun: stubNotRunProject
@@ -96,7 +98,7 @@ describe("Project Page", () => {
     store.isProjectComplete = true;
     const wrapper = mount(AsyncProjectPage, {
       global: {
-        plugins: [testPinia, PrimeVue, ToastService],
+        plugins: [PrimeVue, testPinia],
         stubs: {
           ProjectPostRun: stubRunProject,
           ProjectPreRun: stubNotRunProject
@@ -111,7 +113,7 @@ describe("Project Page", () => {
   it("should call stopPollingStatus on unmount", async () => {
     const wrapper = mount(AsyncProjectPage, {
       global: {
-        plugins: [createTestingPinia(), PrimeVue, ToastService],
+        plugins: [PrimeVue, createTestingPinia()],
         stubs: {
           ProjectPostRun: stubRunProject,
           ProjectPreRun: stubNotRunProject

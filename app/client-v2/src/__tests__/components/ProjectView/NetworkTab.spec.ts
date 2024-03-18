@@ -8,6 +8,9 @@ import { HttpResponse, http } from "msw";
 import PrimeVue from "primevue/config";
 import { defineComponent } from "vue";
 
+vitest.mock("primevue/usetoast", () => ({
+  useToast: vitest.fn()
+}));
 describe("Network Tabs", () => {
   it("should render network graphs with props for each cluster returned from api", async () => {
     render(NetworkTab, {

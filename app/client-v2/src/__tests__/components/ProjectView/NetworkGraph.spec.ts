@@ -4,6 +4,9 @@ import { render, screen } from "@testing-library/vue";
 import PrimeVue from "primevue/config";
 import Tooltip from "primevue/tooltip";
 
+vitest.mock("primevue/usetoast", () => ({
+  useToast: vitest.fn()
+}));
 describe("NetworkGraph", () => {
   it("should render graph and be able to go from fullscreen and close fullscreen mode", async () => {
     render(NetworkGraph, {

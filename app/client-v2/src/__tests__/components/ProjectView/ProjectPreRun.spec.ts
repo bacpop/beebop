@@ -6,6 +6,9 @@ import userEvent from "@testing-library/user-event";
 import { fireEvent, render, screen, waitFor } from "@testing-library/vue";
 import PrimeVue from "primevue/config";
 
+vitest.mock("primevue/usetoast", () => ({
+  useToast: vitest.fn()
+}));
 describe("ProjectView ", () => {
   it("should render drag and drop section no files uploaded", () => {
     render(NotRunProjectVue, {
