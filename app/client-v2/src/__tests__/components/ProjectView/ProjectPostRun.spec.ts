@@ -106,10 +106,8 @@ describe("RunProject", () => {
 
     expect(tabPanel).toHaveAttribute("aria-disabled", "true");
 
-    store.project = {
-      status: {
-        network: "finished"
-      } as any
+    store.project.status = {
+      network: "finished"
     } as any;
 
     await waitFor(() => {
