@@ -41,13 +41,22 @@ describe("RunProject", () => {
     expect(screen.getByText(/running analysis/i)).toBeVisible();
   });
   it("should display correct content for tabs when switching", async () => {
-    const testingPinia = createTestingPinia();
-    const store = useProjectStore(testingPinia);
-    // @ts-expect-error: Getter is read only
-    store.isProjectComplete = true;
     render(ProjectPostRun, {
       global: {
-        plugins: [PrimeVue, testingPinia],
+        plugins: [
+          PrimeVue,
+          createTestingPinia({
+            initialState: {
+              project: {
+                project: {
+                  status: {
+                    network: "finished"
+                  }
+                }
+              }
+            }
+          })
+        ],
         stubs: {
           MicroReactColumn: true,
           ProjectDataTable: {
