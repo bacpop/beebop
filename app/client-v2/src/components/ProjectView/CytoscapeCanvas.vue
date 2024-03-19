@@ -8,9 +8,15 @@ import { onMounted, ref } from "vue";
 
 const props = defineProps<{
   graph: string;
+  cluster: string;
+  isFullScreen?: boolean;
+}>();
+defineEmits<{
+  onFullScreen: [];
 }>();
 
 const cyRef = ref<HTMLElement | null>(null);
+const cystoscapeObj = ref<cytoscape.Core | null>(null);
 
 onMounted(async () => {
   await graphml(cytoscape, jquery);
@@ -52,10 +58,34 @@ onMounted(async () => {
   cy.ready(() => {
     (cy as CyGraphml).graphml({ layoutBy: "cose" });
     (cy as CyGraphml).graphml(props.graph);
+    cystoscapeObj.value = cy;
   });
 });
 </script>
 
 <template>
+  <div class="flex justify-content-between align-items-center">
+    <span class="text-color-secondary">Cluster: {{ props.cluster }}</span>
+    <div>
+      <Button
+        @click="cystoscapeObj?.fit()"
+        outlined
+        icon="pi pi-refresh"
+        v-tooltip.top="'Reset Layout'"
+        aria-label="Reset Layout"
+        size="small"
+        class="mr-1"
+      />
+      <Button
+        v-if="!props.isFullScreen"
+        v-tooltip.top="'Fullscreen'"
+        outlined
+        icon="pi pi-window-maximize"
+        aria-label="Fullscreen"
+        @click="$emit('onFullScreen')"
+        size="small"
+      />
+    </div>
+  </div>
   <div class="shadow-5 border-round w-full h-full m-auto flex-grow-1 text-left" ref="cyRef"></div>
 </template>

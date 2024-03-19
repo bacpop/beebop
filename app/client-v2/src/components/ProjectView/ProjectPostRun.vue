@@ -54,7 +54,7 @@ const tabChange = (num: number) => {
       </ProjectDataTable>
     </TabPanel>
     <TabPanel header="Network" :disabled="!store.isProjectComplete">
-      <NetworkTab v-if="store.isProjectComplete && hasVisitedNetworkTab" />
+      <NetworkTab v-if="store.project.status?.network === 'finished' && hasVisitedNetworkTab" />
     </TabPanel>
   </TabView>
 </template>
