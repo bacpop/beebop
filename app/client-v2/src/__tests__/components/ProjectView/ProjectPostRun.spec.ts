@@ -8,7 +8,7 @@ import PrimeVue from "primevue/config";
 
 import Tooltip from "primevue/tooltip";
 
-describe("RunProject", () => {
+describe("Post run project", () => {
   it("should render progress bar if progress is not 100%", () => {
     const testingPinia = createTestingPinia();
     const store = useProjectStore(testingPinia);
@@ -39,13 +39,22 @@ describe("RunProject", () => {
     expect(screen.getByText(/running analysis/i)).toBeVisible();
   });
   it("should display correct content for tabs when switching", async () => {
-    const testingPinia = createTestingPinia();
-    const store = useProjectStore(testingPinia);
-    // @ts-expect-error: Getter is read only
-    store.isProjectComplete = true;
     render(ProjectPostRun, {
       global: {
-        plugins: [PrimeVue, testingPinia],
+        plugins: [
+          PrimeVue,
+          createTestingPinia({
+            initialState: {
+              project: {
+                project: {
+                  status: {
+                    network: "finished"
+                  }
+                }
+              }
+            }
+          })
+        ],
         stubs: {
           MicroReactColumn: true,
           ProjectDataTable: {
