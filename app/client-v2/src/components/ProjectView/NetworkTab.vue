@@ -22,7 +22,8 @@ const { data, error, isFetching } = useFetch(`${apiUrl}/networkGraphs/${store.pr
   </div>
   <div v-else-if="data?.data">
     <InlineMessage severity="info" class="mb-2"
-      >Use default mouse gestures on graphs to zoom in and out, move nodes around or view in fullscreen</InlineMessage
+      >View in fullscreen, reset layout or use default mouse gestures on graphs to zoom in and out, move nodes
+      around.</InlineMessage
     >
     <div class="grid">
       <div v-for="(value, key) in data.data" :key="key" class="col">

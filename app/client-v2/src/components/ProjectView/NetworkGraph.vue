@@ -11,20 +11,10 @@ const fullScreenVisible = ref(false);
 
 <template>
   <Sidebar v-model:visible="fullScreenVisible" :header="`Cluster: ${props.cluster}`" position="full">
-    <CytoscapeCanvas :graph="props.graph" />
+    <CytoscapeCanvas :graph="props.graph" :cluster="props.cluster" isFullScreen />
   </Sidebar>
   <div class="cytoscape-graph">
-    <div class="flex justify-content-between align-items-center">
-      <span class="text-color-secondary">Cluster: {{ props.cluster }}</span>
-      <Button
-        v-tooltip.top="'Fullscreen'"
-        outlined
-        icon="pi pi-window-maximize"
-        aria-label="Fullscreen"
-        @click="fullScreenVisible = true"
-      />
-    </div>
-    <CytoscapeCanvas :graph="props.graph" />
+    <CytoscapeCanvas :cluster="props.cluster" :graph="props.graph" @onFullScreen="fullScreenVisible = true" />
   </div>
 </template>
 

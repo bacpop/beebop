@@ -5,7 +5,7 @@ import PrimeVue from "primevue/config";
 import Tooltip from "primevue/tooltip";
 
 describe("NetworkGraph", () => {
-  it("should render graph and be able to go from fullscreen and close fullscreen mode", async () => {
+  it("should render info and graphs with correct props", async () => {
     render(NetworkGraph, {
       props: {
         graph: "test-graph",
@@ -24,21 +24,9 @@ describe("NetworkGraph", () => {
       }
     });
 
-    const clusterTextElements = screen.getAllByText(/test-cluster/i);
-    const canvasTextElements = screen.getAllByText(/cytoscape canvas/i);
+    const graph = screen.getByText("cytoscape canvas");
 
-    expect(clusterTextElements.length).toBe(1);
-    expect(canvasTextElements.length).toBe(1);
-    expect(canvasTextElements[0]).toHaveAttribute("graph", "test-graph");
-
-    await userEvent.click(screen.getByRole("button", { name: /fullscreen/i }));
-
-    expect(screen.getAllByText(/test-cluster/i).length).toBe(2);
-    expect(screen.getAllByText(/cytoscape canvas/i).length).toBe(2);
-
-    await userEvent.click(screen.getByRole("button", { name: /close/i }));
-
-    expect(screen.getAllByText(/test-cluster/i).length).toBe(1);
-    expect(screen.getAllByText(/cytoscape canvas/i).length).toBe(1);
+    expect(graph).toHaveAttribute("graph", "test-graph");
+    expect(graph).toHaveAttribute("cluster", "test-cluster");
   });
 });
