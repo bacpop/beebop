@@ -5,8 +5,6 @@ import { createTestingPinia } from "@pinia/testing";
 import userEvent from "@testing-library/user-event";
 import { render, screen, waitFor } from "@testing-library/vue";
 import PrimeVue from "primevue/config";
-import TabPanel from "primevue/tabpanel";
-import TabView from "primevue/tabview";
 
 import Tooltip from "primevue/tooltip";
 

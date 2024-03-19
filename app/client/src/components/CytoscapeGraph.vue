@@ -10,7 +10,7 @@ import cytoscape from "cytoscape";
 import graphml from "cytoscape-graphml";
 import jquery from "jquery";
 import { mapState, mapActions } from "vuex";
-import { CyGraphml } from "../types";
+import { CyGraphml } from "@/types";
 
 export default defineComponent({
     name: "CytoscapeGraph",

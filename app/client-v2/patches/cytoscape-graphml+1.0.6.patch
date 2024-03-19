@@ -1,3 +1,4 @@
+# patch for the cytoscape-graphml package, where the $xml and $graphs variables are not declared with var, causing them to be global variables and causing the tests to fail
 diff --git a/node_modules/cytoscape-graphml/cytoscape-graphml.js b/node_modules/cytoscape-graphml/cytoscape-graphml.js
 index 0455d7c..f30623b 100644
 --- a/node_modules/cytoscape-graphml/cytoscape-graphml.js

@@ -10,22 +10,15 @@ const fullScreenVisible = ref(false);
 </script>
 
 <template>
-  <Dialog v-model:visible="fullScreenVisible" modal>
-    <template #header>
-      <div class="inline-flex align-items-center justify-content-center gap-2">
-        <span class="font-bold white-space-nowrap">Cluster: {{ props.cluster }}</span>
-      </div>
-    </template>
-    <div class="fullscreen-cytoscape">
-      <CytoscapeCanvas :graph="props.graph" />
-    </div>
-  </Dialog>
+  <Sidebar v-model:visible="fullScreenVisible" :header="`Cluster: ${props.cluster}`" position="full">
+    <CytoscapeCanvas :graph="props.graph" />
+  </Sidebar>
   <div class="cytoscape-graph">
     <div class="flex justify-content-between align-items-center">
       <span class="text-color-secondary">Cluster: {{ props.cluster }}</span>
       <Button
         v-tooltip.top="'Fullscreen'"
-        text
+        outlined
         icon="pi pi-window-maximize"
         aria-label="Fullscreen"
         @click="fullScreenVisible = true"
@@ -43,9 +36,5 @@ const fullScreenVisible = ref(false);
   min-width: 500px;
   display: flex;
   flex-direction: column;
-}
-.fullscreen-cytoscape {
-  width: 1200px;
-  height: 750px;
 }
 </style>
