@@ -80,7 +80,7 @@ describe("Post run project", () => {
     expect(screen.getByText(/network graphs/i)).toBeVisible();
     expect(dataTable).not.toBeVisible();
   });
-  it("should enable network tab on project complete", async () => {
+  it("should enable network tab on network finished", async () => {
     render(ProjectPostRun, {
       global: {
         plugins: [PrimeVue, createTestingPinia()],
@@ -104,8 +104,9 @@ describe("Post run project", () => {
 
     expect(tabPanel).toHaveAttribute("aria-disabled", "true");
 
-    // @ts-expect-error: getter is read only
-    store.isProjectComplete = true;
+    store.project.status = {
+      network: "finished"
+    } as any;
 
     await waitFor(() => {
       expect(tabPanel).toHaveAttribute("aria-disabled", "false");
