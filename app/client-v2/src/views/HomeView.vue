@@ -31,8 +31,10 @@ const filters = ref({
 });
 
 const newProjectName = ref("");
+const isEmptyOrSameName = (projectName: string) =>
+  !projectName || projects.value?.data.some((project) => project.name === projectName);
 const addProject = async () => {
-  if (!newProjectName.value || projects.value?.data.some((project) => project.name === newProjectName.value)) {
+  if (isEmptyOrSameName(newProjectName.value)) {
     showErrorToast("Project name already exists or is empty");
     return;
   }
@@ -54,20 +56,23 @@ const editingRows = ref([]);
 const onRowEditSave = async (event: DataTableRowEditSaveEvent) => {
   let { newData, index } = event;
 
-  if (projects.value !== null && projects.value.data[index].name !== newData.name) {
-    const { error } = await useFetch(apiUrl + `/project/${projects?.value?.data[index].id}/rename`, {
-      credentials: "include"
-    })
-      .post({ name: newData.name })
-      .json();
-    if (error.value) {
-      showErrorToast("Error renaming project");
-      return;
-    }
-
-    showSuccessToast("Project renamed successfully");
-    refetchProjects();
+  if (projects.value === null || isEmptyOrSameName(newData.name)) {
+    showErrorToast("Project name already exists or is empty");
+    return;
   }
+
+  const { error } = await useFetch(apiUrl + `/project/${projects.value.data[index].id}/rename`, {
+    credentials: "include"
+  })
+    .post({ name: newData.name })
+    .json();
+  if (error.value) {
+    showErrorToast("Error renaming project");
+    return;
+  }
+
+  showSuccessToast("Project renamed successfully");
+  refetchProjects();
 };
 </script>
 

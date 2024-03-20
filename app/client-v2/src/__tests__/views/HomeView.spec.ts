@@ -143,6 +143,38 @@ describe("HomeView ", () => {
       expect(screen.getByText(/Project renamed successfully/i)).toBeVisible();
     });
   });
+
+  it("should show error message if renamed project name is empty or exists", async () => {
+    renderComponent();
+
+    const firstNameCell = await screen.findByRole("cell", {
+      name: MOCK_PROJECTS[0].name
+    });
+    const firstEditButton = screen.getAllByRole("button", { name: /edit/i })[0];
+
+    await userEvent.click(firstEditButton);
+
+    await userEvent.clear(within(firstNameCell).getByRole("textbox"));
+
+    await userEvent.click(
+      screen.getByRole("button", {
+        name: /save edit/i
+      })
+    );
+    expect(screen.getByText(/error/i)).toBeVisible();
+
+    await userEvent.click(firstEditButton);
+
+    await userEvent.clear(within(firstNameCell).getByRole("textbox"));
+    await userEvent.type(within(firstNameCell).getByRole("textbox"), MOCK_PROJECTS[1].name);
+
+    await userEvent.click(
+      screen.getByRole("button", {
+        name: /save edit/i
+      })
+    );
+    expect(screen.getAllByText(/error/i).length).toBe(2);
+  });
   it("should show error message when project rename fails", async () => {
     server.use(http.post(`${projectIndexUri}/:id/rename`, () => HttpResponse.error()));
     renderComponent();
