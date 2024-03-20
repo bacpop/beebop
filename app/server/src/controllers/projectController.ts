@@ -110,8 +110,11 @@ export default (config) => {
     async deleteSample(request, response, next) {
       await asyncHandler(next, async () => {
         const { projectId, sampleHash } = request.params;
+        const { filename } = request.body as {
+          filename: string;
+        };
         const { redis } = request.app.locals;
-        await userStore(redis).deleteSample(projectId, sampleHash);
+        await userStore(redis).deleteSample(projectId, sampleHash, filename);
         sendSuccess(response, null);
       });
     },

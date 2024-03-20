@@ -298,12 +298,15 @@ describe("projectController", () => {
             params: {
                 projectId: "testProjectId",
                 sampleHash: "1234"
+            },
+            body: {
+                filename: "test1.fa"
             }
         };
 
         await projectController(config).deleteSample(req, mockResponse(),jest.fn());
 
         expect(mockUserStore.deleteSample).toHaveBeenCalledTimes(1);
-        expect(mockUserStore.deleteSample).toHaveBeenCalledWith("testProjectId", "1234");
+        expect(mockUserStore.deleteSample).toHaveBeenCalledWith("testProjectId", "1234", "test1.fa");
     })
 });

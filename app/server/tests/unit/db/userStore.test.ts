@@ -232,14 +232,13 @@ describe("UserStore", () => {
         const sut = new UserStore(mockRedis);
         const projectId = "testProjectId";
         const sampleHash = "testSampleHash";
+        const filename = "test.fa";
         const expectedProjectSamplesKey = (sut as any)._projectSamplesKey(projectId);
-        const expectedSampleId = `${sampleHash}:filename`;
+        const expectedSampleId = `${sampleHash}:${filename}`;
         const expectedProjectSampleKey = (sut as any)._projectSampleKey(projectId, expectedSampleId);
-        mockRedis.smembers.mockImplementation(() => [expectedSampleId, "randomSampleId"]);
     
-        await sut.deleteSample(projectId, sampleHash);
+        await sut.deleteSample(projectId, sampleHash, filename);
     
-        expect(mockRedis.smembers).toHaveBeenCalledWith(expectedProjectSamplesKey);
         expect(mockRedis.srem).toHaveBeenCalledWith(expectedProjectSamplesKey, expectedSampleId);
         expect(mockRedis.del).toHaveBeenCalledWith(expectedProjectSampleKey);
     })

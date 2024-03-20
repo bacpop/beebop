@@ -12,7 +12,7 @@ vitest.mock("cytoscape", () => ({
 vitest.mock("cytoscape-graphml");
 describe("CytoscapeCanvas", () => {
   it("should render div & buttons only for canvas with correct classes for display", async () => {
-    const { container, emitted } = render(CytoscapeCanvas, {
+    const { container } = render(CytoscapeCanvas, {
       props: {
         graph: MOCK_NETWORK_GRAPH,
         cluster: "test-cluster"
@@ -25,7 +25,6 @@ describe("CytoscapeCanvas", () => {
     });
 
     await userEvent.click(screen.getByRole("button", { name: /fullscreen/i }));
-    console.log(emitted());
 
     expect(screen.getByRole("button", { name: /reset/i })).toBeVisible();
     expect(screen.getByRole("button", { name: /fullscreen/i })).toBeVisible();
