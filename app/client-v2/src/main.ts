@@ -9,7 +9,6 @@ import Ripple from "primevue/ripple";
 import ToastService from "primevue/toastservice";
 import "./assets/main.css";
 import Tooltip from "primevue/tooltip";
-
 const app = createApp(App);
 
 app.use(createPinia());

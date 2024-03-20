@@ -13,6 +13,9 @@ export default {
                 });
             }
         );
+        app.get("/networkGraphs/:projectHash", 
+            authCheck, 
+            controller.getNetworkGraphs);
         app.get('/version',
             controller.getVersionInfo);
         app.post('/poppunk',

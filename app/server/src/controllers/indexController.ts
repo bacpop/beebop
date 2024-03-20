@@ -70,6 +70,14 @@ export default (config) => {
                     handleAPIError(request, response, error);
                 });
         },
+        async getNetworkGraphs(request, response) {
+            try {
+                const res = await axios.get(`${config.api_url}/results/networkGraphs/${request.params.projectHash}`);
+                return response.send(res.data);
+            } catch (error) {
+                return handleAPIError(request, response, error);
+            }
+        },
 
         async downloadZip(request, response) {
             await axios.post(`${config.api_url}/results/zip`,

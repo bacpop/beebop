@@ -44,7 +44,7 @@ export const MOCK_PROJECT_SAMPLES: ProjectSample[] = [
       filename: "sample1.fasta",
       md5: "sample1-md5"
     },
-    cluster: 1
+    cluster: "GPSC1"
   },
   {
     hash: "sample2-test-hash",
@@ -60,7 +60,7 @@ export const MOCK_PROJECT_SAMPLES: ProjectSample[] = [
       species: true
     },
     sketch: { filename: "sample2.fasta", md5: "sample2-md5" },
-    cluster: 2
+    cluster: "GPSC2"
   },
   {
     hash: "sample3-test-hash",
@@ -76,7 +76,7 @@ export const MOCK_PROJECT_SAMPLES: ProjectSample[] = [
       species: true
     },
     sketch: { filename: "sample3.fasta", md5: "sample3-md5" },
-    cluster: 3
+    cluster: "GPSC3"
   }
 ];
 export const MOCK_PROJECT_SAMPLES_BEFORE_RUN: ProjectSample[] = [
@@ -115,4 +115,30 @@ export const MOCK_PROJECT: Project = {
     microreact: "finished",
     network: "failed"
   }
+};
+
+export const MOCK_NETWORK_GRAPH = `<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+<key id="key0" for="node" attr.name="id" attr.type="string" />
+<graph id="G" edgedefault="undirected" parse.nodeids="canonical" parse.edgeids="canonical" parse.order="nodesfirst">
+  <node id="n0">
+    <data key="key0">24775_1#252</data>
+    <data key="ref_query">ref</data>
+  </node>
+  <node id="n1">
+    <data key="key0">S_pneumoniae_ASP0581_GCF_003967155_2.fa</data>
+    <data key="ref_query">query</data>
+  </node>
+  <edge id="e0" source="n0" target="n1">
+  </edge>
+</graph>
+</graphml>`;
+export const MOCK_CLUSTER_GRAPH_DICT: Record<string, string> = {
+  GPSC1: "graph1",
+  GPSC2: "graph2",
+  GPSC3: "graph3"
+};
+
+export const MOCK_MICROREACT_DICT = {
+  cluster: "1",
+  url: "https://microreact.org/project/1"
 };

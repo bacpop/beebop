@@ -1,4 +1,5 @@
 import { getApiUrl } from "@/config";
+import { useStorage } from "@vueuse/core";
 import { defineStore } from "pinia";
 
 export interface UserResponse {
@@ -15,7 +16,8 @@ export const useUserStore = defineStore("user", {
   state: () => ({
     id: undefined as undefined | string,
     name: undefined as undefined | string,
-    provider: undefined as undefined | string
+    provider: undefined as undefined | string,
+    microreactToken: useStorage("microreactToken", "")
   }),
   getters: {
     isAuthenticated(state) {

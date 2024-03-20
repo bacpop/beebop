@@ -7,7 +7,7 @@ import { render, screen, waitFor } from "@testing-library/vue";
 import PrimeVue from "primevue/config";
 import Tooltip from "primevue/tooltip";
 
-describe("RunProject", () => {
+describe("Post run project", () => {
   it("should render progress bar if progress is not 100%", () => {
     const testingPinia = createTestingPinia();
     const store = useProjectStore(testingPinia);
@@ -38,13 +38,22 @@ describe("RunProject", () => {
     expect(screen.getByText(/running analysis/i)).toBeVisible();
   });
   it("should display correct content for tabs when switching", async () => {
-    const testingPinia = createTestingPinia();
-    const store = useProjectStore(testingPinia);
-    // @ts-expect-error: Getter is read only
-    store.isProjectComplete = true;
     render(ProjectPostRun, {
       global: {
-        plugins: [PrimeVue, testingPinia],
+        plugins: [
+          PrimeVue,
+          createTestingPinia({
+            initialState: {
+              project: {
+                project: {
+                  status: {
+                    network: "finished"
+                  }
+                }
+              }
+            }
+          })
+        ],
         stubs: {
           MicroReactColumn: true,
           ProjectDataTable: {
@@ -61,17 +70,16 @@ describe("RunProject", () => {
     });
 
     const dataTable = screen.getByText(/data table/i);
-    const networkGraphs = screen.getByText(/network graphs/i);
 
-    expect(networkGraphs).not.toBeVisible();
+    expect(screen.queryByText(/network graphs/i)).not.toBeInTheDocument();
     expect(dataTable).toBeVisible();
 
     await userEvent.click(screen.getByRole("tab", { name: /network/i }));
 
-    expect(networkGraphs).toBeVisible();
+    expect(screen.getByText(/network graphs/i)).toBeVisible();
     expect(dataTable).not.toBeVisible();
   });
-  it("should enable network tab on project complete", async () => {
+  it("should enable network tab on network finished", async () => {
     render(ProjectPostRun, {
       global: {
         plugins: [PrimeVue, createTestingPinia()],
@@ -95,8 +103,9 @@ describe("RunProject", () => {
 
     expect(tabPanel).toHaveAttribute("aria-disabled", "true");
 
-    // @ts-expect-error: getter is read only
-    store.isProjectComplete = true;
+    store.project.status = {
+      network: "finished"
+    } as any;
 
     await waitFor(() => {
       expect(tabPanel).toHaveAttribute("aria-disabled", "false");
@@ -122,15 +131,15 @@ describe("RunProject", () => {
             }
           })
         ],
+        stubs: {
+          MicroReactColumn: true
+        },
         directives: {
           tooltip: Tooltip
         }
       }
     });
 
-    expect(screen.getAllByRole("button", { name: /download microreact zip/i }).length).toBe(
-      MOCK_PROJECT_SAMPLES.length
-    );
     expect(screen.getAllByRole("button", { name: /download network zip/i }).length).toBe(MOCK_PROJECT_SAMPLES.length);
     MOCK_PROJECT_SAMPLES.forEach((sample) => {
       expect(screen.getByText(sample.cluster!)).toBeVisible();
@@ -153,6 +162,9 @@ describe("RunProject", () => {
             }
           })
         ],
+        stubs: {
+          MicroReactColumn: true
+        },
         directives: {
           tooltip: Tooltip
         }
@@ -181,6 +193,9 @@ describe("RunProject", () => {
             }
           })
         ],
+        stubs: {
+          MicroReactColumn: true
+        },
         directives: {
           tooltip: Tooltip
         }
@@ -209,6 +224,9 @@ describe("RunProject", () => {
             }
           })
         ],
+        stubs: {
+          MicroReactColumn: true
+        },
         directives: {
           tooltip: Tooltip
         }
