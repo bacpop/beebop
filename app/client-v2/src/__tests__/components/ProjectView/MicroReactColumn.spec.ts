@@ -3,10 +3,21 @@ import { useProjectStore } from "@/stores/projectStore";
 import { AnalysisType } from "@/types/projectTypes";
 import { createTestingPinia } from "@pinia/testing";
 import userEvent from "@testing-library/user-event";
-import { render, screen } from "@testing-library/vue";
+import { render, screen, waitFor } from "@testing-library/vue";
 import PrimeVue from "primevue/config";
 import Tooltip from "primevue/tooltip";
 
+const mockUseMicroreact = {
+  hasMicroReactError: false,
+  isMicroReactDialogVisible: false,
+  microReactTokenInput: "",
+  onMicroReactVisit: vitest.fn(),
+  saveMicroreactToken: vitest.fn()
+};
+
+vitest.mock("@/composables/useMicroreact", () => ({
+  useMicroreact: () => mockUseMicroreact
+}));
 const renderComponent = (status: string, cluster?: string) =>
   render(MicroReactColumnVue, {
     props: {
@@ -44,7 +55,7 @@ describe("MicroReactColumn", () => {
     await userEvent.click(visitButton);
 
     expect(store.downloadZip).toHaveBeenCalledWith(AnalysisType.MICROREACT, "GPSC1");
-    expect(store.onMicroReactVisit).toHaveBeenCalledWith("GPSC1");
+    expect(mockUseMicroreact.onMicroReactVisit).toHaveBeenCalledWith("GPSC1");
   });
   it("should render failed tag if status is failed", () => {
     renderComponent("failed", "GPSC1");
@@ -62,5 +73,43 @@ describe("MicroReactColumn", () => {
 
     expect(screen.getByRole("button", { name: /Download/ })).toBeDisabled();
     expect(screen.getByRole("button", { name: /Visit/ })).toBeDisabled();
+  });
+
+  describe("Save token Dialog", () => {
+    it("should display dialog if isMicroReactDialogVisible is true & cluster is present", async () => {
+      mockUseMicroreact.isMicroReactDialogVisible = true;
+      renderComponent("finished", "GPSC1");
+
+      await waitFor(() => {
+        expect(screen.getByRole("dialog")).toBeVisible();
+      });
+
+      expect(screen.getByRole("button", { name: /Save/ })).toBeDisabled();
+      expect(screen.getByRole("button", { name: /Cancel/ })).toBeEnabled();
+      expect(screen.getByRole("link")).toHaveAttribute("href", "https://microreact.org/my-account/settings");
+      expect(screen.getByPlaceholderText(/enter token/i)).toHaveValue("");
+    });
+
+    it("should show error text & red border when hasMicroReactError is true", async () => {
+      mockUseMicroreact.hasMicroReactError = true;
+      renderComponent("finished", "GPSC1");
+
+      await waitFor(() => {
+        expect(screen.getByText(/error occurred/i)).toBeVisible();
+      });
+
+      expect(screen.getByRole("dialog")).toHaveClass("border-red-500");
+    });
+
+    it("should call correct  on save button click", async () => {
+      mockUseMicroreact.isMicroReactDialogVisible = true;
+      mockUseMicroreact.microReactTokenInput = "token";
+      renderComponent("finished", "GPSC1");
+
+      const saveButton = await screen.findByRole("button", { name: /Save/ });
+      await userEvent.click(saveButton);
+
+      expect(mockUseMicroreact.saveMicroreactToken).toHaveBeenCalledWith("GPSC1");
+    });
   });
 });

@@ -137,3 +137,8 @@ export const MOCK_CLUSTER_GRAPH_DICT: Record<string, string> = {
   GPSC2: "graph2",
   GPSC3: "graph3"
 };
+
+export const MOCK_MICROREACT_DICT = {
+  cluster: "1",
+  url: "https://microreact.org/project/1"
+};

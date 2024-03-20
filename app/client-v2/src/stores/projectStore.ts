@@ -229,11 +229,6 @@ export const useProjectStore = defineStore("project", {
       } catch (error) {
         console.error(error);
       }
-    },
-
-    // TODO
-    async onMicroReactVisit(cluster: string) {
-      console.log("Microreact visit", cluster);
     }
   }
 });
