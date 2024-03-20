@@ -194,11 +194,11 @@ describe("projectStore", () => {
 
       expect(store.project.samples[0].sketch).toEqual({ filename: "sample1.fasta", md5: "sample1-md5" });
     });
-    it("should remove sample from fileSamples when handleWorkerResponse fails & call showErrorToast", async () => {
+    it("should remove sample from fileSamples when handleWorkerResponse fails & call toast.showErrorToast", async () => {
       const store = useProjectStore();
       store.project.id = "1";
       store.project.samples = [...mockFilesWithHashes];
-      store.showErrorToast = vitest.fn();
+      store.toast.showErrorToast = vitest.fn();
       const eventData = {
         hash: mockFilesWithHashes[0].hash,
         result: JSON.stringify({ Penicillin: 0.24, Chloramphenicol: 0.24 }),
@@ -213,7 +213,9 @@ describe("projectStore", () => {
       await store.handleWorkerResponse("sample1.fasta", { data: eventData } as any);
 
       expect(store.project.samples).toEqual(mockFilesWithHashes.slice(1));
-      expect(store.showErrorToast).toHaveBeenCalledWith("Ensure uploaded sample file is correct or try again later.");
+      expect(store.toast.showErrorToast).toHaveBeenCalledWith(
+        "Ensure uploaded sample file is correct or try again later."
+      );
     });
 
     it("should set pollingIntervalId when pollAnalysisStatus is called & not already set", async () => {
@@ -282,14 +284,14 @@ describe("projectStore", () => {
     it("should stop polling & call showErrorToast if status request fails", async () => {
       const store = useProjectStore();
       store.stopPollingStatus = vitest.fn();
-      store.showErrorToast = vitest.fn();
+      store.toast.showErrorToast = vitest.fn();
       server.use(http.post(statusUri, () => HttpResponse.error()));
 
       await store.getAnalysisStatus();
 
       expect(store.pollingIntervalId).toBeNull();
       expect(store.stopPollingStatus).toHaveBeenCalled();
-      expect(store.showErrorToast).toHaveBeenCalledWith(
+      expect(store.toast.showErrorToast).toHaveBeenCalledWith(
         "Error fetching analysis status. Try again later, or create a new project."
       );
     });
@@ -407,16 +409,16 @@ describe("projectStore", () => {
       expect(URL.createObjectURL).not.toHaveBeenCalled();
     });
 
-    it("should call toast with msg passed in when showErrorToast called", () => {
+    it("should call toast with msg passed in when toast.showErrorToast called", () => {
       const store = useProjectStore();
 
-      store.showErrorToast("test-error");
+      store.toast.showErrorToast("test-error");
 
       expect(mockToastAdd).toHaveBeenCalledWith({
         severity: "error",
-        summary: "Error Occurred",
+        summary: "Error",
         detail: "test-error",
-        life: 3000
+        life: 5000
       });
     });
 
@@ -428,9 +430,9 @@ describe("projectStore", () => {
 
       expect(store.project.samples).toEqual(["sample1", "sample2"]);
     });
-    it("should call api with correct params and showErrorToast when removeUploadedFile fails", async () => {
+    it("should call api with correct params and toast.showErrorToast when removeUploadedFile fails", async () => {
       const store = useProjectStore();
-      store.showErrorToast = vitest.fn();
+      store.toast.showErrorToast = vitest.fn();
       store.project.samples = ["sample1", "sample2", "sample3"] as any;
       server.use(
         http.post(`/project/${store.project.id}/sample/${store.project.samples[2].hash}/delete`, () =>
@@ -440,7 +442,7 @@ describe("projectStore", () => {
 
       await store.removeUploadedFile(2);
 
-      expect(store.showErrorToast).toHaveBeenCalledWith("Error removing file. Try again later.");
+      expect(store.toast.showErrorToast).toHaveBeenCalledWith("Error removing file. Try again later.");
       expect(store.project.samples).toEqual(["sample1", "sample2", "sample3"]);
     });
   });
