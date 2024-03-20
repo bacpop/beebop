@@ -20,7 +20,7 @@ const showErrorToast = (msg: string) => {
 };
 const apiUrl = getApiUrl();
 const {
-  data,
+  data: projects,
   error: projectsError,
   isFetching,
   execute: refetchProjects
@@ -32,7 +32,10 @@ const filters = ref({
 
 const newProjectName = ref("");
 const addProject = async () => {
-  if (!newProjectName.value) return;
+  if (!newProjectName.value || projects.value?.data.some((project) => project.name === newProjectName.value)) {
+    showErrorToast("Project name already exists or is empty");
+    return;
+  }
 
   const { error, data: project } = await useFetch(apiUrl + "/project", {
     credentials: "include"
@@ -51,8 +54,8 @@ const editingRows = ref([]);
 const onRowEditSave = async (event: DataTableRowEditSaveEvent) => {
   let { newData, index } = event;
 
-  if (data.value !== null && data.value.data[index].name !== newData.name) {
-    const { error } = await useFetch(apiUrl + `/project/${data?.value?.data[index].id}/rename`, {
+  if (projects.value !== null && projects.value.data[index].name !== newData.name) {
+    const { error } = await useFetch(apiUrl + `/project/${projects?.value?.data[index].id}/rename`, {
       credentials: "include"
     })
       .post({ name: newData.name })
@@ -79,7 +82,7 @@ const onRowEditSave = async (event: DataTableRowEditSaveEvent) => {
     <div class="surface-card p-4 shadow-2 border-round">
       <DataTable
         class="flex-grow-1"
-        :value="data?.data"
+        :value="projects?.data"
         v-model:filters="filters"
         :pt="{
           header: { style: 'padding: 0.75rem 0rem' },

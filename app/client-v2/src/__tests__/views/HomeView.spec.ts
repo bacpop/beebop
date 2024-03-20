@@ -72,6 +72,23 @@ describe("HomeView ", () => {
       expect(screen.queryByRole("link", { name: MOCK_PROJECTS[2].name })).not.toBeInTheDocument();
     });
   });
+  it("should show error message & not push new route when new project name is empty or exists", async () => {
+    renderComponent();
+    const push = vitest.spyOn(router, "push");
+
+    const createButton = screen.getByRole("button", { name: /new project/i });
+    const createInput = screen.getByPlaceholderText(/create/i);
+
+    await userEvent.click(createButton);
+
+    expect(screen.getByText(/error/i)).toBeVisible();
+
+    await userEvent.type(createInput, MOCK_PROJECTS[0].name);
+    await userEvent.click(createButton);
+
+    expect(push).not.toHaveBeenCalled();
+    expect(screen.getAllByText(/error/i).length).toBe(2);
+  });
   it("should push router when new project is created with name", async () => {
     const push = vitest.spyOn(router, "push");
     renderComponent();
