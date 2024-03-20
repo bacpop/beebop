@@ -64,7 +64,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="flex justify-content-between align-items-center">
+  <div class="flex justify-content-between align-items-center mb-1">
     <span class="text-color-secondary">Cluster: {{ props.cluster }}</span>
     <div>
       <Button
