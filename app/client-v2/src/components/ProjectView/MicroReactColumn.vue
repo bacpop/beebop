@@ -7,7 +7,6 @@ import Dialog from "primevue/dialog";
 const props = defineProps<{
   data: ProjectSample;
 }>();
-// todo: make into composable & clean up logic
 const projectStore = useProjectStore();
 const {
   hasMicroReactError,
