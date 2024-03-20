@@ -56,7 +56,7 @@ const {
         required
       />
       <small v-if="hasMicroReactError" id="token-error" class="text-red-500"
-        >An error occurred, ensure the token is correct and try again</small
+        >An error occurred. Please ensure the token is correct and try again.</small
       >
     </div>
     <div class="flex justify-content-end gap-2">
