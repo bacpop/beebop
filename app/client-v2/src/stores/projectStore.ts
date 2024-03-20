@@ -14,7 +14,6 @@ import {
 } from "@/types/projectTypes";
 import { mande } from "mande";
 import { defineStore } from "pinia";
-import { useToast } from "primevue/usetoast";
 import { Md5 } from "ts-md5";
 
 const baseApi = mande(getApiUrl(), { credentials: "include" });
@@ -87,7 +86,7 @@ export const useProjectStore = defineStore("project", {
         };
         worker.onerror = (error) => {
           console.error(error);
-          this.toast.showErrorToast("Ensure uploaded sample file is correct or try again later.");
+          this.toast.showErrorToast("Ensure uploaded sample file is correct");
         };
       }
     },
@@ -145,7 +144,7 @@ export const useProjectStore = defineStore("project", {
           stopPolling = true;
         }
       } catch (error) {
-        this.toast.showErrorToast("Error fetching analysis status. Try again later, or create a new project.");
+        this.toast.showErrorToast("Error fetching analysis status. Try refresh page, or create a new project.");
         console.error(error);
         stopPolling = true;
       } finally {
@@ -182,7 +181,9 @@ export const useProjectStore = defineStore("project", {
     },
     async removeUploadedFile(index: number) {
       try {
-        await baseApi.post(`/project/${this.project.id}/sample/${this.project.samples[index].hash}/delete`);
+        await baseApi.patch(`/project/${this.project.id}/sample/${this.project.samples[index].hash}`, {
+          filename: this.project.samples[index].filename
+        });
         this.project.samples.splice(index, 1);
       } catch (error) {
         console.error(error);

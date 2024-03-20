@@ -292,7 +292,7 @@ describe("projectStore", () => {
       expect(store.pollingIntervalId).toBeNull();
       expect(store.stopPollingStatus).toHaveBeenCalled();
       expect(store.toast.showErrorToast).toHaveBeenCalledWith(
-        "Error fetching analysis status. Try again later, or create a new project."
+        "Error fetching analysis status. Try refresh page, or create a new project."
       );
     });
     it("should not stop polling if status request returns incomplete status", async () => {
@@ -435,9 +435,13 @@ describe("projectStore", () => {
       store.toast.showErrorToast = vitest.fn();
       store.project.samples = ["sample1", "sample2", "sample3"] as any;
       server.use(
-        http.post(`/project/${store.project.id}/sample/${store.project.samples[2].hash}/delete`, () =>
-          HttpResponse.error()
-        )
+        http.patch(`/project/${store.project.id}/sample/${store.project.samples[2].hash}`, async ({ request }) => {
+          const body = await request.json();
+
+          expect(body).toEqual({ filename: store.project.samples[2].filename });
+
+          return HttpResponse.error();
+        })
       );
 
       await store.removeUploadedFile(2);
