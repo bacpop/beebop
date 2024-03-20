@@ -20,7 +20,6 @@ const fullScreenVisible = ref(false);
 
 <style scoped>
 .cytoscape-graph {
-  gap: 0.25rem;
   max-height: 800px;
   min-height: 500px;
   min-width: 500px;
