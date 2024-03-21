@@ -3,8 +3,8 @@ import { useProjectStore } from "@/stores/projectStore";
 import { useUserStore } from "@/stores/userStore";
 import type { ApiResponse } from "@/types/projectTypes";
 import { mande } from "mande";
-import { useToast } from "primevue/usetoast";
 import { ref } from "vue";
+import { useToastService } from "./useToastService";
 
 export const useMicroreact = () => {
   const microReactApi = mande(`${getApiUrl()}/microreactURL`, { credentials: "include" });
@@ -14,7 +14,7 @@ export const useMicroreact = () => {
   const microReactTokenInput = ref("");
   const hasMicroReactError = ref(false);
   const isFetchingMicroreactUrl = ref(false);
-  const toast = useToast();
+  const { showErrorToast } = useToastService();
 
   const onMicroReactVisit = async (cluster: string) => {
     if (!userStore.microreactToken) {
@@ -34,12 +34,7 @@ export const useMicroreact = () => {
     } catch (error) {
       isFetchingMicroreactUrl.value = false;
       console.error(error);
-      toast.add({
-        severity: "error",
-        summary: "Error Occurred",
-        detail: "Try again later or update your Microreact token.",
-        life: 3000
-      });
+      showErrorToast("Refresh Page or try updating your Microreact token from the menu.");
     }
   };
 
