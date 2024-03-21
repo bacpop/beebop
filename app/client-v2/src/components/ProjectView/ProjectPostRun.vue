@@ -27,8 +27,8 @@ const tabChange = (num: number) => {
     :isMicroReactDialogVisible="isMicroReactDialogVisible"
     :hasMicroReactError="hasMicroReactError"
     :isFetchingMicroreactUrl="isFetchingMicroreactUrl"
-    :header="`${userStore.microreactToken ? 'Update' : 'Save'} Microreact Token`"
-    :text="`Please ${userStore.microreactToken ? 'update' : 'save'} a Microreact token so Microreact graphs can be visited.`"
+    :header="`${userStore.microreactToken ? 'Update or Delete' : 'Save'} Microreact Token`"
+    :text="`${userStore.microreactToken ? 'Update token to change to utilize another Microreact account, or delete token if you no longer want to use Microreact.' : 'Please save Microreact token so Microreact graphs can be visited.'}`"
     @closeDialog="isMicroReactDialogVisible = false"
     @saveMicroreactToken="saveMicroreactToken(projectStore.project.samples[0].cluster, $event)"
   />
