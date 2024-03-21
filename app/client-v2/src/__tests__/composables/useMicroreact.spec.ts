@@ -73,24 +73,24 @@ describe("useMicroreact", () => {
     });
   });
   describe("saveMicroreactToken", () => {
-    it("should update state correctly and call window.open with correct url", async () => {
+    it("should update state correctly & return url", async () => {
       const userStore = useUserStore();
       userStore.microreactToken = "";
       const mockOpen = vitest.fn();
       Object.defineProperty(window, "open", { value: mockOpen });
-      const { saveMicroreactToken, isMicroReactDialogVisible, microReactTokenInput, isFetchingMicroreactUrl } =
+      const { hasMicroReactError, saveMicroreactToken, isMicroReactDialogVisible, isFetchingMicroreactUrl } =
         useMicroreact();
       isMicroReactDialogVisible.value = true;
-      microReactTokenInput.value = "token";
 
-      saveMicroreactToken("GPSC1");
+      const url = await saveMicroreactToken("GPSC1", "token");
 
       await flushPromises();
 
       expect(isMicroReactDialogVisible.value).toBe(false);
+      expect(hasMicroReactError.value).toBe(false);
       expect(userStore.microreactToken).toBe("token");
-      expect(mockOpen).toHaveBeenCalledWith(MOCK_MICROREACT_DICT.url, "_blank");
       expect(isFetchingMicroreactUrl.value).toBe(false);
+      expect(url).toBe(MOCK_MICROREACT_DICT.url);
     });
 
     it("should call api with correct body set hasMicroReactError to true if error occurs", async () => {
@@ -98,9 +98,8 @@ describe("useMicroreact", () => {
       const projectStore = useProjectStore();
       projectStore.project.hash = "hash";
       userStore.microreactToken = "";
-      const { saveMicroreactToken, microReactTokenInput, hasMicroReactError, isFetchingMicroreactUrl } =
-        useMicroreact();
-      microReactTokenInput.value = "token";
+      const { saveMicroreactToken, hasMicroReactError, isFetchingMicroreactUrl } = useMicroreact();
+
       server.use(
         http.post(microreactUri, async ({ request }) => {
           const body = await request.json();
@@ -113,7 +112,7 @@ describe("useMicroreact", () => {
         })
       );
 
-      saveMicroreactToken("GPSC1");
+      saveMicroreactToken("GPSC1", "token");
 
       await flushPromises();
 

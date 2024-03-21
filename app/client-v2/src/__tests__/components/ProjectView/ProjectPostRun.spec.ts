@@ -10,6 +10,7 @@ import Tooltip from "primevue/tooltip";
 vitest.mock("primevue/usetoast", () => ({
   useToast: vitest.fn()
 }));
+
 describe("RunProject", () => {
   it("should render progress bar if progress is not 100%", () => {
     const testingPinia = createTestingPinia();
@@ -21,6 +22,7 @@ describe("RunProject", () => {
         plugins: [PrimeVue, testingPinia],
         stubs: {
           MicroReactColumn: true,
+          MicroReactTokenDialog: true,
           ProjectDataTable: {
             template: `<div>Data Table</div>`
           },
@@ -59,6 +61,7 @@ describe("RunProject", () => {
         ],
         stubs: {
           MicroReactColumn: true,
+          MicroReactTokenDialog: true,
           ProjectDataTable: {
             template: `<div>Data Table</div>`
           },
@@ -88,6 +91,7 @@ describe("RunProject", () => {
         plugins: [PrimeVue, createTestingPinia()],
         stubs: {
           MicroReactColumn: true,
+          MicroReactTokenDialog: true,
           ProjectDataTable: {
             template: `<div>Data Table</div>`
           },
@@ -135,7 +139,8 @@ describe("RunProject", () => {
           })
         ],
         stubs: {
-          MicroReactColumn: true
+          MicroReactColumn: true,
+          MicroReactTokenDialog: true
         },
         directives: {
           tooltip: Tooltip
@@ -166,7 +171,8 @@ describe("RunProject", () => {
           })
         ],
         stubs: {
-          MicroReactColumn: true
+          MicroReactColumn: true,
+          MicroReactTokenDialog: true
         },
         directives: {
           tooltip: Tooltip
@@ -197,6 +203,7 @@ describe("RunProject", () => {
           })
         ],
         stubs: {
+          MicroReactTokenDialog: true,
           MicroReactColumn: true
         },
         directives: {
@@ -228,6 +235,7 @@ describe("RunProject", () => {
           })
         ],
         stubs: {
+          MicroReactTokenDialog: true,
           MicroReactColumn: true
         },
         directives: {

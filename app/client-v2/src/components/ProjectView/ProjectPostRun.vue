@@ -23,7 +23,7 @@ const tabChange = (num: number) => {
 
 <template>
   <MicroReactTokenDialog
-    v-if="projectStore.project.samples[0].cluster"
+    v-if="projectStore.project.samples?.length > 0 && projectStore.project.samples[0]?.cluster"
     :isMicroReactDialogVisible="isMicroReactDialogVisible"
     :hasMicroReactError="hasMicroReactError"
     :isFetchingMicroreactUrl="isFetchingMicroreactUrl"
