@@ -7,6 +7,7 @@ import NetworkTab from "./NetworkTab.vue";
 import { ref } from "vue";
 import { useMicroreact } from "@/composables/useMicroreact";
 import { useUserStore } from "@/stores/userStore";
+import MicroReactTokenDialog from "./MicroReactTokenDialog.vue";
 
 const projectStore = useProjectStore();
 const userStore = useUserStore();
@@ -26,8 +27,8 @@ const tabChange = (num: number) => {
     :isMicroReactDialogVisible="isMicroReactDialogVisible"
     :hasMicroReactError="hasMicroReactError"
     :isFetchingMicroreactUrl="isFetchingMicroreactUrl"
-    :header="`${userStore.microreactToken ? 'Update' : 'Submit'} Microreact Token`"
-    :text="`Please ${userStore.microreactToken ? 'update' : 'submit'} a Microreact token so Microreact graphs can be visited.`"
+    :header="`${userStore.microreactToken ? 'Update' : 'Save'} Microreact Token`"
+    :text="`Please ${userStore.microreactToken ? 'update' : 'save'} a Microreact token so Microreact graphs can be visited.`"
     @closeDialog="isMicroReactDialogVisible = false"
     @saveMicroreactToken="saveMicroreactToken(projectStore.project.samples[0].cluster, $event)"
   />
@@ -69,7 +70,7 @@ const tabChange = (num: number) => {
                   @click="isMicroReactDialogVisible = true"
                   :disabled="projectStore.project.status?.microreact !== 'finished'"
                   aria-label="Update Microreact token"
-                  v-tooltip.top="'Update Microreact token'"
+                  v-tooltip.top="`${userStore.microreactToken ? 'Update' : 'Set'} Microreact token`"
                   size="small"
                 />
               </div>

@@ -30,7 +30,7 @@ watch(microreactToken, async (newVal) => {
     modal
     :draggable="false"
     :header="props.header"
-    :style="{ width: '30rem' }"
+    :style="{ width: '32rem' }"
     :class="{ 'border-red-500': hasMicroReactError }"
   >
     <div class="flex flex-column gap-2 p-text-secondary block mb-4">
@@ -62,15 +62,25 @@ watch(microreactToken, async (newVal) => {
         >An error occurred. Please ensure the token is correct and try again.</small
       >
     </div>
-    <div class="flex justify-content-end gap-2">
-      <Button type="button" label="Cancel" severity="secondary" @click="$emit('closeDialog')"></Button>
-      <Button
-        type="button"
-        label="Save"
-        :disabled="!tokenInput"
-        :loading="isFetchingMicroreactUrl"
-        @click="$emit('saveMicroreactToken', tokenInput)"
-      ></Button>
+    <div class="flex justify-content-between">
+      <div>
+        <Button
+          outlined
+          v-if="userStore.microreactToken"
+          severity="danger"
+          label="Delete Token"
+          @click="userStore.microreactToken = ''"
+        ></Button>
+      </div>
+      <div class="flex justify-content-end gap-2">
+        <Button type="button" label="Cancel" severity="secondary" @click="$emit('closeDialog')"></Button>
+        <Button
+          label="Save"
+          :disabled="!tokenInput"
+          :loading="isFetchingMicroreactUrl"
+          @click="$emit('saveMicroreactToken', tokenInput)"
+        ></Button>
+      </div>
     </div>
   </Dialog>
 </template>
