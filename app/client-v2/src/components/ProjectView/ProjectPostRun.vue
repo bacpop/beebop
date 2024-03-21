@@ -5,9 +5,13 @@ import { useProjectStore } from "@/stores/projectStore";
 import { AnalysisType } from "@/types/projectTypes";
 import NetworkTab from "./NetworkTab.vue";
 import { ref } from "vue";
+import { useMicroreact } from "@/composables/useMicroreact";
+import { useUserStore } from "@/stores/userStore";
 
-const store = useProjectStore();
+const projectStore = useProjectStore();
+const userStore = useUserStore();
 const hasVisitedNetworkTab = ref(false);
+const { hasMicroReactError, isMicroReactDialogVisible, saveMicroreactToken, isFetchingMicroreactUrl } = useMicroreact();
 
 const tabChange = (num: number) => {
   if (num == 1 && !hasVisitedNetworkTab.value) {
@@ -17,9 +21,19 @@ const tabChange = (num: number) => {
 </script>
 
 <template>
-  <div v-if="store.analysisProgressPercentage !== 100">
+  <MicroReactTokenDialog
+    v-if="projectStore.project.samples[0].cluster"
+    :isMicroReactDialogVisible="isMicroReactDialogVisible"
+    :hasMicroReactError="hasMicroReactError"
+    :isFetchingMicroreactUrl="isFetchingMicroreactUrl"
+    :header="`${userStore.microreactToken ? 'Update' : 'Submit'} Microreact Token`"
+    :text="`Please ${userStore.microreactToken ? 'update' : 'submit'} a Microreact token so Microreact graphs can be visited.`"
+    @closeDialog="isMicroReactDialogVisible = false"
+    @saveMicroreactToken="saveMicroreactToken(projectStore.project.samples[0].cluster, $event)"
+  />
+  <div v-if="projectStore.analysisProgressPercentage !== 100">
     <div class="mb-2 fadein animation-duration-2000 animation-iteration-infinite">Running Analysis...</div>
-    <ProgressBar :value="store.analysisProgressPercentage"></ProgressBar>
+    <ProgressBar :value="projectStore.analysisProgressPercentage"></ProgressBar>
   </div>
   <TabView @update:active-index="tabChange">
     <TabPanel header="Samples">
@@ -33,19 +47,33 @@ const tabChange = (num: number) => {
           <Column header="Network">
             <template #body="{ data }">
               <Button
-                v-if="store.project.status?.network === 'finished'"
+                v-if="projectStore.project.status?.network === 'finished'"
                 outlined
                 icon="pi pi-download"
-                @click="data.cluster && store.downloadZip(AnalysisType.NETWORK, data.cluster)"
+                @click="data.cluster && projectStore.downloadZip(AnalysisType.NETWORK, data.cluster)"
                 :disabled="!data.cluster"
                 aria-label="Download network zip"
                 v-tooltip.top="'Download zip'"
               />
-              <Tag v-else-if="store.project.status?.network === 'failed'" value="failed" severity="danger" />
-              <Tag v-else :value="store.project.status?.network" severity="warning" />
+              <Tag v-else-if="projectStore.project.status?.network === 'failed'" value="failed" severity="danger" />
+              <Tag v-else :value="projectStore.project.status?.network" severity="warning" />
             </template>
           </Column>
-          <Column header="Microreact">
+          <Column>
+            <template #header>
+              <div class="flex align-items-center gap-2">
+                <span>Microreact</span>
+                <Button
+                  text
+                  icon="pi pi-cog"
+                  @click="isMicroReactDialogVisible = true"
+                  :disabled="projectStore.project.status?.microreact !== 'finished'"
+                  aria-label="Update Microreact token"
+                  v-tooltip.top="'Update Microreact token'"
+                  size="small"
+                />
+              </div>
+            </template>
             <template #body="{ data }">
               <MicroReactColumn :data="data" />
             </template>
@@ -53,8 +81,8 @@ const tabChange = (num: number) => {
         </template>
       </ProjectDataTable>
     </TabPanel>
-    <TabPanel header="Network" :disabled="store.project.status?.network !== 'finished'">
-      <NetworkTab v-if="store.project.status?.network === 'finished' && hasVisitedNetworkTab" />
+    <TabPanel header="Network" :disabled="projectStore.project.status?.network !== 'finished'">
+      <NetworkTab v-if="projectStore.project.status?.network === 'finished' && hasVisitedNetworkTab" />
     </TabPanel>
   </TabView>
 </template>

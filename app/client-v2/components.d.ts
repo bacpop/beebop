@@ -19,6 +19,7 @@ declare module 'vue' {
     Menu: typeof import('primevue/menu')['default']
     Menubar: typeof import('primevue/menubar')['default']
     MicroReactColumn: typeof import('./src/components/ProjectView/MicroReactColumn.vue')['default']
+    MicroReactTokenDialog: typeof import('./src/components/ProjectView/MicroReactTokenDialog.vue')['default']
     NetworkGraph: typeof import('./src/components/ProjectView/NetworkGraph.vue')['default']
     NetworkTab: typeof import('./src/components/ProjectView/NetworkTab.vue')['default']
     ProgressBar: typeof import('primevue/progressbar')['default']

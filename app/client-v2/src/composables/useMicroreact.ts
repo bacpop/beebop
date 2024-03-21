@@ -11,7 +11,6 @@ export const useMicroreact = () => {
   const projectStore = useProjectStore();
   const userStore = useUserStore();
   const isMicroReactDialogVisible = ref(false);
-  const microReactTokenInput = ref("");
   const hasMicroReactError = ref(false);
   const isFetchingMicroreactUrl = ref(false);
   const { showErrorToast } = useToastService();
@@ -38,19 +37,21 @@ export const useMicroreact = () => {
     }
   };
 
-  const saveMicroreactToken = async (cluster: string) => {
+  const saveMicroreactToken = async (cluster: string, token: string) => {
     isFetchingMicroreactUrl.value = true;
     try {
       const res = await microReactApi.post<ApiResponse<{ cluster: string; url: string }>>({
         cluster,
-        apiToken: microReactTokenInput.value,
+        apiToken: token,
         projectHash: projectStore.project.hash
       });
 
       isFetchingMicroreactUrl.value = false;
       isMicroReactDialogVisible.value = false;
-      userStore.microreactToken = microReactTokenInput.value;
-      window.open(res.data.url, "_blank");
+      hasMicroReactError.value = false;
+      userStore.microreactToken = token;
+
+      return res.data.url;
     } catch (error) {
       isFetchingMicroreactUrl.value = false;
       console.log(error);
@@ -62,7 +63,6 @@ export const useMicroreact = () => {
     onMicroReactVisit,
     saveMicroreactToken,
     isMicroReactDialogVisible,
-    microReactTokenInput,
     hasMicroReactError,
     isFetchingMicroreactUrl
   };
