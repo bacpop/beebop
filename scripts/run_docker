@@ -21,4 +21,4 @@ docker cp proxy/ssl/dhparam.pem beebop-proxy-1:/run/proxy/
 docker cp proxy/$SSL_PATH/certificate.pem beebop-proxy-1:/run/proxy/
 docker cp proxy/$SSL_PATH/key.pem beebop-proxy-1:/run/proxy/
 docker run --rm -v beebop_beebop-storage:/beebop/storage mrcide/beebop-py:main \
-       ./scripts/download_db --small storage
+       ./scripts/download_db 
