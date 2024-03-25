@@ -144,7 +144,7 @@ export const useProjectStore = defineStore("project", {
           stopPolling = true;
         }
       } catch (error) {
-        this.toast.showErrorToast("Error fetching analysis status. Try refresh page, or create a new project.");
+        this.toast.showErrorToast("Error fetching analysis status. Try refreshing the page, or create a new project.");
         console.error(error);
         stopPolling = true;
       } finally {
@@ -181,7 +181,7 @@ export const useProjectStore = defineStore("project", {
     },
     async removeUploadedFile(index: number) {
       try {
-        await baseApi.patch(`/project/${this.project.id}/sample/${this.project.samples[index].hash}`, {
+        await baseApi.patch(`/project/${this.project.id}/sample/${this.project.samples[index].hash}/delete`, {
           filename: this.project.samples[index].filename
         });
         this.project.samples.splice(index, 1);

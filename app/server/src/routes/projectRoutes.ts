@@ -24,7 +24,7 @@ export default {
         app.post('/project/:projectId/rename',
             authCheck,
             controller.renameProject);
-        app.patch(`/project/:projectId/sample/:sampleHash`,
+        app.patch(`/project/:projectId/sample/:sampleHash/delete`,
             authCheck, 
             controller.deleteSample);
     }

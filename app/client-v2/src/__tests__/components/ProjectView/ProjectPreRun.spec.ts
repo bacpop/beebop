@@ -115,29 +115,23 @@ describe("ProjectView ", () => {
     });
   });
 
-  it("should render button to remove uploaded files and call store.removeUploadedFile on click", async () => {
+  it("should render enabled button to remove uploaded files and call store.removeUploadedFile on click when ready to run", async () => {
+    const testingPinia = createTestingPinia();
+    const store = useProjectStore();
+    // @ts-expect-error: Getter is read only
+    store.isReadyToRun = true;
+    store.project.samples = MOCK_PROJECT_SAMPLES_BEFORE_RUN;
+
     render(ProjectPreRun, {
       global: {
-        plugins: [
-          PrimeVue,
-          createTestingPinia({
-            initialState: {
-              project: {
-                project: {
-                  samples: MOCK_PROJECT_SAMPLES_BEFORE_RUN
-                }
-              }
-            }
-          })
-        ],
+        plugins: [PrimeVue, testingPinia],
         directives: {
           tooltip: Tooltip
         }
       }
     });
-    const store = useProjectStore();
-
     const removeButton = screen.getAllByRole("button", { name: /remove/i })[1];
+
     await userEvent.click(removeButton);
 
     await waitFor(() => {
