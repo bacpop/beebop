@@ -2,7 +2,6 @@
 import { useMicroreact } from "@/composables/useMicroreact";
 import { useProjectStore } from "@/stores/projectStore";
 import { type ProjectSample, AnalysisType } from "@/types/projectTypes";
-import Toast from "primevue/toast";
 import Dialog from "primevue/dialog";
 const props = defineProps<{
   data: ProjectSample;
@@ -19,7 +18,6 @@ const {
 </script>
 
 <template>
-  <Toast />
   <Dialog
     v-if="props.data.cluster"
     v-model:visible="isMicroReactDialogVisible"

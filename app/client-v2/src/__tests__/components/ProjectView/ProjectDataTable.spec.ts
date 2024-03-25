@@ -4,6 +4,9 @@ import { createTestingPinia } from "@pinia/testing";
 import { render, screen } from "@testing-library/vue";
 import PrimeVue from "primevue/config";
 
+vitest.mock("primevue/usetoast", () => ({
+  useToast: vitest.fn()
+}));
 describe("Project data table", () => {
   beforeEach(() => {
     render(ProjectDataTableVue, {

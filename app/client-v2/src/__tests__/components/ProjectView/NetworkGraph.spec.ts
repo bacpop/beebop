@@ -4,6 +4,9 @@ import { render, screen } from "@testing-library/vue";
 import PrimeVue from "primevue/config";
 import Tooltip from "primevue/tooltip";
 
+vitest.mock("primevue/usetoast", () => ({
+  useToast: vitest.fn()
+}));
 describe("NetworkGraph", () => {
   it("should render info and graphs with correct props", async () => {
     render(NetworkGraph, {

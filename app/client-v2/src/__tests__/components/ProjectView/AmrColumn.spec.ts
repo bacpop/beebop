@@ -6,6 +6,9 @@ import { render, screen } from "@testing-library/vue";
 import PrimeVue from "primevue/config";
 import Tooltip from "primevue/tooltip";
 
+vitest.mock("primevue/usetoast", () => ({
+  useToast: vitest.fn()
+}));
 const renderComponent = (amr?: AMR) => {
   return render(AmrColumnVue, {
     props: {
