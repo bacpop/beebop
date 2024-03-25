@@ -1,2 +1,3 @@
-export API_BRANCH=main
+# TODO: switch back to main when beebop_py is merged in
+export API_BRANCH="bacpop-159-use-v8"
 export DB_LOCATION="./storage/GPS_v8_ref"
