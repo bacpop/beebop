@@ -1,3 +1,4 @@
+import { useToastService } from "@/composables/useToastService";
 import { getApiUrl } from "@/config";
 import {
   COMPLETE_STATUS_TYPES,
@@ -17,11 +18,11 @@ import { Md5 } from "ts-md5";
 
 const baseApi = mande(getApiUrl(), { credentials: "include" });
 
-// TODO: add proper error handling. Maybe best to add error state attribute and watch accordingly cos of nested things interval/workers
 export const useProjectStore = defineStore("project", {
   state: () => ({
     project: {} as Project,
-    pollingIntervalId: null as ReturnType<typeof setInterval> | null
+    pollingIntervalId: null as ReturnType<typeof setInterval> | null,
+    toast: useToastService() as ReturnType<typeof useToastService>
   }),
 
   getters: {
@@ -83,6 +84,10 @@ export const useProjectStore = defineStore("project", {
         worker.onmessage = async (event: MessageEvent<WorkerResponse>) => {
           this.handleWorkerResponse(file.name, event);
         };
+        worker.onerror = (error) => {
+          console.error(error);
+          this.toast.showErrorToast("Ensure uploaded sample file is correct");
+        };
       }
     },
 
@@ -107,7 +112,10 @@ export const useProjectStore = defineStore("project", {
         );
       } catch (error) {
         console.error(error);
-        this.project.samples.splice(matchedHashIndex, 1);
+        this.toast.showErrorToast("Ensure uploaded sample file is correct or try again later.");
+        if (matchedHashIndex !== -1) {
+          this.project.samples.splice(matchedHashIndex, 1);
+        }
       }
     },
 
@@ -136,6 +144,7 @@ export const useProjectStore = defineStore("project", {
           stopPolling = true;
         }
       } catch (error) {
+        this.toast.showErrorToast("Error fetching analysis status. Try refreshing the page, or create a new project.");
         console.error(error);
         stopPolling = true;
       } finally {
@@ -170,23 +179,31 @@ export const useProjectStore = defineStore("project", {
         this.pollingIntervalId = null;
       }
     },
-    // TODO: update to remove from api as well
-    // removeUploadedFile(index: number) {
-    //   // this.fileSamples.splice(index, 1);
-    // },
+    async removeUploadedFile(index: number) {
+      try {
+        await baseApi.patch(`/project/${this.project.id}/sample/${this.project.samples[index].hash}/delete`, {
+          filename: this.project.samples[index].filename
+        });
+        this.project.samples.splice(index, 1);
+      } catch (error) {
+        console.error(error);
+        this.toast.showErrorToast("Error removing file. Try again later.");
+      }
+    },
 
     async runAnalysis() {
       const body = this.buildRunAnalysisPostBody();
       try {
         await baseApi.post("/poppunk", body);
+
         this.project.hash = body.projectHash;
+        this.project.status = { assign: "submitted", microreact: "submitted", network: "submitted" };
+        this.pollAnalysisStatus();
       } catch (error) {
         console.error("Error running analysis", error);
+        this.toast.showErrorToast("Error running analysis. Try again later.");
         return;
       }
-
-      this.project.status = { assign: "submitted", microreact: "submitted", network: "submitted" };
-      this.pollAnalysisStatus();
     },
 
     buildRunAnalysisPostBody() {
@@ -228,6 +245,7 @@ export const useProjectStore = defineStore("project", {
         URL.revokeObjectURL(link.href);
       } catch (error) {
         console.error(error);
+        this.toast.showErrorToast("Error downloading zip file. Try again later.");
       }
     }
   }

@@ -9,6 +9,13 @@ import { HttpResponse, http } from "msw";
 import { createPinia, setActivePinia } from "pinia";
 import { Md5 } from "ts-md5";
 
+const mockToastAdd = vitest.fn();
+vitest.mock("primevue/usetoast", () => ({
+  useToast: vitest.fn(() => ({
+    add: mockToastAdd
+  }))
+}));
+
 describe("projectStore", () => {
   beforeEach(() => {
     setActivePinia(createPinia());
@@ -187,10 +194,11 @@ describe("projectStore", () => {
 
       expect(store.project.samples[0].sketch).toEqual({ filename: "sample1.fasta", md5: "sample1-md5" });
     });
-    it("should remove sample from fileSamples when handleWorkerResponse fails", async () => {
+    it("should remove sample from fileSamples when handleWorkerResponse fails & call toast.showErrorToast", async () => {
       const store = useProjectStore();
       store.project.id = "1";
       store.project.samples = [...mockFilesWithHashes];
+      store.toast.showErrorToast = vitest.fn();
       const eventData = {
         hash: mockFilesWithHashes[0].hash,
         result: JSON.stringify({ Penicillin: 0.24, Chloramphenicol: 0.24 }),
@@ -205,6 +213,9 @@ describe("projectStore", () => {
       await store.handleWorkerResponse("sample1.fasta", { data: eventData } as any);
 
       expect(store.project.samples).toEqual(mockFilesWithHashes.slice(1));
+      expect(store.toast.showErrorToast).toHaveBeenCalledWith(
+        "Ensure uploaded sample file is correct or try again later."
+      );
     });
 
     it("should set pollingIntervalId when pollAnalysisStatus is called & not already set", async () => {
@@ -270,15 +281,19 @@ describe("projectStore", () => {
       expect(store.project.status).toEqual(MOCK_PROJECT.status);
       expect(store.stopPollingStatus).toHaveBeenCalled();
     });
-    it("should stop polling if status request fails", async () => {
+    it("should stop polling & call showErrorToast if status request fails", async () => {
       const store = useProjectStore();
       store.stopPollingStatus = vitest.fn();
+      store.toast.showErrorToast = vitest.fn();
       server.use(http.post(statusUri, () => HttpResponse.error()));
 
       await store.getAnalysisStatus();
 
       expect(store.pollingIntervalId).toBeNull();
       expect(store.stopPollingStatus).toHaveBeenCalled();
+      expect(store.toast.showErrorToast).toHaveBeenCalledWith(
+        "Error fetching analysis status. Try refreshing the page, or create a new project."
+      );
     });
     it("should not stop polling if status request returns incomplete status", async () => {
       const store = useProjectStore();
@@ -392,6 +407,50 @@ describe("projectStore", () => {
       await store.downloadZip(AnalysisType.MICROREACT, "GPSC1");
 
       expect(URL.createObjectURL).not.toHaveBeenCalled();
+    });
+
+    it("should call toast with msg passed in when toast.showErrorToast called", () => {
+      const store = useProjectStore();
+
+      store.toast.showErrorToast("test-error");
+
+      expect(mockToastAdd).toHaveBeenCalledWith({
+        severity: "error",
+        summary: "Error",
+        detail: "test-error",
+        life: 5000
+      });
+    });
+
+    it("should call api and remove sample from store at index when removeUploadedFile is called", async () => {
+      const store = useProjectStore();
+      store.project.samples = ["sample1", "sample2", "sample3"] as any;
+
+      await store.removeUploadedFile(2);
+
+      expect(store.project.samples).toEqual(["sample1", "sample2"]);
+    });
+    it("should call api with correct params and toast.showErrorToast when removeUploadedFile fails", async () => {
+      const store = useProjectStore();
+      store.toast.showErrorToast = vitest.fn();
+      store.project.samples = ["sample1", "sample2", "sample3"] as any;
+      server.use(
+        http.patch(
+          `/project/${store.project.id}/sample/${store.project.samples[2].hash}/delete`,
+          async ({ request }) => {
+            const body = await request.json();
+
+            expect(body).toEqual({ filename: store.project.samples[2].filename });
+
+            return HttpResponse.error();
+          }
+        )
+      );
+
+      await store.removeUploadedFile(2);
+
+      expect(store.toast.showErrorToast).toHaveBeenCalledWith("Error removing file. Try again later.");
+      expect(store.project.samples).toEqual(["sample1", "sample2", "sample3"]);
     });
   });
 });

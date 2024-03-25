@@ -14,7 +14,9 @@ const mockUseMicroreact = {
   onMicroReactVisit: vitest.fn(),
   saveMicroreactToken: vitest.fn()
 };
-
+vitest.mock("primevue/usetoast", () => ({
+  useToast: vitest.fn()
+}));
 vitest.mock("@/composables/useMicroreact", () => ({
   useMicroreact: () => mockUseMicroreact
 }));

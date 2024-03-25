@@ -25,7 +25,8 @@ const mockUserStore = {
     getSample: jest.fn().mockImplementation(() => ({
         sketch: "test sketch",
         amr: "test amr"
-    }))
+    })),
+    deleteSample: jest.fn(),
 };
 jest.mock("../../../src/db/userStore", () => ({
     userStore: mockUserStoreConstructor.mockReturnValue(mockUserStore)
@@ -290,4 +291,22 @@ describe("projectController", () => {
             errors: [{error: "PROJECT_ERROR", detail: "test project error"}]
         });
     });
+
+    it("deleteSample calls userStore deleteSample with correct params", async () => {
+        const req = {
+            app: mockApp,
+            params: {
+                projectId: "testProjectId",
+                sampleHash: "1234"
+            },
+            body: {
+                filename: "test1.fa"
+            }
+        };
+
+        await projectController(config).deleteSample(req, mockResponse(),jest.fn());
+
+        expect(mockUserStore.deleteSample).toHaveBeenCalledTimes(1);
+        expect(mockUserStore.deleteSample).toHaveBeenCalledWith("testProjectId", "1234", "test1.fa");
+    })
 });

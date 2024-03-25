@@ -6,18 +6,13 @@ import InputGroup from "primevue/inputgroup";
 import { FilterMatchMode } from "primevue/api";
 import type { DataTableRowEditSaveEvent } from "primevue/datatable";
 import type { ProjectsResponse } from "@/types/projectTypes";
-import { useToast } from "primevue/usetoast";
 import Toast from "primevue/toast";
 import { useRouter } from "vue-router";
+import { useToastService } from "@/composables/useToastService";
 
 const router = useRouter();
-const toast = useToast();
-const showSuccessToast = (msg: string) => {
-  toast.add({ severity: "success", summary: "Success", detail: msg, life: 3000 });
-};
-const showErrorToast = (msg: string) => {
-  toast.add({ severity: "error", summary: "Error", detail: msg, life: 3000 });
-};
+const { showErrorToast, showSuccessToast } = useToastService();
+
 const apiUrl = getApiUrl();
 const {
   data,

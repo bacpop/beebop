@@ -15,7 +15,7 @@ const tableIsHovered = ref(false);
         <Button label="Run Analysis" outlined @click="store.runAnalysis" :disabled="!store.isReadyToRun" />
       </div>
     </template>
-    <template #content>
+    <template #empty>
       <div
         v-if="store.project.samples.length > 0"
         @dragover="tableIsHovered = true"
@@ -27,8 +27,7 @@ const tableIsHovered = ref(false);
         <ProjectDataTable>
           <template #extra-cols>
             <Column>
-              <!-- TODO: have to add endpoint to remove stored data as well -->
-              <!-- <template #body="props">
+              <template #body="props">
                 <Button
                   icon="pi pi-times"
                   @click="store.removeUploadedFile(props.index)"
@@ -36,8 +35,10 @@ const tableIsHovered = ref(false);
                   rounded
                   size="small"
                   severity="danger"
+                  aria-label="`Remove ${props.rowData.name}`"
+                  :disabled="!store.isReadyToRun"
                 />
-              </template> -->
+              </template>
             </Column>
           </template>
         </ProjectDataTable>

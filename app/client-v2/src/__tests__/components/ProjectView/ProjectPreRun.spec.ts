@@ -1,14 +1,18 @@
-import NotRunProjectVue from "@/components/ProjectView/ProjectPreRun.vue";
+import ProjectPreRun from "@/components/ProjectView/ProjectPreRun.vue";
 import { MOCK_PROJECT_SAMPLES_BEFORE_RUN } from "@/mocks/mockObjects";
 import { useProjectStore } from "@/stores/projectStore";
 import { createTestingPinia } from "@pinia/testing";
 import userEvent from "@testing-library/user-event";
 import { fireEvent, render, screen, waitFor } from "@testing-library/vue";
 import PrimeVue from "primevue/config";
+import Tooltip from "primevue/tooltip";
 
+vitest.mock("primevue/usetoast", () => ({
+  useToast: vitest.fn()
+}));
 describe("ProjectView ", () => {
   it("should render drag and drop section no files uploaded", () => {
-    render(NotRunProjectVue, {
+    render(ProjectPreRun, {
       global: {
         plugins: [
           createTestingPinia({
@@ -33,7 +37,7 @@ describe("ProjectView ", () => {
     // @ts-expect-error: Getter is read only
     store.isReadyToRun = true;
     store.project.samples = [];
-    render(NotRunProjectVue, {
+    render(ProjectPreRun, {
       global: {
         plugins: [testPinia, PrimeVue]
       }
@@ -49,7 +53,7 @@ describe("ProjectView ", () => {
     store.project.samples = [];
     // @ts-expect-error: Getter is read only
     store.isReadyToRun = false;
-    render(NotRunProjectVue, {
+    render(ProjectPreRun, {
       global: {
         plugins: [testPinia, PrimeVue]
       }
@@ -58,7 +62,7 @@ describe("ProjectView ", () => {
     expect(screen.getByRole("button", { name: /run analysis/i })).toBeDisabled();
   });
   it("should render data table if file samples uploaded", () => {
-    render(NotRunProjectVue, {
+    render(ProjectPreRun, {
       global: {
         plugins: [
           createTestingPinia({
@@ -85,7 +89,7 @@ describe("ProjectView ", () => {
 
   it("should call store.onFilesUpload on files uploaded", async () => {
     const mockFile = { name: "sample1.fasta", text: () => Promise.resolve("sample1") } as File;
-    const { container } = render(NotRunProjectVue, {
+    const { container } = render(ProjectPreRun, {
       global: {
         plugins: [
           createTestingPinia({
@@ -108,6 +112,30 @@ describe("ProjectView ", () => {
 
     await waitFor(() => {
       expect(store.onFilesUpload).toHaveBeenCalledWith([mockFile]);
+    });
+  });
+
+  it("should render enabled button to remove uploaded files and call store.removeUploadedFile on click when ready to run", async () => {
+    const testingPinia = createTestingPinia();
+    const store = useProjectStore();
+    // @ts-expect-error: Getter is read only
+    store.isReadyToRun = true;
+    store.project.samples = MOCK_PROJECT_SAMPLES_BEFORE_RUN;
+
+    render(ProjectPreRun, {
+      global: {
+        plugins: [PrimeVue, testingPinia],
+        directives: {
+          tooltip: Tooltip
+        }
+      }
+    });
+    const removeButton = screen.getAllByRole("button", { name: /remove/i })[1];
+
+    await userEvent.click(removeButton);
+
+    await waitFor(() => {
+      expect(store.removeUploadedFile).toHaveBeenCalledWith(1);
     });
   });
 });
