@@ -38,22 +38,24 @@ export default (config) => {
         const { redis } = request.app.locals;
         const store = userStore(redis);
         const baseProjectInfo = await store.getBaseProjectInfo(projectId);
-        const projectSplitSampleIds = await store.getProjectSplitSampleIds(projectId);
+        const projectSplitSampleIds = await store.getProjectSplitSampleIds(
+          projectId
+        );
 
-        // If there is no project hash, then the project has not been submitted so will have no poppunk result data available from beebop_py yet        
+        // If there is no project hash, then the project has not been submitted so will have no poppunk result data available from beebop_py yet
         if (!baseProjectInfo.hash) {
-
           const responseSamples = await ProjectUtils.getResponseSamples(
             store,
             projectId,
             projectSplitSampleIds
           );
           return sendSuccess(response, {
+            id: projectId,
             ...baseProjectInfo,
             samples: responseSamples,
           });
         }
-        
+
         let ranProjectResponse: AxiosResponse<APIResponse<APIProjectResponse>>;
         try {
           ranProjectResponse = await axios.get(
@@ -71,6 +73,7 @@ export default (config) => {
           apiData
         );
         return sendSuccess(response, {
+          id: projectId,
           ...baseProjectInfo,
           ...apiData,
           samples: responseSamples,
@@ -101,6 +104,17 @@ export default (config) => {
           filename,
           sketch
         );
+        sendSuccess(response, null);
+      });
+    },
+    async deleteSample(request, response, next) {
+      await asyncHandler(next, async () => {
+        const { projectId, sampleHash } = request.params;
+        const { filename } = request.body as {
+          filename: string;
+        };
+        const { redis } = request.app.locals;
+        await userStore(redis).deleteSample(projectId, sampleHash, filename);
         sendSuccess(response, null);
       });
     },

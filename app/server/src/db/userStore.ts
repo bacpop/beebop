@@ -98,6 +98,11 @@ export class UserStore {
         const amrString = await this._redis.hget(this._projectSampleKey(projectId, sampleId), "amr");
         return JSON.parse(amrString);
     }
+    async deleteSample(projectId: string, sampleHash: string, filename: string) {
+        const sampleId = this._sampleId(sampleHash, filename);
+        await this._redis.srem(this._projectSamplesKey(projectId), sampleId);
+        await this._redis.del(this._projectSampleKey(projectId, sampleId));
+    }
 
     async getSample(projectId: string, sampleHash: string, filename: string): Promise<{ sketch: Record<string, unknown>; amr: AMR }> {
         const sampleId = this._sampleId(sampleHash, filename);
