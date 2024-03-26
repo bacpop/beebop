@@ -13,6 +13,7 @@ declare module 'vue' {
     CytoscapeCanvas: typeof import('./src/components/ProjectView/CytoscapeCanvas.vue')['default']
     DataTable: typeof import('primevue/datatable')['default']
     Dialog: typeof import('primevue/dialog')['default']
+    ExternalLink: typeof import('./src/components/Common/ExternalLink.vue')['default']
     FileUpload: typeof import('primevue/fileupload')['default']
     Image: typeof import('primevue/image')['default']
     InlineMessage: typeof import('primevue/inlinemessage')['default']

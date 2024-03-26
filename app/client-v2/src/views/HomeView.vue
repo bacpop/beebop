@@ -27,7 +27,8 @@ const filters = ref({
 
 const newProjectName = ref("");
 const isEmptyOrSameName = (projectName: string) =>
-  !projectName || projects.value?.data.some((project) => project.name === projectName);
+  !projectName.trim() || projects.value?.data.some((project) => project.name === projectName);
+
 const addProject = async () => {
   if (isEmptyOrSameName(newProjectName.value)) {
     showErrorToast("Project name already exists or is empty");
