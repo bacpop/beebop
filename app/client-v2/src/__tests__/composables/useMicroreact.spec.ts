@@ -120,4 +120,17 @@ describe("useMicroreact", () => {
       expect(isFetchingMicroreactUrl.value).toBe(false);
     });
   });
+
+  describe("closeDialog", () => {
+    it("should set isMicroReactDialogVisible & hasMicroReactError to false", () => {
+      const { closeDialog, isMicroReactDialogVisible, hasMicroReactError } = useMicroreact();
+      isMicroReactDialogVisible.value = true;
+      hasMicroReactError.value = true;
+
+      closeDialog();
+
+      expect(isMicroReactDialogVisible.value).toBe(false);
+      expect(hasMicroReactError.value).toBe(false);
+    });
+  });
 });

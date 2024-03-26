@@ -10,7 +10,7 @@ const props = defineProps<{
   header: string;
   text: string;
 }>();
-defineEmits<{
+const emit = defineEmits<{
   closeDialog: [];
   saveMicroreactToken: [value: string];
 }>();
@@ -18,6 +18,10 @@ const userStore = useUserStore();
 const { microreactToken } = storeToRefs(userStore);
 const tokenInput = ref(microreactToken.value || "");
 
+const deleteToken = () => {
+  userStore.microreactToken = "";
+  emit("closeDialog");
+};
 watch(microreactToken, async (newVal) => {
   tokenInput.value = newVal || "";
 });
@@ -69,7 +73,7 @@ watch(microreactToken, async (newVal) => {
           v-if="userStore.microreactToken"
           severity="danger"
           label="Delete Token"
-          @click="userStore.microreactToken = ''"
+          @click="deleteToken"
         ></Button>
       </div>
       <div class="flex justify-content-end gap-2">

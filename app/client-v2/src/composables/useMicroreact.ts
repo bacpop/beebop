@@ -15,6 +15,10 @@ export const useMicroreact = () => {
   const isFetchingMicroreactUrl = ref(false);
   const { showErrorToast } = useToastService();
 
+  const closeDialog = () => {
+    isMicroReactDialogVisible.value = false;
+    hasMicroReactError.value = false;
+  };
   const onMicroReactVisit = async (cluster: string) => {
     if (!userStore.microreactToken) {
       isMicroReactDialogVisible.value = true;
@@ -60,6 +64,7 @@ export const useMicroreact = () => {
   };
 
   return {
+    closeDialog,
     onMicroReactVisit,
     saveMicroreactToken,
     isMicroReactDialogVisible,

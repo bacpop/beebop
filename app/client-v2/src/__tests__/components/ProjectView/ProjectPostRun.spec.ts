@@ -246,4 +246,37 @@ describe("RunProject", () => {
 
     expect(screen.queryAllByText(/started/i).length).toBe(MOCK_PROJECT_SAMPLES.length);
   });
+
+  it("should render disabled microreact setting button when microreact is not finished", async () => {
+    render(ProjectPostRun, {
+      global: {
+        plugins: [
+          PrimeVue,
+          createTestingPinia({
+            initialState: {
+              project: {
+                project: {
+                  samples: MOCK_PROJECT_SAMPLES,
+                  status: {
+                    assign: "finished",
+                    microreact: "started",
+                    network: "finished"
+                  }
+                }
+              }
+            }
+          })
+        ],
+        stubs: {
+          MicroReactTokenDialog: true,
+          MicroReactColumn: true
+        },
+        directives: {
+          tooltip: Tooltip
+        }
+      }
+    });
+
+    expect(screen.getByRole("button", { name: /microreact settings/i })).toBeDisabled();
+  });
 });

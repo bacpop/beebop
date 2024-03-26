@@ -9,6 +9,7 @@ const props = defineProps<{
 }>();
 const projectStore = useProjectStore();
 const {
+  closeDialog,
   hasMicroReactError,
   isMicroReactDialogVisible,
   onMicroReactVisit,
@@ -31,7 +32,7 @@ const onSaveMicroreactToken = async (cluster: string, token: string) => {
     :isFetchingMicroreactUrl="isFetchingMicroreactUrl"
     header="Submit Microreact Token"
     text="Please submit a Microreact token so a URL can be generated and you can be directed to Microreact"
-    @closeDialog="isMicroReactDialogVisible = false"
+    @closeDialog="closeDialog"
     @saveMicroreactToken="onSaveMicroreactToken(props.data.cluster, $event)"
   />
   <div v-if="projectStore.project.status?.microreact === 'finished'" class="flex gap-2">

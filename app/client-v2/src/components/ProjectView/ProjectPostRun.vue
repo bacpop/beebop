@@ -12,12 +12,19 @@ import MicroReactTokenDialog from "./MicroReactTokenDialog.vue";
 const projectStore = useProjectStore();
 const userStore = useUserStore();
 const hasVisitedNetworkTab = ref(false);
-const { hasMicroReactError, isMicroReactDialogVisible, saveMicroreactToken, isFetchingMicroreactUrl } = useMicroreact();
+const { closeDialog, hasMicroReactError, isMicroReactDialogVisible, saveMicroreactToken, isFetchingMicroreactUrl } =
+  useMicroreact();
 
 const tabChange = (num: number) => {
   if (num == 1 && !hasVisitedNetworkTab.value) {
     hasVisitedNetworkTab.value = true;
   }
+};
+const getMicroreactSettingsTooltip = () => {
+  if (projectStore.project.status?.microreact !== "finished") {
+    return "Microreact settings will become available when Microreact data has been generated";
+  }
+  return `${userStore.microreactToken ? "Update" : "Set"} Microreact token`;
 };
 </script>
 
@@ -29,7 +36,7 @@ const tabChange = (num: number) => {
     :isFetchingMicroreactUrl="isFetchingMicroreactUrl"
     :header="`${userStore.microreactToken ? 'Update or Delete' : 'Save'} Microreact Token`"
     :text="`${userStore.microreactToken ? 'Update token to change to utilize another Microreact account, or delete token if you no longer want to use Microreact.' : 'Please save Microreact token so Microreact graphs can be visited.'}`"
-    @closeDialog="isMicroReactDialogVisible = false"
+    @closeDialog="closeDialog"
     @saveMicroreactToken="saveMicroreactToken(projectStore.project.samples[0].cluster, $event)"
   />
   <div v-if="projectStore.analysisProgressPercentage !== 100">
@@ -64,15 +71,16 @@ const tabChange = (num: number) => {
             <template #header>
               <div class="flex align-items-center gap-2">
                 <span>Microreact</span>
-                <Button
-                  text
-                  icon="pi pi-cog"
-                  @click="isMicroReactDialogVisible = true"
-                  :disabled="projectStore.project.status?.microreact !== 'finished'"
-                  aria-label="Update Microreact token"
-                  v-tooltip.top="`${userStore.microreactToken ? 'Update' : 'Set'} Microreact token`"
-                  size="small"
-                />
+                <div v-tooltip.top="getMicroreactSettingsTooltip()">
+                  <Button
+                    text
+                    icon="pi pi-cog"
+                    @click="isMicroReactDialogVisible = true"
+                    :disabled="projectStore.project.status?.microreact !== 'finished'"
+                    aria-label="Microreact settings"
+                    size="small"
+                  />
+                </div>
               </div>
             </template>
             <template #body="{ data }">

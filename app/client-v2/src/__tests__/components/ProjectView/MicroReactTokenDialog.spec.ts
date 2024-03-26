@@ -107,13 +107,14 @@ describe("MicroReactTokenDialog", () => {
     expect(emitted("closeDialog").length).toBe(2);
   });
 
-  it("should set userStore token to empty string on delete button click", async () => {
-    renderComponent({});
+  it("should set userStore token to empty string & close dialog on delete button click", async () => {
+    const { emitted } = renderComponent({});
     const userStore = useUserStore();
     const deleteButton = await screen.findByRole("button", { name: /delete/i });
 
     await userEvent.click(deleteButton);
 
     expect(userStore.microreactToken).toBe("");
+    expect(emitted("closeDialog")).toBeDefined();
   });
 });
