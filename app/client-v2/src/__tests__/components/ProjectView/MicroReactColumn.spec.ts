@@ -1,4 +1,5 @@
 import MicroReactColumnVue from "@/components/ProjectView/MicroReactColumn.vue";
+import { MOCK_MICROREACT_DICT } from "@/mocks/mockObjects";
 import { useProjectStore } from "@/stores/projectStore";
 import { AnalysisType } from "@/types/projectTypes";
 import { createTestingPinia } from "@pinia/testing";
@@ -10,9 +11,9 @@ import Tooltip from "primevue/tooltip";
 const mockUseMicroreact = {
   hasMicroReactError: false,
   isMicroReactDialogVisible: false,
-  microReactTokenInput: "",
   onMicroReactVisit: vitest.fn(),
-  saveMicroreactToken: vitest.fn()
+  saveMicroreactToken: vitest.fn(),
+  isFetchingMicroreactUrl: false
 };
 vitest.mock("primevue/usetoast", () => ({
   useToast: vitest.fn()
@@ -103,15 +104,20 @@ describe("MicroReactColumn", () => {
       expect(screen.getByRole("dialog")).toHaveClass("border-red-500");
     });
 
-    it("should call correct  on save button click", async () => {
+    it("should call saveMicroReactToken and window.open on save button click ", async () => {
+      const mockOpen = vitest.fn();
+      Object.defineProperty(window, "open", { value: mockOpen });
+      mockUseMicroreact.saveMicroreactToken.mockResolvedValue(MOCK_MICROREACT_DICT.url);
       mockUseMicroreact.isMicroReactDialogVisible = true;
-      mockUseMicroreact.microReactTokenInput = "token";
+
       renderComponent("finished", "GPSC1");
 
-      const saveButton = await screen.findByRole("button", { name: /Save/ });
-      await userEvent.click(saveButton);
+      const tokenInput = await screen.findByPlaceholderText(/enter token/i);
+      await userEvent.type(tokenInput, "token");
+      await userEvent.click(screen.getByRole("button", { name: /Save/ }));
 
-      expect(mockUseMicroreact.saveMicroreactToken).toHaveBeenCalledWith("GPSC1");
+      expect(mockUseMicroreact.saveMicroreactToken).toHaveBeenCalledWith("GPSC1", "token");
+      expect(mockOpen).toHaveBeenCalledWith(MOCK_MICROREACT_DICT.url, "_blank");
     });
   });
 });

@@ -2,87 +2,55 @@
 import { useMicroreact } from "@/composables/useMicroreact";
 import { useProjectStore } from "@/stores/projectStore";
 import { type ProjectSample, AnalysisType } from "@/types/projectTypes";
-import Dialog from "primevue/dialog";
+import Toast from "primevue/toast";
+import MicroReactTokenDialog from "./MicroReactTokenDialog.vue";
 const props = defineProps<{
   data: ProjectSample;
 }>();
 const projectStore = useProjectStore();
 const {
+  closeDialog,
   hasMicroReactError,
   isMicroReactDialogVisible,
-  microReactTokenInput,
   onMicroReactVisit,
   saveMicroreactToken,
   isFetchingMicroreactUrl
 } = useMicroreact();
+
+const onSaveMicroreactToken = async (cluster: string, token: string) => {
+  const url = await saveMicroreactToken(cluster, token);
+  if (url) window.open(url, "_blank");
+};
 </script>
 
 <template>
-  <Dialog
+  <Toast />
+  <MicroReactTokenDialog
     v-if="props.data.cluster"
-    v-model:visible="isMicroReactDialogVisible"
-    modal
-    :draggable="false"
+    :isMicroReactDialogVisible="isMicroReactDialogVisible"
+    :hasMicroReactError="hasMicroReactError"
+    :isFetchingMicroreactUrl="isFetchingMicroreactUrl"
     header="Submit Microreact Token"
-    :style="{ width: '30rem' }"
-    :class="{ 'border-red-500': hasMicroReactError }"
-  >
-    <div class="flex flex-column gap-2 p-text-secondary block mb-4">
-      <div>Please submit a Microreact token so a URL can be generated and you can be directed to Microreact.</div>
-      <div>
-        You can find your token in your
-        <a
-          class="text-primary no-underline hover:underline font-semibold"
-          href="https://microreact.org/my-account/settings"
-          target="_blank"
-        >
-          Microreact Account Settings</a
-        >.
-      </div>
-    </div>
-    <div class="flex flex-column gap-2 mb-3">
-      <label for="microreact-token-input" class="font-medium">Token</label>
-      <InputText
-        v-model="microReactTokenInput"
-        id="microreact-token-input"
-        class="flex-auto"
-        autocomplete="off"
-        :invalid="hasMicroReactError"
-        aria-errormessage="token-error"
-        placeholder="Enter token..."
-        required
-      />
-      <small v-if="hasMicroReactError" id="token-error" class="text-red-500"
-        >An error occurred. Please ensure the token is correct and try again.</small
-      >
-    </div>
-    <div class="flex justify-content-end gap-2">
-      <Button type="button" label="Cancel" severity="secondary" @click="isMicroReactDialogVisible = false"></Button>
-      <Button
-        type="button"
-        label="Save & Visit"
-        :disabled="!microReactTokenInput"
-        :loading="isFetchingMicroreactUrl"
-        @click="saveMicroreactToken(props.data.cluster)"
-      ></Button>
-    </div>
-  </Dialog>
+    text="Please submit a Microreact token so a URL can be generated and you can be directed to Microreact"
+    @closeDialog="closeDialog"
+    @saveMicroreactToken="onSaveMicroreactToken(props.data.cluster, $event)"
+  />
   <div v-if="projectStore.project.status?.microreact === 'finished'" class="flex gap-2">
     <Button
       outlined
       icon="pi pi-download"
       aria-label="Download microreact zip"
-      @click="props.data.cluster && projectStore.downloadZip(AnalysisType.MICROREACT, props.data.cluster)"
-      :disabled="!props.data.cluster"
+      @click="data.cluster && projectStore.downloadZip(AnalysisType.MICROREACT, data.cluster)"
+      :disabled="!data.cluster"
       v-tooltip.top="'Download zip'"
     />
     <Button
       outlined
       icon="pi pi-arrow-right"
       label="Visit"
-      @click="props.data.cluster && onMicroReactVisit(props.data.cluster)"
+      @click="data.cluster && onMicroReactVisit(data.cluster)"
       :loading="isFetchingMicroreactUrl"
-      :disabled="!props.data.cluster"
+      :disabled="!data.cluster"
       v-tooltip.top="'Visit microreact'"
     />
   </div>
