@@ -72,6 +72,23 @@ describe("HomeView ", () => {
       expect(screen.queryByRole("link", { name: MOCK_PROJECTS[2].name })).not.toBeInTheDocument();
     });
   });
+  it("should show error message & not push new route when new project name is empty or exists", async () => {
+    renderComponent();
+    const push = vitest.spyOn(router, "push");
+
+    const createButton = screen.getByRole("button", { name: /new project/i });
+    const createInput = screen.getByPlaceholderText(/create/i);
+
+    await userEvent.click(createButton);
+
+    expect(screen.getByText(/error/i)).toBeVisible();
+
+    await userEvent.type(createInput, MOCK_PROJECTS[0].name);
+    await userEvent.click(createButton);
+
+    expect(push).not.toHaveBeenCalled();
+    expect(screen.getAllByText(/error/i).length).toBe(2);
+  });
   it("should push router when new project is created with name", async () => {
     const push = vitest.spyOn(router, "push");
     renderComponent();
@@ -125,6 +142,38 @@ describe("HomeView ", () => {
     await waitFor(() => {
       expect(screen.getByText(/Project renamed successfully/i)).toBeVisible();
     });
+  });
+
+  it("should show error message if renamed project name is empty or exists", async () => {
+    renderComponent();
+
+    const firstNameCell = await screen.findByRole("cell", {
+      name: MOCK_PROJECTS[0].name
+    });
+    const firstEditButton = screen.getAllByRole("button", { name: /edit/i })[0];
+
+    await userEvent.click(firstEditButton);
+
+    await userEvent.clear(within(firstNameCell).getByRole("textbox"));
+
+    await userEvent.click(
+      screen.getByRole("button", {
+        name: /save edit/i
+      })
+    );
+    expect(screen.getByText(/error/i)).toBeVisible();
+
+    await userEvent.click(firstEditButton);
+
+    await userEvent.clear(within(firstNameCell).getByRole("textbox"));
+    await userEvent.type(within(firstNameCell).getByRole("textbox"), MOCK_PROJECTS[1].name);
+
+    await userEvent.click(
+      screen.getByRole("button", {
+        name: /save edit/i
+      })
+    );
+    expect(screen.getAllByText(/error/i).length).toBe(2);
   });
   it("should show error message when project rename fails", async () => {
     server.use(http.post(`${projectIndexUri}/:id/rename`, () => HttpResponse.error()));
