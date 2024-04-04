@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { getApiUrl } from "@/config";
 import { useUserStore } from "@/stores/userStore";
+import { reactive } from "vue";
 import { useRouter } from "vue-router";
 const apiUrl = getApiUrl();
 const loginUrls = {
@@ -9,6 +10,10 @@ const loginUrls = {
 };
 const userStore = useUserStore();
 const router = useRouter();
+const clickedButton = reactive({
+  github: false,
+  google: false
+});
 
 if (userStore.isAuthenticated) {
   router.push("/");
@@ -27,10 +32,26 @@ if (userStore.isAuthenticated) {
           </div>
           <div class="flex flex-column gap-3">
             <a :href="loginUrls.google">
-              <Button label="Sign In With Google" icon="pi pi-google" size="large" class="w-full p-3" outlined></Button>
+              <Button
+                :loading="clickedButton.google"
+                @click="clickedButton.google = true"
+                label="Sign In With Google"
+                icon="pi pi-google"
+                size="large"
+                class="w-full p-3"
+                outlined
+              ></Button>
             </a>
             <a :href="loginUrls.github">
-              <Button label="Sign In With Github" icon="pi pi-github" size="large" class="w-full p-3" outlined></Button>
+              <Button
+                :loading="clickedButton.github"
+                @click="clickedButton.github = true"
+                label="Sign In With Github"
+                icon="pi pi-github"
+                size="large"
+                class="w-full p-3"
+                outlined
+              ></Button>
             </a>
           </div>
         </div>

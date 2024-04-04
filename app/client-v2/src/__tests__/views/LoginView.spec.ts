@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/vue";
 import { createTestingPinia } from "@pinia/testing";
 import { useRouter } from "vue-router";
 import type { Mock } from "vitest";
+import userEvent from "@testing-library/user-event";
 
 vitest.mock("vue-router", () => ({
   useRoute: vitest.fn(),
@@ -28,6 +29,27 @@ describe("Login view", () => {
       "href",
       expect.stringContaining("/login/google")
     );
+  });
+
+  it("should disable button & show loader on button clicks", async () => {
+    const { container } = render(LoginViewVue, {
+      global: {
+        plugins: [createTestingPinia()]
+      }
+    });
+
+    const gitHubButton = screen.getByRole("button", { name: /github/i });
+    const googleButton = screen.getByRole("button", { name: /google/i });
+
+    expect(gitHubButton).not.toHaveAttribute("disabled");
+    expect(googleButton).not.toHaveAttribute("disabled");
+
+    await userEvent.click(gitHubButton);
+    await userEvent.click(googleButton);
+
+    expect(gitHubButton).toHaveAttribute("disabled");
+    expect(googleButton).toHaveAttribute("disabled");
+    expect(container.querySelectorAll("svg.p-icon-spin").length).toBe(2);
   });
 
   it("should route to '/' when user is authenticated", async () => {
