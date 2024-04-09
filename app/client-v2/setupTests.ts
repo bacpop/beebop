@@ -7,6 +7,8 @@ beforeAll(() => {
 
 afterEach(() => {
   server.resetHandlers();
+  vi.restoreAllMocks();
+  // https://vitest.dev/api/vi.html#vi-spyon
 });
 
 afterAll(() => {
