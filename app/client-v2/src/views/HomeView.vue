@@ -3,15 +3,18 @@ import { getApiUrl } from "@/config";
 import { useFetch, useDateFormat } from "@vueuse/core";
 import { ref } from "vue";
 import InputGroup from "primevue/inputgroup";
+import ConfirmDialog from "primevue/confirmdialog";
 import { FilterMatchMode } from "primevue/api";
 import type { DataTableRowEditSaveEvent } from "primevue/datatable";
 import type { ProjectsResponse } from "@/types/projectTypes";
 import Toast from "primevue/toast";
 import { useRouter } from "vue-router";
 import { useToastService } from "@/composables/useToastService";
+import { useConfirm } from "primevue/useconfirm";
 
 const router = useRouter();
-const { showErrorToast, showSuccessToast } = useToastService();
+const { showErrorToast, showSuccessToast, showInfoToast } = useToastService();
+const confirm = useConfirm();
 
 const apiUrl = getApiUrl();
 const {
@@ -48,6 +51,38 @@ const addProject = async () => {
   router.push(`/project/${project.value?.data}`);
 };
 
+const deleteProject = async (index: number) => {
+  const projectId = projects.value?.data[index].id;
+
+  confirm.require({
+    message: `Are you sure you want to delete the project '${projects.value?.data[index].name}'?`,
+    header: projects.value?.data[index].name,
+    icon: "pi pi-exclamation-triangle",
+    rejectLabel: "Cancel",
+    acceptLabel: "Delete project",
+    rejectClass: "p-button-secondary p-button-outlined",
+    acceptClass: "p-button-danger",
+    reject: () => {
+      showInfoToast("Deletion cancelled");
+    },
+    accept: async () => {
+      const { error } = await useFetch(`${apiUrl}/project/${projectId}/delete`, {
+        credentials: "include"
+      })
+        .patch()
+        .json();
+
+      if (error.value) {
+        showErrorToast("Deletion failed due to an error");
+        return;
+      }
+
+      refetchProjects();
+      showSuccessToast("Project deleted successfully");
+    }
+  });
+};
+
 const editingRows = ref([]);
 const onRowEditSave = async (event: DataTableRowEditSaveEvent) => {
   let { newData, index } = event;
@@ -75,6 +110,7 @@ const onRowEditSave = async (event: DataTableRowEditSaveEvent) => {
 <template>
   <div class="home-page">
     <Toast />
+    <ConfirmDialog />
     <div class="flex flex-column gap-1 mb-3">
       <span class="text-3xl font-bold">Projects</span>
       <span class="text-color-secondary">View and navigate to existing projects or create new ones</span>
@@ -150,6 +186,20 @@ const onRowEditSave = async (event: DataTableRowEditSaveEvent) => {
         <Column field="timestamp" header="Date Created" sortable class="w-3">
           <template #body="{ data }">
             {{ useDateFormat(data.timestamp, "DD/MM/YYYY HH:mm").value }}
+          </template>
+        </Column>
+        <Column class="w-1">
+          <template #body="{ data, index }">
+            <Button
+              icon="pi pi-times"
+              @click="deleteProject(index)"
+              outlined
+              rounded
+              size="small"
+              severity="danger"
+              role="button"
+              :aria-label="`delete ${data.name}`"
+            />
           </template>
         </Column>
       </DataTable>

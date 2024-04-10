@@ -41,6 +41,7 @@ export interface Project {
     microreact: StatusTypes;
     network: StatusTypes;
   };
+  deleted_at?: string;
 }
 export type StatusTypes = "finished" | "failed" | "started" | "waiting" | "deferred" | "submitted";
 export const COMPLETE_STATUS_TYPES: StatusTypes[] = ["finished", "failed"];

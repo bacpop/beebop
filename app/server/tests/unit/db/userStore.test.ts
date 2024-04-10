@@ -6,11 +6,27 @@ describe("UserStore", () => {
         lpush: jest.fn(),
         sadd: jest.fn(),
         hget: jest.fn(),
-        hgetall: jest.fn(),
-        lrange: jest.fn().mockImplementation(() => ["123", "456"]),
-        hmget: jest.fn().mockImplementation((key: string, ...valueNames: string[]) => {
-            return valueNames.map((valueName) => valueName === "timestamp" ? 1687879913811 : `${valueName} for ${key}`);
+        hgetall: jest.fn().mockImplementation((key: string) => {
+            const projectInterfaceKeys = ["id", "name", "samples", "timestamp", "hash", "status"];
+            if (key === "beebop:project:789") {
+                projectInterfaceKeys.push("deleted_at");
+            }
+            const projectData = {};
+            projectInterfaceKeys.forEach((valueName) => {
+                switch (valueName) {
+                    case "timestamp":
+                        projectData[valueName] = 1687879913811;
+                        break;
+                    case "deleted_at":
+                        projectData[valueName] = 1687879913812;
+                        break;
+                    default:
+                        projectData[valueName] = `${valueName} for ${key}`;
+                }
+            });
+            return projectData;
         }),
+        lrange: jest.fn().mockImplementation(() => ["123", "456", "789"]),
         scard: jest.fn().mockImplementation(() => 2),
         smembers: jest.fn(),
         srem: jest.fn(),
@@ -67,7 +83,13 @@ describe("UserStore", () => {
         expect(mockRedis.hset.mock.calls[0][2]).toBe("testProjectHash");
     });
 
-    it("gets user projects", async () => {
+    it("deletes project", async () => {
+        const sut = new UserStore(mockRedis);
+        await sut.deleteProject(mockRequest, "testProjectId");
+        expect(mockRedis.hset).toHaveBeenCalledWith("beebop:project:testProjectId", "deleted_at", 1687879913811);
+    });
+
+    it("gets user projects, excluding deleted projects", async () => {
         const sut = new UserStore(mockRedis);
         const result = await sut.getUserProjects(mockRequest);
         expect(result).toStrictEqual([

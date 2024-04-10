@@ -81,6 +81,15 @@ export default (config) => {
       });
     },
 
+    async deleteProject(request, response, next) {
+      await asyncHandler(next, async () => {
+        const { projectId } = request.params;
+        const { redis } = request.app.locals;
+        await userStore(redis).deleteProject(request, projectId);
+        sendSuccess(response, null);
+      });
+    },
+
     async postAMR(request, response, next) {
       await asyncHandler(next, async () => {
         const amr = request.body as AMR;
@@ -90,6 +99,7 @@ export default (config) => {
         sendSuccess(response, null);
       });
     },
+
     async postSketch(request, response, next) {
       await asyncHandler(next, async () => {
         const { sketch, filename } = request.body as {
@@ -107,6 +117,7 @@ export default (config) => {
         sendSuccess(response, null);
       });
     },
+
     async deleteSample(request, response, next) {
       await asyncHandler(next, async () => {
         const { projectId, sampleHash } = request.params;

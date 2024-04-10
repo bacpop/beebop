@@ -39,6 +39,13 @@ export class UserStore {
         await this._setProjectName(projectId, newProjectName);
     }
 
+    async deleteProject(request, projectId: string) {
+        // TODO: verify that this project belongs to the request user:
+        // https://mrc-ide.myjetbrains.com/youtrack/issue/bacpop-96
+
+        await this._redis.hset(this._projectKey(projectId), "deleted_at", Date.now());
+    }
+
     async saveProjectHash(request, projectId: string, projectHash: string) {
         // TODO: verify that this project belongs to the request user:
         // https://mrc-ide.myjetbrains.com/youtrack/issue/bacpop-96
@@ -48,7 +55,7 @@ export class UserStore {
     async getProjectHash(request, projectId: string) {
          return await this._redis.hget(this._projectKey(projectId), "hash")
     }
-    
+
     async getBaseProjectInfo(projectId: string): Promise<BaseProjectInfo> {
         return await this._redis.hgetall(this._projectKey(projectId)) as unknown as BaseProjectInfo;
     }
@@ -61,15 +68,18 @@ export class UserStore {
 
         const result = [];
         await Promise.all(projectIds.map(async (projectId: string) => {
-            const values = await this._redis.hmget(this._projectKey(projectId), "name", "hash", "timestamp");
-            const samplesCount = await this.getProjectSampleCount(projectId);
-            result.push({
-                id: projectId,
-                name: values[0],
-                hash: values[1],
-                timestamp: parseInt(values[2]),
-                samplesCount
-            });
+            const projectData = await this._redis.hgetall(this._projectKey(projectId));
+            if (!projectData.deleted_at) {
+                const samplesCount = await this.getProjectSampleCount(projectId);
+
+                result.push({
+                    id: projectId,
+                    name: projectData.name,
+                    hash: projectData.hash,
+                    timestamp: parseInt(projectData.timestamp),
+                    samplesCount
+                });
+            }
         }));
 
         return result;
@@ -86,7 +96,7 @@ export class UserStore {
         await this._redis.sadd(this._projectSamplesKey(projectId), sampleId);
         await this._redis.hset(this._projectSampleKey(projectId, sampleId), "amr", JSON.stringify(amr));
     }
-    
+
     async getSketch(projectId: string, sampleHash: string, filename: string): Promise<Record<string, unknown>> {
         const sampleId = this._sampleId(sampleHash, filename);
         const sketchString = await this._redis.hget(this._projectSampleKey(projectId, sampleId), "sketch");

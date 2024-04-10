@@ -10,6 +10,7 @@ declare module 'vue' {
     AmrColumn: typeof import('./src/components/ProjectView/AmrColumn.vue')['default']
     Button: typeof import('primevue/button')['default']
     Column: typeof import('primevue/column')['default']
+    ConfirmDialog: typeof import('./src/components/Common/ConfirmDialog.vue')['default']
     CytoscapeCanvas: typeof import('./src/components/ProjectView/CytoscapeCanvas.vue')['default']
     DataTable: typeof import('primevue/datatable')['default']
     Dialog: typeof import('primevue/dialog')['default']

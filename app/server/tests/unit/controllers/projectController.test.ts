@@ -17,6 +17,7 @@ const mockUserStore = {
     getAMR: jest.fn().mockImplementation((projectId: string, sampleHash: string, fileName: string) =>
         `AMR for ${projectId}-${sampleHash}-${fileName}`),
     renameProject: jest.fn(),
+    deleteProject: jest.fn(),
     getBaseProjectInfo: jest.fn().mockImplementation(() => ({
         hash: "123",
         timestamp: 12321,
@@ -101,6 +102,26 @@ describe("projectController", () => {
             data: null
         });
     });
+
+    it("deletes project", async () => {
+        const req = {
+            app: mockApp,
+            params: {
+                projectId: "testProjectId"
+            }
+        };
+        const res = mockResponse();
+        await projectController(config).deleteProject(req, res, jest.fn());
+        expect(mockUserStoreConstructor).toHaveBeenCalledTimes(1);
+        expect(mockUserStoreConstructor.mock.calls[0][0]).toBe(mockRedis);
+        expect(mockUserStore.deleteProject).toHaveBeenCalledWith(req, "testProjectId");
+        expect(res.json).toHaveBeenCalledTimes(1);
+        expect(res.json.mock.calls[0][0]).toStrictEqual({
+            status: "success",
+            errors: [],
+            data: null
+        });
+    })
 
     it("gets projects for user", async () => {
         const req = {

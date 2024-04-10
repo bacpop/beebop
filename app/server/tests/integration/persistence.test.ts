@@ -79,7 +79,6 @@ describe("User persistence", () => {
         {
           id: "abcd",
           name: "test save 1",
-          hash: null,
           timestamp: 1689070004473,
           samplesCount: 1,
         },
@@ -118,7 +117,6 @@ describe("User persistence", () => {
         {
           id: "abcd",
           name: "new name",
-          hash: null,
           timestamp: 1689070004473,
           samplesCount: 1,
         },

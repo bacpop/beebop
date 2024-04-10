@@ -1,4 +1,5 @@
 import ToastService from "primevue/toastservice";
+import ConfirmationService from "primevue/confirmationservice";
 import PrimeVue from "primevue/config";
 import HomeViewVue from "@/views/HomeView.vue";
 import { render, screen, waitFor, within } from "@testing-library/vue";
@@ -23,7 +24,7 @@ const router = createRouter({
 const renderComponent = () => {
   render(HomeViewVue, {
     global: {
-      plugins: [router, PrimeVue, ToastService],
+      plugins: [router, PrimeVue, ToastService, ConfirmationService],
       directives: { ripple: Ripple }
     }
   });
@@ -196,6 +197,118 @@ describe("HomeView ", () => {
 
     await waitFor(() => {
       expect(screen.getByText(/Error renaming project/i)).toBeVisible();
+    });
+  });
+
+  describe("Deleting projects", () => {
+    describe("When the user confirms the deletion", () => {
+      it("should send a request to delete project", async () => {
+        const fetchSpy = vi.spyOn(window, "fetch");
+        renderComponent();
+
+        await screen.findByRole("cell", {
+          name: MOCK_PROJECTS[0].name
+        });
+
+        const firstDeleteButton = await screen.getByRole("button", {
+          name: new RegExp(`delete ${MOCK_PROJECTS[0].name}`, "i")
+        });
+        await userEvent.click(firstDeleteButton);
+
+        // Mock a different response to 'get' (and, later, assert that this different set of projects is listed) to verify that get is called a second time
+        server.use(
+          http.get(`${projectIndexUri}s`, () => {
+            return HttpResponse.json({ data: MOCK_PROJECTS.slice(1), errors: [], status: "success" });
+          })
+        );
+
+        await waitFor(() => {
+          expect(screen.getByText(/Are you sure you want to delete the project/i)).toBeVisible();
+        });
+
+        const confirmDeleteButton = await screen.getByRole("button", { name: "Delete project" });
+        await userEvent.click(confirmDeleteButton);
+
+        expect(fetchSpy).toHaveBeenCalledWith(
+          `${projectIndexUri}/${MOCK_PROJECTS[0].id}/delete`,
+          expect.objectContaining({ credentials: "include" })
+        );
+
+        await waitFor(() => {
+          expect(screen.getByText(/Project deleted successfully/i)).toBeVisible();
+          expect(screen.queryByText(MOCK_PROJECTS[0].name)).not.toBeInTheDocument();
+          expect(screen.getByText(MOCK_PROJECTS[1].name)).toBeVisible();
+          expect(screen.getByText(MOCK_PROJECTS[2].name)).toBeVisible();
+        });
+      });
+    });
+
+    describe("When the user cancels the deletion", () => {
+      it("doesn't delete the project", async () => {
+        const fetchSpy = vi.spyOn(window, "fetch");
+        renderComponent();
+
+        await screen.findByRole("cell", {
+          name: MOCK_PROJECTS[0].name
+        });
+
+        const firstDeleteButton = await screen.getByRole("button", {
+          name: new RegExp(`delete ${MOCK_PROJECTS[0].name}`, "i")
+        });
+        await userEvent.click(firstDeleteButton);
+
+        await waitFor(() => {
+          expect(screen.getByText(/Are you sure you want to delete the project/i)).toBeVisible();
+        });
+
+        const rejectDeleteButton = await screen.getByRole("button", { name: "Cancel" });
+        await userEvent.click(rejectDeleteButton);
+
+        expect(fetchSpy).not.toHaveBeenCalledWith(
+          `${projectIndexUri}/${MOCK_PROJECTS[0].id}/delete`,
+          expect.objectContaining({ credentials: "include" })
+        );
+
+        await waitFor(() => {
+          expect(screen.getByText(MOCK_PROJECTS[0].name)).toBeVisible();
+        });
+      });
+    });
+
+    it("should show error message when the deletion fails", async () => {
+      const fetchSpy = vi.spyOn(window, "fetch");
+      renderComponent();
+
+      server.use(
+        http.patch(`${projectIndexUri}/:id/delete`, () => {
+          return HttpResponse.error();
+        })
+      );
+
+      await screen.findByRole("cell", {
+        name: MOCK_PROJECTS[0].name
+      });
+
+      const firstDeleteButton = await screen.getByRole("button", {
+        name: new RegExp(`delete ${MOCK_PROJECTS[0].name}`, "i")
+      });
+      await userEvent.click(firstDeleteButton);
+
+      await waitFor(() => {
+        expect(screen.getByText(/Are you sure you want to delete the project/i)).toBeVisible();
+      });
+
+      const confirmDeleteButton = await screen.getByRole("button", { name: "Delete project" });
+      await userEvent.click(confirmDeleteButton);
+
+      expect(fetchSpy).toHaveBeenCalledWith(
+        `${projectIndexUri}/${MOCK_PROJECTS[0].id}/delete`,
+        expect.objectContaining({ credentials: "include" })
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText(/Deletion failed due to an error/i)).toBeVisible();
+      });
     });
   });
 });
