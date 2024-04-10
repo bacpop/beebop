@@ -142,9 +142,16 @@ npm run test:dev
 from `app/server`.
 
 ### End-to-end tests
-To run end-to-end test, the app must be started with `./scripts/run_test`. In a new terminal, these test can be launched with
+To run end-to-end test, the app must be started with `./scripts/run_test` from the root of the repo.
+
+You'll need to have the playwright dependencies installed. You can install them with
+```
+npx playwright install-deps
+```
+
+In a new terminal, these tests can be launched with
 ```
 npx playwright test
 ```
-from `app/client/`.
+from `app/client-v2/`.
 To close all components once ready, run `./scripts/stop_test` from root.
