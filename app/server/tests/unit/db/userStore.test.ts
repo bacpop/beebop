@@ -1,16 +1,15 @@
 import {UserStore} from "../../../src/db/userStore";
 
 describe("UserStore", () => {
-    const mockHGetAll = (key: string) => {
-        const valueNames = ["id", "name", "samples", "timestamp", "hash", "status", ...(key === "beebop:project:789" ? ["deleted_at"] : [])];
-        return valueNames.reduce((acc, v) => ({...acc, [v]: (v === "timestamp" || v === "deleted_at") ? 1687879913811 : `${v} for ${key}`}), {});
-    }
     const mockRedis = {
         hset: jest.fn(),
         lpush: jest.fn(),
         sadd: jest.fn(),
         hget: jest.fn(),
-        hgetall: jest.fn().mockImplementation((key: string) => mockHGetAll(key)),
+        hgetall: jest.fn().mockImplementation((key: string) => {
+            const valueNames = ["id", "name", "samples", "timestamp", "hash", "status", ...(key === "beebop:project:789" ? ["deleted_at"] : [])];
+            return valueNames.reduce((acc, v) => ({...acc, [v]: (v === "timestamp" || v === "deleted_at") ? 1687879913811 : `${v} for ${key}`}), {});
+        }),
         lrange: jest.fn().mockImplementation(() => ["123", "456", "789"]),
         scard: jest.fn().mockImplementation(() => 2),
         smembers: jest.fn(),

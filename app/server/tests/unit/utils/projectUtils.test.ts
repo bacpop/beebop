@@ -4,24 +4,7 @@ import { BeebopError } from "../../../src/errors/beebopError";
 
 describe("ProjectUtils", () => {
   describe("getResponseSamples", () => {
-    const mockRedis = {
-      hset: jest.fn(),
-      lpush: jest.fn(),
-      sadd: jest.fn(),
-      hget: jest.fn(),
-      hgetall: jest.fn(),
-      lrange: jest.fn().mockImplementation(() => ["123", "456"]),
-      hmget: jest
-        .fn()
-        .mockImplementation((key: string, ...valueNames: string[]) => {
-          return valueNames.map((valueName) =>
-            valueName === "timestamp"
-              ? 1687879913811
-              : `${valueName} for ${key}`
-          );
-        }),
-      scard: jest.fn().mockImplementation(() => 2),
-    } as any;
+    const mockRedis = {} as any;
 
     const mockUserStore = new UserStore(mockRedis);
     const projectId = "testProjectId";
