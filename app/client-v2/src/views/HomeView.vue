@@ -7,14 +7,16 @@ import ConfirmDialog from "primevue/confirmdialog";
 import { FilterMatchMode } from "primevue/api";
 import type { DataTableRowEditSaveEvent } from "primevue/datatable";
 import type { ProjectsResponse } from "@/types/projectTypes";
+import DeleteProjectButton from "@/components/HomeView/DeleteProjectButton.vue";
 import Toast from "primevue/toast";
 import { useRouter } from "vue-router";
 import { useToastService } from "@/composables/useToastService";
 import { useConfirm } from "primevue/useconfirm";
 
-const router = useRouter();
-const { showErrorToast, showSuccessToast, showInfoToast } = useToastService();
+
 const confirm = useConfirm();
+const router = useRouter();
+const { showErrorToast, showSuccessToast } = useToastService();
 
 const apiUrl = getApiUrl();
 const {
@@ -49,38 +51,6 @@ const addProject = async () => {
     return;
   }
   router.push(`/project/${project.value?.data}`);
-};
-
-const deleteProject = async (index: number) => {
-  const projectId = projects.value?.data[index].id;
-
-  confirm.require({
-    message: `Are you sure you want to delete the project '${projects.value?.data[index].name}'?`,
-    header: projects.value?.data[index].name,
-    icon: "pi pi-exclamation-triangle",
-    rejectLabel: "Cancel",
-    acceptLabel: "Delete project",
-    rejectClass: "p-button-secondary p-button-outlined",
-    acceptClass: "p-button-danger",
-    reject: () => {
-      showInfoToast("Deletion cancelled");
-    },
-    accept: async () => {
-      const { error } = await useFetch(`${apiUrl}/project/${projectId}/delete`, {
-        credentials: "include"
-      })
-        .patch()
-        .json();
-
-      if (error.value) {
-        showErrorToast("Deletion failed due to an error");
-        return;
-      }
-
-      refetchProjects();
-      showSuccessToast("Project deleted successfully");
-    }
-  });
 };
 
 const editingRows = ref([]);
@@ -189,16 +159,12 @@ const onRowEditSave = async (event: DataTableRowEditSaveEvent) => {
           </template>
         </Column>
         <Column class="w-1">
-          <template #body="{ data, index }">
-            <Button
-              icon="pi pi-times"
-              @click="deleteProject(index)"
-              outlined
-              rounded
-              size="small"
-              severity="danger"
-              role="button"
-              :aria-label="`delete ${data.name}`"
+          <template #body="{ data }">
+            <DeleteProjectButton
+              :project-id="data.id"
+              :project-name="data.name"
+              :confirm="confirm"
+              @deleted="refetchProjects"
             />
           </template>
         </Column>

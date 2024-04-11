@@ -27,8 +27,8 @@ export class UserStore {
 
     private async _validProject(projectId: string): Promise<Record<string, unknown>> {
         const project = await this._redis.hgetall(this._projectKey(projectId));
-        if (project.deleted_at) {
-            throw new Error(`This project has been deleted.`);
+        if (project.deletedAt) {
+            throw new Error("This project has been deleted.");
         } else {
             return project; // To save looking it up a second time
         }
@@ -53,7 +53,7 @@ export class UserStore {
         // TODO: verify that this project belongs to the request user:
         // https://mrc-ide.myjetbrains.com/youtrack/issue/bacpop-96
         await this._validProject(projectId);
-        await this._redis.hset(this._projectKey(projectId), "deleted_at", Date.now());
+        await this._redis.hset(this._projectKey(projectId), "deletedAt", Date.now());
     }
 
     async saveProjectHash(request, projectId: string, projectHash: string) {
@@ -82,7 +82,7 @@ export class UserStore {
         const result = [];
         await Promise.all(projectIds.map(async (projectId: string) => {
             const projectData = await this._redis.hgetall(this._projectKey(projectId));
-            if (!projectData.deleted_at) {
+            if (!projectData.deletedAt) {
                 const samplesCount = await this.getProjectSampleCount(projectId);
 
                 result.push({

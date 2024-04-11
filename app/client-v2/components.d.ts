@@ -13,6 +13,7 @@ declare module 'vue' {
     ConfirmDialog: typeof import('./src/components/Common/ConfirmDialog.vue')['default']
     CytoscapeCanvas: typeof import('./src/components/ProjectView/CytoscapeCanvas.vue')['default']
     DataTable: typeof import('primevue/datatable')['default']
+    DeleteProjectButton: typeof import('./src/components/HomeView/DeleteProjectButton.vue')['default']
     Dialog: typeof import('primevue/dialog')['default']
     ExternalLink: typeof import('./src/components/Common/ExternalLink.vue')['default']
     FileUpload: typeof import('primevue/fileupload')['default']
