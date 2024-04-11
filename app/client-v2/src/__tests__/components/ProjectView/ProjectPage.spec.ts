@@ -34,6 +34,7 @@ describe("Project Page", () => {
     const testPinia = createTestingPinia();
     const store = useProjectStore(testPinia);
     store.project.name = "Test Project";
+    store.project.samples = [];
     // @ts-expect-error: getter is read-only
     store.startedRun = true;
     const wrapper = mount(AsyncProjectPage, {
@@ -57,6 +58,7 @@ describe("Project Page", () => {
     const testPinia = createTestingPinia();
     const store = useProjectStore(testPinia);
     store.project.name = "Test Project";
+    store.project.samples = [];
     // @ts-expect-error: getter is read-only
     store.startedRun = false;
     const wrapper = mount(AsyncProjectPage, {

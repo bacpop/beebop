@@ -1,6 +1,7 @@
 import {
   get,
   post,
+  deleteRequest,
   flushRedis,
   getRedisHash,
   getRedisList,
@@ -120,6 +121,46 @@ describe("User persistence", () => {
           timestamp: 1689070004473,
           samplesCount: 1,
         },
+      ],
+      errors: [],
+    });
+  });
+
+  it("tags a project as having been deleted", async () => {
+    const now = Date.now();
+
+    const projectId = "test-delete-project-id";
+    await saveRedisList("beebop:userprojects:mock:1234", [projectId, "other-project-id"]);
+    await saveRedisHash(`beebop:project:${projectId}`, {
+      name: "project to delete",
+      timestamp: now.toString(),
+    });
+    await saveRedisHash("beebop:project:other-project-id", {
+      name: "other project",
+      timestamp: now.toString(),
+    });
+
+    const projectDetailsBeforeDelete = await getRedisHash(`beebop:project:${projectId}`);
+    expect(projectDetailsBeforeDelete.deletedAt).toBeUndefined();
+
+    const deleteResponse = await deleteRequest(`project/${projectId}/delete`, connectionCookie);
+    expect(deleteResponse.status).toBe(200);
+
+    const projectDetailsAfterDelete = await getRedisHash(`beebop:project:${projectId}`);
+    const deletedAt = parseInt(projectDetailsAfterDelete.deletedAt);
+    expectTimestampIsSoonAfter(deletedAt, now);
+
+    const getProjectsResponse = await get("projects", connectionCookie);
+    expect(getProjectsResponse.status).toBe(200);
+    expect(getProjectsResponse.data).toStrictEqual({
+      status: "success",
+      data: [
+        {
+          id: "other-project-id",
+          name: "other project",
+          timestamp: now,
+          samplesCount: 0,
+        }
       ],
       errors: [],
     });
