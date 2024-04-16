@@ -163,6 +163,8 @@ const onRowEditSave = async (event: DataTableRowEditSaveEvent) => {
               :project-id="data.id"
               :project-name="data.name"
               :confirm="confirm"
+              :showErrorToast="showErrorToast"
+              :showSuccessToast="showSuccessToast"
               @deleted="refetchProjects"
             />
           </template>

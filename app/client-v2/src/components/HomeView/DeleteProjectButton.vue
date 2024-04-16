@@ -1,20 +1,18 @@
 <script setup lang="ts">
 import { getApiUrl } from "@/config";
 import { useFetch } from "@vueuse/core";
-import Toast from "primevue/toast";
-import { useToastService } from "@/composables/useToastService";
-import type { ConfirmationOptions } from 'primevue/confirmationoptions';
+import type { ConfirmationOptions } from "primevue/confirmationoptions";
 
-const { showErrorToast, showSuccessToast } = useToastService();
-
-const props = defineProps<({
-  projectId: string,
-  projectName: string,
+const props = defineProps<{
+  projectId: string;
+  projectName: string;
   confirm: {
     require: (option: ConfirmationOptions) => void;
     close: () => void;
   };
-})>();
+  showErrorToast: (msg: string) => void;
+  showSuccessToast: (msg: string) => void;
+}>();
 
 const emit = defineEmits<{
   deleted: [];
@@ -28,7 +26,7 @@ const doDeleteProject = async () => {
   })
     .delete()
     .json();
-}
+};
 
 const confirmDeleteProject = async () => {
   props.confirm.require({
@@ -43,10 +41,10 @@ const confirmDeleteProject = async () => {
       const { error } = await doDeleteProject();
 
       if (error.value) {
-        showErrorToast("Deletion failed due to an error");
+        props.showErrorToast("Deletion failed due to an error");
       } else {
-        emit('deleted');
-        showSuccessToast("Project deleted");
+        emit("deleted");
+        props.showSuccessToast("Project deleted");
       }
     }
   });
@@ -54,7 +52,6 @@ const confirmDeleteProject = async () => {
 </script>
 
 <template>
-  <Toast />
   <Button
     icon="pi pi-times"
     @click="confirmDeleteProject"
@@ -66,4 +63,3 @@ const confirmDeleteProject = async () => {
     :aria-label="`delete ${props.projectName}`"
   />
 </template>
-

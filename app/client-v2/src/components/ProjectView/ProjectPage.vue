@@ -22,7 +22,10 @@ onUnmounted(() => {
 
 <template>
   <Toast />
-  <div v-if="projectFetchError && (projectFetchError as any).response?.status === 404" class="text-red-500 text-center font-semibold flex align-items-center">
+  <div
+    v-if="projectFetchError && (projectFetchError as any).response?.status === 404"
+    class="text-red-500 text-center font-semibold flex align-items-center"
+  >
     Project not found. This project does not exist or has been deleted.
   </div>
   <div v-else-if="projectFetchError" class="text-red-500 text-center font-semibold flex align-items-center">
