@@ -3,12 +3,17 @@ import { useProjectStore } from "@/stores/projectStore";
 import { useRoute } from "vue-router";
 import ProjectPostRun from "@/components/ProjectView/ProjectPostRun.vue";
 import ProjectPreRun from "@/components/ProjectView/ProjectPreRun.vue";
-import { onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import Toast from "primevue/toast";
 
 const route = useRoute();
 const store = useProjectStore();
-const projectFetchError = await store.getProject(route.params.id as string);
+
+let projectFetchError = ref<any>(null);
+
+onMounted(async () => {
+  projectFetchError.value = await store.getProject(route.params.id as string);
+});
 
 onUnmounted(() => {
   store.stopPollingStatus();
@@ -17,7 +22,10 @@ onUnmounted(() => {
 
 <template>
   <Toast />
-  <div v-if="projectFetchError" class="text-red-500 text-center font-semibold flex align-items-center">
+  <div v-if="projectFetchError && (projectFetchError as any).response?.status === 404" class="text-red-500 text-center font-semibold flex align-items-center">
+    Project not found. This project does not exist or has been deleted.
+  </div>
+  <div v-else-if="projectFetchError" class="text-red-500 text-center font-semibold flex align-items-center">
     Error fetching project... Refresh or try again later
   </div>
   <div v-else class="single-project-card">
@@ -36,7 +44,7 @@ onUnmounted(() => {
     </div>
     <div class="surface-card p-4 shadow-2 border-round">
       <ProjectPostRun v-if="store.startedRun" />
-      <ProjectPreRun v-else />
+      <ProjectPreRun v-if="store.project && store.project.samples" />
     </div>
   </div>
 </template>

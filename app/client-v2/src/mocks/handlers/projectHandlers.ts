@@ -32,7 +32,7 @@ export const projectHandlers: HttpHandler[] = [
   ),
   http.get(`${projectIndexUri}/:id`, () => HttpResponse.json({ data: MOCK_PROJECT, errors: [], status: "success" })),
   http.post(`${projectIndexUri}/:id/rename`, () => HttpResponse.json({ data: null, errors: [], status: "success" })),
-  http.patch(`${projectIndexUri}/:id/delete`, () => HttpResponse.json({ data: null, errors: [], status: "success" })),
+  http.delete(`${projectIndexUri}/:id/delete`, () => HttpResponse.json({ data: null, errors: [], status: "success" })),
   http.post(assignResultUri, () =>
     HttpResponse.json({
       data: {

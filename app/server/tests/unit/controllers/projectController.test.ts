@@ -66,7 +66,7 @@ describe("projectController", () => {
             app: mockApp
         };
         const res = mockResponse();
-        await projectController(config).newProject(req, res);
+        await projectController(config).newProject(req, res, jest.fn());
         expect(mockUserStoreConstructor).toHaveBeenCalledTimes(1);
         expect(mockUserStoreConstructor.mock.calls[0][0]).toBe(mockRedis);
         expect(mockUserStore.saveNewProject).toHaveBeenCalledTimes(1);
@@ -91,7 +91,7 @@ describe("projectController", () => {
             app: mockApp
         };
         const res = mockResponse();
-        await projectController(config).renameProject(req, res);
+        await projectController(config).renameProject(req, res, jest.fn());
         expect(mockUserStoreConstructor).toHaveBeenCalledTimes(1);
         expect(mockUserStoreConstructor.mock.calls[0][0]).toBe(mockRedis);
         expect(mockUserStore.renameProject).toHaveBeenCalledWith(req, "testProjectId", "new name");

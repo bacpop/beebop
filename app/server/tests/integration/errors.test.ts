@@ -1,4 +1,4 @@
-import {flushRedis, get, post, saveRedisHash, saveRedisSet} from "./utils";
+import {flushRedis, get, post, saveRedisHash, saveRedisSet, saveRedisList } from "./utils";
 import {uid} from "uid";
 import {setTimeout} from "timers/promises";
 import {testSample} from "./testSample";
@@ -20,7 +20,7 @@ describe("Error handling", () => {
     const newProject = async () => {
         const newProjectRes = await post("project", {name: "test project"}, connectionCookie);
         expect(newProjectRes.status).toBe(200);
-       return newProjectRes.data.data;
+        return newProjectRes.data.data;
     };
 
     const runProjectToCompletion = async () => {
@@ -80,7 +80,7 @@ describe("Error handling", () => {
         ]);
     });
 
-    it("Returns expect response for malformed API error", async () => {
+    it("Returns expected response for malformed API error", async () => {
         // Send rubbish to poppunk request - API responds with a 400 response, but unfortunately an HTML one -
         // should be logged as a 400 response and error message returned indicating malformed response
         const junk = {
@@ -129,7 +129,7 @@ describe("Error handling", () => {
         await saveRedisHash(redisKey, {"amr": "{{{{nope"});
 
         const projectRes = await get(`project/${projectId}`, connectionCookie);
-                
+
         expect(projectRes.status).toBe(500);
         expect(projectRes.data.data).toBe(null);
         expect(projectRes.data.errors.length).toBe(1);
@@ -137,4 +137,45 @@ describe("Error handling", () => {
         expect(error.error).toBe("Unexpected error");
         expect(error.detail).toMatch(/An unexpected error occurred. Please contact support and quote error code [a-z0-9]{11}/);
     });
+
+    describe("validation errors for operations relating to deleted projects", () => {
+        const projectId = "deleted-project-id";
+
+        beforeEach(async () => {
+            const now = Date.now();
+            await saveRedisList("beebop:userprojects:mock:1234", [projectId]);
+            await saveRedisHash(`beebop:project:${projectId}`, {
+                name: "project to delete",
+                timestamp: now.toString(),
+                deletedAt: (now + 1).toString(),
+            });
+        })
+
+        it("returns expected response for project not found", async () => {
+            const projectRes = await get(`project/${projectId}`, connectionCookie);
+            expect(projectRes.status).toBe(404);
+            expect(projectRes.data.status).toBe("failure");
+            expect(projectRes.data.data).toBe(null);
+            expect(projectRes.data.errors).toStrictEqual([
+                {
+                    error: "Deleted project",
+                    detail: "This project has been deleted"
+                }
+            ]);
+        });
+
+        it("returns 'not found' response for renaming a deleted project", async () => {
+            const response = await post(`project/${projectId}/rename`, { name: "new name" }, connectionCookie);
+            expect(response.status).toBe(404);
+            expect(response.data.status).toBe("failure");
+            expect(response.data.data).toBe(null);
+            expect(response.data.errors).toStrictEqual([
+                {
+                    error: "Deleted project",
+                    detail: "This project has been deleted"
+                }
+            ]);
+        });
+    });
 });
+

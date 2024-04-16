@@ -13,7 +13,6 @@ import { useRouter } from "vue-router";
 import { useToastService } from "@/composables/useToastService";
 import { useConfirm } from "primevue/useconfirm";
 
-
 const confirm = useConfirm();
 const router = useRouter();
 const { showErrorToast, showSuccessToast } = useToastService();
@@ -72,15 +71,15 @@ const onRowEditSave = async (event: DataTableRowEditSaveEvent) => {
     return;
   }
 
-  showSuccessToast("Project renamed successfully");
+  showSuccessToast("Project renamed");
   refetchProjects();
 };
 </script>
 
 <template>
   <div class="home-page">
-    <Toast />
     <ConfirmDialog />
+    <Toast />
     <div class="flex flex-column gap-1 mb-3">
       <span class="text-3xl font-bold">Projects</span>
       <span class="text-color-secondary">View and navigate to existing projects or create new ones</span>

@@ -141,7 +141,7 @@ describe("HomeView ", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText(/Project renamed successfully/i)).toBeVisible();
+      expect(screen.getByText(/Project renamed/i)).toBeVisible();
     });
   });
 
@@ -235,7 +235,7 @@ describe("HomeView ", () => {
         );
 
         await waitFor(() => {
-          expect(screen.getByText(/Project deleted successfully/i)).toBeVisible();
+          expect(screen.getByText(/Project deleted/i)).toBeVisible();
           expect(screen.queryByText(MOCK_PROJECTS[0].name)).not.toBeInTheDocument();
           expect(screen.getByText(MOCK_PROJECTS[1].name)).toBeVisible();
           expect(screen.getByText(MOCK_PROJECTS[2].name)).toBeVisible();
@@ -280,7 +280,7 @@ describe("HomeView ", () => {
       renderComponent();
 
       server.use(
-        http.patch(`${projectIndexUri}/:id/delete`, () => {
+        http.delete(`${projectIndexUri}/:id/delete`, () => {
           return HttpResponse.error();
         })
       );

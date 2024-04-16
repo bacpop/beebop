@@ -7,8 +7,8 @@ describe("UserStore", () => {
         sadd: jest.fn(),
         hget: jest.fn(),
         hgetall: jest.fn().mockImplementation((key: string) => {
-            const valueNames = ["id", "name", "samples", "timestamp", "hash", "status", ...(key === "beebop:project:789" ? ["deleted_at"] : [])];
-            return valueNames.reduce((acc, v) => ({...acc, [v]: (v === "timestamp" || v === "deleted_at") ? 1687879913811 : `${v} for ${key}`}), {});
+            const valueNames = ["id", "name", "samples", "timestamp", "hash", "status", ...(key === "beebop:project:789" ? ["deletedAt"] : [])];
+            return valueNames.reduce((acc, v) => ({...acc, [v]: (v === "timestamp" || v === "deletedAt") ? 1687879913811 : `${v} for ${key}`}), {});
         }),
         lrange: jest.fn().mockImplementation(() => ["123", "456", "789"]),
         scard: jest.fn().mockImplementation(() => 2),
@@ -60,7 +60,7 @@ describe("UserStore", () => {
 
     it("does not rename a project if it has been deleted", async () => {
         const sut = new UserStore(mockRedis);
-        await expect(sut.renameProject(mockRequest, "789", "new proj name")).rejects.toThrow("This project has been deleted.");
+        await expect(sut.renameProject(mockRequest, "789", "new proj name")).rejects.toThrow("This project has been deleted");
         expect(mockRedis.hset).not.toHaveBeenCalled();
     });
 
@@ -75,14 +75,14 @@ describe("UserStore", () => {
 
     it("does not save project hash if it has been deleted", async () => {
         const sut = new UserStore(mockRedis);
-        await expect(sut.saveProjectHash(mockRequest, "789", "testProjectHash")).rejects.toThrow("This project has been deleted.");
+        await expect(sut.saveProjectHash(mockRequest, "789", "testProjectHash")).rejects.toThrow("This project has been deleted");
         expect(mockRedis.hset).not.toHaveBeenCalled();
     });
 
     it("deletes project", async () => {
         const sut = new UserStore(mockRedis);
         await sut.deleteProject(mockRequest, "testProjectId");
-        expect(mockRedis.hset).toHaveBeenCalledWith("beebop:project:testProjectId", "deleted_at", 1687879913811);
+        expect(mockRedis.hset).toHaveBeenCalledWith("beebop:project:testProjectId", "deletedAt", 1687879913811);
     });
 
     it("gets user projects, excluding deleted projects", async () => {
@@ -132,7 +132,7 @@ describe("UserStore", () => {
 
     it("does not save amr data if the project has been deleted", async () => {
         const sut = new UserStore(mockRedis);
-        await expect(sut.saveAMR("789", "1234", {filename: "testfile.fa", Penicillin: 0.1} as any)).rejects.toThrow("This project has been deleted.");
+        await expect(sut.saveAMR("789", "1234", {filename: "testfile.fa", Penicillin: 0.1} as any)).rejects.toThrow("This project has been deleted");
         expect(mockRedis.sadd).not.toHaveBeenCalled();
         expect(mockRedis.hset).not.toHaveBeenCalled();
     });
@@ -159,7 +159,7 @@ describe("UserStore", () => {
 
     it("does not get amr data if the project has been deleted", async () => {
         const sut = new UserStore(mockRedis);
-        await expect(sut.getAMR("789", "1234", "test.fa")).rejects.toThrow("This project has been deleted.");
+        await expect(sut.getAMR("789", "1234", "test.fa")).rejects.toThrow("This project has been deleted");
         expect(mockRedis.hget).not.toHaveBeenCalled();
     });
 
@@ -176,7 +176,7 @@ describe("UserStore", () => {
 
     it("does not get project samples if the project has been deleted", async () => {
         const sut = new UserStore(mockRedis);
-        await expect(sut.getProjectSplitSampleIds("789")).rejects.toThrow("This project has been deleted.");
+        await expect(sut.getProjectSplitSampleIds("789")).rejects.toThrow("This project has been deleted");
         expect(mockRedis.smembers).not.toHaveBeenCalled();
     });
 
@@ -201,7 +201,7 @@ describe("UserStore", () => {
 
     it("does not get base project info if the project has been deleted", async () => {
         const sut = new UserStore(mockRedis);
-        await expect(sut.getBaseProjectInfo("789")).rejects.toThrow("This project has been deleted.");
+        await expect(sut.getBaseProjectInfo("789")).rejects.toThrow("This project has been deleted");
     });
 
     it("saves sketch data", async () => {
@@ -229,7 +229,7 @@ describe("UserStore", () => {
 
     it("does not save sketch data if the project has been deleted", async () => {
         const sut = new UserStore(mockRedis);
-        await expect(sut.saveSketch("789", "1234", "test.fa", { key: "value" })).rejects.toThrow("This project has been deleted.");
+        await expect(sut.saveSketch("789", "1234", "test.fa", { key: "value" })).rejects.toThrow("This project has been deleted");
         expect(mockRedis.sadd).not.toHaveBeenCalled();
         expect(mockRedis.hset).not.toHaveBeenCalled();
     });
@@ -256,7 +256,7 @@ describe("UserStore", () => {
 
     it("does not get sketch data if the project has been deleted", async () => {
         const sut = new UserStore(mockRedis);
-        await expect(sut.getSketch("789", "1234", "test.fa")).rejects.toThrow("This project has been deleted.");
+        await expect(sut.getSketch("789", "1234", "test.fa")).rejects.toThrow("This project has been deleted");
         expect(mockRedis.hget).not.toHaveBeenCalled();
     });
 
@@ -288,7 +288,7 @@ describe("UserStore", () => {
 
     it("does not get sample data if the project has been deleted", async () => {
         const sut = new UserStore(mockRedis);
-        await expect(sut.getSample("789", "1234", "test.fa")).rejects.toThrow("This project has been deleted.");
+        await expect(sut.getSample("789", "1234", "test.fa")).rejects.toThrow("This project has been deleted");
     });
 
     it("deletes sample ", async () => {

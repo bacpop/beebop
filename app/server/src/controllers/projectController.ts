@@ -2,10 +2,11 @@ import { ProjectUtils } from "./../utils/projectUtils";
 import { ProjectNameRequest } from "../types/requestTypes";
 import { userStore } from "../db/userStore";
 import { handleAPIError, sendSuccess } from "../utils";
+import { handleError } from "../errors/handleError";
 import asyncHandler from "../errors/asyncHandler";
 import axios, { AxiosResponse } from "axios";
 import { APIResponse, APIProjectResponse } from "../types/responseTypes";
-import { AMR } from "../types/models";
+import { AMR, BaseProjectInfo } from "../types/models";
 
 export default (config) => {
   return {
@@ -17,19 +18,23 @@ export default (config) => {
       });
     },
 
-    async newProject(request, response) {
-      const name = (request.body as ProjectNameRequest).name;
-      const { redis } = request.app.locals;
-      const projectId = await userStore(redis).saveNewProject(request, name);
-      sendSuccess(response, projectId);
+    async newProject(request, response, next) {
+      await asyncHandler(next, async () => {
+        const name = (request.body as ProjectNameRequest).name;
+        const { redis } = request.app.locals;
+        const projectId = await userStore(redis).saveNewProject(request, name);
+        sendSuccess(response, projectId);
+      })
     },
 
-    async renameProject(request, response) {
-      const { projectId } = request.params;
-      const name = (request.body as ProjectNameRequest).name;
-      const { redis } = request.app.locals;
-      await userStore(redis).renameProject(request, projectId, name);
-      sendSuccess(response, null);
+    async renameProject(request, response, next) {
+      await asyncHandler(next, async () => {
+        const { projectId } = request.params;
+        const name = (request.body as ProjectNameRequest).name;
+        const { redis } = request.app.locals;
+        await userStore(redis).renameProject(request, projectId, name);
+        sendSuccess(response, null);
+      })
     },
 
     async getProject(request, response, next) {
@@ -37,7 +42,13 @@ export default (config) => {
         const { projectId } = request.params;
         const { redis } = request.app.locals;
         const store = userStore(redis);
-        const baseProjectInfo = await store.getBaseProjectInfo(projectId);
+        let baseProjectInfo: BaseProjectInfo;
+        try {
+          baseProjectInfo = await store.getBaseProjectInfo(projectId);
+        } catch (error) {
+          return handleError(error, request, response, null);
+        }
+
         const projectSplitSampleIds = await store.getProjectSplitSampleIds(
           projectId
         );

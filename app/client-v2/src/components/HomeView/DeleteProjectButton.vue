@@ -5,7 +5,7 @@ import Toast from "primevue/toast";
 import { useToastService } from "@/composables/useToastService";
 import type { ConfirmationOptions } from 'primevue/confirmationoptions';
 
-const { showErrorToast, showSuccessToast, showInfoToast } = useToastService();
+const { showErrorToast, showSuccessToast } = useToastService();
 
 const props = defineProps<({
   projectId: string,
@@ -26,7 +26,7 @@ const doDeleteProject = async () => {
   return await useFetch(`${apiUrl}/project/${props.projectId}/delete`, {
     credentials: "include"
   })
-    .patch()
+    .delete()
     .json();
 }
 
@@ -39,9 +39,6 @@ const confirmDeleteProject = async () => {
     acceptLabel: "Delete project",
     rejectClass: "p-button-secondary p-button-outlined",
     acceptClass: "p-button-danger",
-    reject: () => {
-      showInfoToast("Deletion cancelled");
-    },
     accept: async () => {
       const { error } = await doDeleteProject();
 
@@ -49,7 +46,7 @@ const confirmDeleteProject = async () => {
         showErrorToast("Deletion failed due to an error");
       } else {
         emit('deleted');
-        showSuccessToast("Project deleted successfully");
+        showSuccessToast("Project deleted");
       }
     }
   });
