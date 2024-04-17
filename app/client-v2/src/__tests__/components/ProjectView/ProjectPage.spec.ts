@@ -34,7 +34,6 @@ describe("Project Page", () => {
     const testPinia = createTestingPinia();
     const store = useProjectStore(testPinia);
     store.project.name = "Test Project";
-    store.project.samples = [];
     // @ts-expect-error: getter is read-only
     store.startedRun = true;
     const wrapper = mount(AsyncProjectPage, {
@@ -58,7 +57,6 @@ describe("Project Page", () => {
     const testPinia = createTestingPinia();
     const store = useProjectStore(testPinia);
     store.project.name = "Test Project";
-    store.project.samples = [];
     // @ts-expect-error: getter is read-only
     store.startedRun = false;
     const wrapper = mount(AsyncProjectPage, {
@@ -93,7 +91,7 @@ describe("Project Page", () => {
 
     expect(wrapper.text()).toContain("Error fetching project");
   });
-  it("should render 'not found' content if the project has been deleted", async () => {
+  it("should render 'not found' content if getProject throws an error and the project has been deleted", async () => {
     const testPinia = createTestingPinia();
 
     const store = useProjectStore(testPinia);

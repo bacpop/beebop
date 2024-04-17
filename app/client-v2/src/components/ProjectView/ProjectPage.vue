@@ -3,17 +3,13 @@ import { useProjectStore } from "@/stores/projectStore";
 import { useRoute } from "vue-router";
 import ProjectPostRun from "@/components/ProjectView/ProjectPostRun.vue";
 import ProjectPreRun from "@/components/ProjectView/ProjectPreRun.vue";
-import { ref, onMounted, onUnmounted } from "vue";
+import { onUnmounted } from "vue";
 import Toast from "primevue/toast";
 
 const route = useRoute();
 const store = useProjectStore();
 
-let projectFetchError = ref<any>(null);
-
-onMounted(async () => {
-  projectFetchError.value = await store.getProject(route.params.id as string);
-});
+const projectFetchError = await store.getProject(route.params.id as string);
 
 onUnmounted(() => {
   store.stopPollingStatus();
@@ -47,7 +43,7 @@ onUnmounted(() => {
     </div>
     <div class="surface-card p-4 shadow-2 border-round">
       <ProjectPostRun v-if="store.startedRun" />
-      <ProjectPreRun v-if="store.project && store.project.samples" />
+      <ProjectPreRun v-else />
     </div>
   </div>
 </template>
