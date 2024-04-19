@@ -1,7 +1,9 @@
 import ToastService from "primevue/toastservice";
+import ConfirmationService from "primevue/confirmationservice";
 import PrimeVue from "primevue/config";
 import HomeViewVue from "@/views/HomeView.vue";
 import { render, screen, waitFor, within } from "@testing-library/vue";
+import { mount } from "@vue/test-utils";
 import Ripple from "primevue/ripple";
 import { MOCK_PROJECTS } from "@/mocks/mockObjects";
 import { createRouter, createWebHistory } from "vue-router";
@@ -20,10 +22,11 @@ const router = createRouter({
     { path: "/project/:id", component: defineComponent({ template: `<div>project page</div>` }) }
   ]
 });
+
 const renderComponent = () => {
   render(HomeViewVue, {
     global: {
-      plugins: [router, PrimeVue, ToastService],
+      plugins: [router, PrimeVue, ToastService, ConfirmationService],
       directives: { ripple: Ripple }
     }
   });
@@ -38,6 +41,7 @@ describe("HomeView ", () => {
         expect(screen.getByRole("link", { name: project.name })).toHaveAttribute("href", `/project/${project.id}`);
         expect(screen.getByText(project.samplesCount)).toBeVisible();
         expect(screen.getByText(useDateFormat(project.timestamp, "DD/MM/YYYY HH:mm").value)).toBeVisible();
+        expect(screen.getByRole("button", { name: new RegExp(`delete ${project.name}`, "i") })).toBeVisible();
       });
     });
   });
@@ -140,7 +144,7 @@ describe("HomeView ", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText(/Project renamed successfully/i)).toBeVisible();
+      expect(screen.getByText(/Project renamed/i)).toBeVisible();
     });
   });
 
@@ -196,6 +200,124 @@ describe("HomeView ", () => {
 
     await waitFor(() => {
       expect(screen.getByText(/Error renaming project/i)).toBeVisible();
+    });
+  });
+
+  // Since the Confirm and Toast components live in the HomeView component, we have to check their behavior in the context of the HomeView.
+  // Those components have to live in the HomeView component because we need to have only one of them in the page.
+  describe("Deleting projects", () => {
+    it("should reload the list of projects after DeleteProjectButton is clicked and deletion is confirmed", async () => {
+      const fetchSpy = vi.spyOn(window, "fetch");
+      renderComponent();
+
+      await waitFor(() => {
+        MOCK_PROJECTS.forEach((project) => {
+          expect(screen.getByRole("link", { name: project.name })).toHaveAttribute("href", `/project/${project.id}`);
+        });
+      });
+
+      const firstDeleteButton = await screen.getByRole("button", {
+        name: new RegExp(`delete ${MOCK_PROJECTS[0].name}`, "i")
+      });
+      await userEvent.click(firstDeleteButton);
+
+      // Mock a different response to 'get' (and, later, assert that this different set of projects is listed) to verify that get is called a second time
+      server.use(
+        http.get(`${projectIndexUri}s`, () => {
+          return HttpResponse.json({ data: MOCK_PROJECTS.slice(1), errors: [], status: "success" });
+        })
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText(/Are you sure you want to delete the project/i)).toBeVisible();
+      });
+
+      const confirmDeleteButton = await screen.getByRole("button", { name: "Delete project" });
+      await userEvent.click(confirmDeleteButton);
+
+      await waitFor(() => {
+        MOCK_PROJECTS.slice(1).forEach((project) => {
+          expect(screen.getByText(project.name)).toBeVisible();
+        });
+        expect(screen.queryByText(MOCK_PROJECTS[0].name)).not.toBeInTheDocument();
+      });
+
+      expect(fetchSpy).toHaveBeenCalledWith(
+        `${projectIndexUri}/${MOCK_PROJECTS[0].id}/delete`,
+        expect.objectContaining({ credentials: "include" })
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText(/Project deleted/i)).toBeVisible();
+      });
+    });
+
+    it("should show error message when the deletion fails", async () => {
+      const fetchSpy = vi.spyOn(window, "fetch");
+      renderComponent();
+
+      server.use(
+        http.delete(`${projectIndexUri}/:id/delete`, () => {
+          return HttpResponse.error();
+        })
+      );
+
+      await screen.findByRole("cell", {
+        name: MOCK_PROJECTS[0].name
+      });
+
+      const firstDeleteButton = await screen.getByRole("button", {
+        name: new RegExp(`delete ${MOCK_PROJECTS[0].name}`, "i")
+      });
+      await userEvent.click(firstDeleteButton);
+
+      await waitFor(() => {
+        expect(screen.getByText(/Are you sure you want to delete the project/i)).toBeVisible();
+      });
+
+      const confirmDeleteButton = await screen.getByRole("button", { name: "Delete project" });
+      await userEvent.click(confirmDeleteButton);
+
+      expect(fetchSpy).toHaveBeenCalledWith(
+        `${projectIndexUri}/${MOCK_PROJECTS[0].id}/delete`,
+        expect.objectContaining({ credentials: "include" })
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText(/Deletion failed due to an error/i)).toBeVisible();
+      });
+    });
+
+    describe("When the user cancels the deletion", () => {
+      it("doesn't delete the project", async () => {
+        const fetchSpy = vi.spyOn(window, "fetch");
+        renderComponent();
+
+        await screen.findByRole("cell", {
+          name: MOCK_PROJECTS[0].name
+        });
+
+        const firstDeleteButton = await screen.getByRole("button", {
+          name: new RegExp(`delete ${MOCK_PROJECTS[0].name}`, "i")
+        });
+        await userEvent.click(firstDeleteButton);
+
+        await waitFor(() => {
+          expect(screen.getByText(/Are you sure you want to delete the project/i)).toBeVisible();
+        });
+
+        const rejectDeleteButton = await screen.getByRole("button", { name: "Cancel" });
+        await userEvent.click(rejectDeleteButton);
+
+        expect(fetchSpy).not.toHaveBeenCalledWith(
+          `${projectIndexUri}/${MOCK_PROJECTS[0].id}/delete`,
+          expect.objectContaining({ credentials: "include" })
+        );
+
+        await waitFor(() => {
+          expect(screen.getByText(MOCK_PROJECTS[0].name)).toBeVisible();
+        });
+      });
     });
   });
 });

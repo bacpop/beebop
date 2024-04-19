@@ -1,6 +1,7 @@
 import Redis from "ioredis";
 import {uid} from "uid";
 import {AMR, BaseProjectInfo, SplitSampleId} from "../types/models";
+import {BeebopError} from "../errors/beebopError";
 
 const BEEBOP_PREFIX = "beebop:";
 
@@ -21,7 +22,17 @@ export class UserStore {
     private _sampleId = (sampleHash: string, fileName: string) => `${sampleHash}:${fileName}`;
 
     private async _setProjectName (projectId: string, newProjectName: string) {
+        await this._validateProject(projectId);
         await this._redis.hset(this._projectKey(projectId), "name", newProjectName);
+    }
+
+    private async _validateProject(projectId: string): Promise<Record<string, unknown>> {
+        const project = await this._redis.hgetall(this._projectKey(projectId));
+        if (project.deletedAt) {
+            throw new BeebopError('Deleted project', 'This project has been deleted', 404);
+        } else {
+            return project;
+        }
     }
 
     async saveNewProject(request, projectName: string) {
@@ -36,21 +47,32 @@ export class UserStore {
     async renameProject(request, projectId: string, newProjectName: string) {
         // TODO: verify that this project belongs to the request user:
         // https://mrc-ide.myjetbrains.com/youtrack/issue/bacpop-96
+        await this._validateProject(projectId);
         await this._setProjectName(projectId, newProjectName);
+    }
+
+    async deleteProject(request, projectId: string) {
+        // TODO: verify that this project belongs to the request user:
+        // https://mrc-ide.myjetbrains.com/youtrack/issue/bacpop-96
+        await this._validateProject(projectId);
+        await this._redis.hset(this._projectKey(projectId), "deletedAt", Date.now());
     }
 
     async saveProjectHash(request, projectId: string, projectHash: string) {
         // TODO: verify that this project belongs to the request user:
         // https://mrc-ide.myjetbrains.com/youtrack/issue/bacpop-96
+        await this._validateProject(projectId);
         await this._redis.hset(this._projectKey(projectId), "hash", projectHash);
     }
 
     async getProjectHash(request, projectId: string) {
-         return await this._redis.hget(this._projectKey(projectId), "hash")
+        await this._validateProject(projectId);
+        return await this._redis.hget(this._projectKey(projectId), "hash")
     }
-    
+
     async getBaseProjectInfo(projectId: string): Promise<BaseProjectInfo> {
-        return await this._redis.hgetall(this._projectKey(projectId)) as unknown as BaseProjectInfo;
+        const project = await this._validateProject(projectId);
+        return project as unknown as BaseProjectInfo;
     }
 
     async getUserProjects(request) {
@@ -61,64 +83,75 @@ export class UserStore {
 
         const result = [];
         await Promise.all(projectIds.map(async (projectId: string) => {
-            const values = await this._redis.hmget(this._projectKey(projectId), "name", "hash", "timestamp");
-            const samplesCount = await this.getProjectSampleCount(projectId);
-            result.push({
-                id: projectId,
-                name: values[0],
-                hash: values[1],
-                timestamp: parseInt(values[2]),
-                samplesCount
-            });
+            const projectData = await this._redis.hgetall(this._projectKey(projectId));
+            if (!projectData.deletedAt) {
+                const samplesCount = await this.getProjectSampleCount(projectId);
+
+                result.push({
+                    id: projectId,
+                    name: projectData.name,
+                    hash: projectData.hash,
+                    timestamp: parseInt(projectData.timestamp),
+                    samplesCount
+                });
+            }
         }));
 
         return result;
     }
 
     async saveSketch(projectId: string, sampleHash: string, filename: string, sketch: Record<string,unknown> ) {
+        await this._validateProject(projectId);
         const sampleId = this._sampleId(sampleHash, filename);
         await this._redis.sadd(this._projectSamplesKey(projectId), sampleId);
         await this._redis.hset(this._projectSampleKey(projectId, sampleId), "sketch", JSON.stringify(sketch));
     }
 
     async saveAMR(projectId: string, sampleHash: string, amr: AMR) {
+        await this._validateProject(projectId);
         const sampleId = this._sampleId(sampleHash, amr.filename);
         await this._redis.sadd(this._projectSamplesKey(projectId), sampleId);
         await this._redis.hset(this._projectSampleKey(projectId, sampleId), "amr", JSON.stringify(amr));
     }
-    
+
     async getSketch(projectId: string, sampleHash: string, filename: string): Promise<Record<string, unknown>> {
+        await this._validateProject(projectId);
         const sampleId = this._sampleId(sampleHash, filename);
         const sketchString = await this._redis.hget(this._projectSampleKey(projectId, sampleId), "sketch");
         return JSON.parse(sketchString);
     }
 
     async getAMR(projectId: string, sampleHash: string, fileName: string): Promise<AMR> {
+        await this._validateProject(projectId);
         const sampleId = this._sampleId(sampleHash, fileName);
         const amrString = await this._redis.hget(this._projectSampleKey(projectId, sampleId), "amr");
         return JSON.parse(amrString);
     }
     async deleteSample(projectId: string, sampleHash: string, filename: string) {
+        await this._validateProject(projectId);
         const sampleId = this._sampleId(sampleHash, filename);
         await this._redis.srem(this._projectSamplesKey(projectId), sampleId);
         await this._redis.del(this._projectSampleKey(projectId, sampleId));
     }
 
     async getSample(projectId: string, sampleHash: string, filename: string): Promise<{ sketch: Record<string, unknown>; amr: AMR }> {
+        await this._validateProject(projectId);
         const sampleId = this._sampleId(sampleHash, filename);
         const samples = await this._redis.hgetall(this._projectSampleKey(projectId, sampleId));
         return { sketch: JSON.parse(samples.sketch), amr: JSON.parse(samples.amr) };
     }
 
     async getProjectSplitSampleIds(projectId: string): Promise<SplitSampleId[]> {
-         const sampleIds = await this._redis.smembers(this._projectSamplesKey(projectId));
-         return sampleIds.map((sampleId) => {
-             const [hash, filename] = sampleId.split(":");
-             return {hash, filename};
-         });
+        await this._validateProject(projectId);
+        const sampleIds = await this._redis.smembers(this._projectSamplesKey(projectId));
+        return sampleIds.map((sampleId) => {
+            const [hash, filename] = sampleId.split(":");
+            return {hash, filename};
+        });
     }
 
     async getProjectSampleCount(projectId: string) {
+        await this._validateProject(projectId);
         return this._redis.scard(this._projectSamplesKey(projectId));
     }
 }

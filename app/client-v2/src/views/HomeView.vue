@@ -3,13 +3,17 @@ import { getApiUrl } from "@/config";
 import { useFetch, useDateFormat } from "@vueuse/core";
 import { ref } from "vue";
 import InputGroup from "primevue/inputgroup";
+import ConfirmDialog from "primevue/confirmdialog";
 import { FilterMatchMode } from "primevue/api";
 import type { DataTableRowEditSaveEvent } from "primevue/datatable";
 import type { ProjectsResponse } from "@/types/projectTypes";
+import DeleteProjectButton from "@/components/HomeView/DeleteProjectButton.vue";
 import Toast from "primevue/toast";
 import { useRouter } from "vue-router";
 import { useToastService } from "@/composables/useToastService";
+import { useConfirm } from "primevue/useconfirm";
 
+const confirm = useConfirm();
 const router = useRouter();
 const { showErrorToast, showSuccessToast } = useToastService();
 
@@ -67,13 +71,14 @@ const onRowEditSave = async (event: DataTableRowEditSaveEvent) => {
     return;
   }
 
-  showSuccessToast("Project renamed successfully");
+  showSuccessToast("Project renamed");
   refetchProjects();
 };
 </script>
 
 <template>
   <div class="home-page">
+    <ConfirmDialog />
     <Toast />
     <div class="flex flex-column gap-1 mb-3">
       <span class="text-3xl font-bold">Projects</span>
@@ -150,6 +155,18 @@ const onRowEditSave = async (event: DataTableRowEditSaveEvent) => {
         <Column field="timestamp" header="Date Created" sortable class="w-3">
           <template #body="{ data }">
             {{ useDateFormat(data.timestamp, "DD/MM/YYYY HH:mm").value }}
+          </template>
+        </Column>
+        <Column class="w-1">
+          <template #body="{ data }">
+            <DeleteProjectButton
+              :project-id="data.id"
+              :project-name="data.name"
+              :confirm="confirm"
+              :showErrorToast="showErrorToast"
+              :showSuccessToast="showSuccessToast"
+              @deleted="refetchProjects"
+            />
           </template>
         </Column>
       </DataTable>

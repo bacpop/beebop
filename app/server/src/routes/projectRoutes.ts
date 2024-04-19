@@ -15,6 +15,9 @@ export default {
         app.get('/project/:projectId',
             authCheck,
             controller.getProject);
+        app.delete('/project/:projectId/delete',
+            authCheck,
+            controller.deleteProject);
         app.post('/project/:projectId/amr/:sampleHash',
             authCheck,
             controller.postAMR);

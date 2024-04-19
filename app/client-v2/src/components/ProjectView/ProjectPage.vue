@@ -8,6 +8,7 @@ import Toast from "primevue/toast";
 
 const route = useRoute();
 const store = useProjectStore();
+
 const projectFetchError = await store.getProject(route.params.id as string);
 
 onUnmounted(() => {
@@ -17,7 +18,13 @@ onUnmounted(() => {
 
 <template>
   <Toast />
-  <div v-if="projectFetchError" class="text-red-500 text-center font-semibold flex align-items-center">
+  <div
+    v-if="projectFetchError && (projectFetchError as any).response?.status === 404"
+    class="text-red-500 text-center font-semibold flex align-items-center"
+  >
+    Project not found. This project does not exist or has been deleted.
+  </div>
+  <div v-else-if="projectFetchError" class="text-red-500 text-center font-semibold flex align-items-center">
     Error fetching project... Refresh or try again later
   </div>
   <div v-else class="single-project-card">

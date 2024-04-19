@@ -24,6 +24,10 @@ export const post = (url: string, payload: any, cookie: string) => {
     return axios.post(fullUrl(url), payload, {headers: headers(cookie), validateStatus });
 };
 
+export const deleteRequest = (url: string, cookie: string) => {
+    return axios.delete(fullUrl(url), {headers: headers(cookie), validateStatus });
+}
+
 export const withRedis = async (func: (redis: Redis) => any) => {
     const redis = new Redis(redisUrl);
     try {

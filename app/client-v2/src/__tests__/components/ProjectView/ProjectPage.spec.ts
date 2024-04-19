@@ -76,7 +76,7 @@ describe("Project Page", () => {
   it("should render error content if getProject throws an error", async () => {
     const testPinia = createTestingPinia();
     const store = useProjectStore(testPinia);
-    store.getProject = vitest.fn().mockResolvedValue("error fetching projects");
+    store.getProject = vitest.fn().mockResolvedValue("arbitrary error value");
     const wrapper = mount(AsyncProjectPage, {
       global: {
         plugins: [PrimeVue, testPinia],
@@ -90,6 +90,26 @@ describe("Project Page", () => {
     await flushPromises();
 
     expect(wrapper.text()).toContain("Error fetching project");
+  });
+  it("should render 'not found' content if getProject throws an error and the project has been deleted", async () => {
+    const testPinia = createTestingPinia();
+
+    const store = useProjectStore(testPinia);
+    store.getProject = vitest.fn().mockResolvedValue({ response: { status: 404 } });
+
+    const wrapper = mount(AsyncProjectPage, {
+      global: {
+        plugins: [PrimeVue, testPinia],
+        stubs: {
+          ProjectPostRun: stubRunProject,
+          ProjectPreRun: stubNotRunProject
+        }
+      }
+    });
+
+    await flushPromises();
+
+    expect(wrapper.text()).toContain("Project not found");
   });
   it("should render completed tag if project is complete", async () => {
     const testPinia = createTestingPinia();
