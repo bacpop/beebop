@@ -28,41 +28,27 @@ describe("AMR column", () => {
 
     expect(screen.getByText(/pending/)).toBeVisible();
   });
-  it("should display correct tag severity for items", () => {
-    const { container } = renderComponent(MOCK_PROJECT_SAMPLES[0].amr);
 
-    const success = container.querySelectorAll(".p-tag-success");
-    const warning = container.querySelectorAll(".p-tag-warning");
-    const danger = container.querySelectorAll(".p-tag-danger");
-
-    expect(success.length).toBe(2);
-    expect(warning.length).toBe(2);
-    expect(danger.length).toBe(1);
-  });
-  it("should display correct % and species abbreviation", async () => {
+  it("should display correct species abbreviation", async () => {
     renderComponent(MOCK_PROJECT_SAMPLES[0].amr);
 
     expect(screen.getByText(/P/)).toBeVisible();
-    expect(screen.getByText(/24/)).toBeVisible();
 
     expect(screen.getByText(/C/)).toBeVisible();
-    expect(screen.getByText(/99/)).toBeVisible();
 
     expect(screen.getByText(/E/)).toBeVisible();
-    expect(screen.getByText(/44/)).toBeVisible();
 
     expect(screen.getByText(/Te/)).toBeVisible();
-    expect(screen.getByText(/8/)).toBeVisible();
 
     expect(screen.getByText(/Sxt/)).toBeVisible();
-    expect(screen.getByText(/33/)).toBeVisible();
   });
-  it("should show tooltip with full name on hover", async () => {
+
+  it("should show tooltip with full name on hover & probability word", async () => {
     const { container } = renderComponent(MOCK_PROJECT_SAMPLES[0].amr);
 
-    const success = container.querySelectorAll(".p-tag-danger")[0];
+    const success = container.querySelectorAll(".p-tag")[0];
     await userEvent.hover(success);
 
-    await screen.findByText(/Chloramphenicol/);
+    await screen.findByText(/Penicillin: Unlikely/i);
   });
 });
