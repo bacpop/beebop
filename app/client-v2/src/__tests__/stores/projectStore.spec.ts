@@ -315,6 +315,18 @@ describe("projectStore", () => {
 
       expect(store.getClusterAssignResult).toHaveBeenCalled();
     });
+    it("should stop polling & set all status to failed if assign status is failed", async () => {
+      const store = useProjectStore();
+      store.stopPollingStatus = vitest.fn();
+      server.use(
+        http.post(statusUri, () => HttpResponse.json({ data: { assign: "failed" }, errors: [], status: "success" }))
+      );
+
+      await store.getAnalysisStatus();
+
+      expect(store.project.status).toEqual({ assign: "failed", microreact: "failed", network: "failed" });
+      expect(store.stopPollingStatus).toHaveBeenCalled();
+    });
     it("should set state, call buildRunAnalysisPostBody and pollAnalysisStatus when runAnalysis is called", async () => {
       const store = useProjectStore();
       store.buildRunAnalysisPostBody = vitest.fn().mockReturnValue({ projectHash: "test-hash" });

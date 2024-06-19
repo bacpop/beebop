@@ -10,7 +10,8 @@ import {
   WorkerResponseValueTypes,
   AnalysisType,
   type AssignCluster,
-  type ClusterInfo
+  type ClusterInfo,
+  type StatusTypes
 } from "@/types/projectTypes";
 import { mande } from "mande";
 import { defineStore } from "pinia";
@@ -133,16 +134,7 @@ export const useProjectStore = defineStore("project", {
       let stopPolling = false;
       try {
         const statusRes = await baseApi.post<ApiResponse<AnalysisStatus>>("/status", { hash: this.project.hash });
-        this.project.status = statusRes.data;
-        if (statusRes.data.assign === "finished" && prevClusterAssign !== "finished") {
-          await this.getClusterAssignResult();
-        }
-        if (
-          COMPLETE_STATUS_TYPES.includes(statusRes.data.network) &&
-          COMPLETE_STATUS_TYPES.includes(statusRes.data.microreact)
-        ) {
-          stopPolling = true;
-        }
+        stopPolling = await this.processStatusAndGetPolling(statusRes.data, prevClusterAssign);
       } catch (error) {
         this.toast.showErrorToast("Error fetching analysis status. Try refreshing the page, or create a new project.");
         console.error(error);
@@ -152,6 +144,19 @@ export const useProjectStore = defineStore("project", {
           this.stopPollingStatus();
         }
       }
+    },
+    async processStatusAndGetPolling(data: AnalysisStatus, prevClusterAssign: StatusTypes | undefined) {
+      const { assign, network, microreact } = data;
+      this.project.status = data;
+
+      if (assign === "finished" && prevClusterAssign !== "finished") {
+        await this.getClusterAssignResult();
+      }
+      if (assign === "failed") {
+        this.project.status = { assign: "failed", network: "failed", microreact: "failed" };
+      }
+
+      return assign === "failed" || [network, microreact].every((status) => COMPLETE_STATUS_TYPES.includes(status));
     },
 
     async getClusterAssignResult() {

@@ -44,7 +44,7 @@ export interface Project {
   deletedAt?: string;
 }
 export type StatusTypes = "finished" | "failed" | "started" | "waiting" | "deferred" | "submitted";
-export const COMPLETE_STATUS_TYPES: StatusTypes[] = ["finished", "failed"];
+export const COMPLETE_STATUS_TYPES: StatusTypes[] = ["finished", "failed"] as const;
 
 export interface AnalysisStatus {
   assign: StatusTypes;
