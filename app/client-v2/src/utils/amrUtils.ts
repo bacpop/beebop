@@ -58,5 +58,5 @@ export const generateRGBForAmr = (value: number, antibiotic: keyof typeof antibi
   const r = Math.round(target0.r - probability * (target0.r - target1.r));
   const g = Math.round(target0.g - probability * (target0.g - target1.g));
   const b = Math.round(target0.b - probability * (target0.b - target1.b));
-  return `rgb(${r},${g},${b},0.8)`;
+  return `rgb(${r},${g},${b})`;
 };

@@ -32,11 +32,11 @@ describe("amrUtils", () => {
   });
   describe("generateRGBForAmr", () => {
     it.each([
-      [0.95, "Penicillin", "rgb(66,152,141,0.8)"],
-      [0.5, "Chloramphenicol", "rgb(95,177,166,0.8)"],
-      [0.1, "Erythromycin", "rgb(151,225,215,0.8)"],
-      [0.6, "Tetracycline", "rgb(28,119,107,0.8)"],
-      [0.7, "Cotrim", "rgb(87,170,159,0.8)"]
+      [0.95, "Penicillin", "rgb(66,152,141)"],
+      [0.5, "Chloramphenicol", "rgb(95,177,166)"],
+      [0.1, "Erythromycin", "rgb(151,225,215)"],
+      [0.6, "Tetracycline", "rgb(28,119,107)"],
+      [0.7, "Cotrim", "rgb(87,170,159)"]
     ])("should return the correct RGB value for given value %d and antibiotic %s", (value, antibiotic, expected) => {
       expect(generateRGBForAmr(value, antibiotic as any)).toBe(expected);
     });
