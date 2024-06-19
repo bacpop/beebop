@@ -30,7 +30,13 @@ const antibioticProbabilityMap = {
   ]
 };
 
-export const convertProbabilityToWord = (probability: number, antibiotic: keyof typeof antibioticProbabilityMap) => {
+export const convertProbabilityToWord = (
+  probability: number | string,
+  antibiotic: keyof typeof antibioticProbabilityMap
+) => {
+  if (typeof probability === "string") {
+    return "Unsure";
+  }
   // Translate probabilities into words, depending on antibiotic
   const thresholds = antibioticProbabilityMap[antibiotic];
   for (const { threshold, word } of thresholds) {

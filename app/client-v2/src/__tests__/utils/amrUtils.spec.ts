@@ -25,7 +25,8 @@ describe("amrUtils", () => {
       [0.7, "Cotrim", "Highly likely"],
       [0.5, "Cotrim", "Very good chance"],
       [0.2, "Cotrim", "Probably not"],
-      [0.05, "Cotrim", "Unlikely"]
+      [0.05, "Cotrim", "Unlikely"],
+      ["not a number", "Cotrim", "Unsure"]
     ])("should return the correct word for given probability %d for %s", (probability, antibiotic, expected) => {
       expect(convertProbabilityToWord(probability, antibiotic as any)).toBe(expected);
     });
