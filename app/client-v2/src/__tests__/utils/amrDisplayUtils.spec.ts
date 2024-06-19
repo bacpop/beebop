@@ -1,4 +1,4 @@
-import { convertProbabilityToWord, generateRGBForAmr } from "@/utils/amrUtils";
+import { convertProbabilityToWord, getProbabilityColor } from "@/utils/amrDisplayUtils";
 
 describe("amrUtils", () => {
   describe("convertProbabilityToWord", () => {
@@ -25,20 +25,24 @@ describe("amrUtils", () => {
       [0.7, "Cotrim", "Highly likely"],
       [0.5, "Cotrim", "Very good chance"],
       [0.2, "Cotrim", "Probably not"],
-      [0.05, "Cotrim", "Unlikely"]
+      [0.05, "Cotrim", "Unlikely"],
+      ["not a number", "Cotrim", "Unsure"]
     ])("should return the correct word for given probability %d for %s", (probability, antibiotic, expected) => {
       expect(convertProbabilityToWord(probability, antibiotic as any)).toBe(expected);
     });
   });
-  describe("generateRGBForAmr", () => {
+  describe("getProbabilityColor", () => {
     it.each([
-      [0.95, "Penicillin", "rgb(66,152,141)"],
-      [0.5, "Chloramphenicol", "rgb(95,177,166)"],
-      [0.1, "Erythromycin", "rgb(151,225,215)"],
-      [0.6, "Tetracycline", "rgb(28,119,107)"],
-      [0.7, "Cotrim", "rgb(87,170,159)"]
-    ])("should return the correct RGB value for given value %d and antibiotic %s", (value, antibiotic, expected) => {
-      expect(generateRGBForAmr(value, antibiotic as any)).toBe(expected);
+      ["Almost certainly", "rgb(129, 142, 161, 1)"],
+      ["Highly likely", "rgb(129, 142, 161, 0.9)"],
+      ["Very good chance", "rgb(129, 142, 161, 0.8)"],
+      ["Probably", "rgb(129, 142, 161, 0.7)"],
+      ["Unsure", "rgb(129, 142, 161, 0.5)"],
+      ["Probably not", "rgb(129, 142, 161, 0.3)"],
+      ["Unlikely", "rgb(129, 142, 161, 0.2)"],
+      ["Highly unlikely", "rgb(129, 142, 161, 0.1)"]
+    ])("for given probability word %s return rgb value: %s", (probabilityValue, expected) => {
+      expect(getProbabilityColor(probabilityValue as any)).toBe(expected);
     });
   });
 });
