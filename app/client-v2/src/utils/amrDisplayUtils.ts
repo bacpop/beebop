@@ -1,4 +1,19 @@
-const antibioticProbabilityMap = {
+type ProbabilityWord =
+  | "Almost certainly"
+  | "Highly likely"
+  | "Very good chance"
+  | "Probably"
+  | "Unsure"
+  | "Probably not"
+  | "Unlikely"
+  | "Highly unlikely";
+const antibioticProbabilityMap: Record<
+  string,
+  {
+    threshold: number;
+    word: ProbabilityWord;
+  }[]
+> = {
   Penicillin: [
     { threshold: 0.9, word: "Highly likely" },
     { threshold: 0.75, word: "Very good chance" },
@@ -29,40 +44,34 @@ const antibioticProbabilityMap = {
     { threshold: 0, word: "Unlikely" }
   ]
 };
+const probabilityTransparencies: Record<ProbabilityWord, number> = {
+  "Almost certainly": 1,
+  "Highly likely": 0.9,
+  "Very good chance": 0.8,
+  Probably: 0.7,
+  Unsure: 0.5,
+  "Probably not": 0.3,
+  Unlikely: 0.2,
+  "Highly unlikely": 0.1
+};
 
 export const convertProbabilityToWord = (
   probability: number | string,
   antibiotic: keyof typeof antibioticProbabilityMap
 ) => {
-  if (typeof probability === "string") {
+  if (typeof probability !== "number") {
     return "Unsure";
   }
-  // Translate probabilities into words, depending on antibiotic
   const thresholds = antibioticProbabilityMap[antibiotic];
   for (const { threshold, word } of thresholds) {
     if (probability >= threshold) {
       return word;
     }
   }
+  return "Unsure";
 };
 
-export const generateRGBForAmr = (value: number, antibiotic: keyof typeof antibioticProbabilityMap) => {
-  // Translate probabilities into colours, depending on antibiotic
-  let probability = 0;
-  if (antibiotic === "Penicillin" || antibiotic === "Cotrim") {
-    // achieve more color changes towards the extremes 0&1
-    probability = 0.07 * Math.log((Number(value) + 0.0008) / (1 - 0.9992 * Number(value))) + 0.499944067;
-  } else if (antibiotic === "Chloramphenicol" || antibiotic === "Tetracycline") {
-    // achieve more changes around .5
-    probability = Math.exp(40 * Number(value) - 20) / (1 + Math.exp(40 * Number(value) - 20));
-  } else {
-    probability = value;
-  }
-  // set targeted colours for values 0 and 1
-  const target0 = { r: 165, g: 237, b: 227 }; // light primary color
-  const target1 = { r: 25, g: 117, b: 105 }; // dark primary color
-  const r = Math.round(target0.r - probability * (target0.r - target1.r));
-  const g = Math.round(target0.g - probability * (target0.g - target1.g));
-  const b = Math.round(target0.b - probability * (target0.b - target1.b));
-  return `rgb(${r},${g},${b})`;
+export const getProbabilityColor = (probabilityWord: ProbabilityWord) => {
+  // --primary-yellow color
+  return `rgb(129, 142, 161, ${probabilityTransparencies[probabilityWord]})`;
 };
