@@ -51,4 +51,21 @@ describe("AMR column", () => {
 
     await screen.findByText(/Penicillin: Unlikely/i);
   });
+  it("should show tooltip with unkown if probability is amr doesnt not have value", async () => {
+    const { container } = renderComponent({
+      filename: "sample1.fasta",
+      Penicillin: "-",
+      Chloramphenicol: "-",
+      Erythromycin: "-",
+      Tetracycline: "-",
+      Trim_sulfa: "-",
+      length: "-",
+      species: "-"
+    } as unknown as AMR);
+
+    const success = container.querySelectorAll(".p-tag")[0];
+    await userEvent.hover(success);
+
+    await screen.findByText(/Penicillin: Unknown/i);
+  });
 });
