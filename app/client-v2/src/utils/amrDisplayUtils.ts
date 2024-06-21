@@ -6,7 +6,8 @@ type ProbabilityWord =
   | "Unsure"
   | "Probably not"
   | "Unlikely"
-  | "Highly unlikely";
+  | "Highly unlikely"
+  | "Unknown";
 const antibioticProbabilityMap: Record<
   string,
   {
@@ -52,15 +53,16 @@ const probabilityTransparencies: Record<ProbabilityWord, number> = {
   Unsure: 0.5,
   "Probably not": 0.3,
   Unlikely: 0.2,
-  "Highly unlikely": 0.1
+  "Highly unlikely": 0.1,
+  Unknown: 0
 };
 
 export const convertProbabilityToWord = (
   probability: number | string,
   antibiotic: keyof typeof antibioticProbabilityMap
-) => {
+): ProbabilityWord => {
   if (typeof probability !== "number") {
-    return "Unsure";
+    return "Unknown";
   }
   const thresholds = antibioticProbabilityMap[antibiotic];
   for (const { threshold, word } of thresholds) {

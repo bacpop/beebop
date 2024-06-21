@@ -43,7 +43,7 @@ const displayAMR = computed(() => {
 <template>
   <div v-if="amr" class="flex gap-2 flex-wrap">
     <Tag
-      v-tooltip.top="`${key}: ${probabilityWord}(${convertToRoundedPercent(value)}%)`"
+      v-tooltip.top="`${key}: ${isNaN(value) ? 'Unknown' : `${probabilityWord}(${convertToRoundedPercent(value)}%)`}`"
       :style="`background-color: ${getProbabilityColor(probabilityWord)}; color: var(--text)`"
       v-for="({ label, value, probabilityWord }, key) in displayAMR"
       :key="key"
