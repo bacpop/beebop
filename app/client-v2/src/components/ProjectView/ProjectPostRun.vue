@@ -50,7 +50,14 @@ const getMicroreactSettingsTooltip = () => {
           <Column field="cluster" header="Cluster">
             <template #body="{ data }">
               <span v-if="data.cluster"> {{ data.cluster }}</span>
-              <Tag v-else-if="projectStore.project.status?.assign === 'failed'" value="failed" severity="danger" />
+              <Tag
+                v-else-if="
+                  projectStore.project.status?.assign === 'failed' ||
+                  (projectStore.project.status?.assign === 'finished' && !data.cluster)
+                "
+                value="failed"
+                severity="danger"
+              />
               <Tag v-else value="pending" severity="warning" /> </template
           ></Column>
           <Column header="Network">
