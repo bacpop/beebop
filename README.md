@@ -124,6 +124,10 @@ Auth will not work at this point unless there are configured oauth apps that mat
 In general the approach to getting secrets into the config could use some iteration and we should probably have a way to skip auth 
 based on a config flag.
 
+### Example fasta files
+
+[can be found in the Knowledge Base article]([url](https://mrc-ide.myjetbrains.com/youtrack/articles/bacpop-A-1/beebop))
+
 ## Testing
 ### Frontend tests
 
