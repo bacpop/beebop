@@ -45,23 +45,30 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
+    { name: "setup", testMatch: /.*\.setup\.ts/ },
     {
       name: "chromium",
       use: {
-        ...devices["Desktop Chrome"]
-      }
+        ...devices["Desktop Chrome"],
+        storageState: "./e2e/.auth/user.json"
+      },
+      dependencies: ["setup"]
     },
     {
       name: "firefox",
       use: {
-        ...devices["Desktop Firefox"]
-      }
+        ...devices["Desktop Firefox"],
+        storageState: "./e2e/.auth/user.json"
+      },
+      dependencies: ["setup"]
     },
     {
       name: "webkit",
       use: {
-        ...devices["Desktop Safari"]
-      }
+        ...devices["Desktop Safari"],
+        storageState: "./e2e/.auth/user.json"
+      },
+      dependencies: ["setup"]
     }
 
     /* Test against mobile viewports. */
