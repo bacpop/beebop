@@ -73,10 +73,10 @@ describe("projectStore", () => {
 
   describe("actions", () => {
     const mockFilesWithHashes = [
-      { name: "sample1.fasta", text: () => Promise.resolve("sample1"), hash: Md5.hashStr("sample1") },
-      { name: "sample2.fasta", text: () => Promise.resolve("sample2"), hash: Md5.hashStr("sample2") },
-      { name: "sample3.fasta", text: () => Promise.resolve("sample3"), hash: Md5.hashStr("sample3") }
-    ] as any[];
+      { name: "sample1.fasta", text: () => Promise.resolve(">sample1"), hash: Md5.hashStr(">sample1") },
+      { name: "sample2.fasta", text: () => Promise.resolve(">sample2"), hash: Md5.hashStr(">sample2") },
+      { name: "sample3.fasta", text: () => Promise.resolve(">sample3"), hash: Md5.hashStr(">sample3") }
+    ] as unknown as File[];
 
     class MockWorker implements Partial<Worker> {
       url: string;
@@ -463,6 +463,22 @@ describe("projectStore", () => {
 
       expect(store.toast.showErrorToast).toHaveBeenCalledWith("Error removing file. Try again later.");
       expect(store.project.samples).toEqual(["sample1", "sample2", "sample3"]);
+    });
+    it("should throw error and toast message when getFileHash is called with file with >1 sequence", async () => {
+      const store = useProjectStore();
+      const mockFile = {
+        name: "sample1.fasta",
+        text: () => Promise.resolve(">seq2\nABDABDAEAREAR\n>seq2\nADADJUDAHSASA")
+      } as any;
+
+      await expect(store.getFileHash(mockFile)).rejects.toThrow(Error(`${mockFile.name} does not have 1 sequence`));
+    });
+    it("should return file hash when getFileHash is called with file with 1 sequence", async () => {
+      const store = useProjectStore();
+
+      const fileHash = await store.getFileHash(mockFilesWithHashes[0]);
+
+      expect(fileHash).toBe(mockFilesWithHashes[0].hash);
     });
   });
 });
