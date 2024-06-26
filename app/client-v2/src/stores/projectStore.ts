@@ -74,8 +74,8 @@ export const useProjectStore = defineStore("project", {
 
     async processFiles(files: File[]) {
       for (const file of files) {
-        const fileHash = await this.getFileHash(file);
-
+        const content = await file.text();
+        const fileHash = Md5.hashStr(content);
         this.project.samples.push({ hash: fileHash, filename: file.name });
 
         // run web worker to get sketch and amr data and then post to server
@@ -90,15 +90,6 @@ export const useProjectStore = defineStore("project", {
           this.toast.showErrorToast("Ensure uploaded sample file is correct");
         };
       }
-    },
-    async getFileHash(file: File) {
-      const content = await file.text();
-      const sequences = content.split(">");
-      if (sequences.length !== 2) {
-        this.toast.showErrorToast(`${file.name} does not have 1 sequence. Ensure all files have 1 sequence`);
-        throw Error(`${file.name} does not have 1 sequence`);
-      }
-      return Md5.hashStr(content);
     },
 
     async handleWorkerResponse(filename: string, event: MessageEvent<WorkerResponse>) {
