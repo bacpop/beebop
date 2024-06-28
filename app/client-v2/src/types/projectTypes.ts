@@ -28,6 +28,7 @@ export interface ProjectSample {
   amr?: AMR;
   sketch?: Record<string, unknown>;
   cluster?: string;
+  failReason?: string;
 }
 
 export interface Project {

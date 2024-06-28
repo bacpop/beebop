@@ -55,11 +55,13 @@ const getMicroreactSettingsTooltip = () => {
                   projectStore.project.status?.assign === 'failed' ||
                   (projectStore.project.status?.assign === 'finished' && !data.cluster)
                 "
+                v-tooltip.top="`${data.failReason ?? 'Invalid Sample'}`"
                 value="failed"
                 severity="danger"
               />
-              <Tag v-else value="pending" severity="warning" /> </template
-          ></Column>
+              <Tag v-else value="pending" severity="warning" />
+            </template>
+          </Column>
           <Column header="Network">
             <template #body="{ data }">
               <Button
