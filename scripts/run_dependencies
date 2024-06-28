@@ -18,6 +18,7 @@ docker network create $NETWORK > /dev/null || /bin/true
 
 docker run -d --rm --name $NAME_REDIS --network=$NETWORK -p 6379:6379 redis:5.0
 docker run -d --rm --name $NAME_WORKER --network=$NETWORK \
+       --pull always \
        --env=REDIS_HOST="$NAME_REDIS" \
        -v $VOLUME:/beebop/storage \
        mrcide/beebop-py:$API_BRANCH rqworker
