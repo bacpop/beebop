@@ -28,6 +28,7 @@ export interface ProjectSample {
   amr?: AMR;
   sketch?: Record<string, unknown>;
   cluster?: string;
+  failReason?: string;
 }
 
 export interface Project {
@@ -44,7 +45,7 @@ export interface Project {
   deletedAt?: string;
 }
 export type StatusTypes = "finished" | "failed" | "started" | "waiting" | "deferred" | "submitted";
-export const COMPLETE_STATUS_TYPES: StatusTypes[] = ["finished", "failed"];
+export const COMPLETE_STATUS_TYPES: StatusTypes[] = ["finished", "failed"] as const;
 
 export interface AnalysisStatus {
   assign: StatusTypes;

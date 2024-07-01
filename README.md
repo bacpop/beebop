@@ -64,7 +64,7 @@ To start all required components, run:
 ./scripts/run_test
 ```
 
-The website can be viewed at http://localhost:8080/ . You can stop the application with `./scripts/stop_test`.
+The website can be viewed at http://localhost:5173/ . You can stop the application with `./scripts/stop_test`.
 
 The `run_test` script uses [pm2](https://github.com/Unitech/pm2) to manage running the client and server applications.
 

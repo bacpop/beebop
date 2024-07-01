@@ -3,7 +3,7 @@ import { assignResultUri, projectIndexUri, statusUri } from "@/mocks/handlers/pr
 import { MOCK_PROJECT, MOCK_PROJECT_SAMPLES, MOCK_PROJECT_SAMPLES_BEFORE_RUN } from "@/mocks/mockObjects";
 import { server } from "@/mocks/server";
 import { useProjectStore } from "@/stores/projectStore";
-import { WorkerResponseValueTypes, type ProjectSample, AnalysisType } from "@/types/projectTypes";
+import { WorkerResponseValueTypes, type ProjectSample, AnalysisType, type AnalysisStatus } from "@/types/projectTypes";
 import { flushPromises } from "@vue/test-utils";
 import { HttpResponse, http } from "msw";
 import { createPinia, setActivePinia } from "pinia";
@@ -315,6 +315,18 @@ describe("projectStore", () => {
 
       expect(store.getClusterAssignResult).toHaveBeenCalled();
     });
+    it("should stop polling & set all status to failed if assign status is failed", async () => {
+      const store = useProjectStore();
+      store.stopPollingStatus = vitest.fn();
+      server.use(
+        http.post(statusUri, () => HttpResponse.json({ data: { assign: "failed" }, errors: [], status: "success" }))
+      );
+
+      await store.getAnalysisStatus();
+
+      expect(store.project.status).toEqual({ assign: "failed", microreact: "failed", network: "failed" });
+      expect(store.stopPollingStatus).toHaveBeenCalled();
+    });
     it("should set state, call buildRunAnalysisPostBody and pollAnalysisStatus when runAnalysis is called", async () => {
       const store = useProjectStore();
       store.buildRunAnalysisPostBody = vitest.fn().mockReturnValue({ projectHash: "test-hash" });
@@ -451,6 +463,15 @@ describe("projectStore", () => {
 
       expect(store.toast.showErrorToast).toHaveBeenCalledWith("Error removing file. Try again later.");
       expect(store.project.samples).toEqual(["sample1", "sample2", "sample3"]);
+    });
+    it("should set all status to failed & return true if assign is failed when processStatusAndGetPolling called", async () => {
+      const analysisStatus: AnalysisStatus = { assign: "failed", network: "deferred", microreact: "waiting" };
+      const store = useProjectStore();
+
+      const stopPolling = await store.processStatusAndGetPolling(analysisStatus, "waiting");
+
+      expect(stopPolling).toBe(true);
+      expect(store.project.status).toStrictEqual({ assign: "failed", network: "failed", microreact: "failed" });
     });
   });
 });

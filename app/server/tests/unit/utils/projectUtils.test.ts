@@ -1,6 +1,5 @@
-import { ProjectUtils } from "../../../src/utils/projectUtils";
 import { UserStore } from "../../../src/db/userStore";
-import { BeebopError } from "../../../src/errors/beebopError";
+import { ProjectUtils } from "../../../src/utils/projectUtils";
 
 describe("ProjectUtils", () => {
   describe("getResponseSamples", () => {
@@ -58,18 +57,6 @@ describe("ProjectUtils", () => {
         },
       ]);
       expect(mockGetSample).toHaveBeenCalledTimes(3);
-    });
-
-    it("should throw an error if a sample is not in the API data", async () => {
-      const badApiData = { ...apiData, samples: apiData.samples.slice(1) };
-      await expect(
-        ProjectUtils.getResponseSamples(
-          mockUserStore,
-          projectId,
-          projectSamples,
-          badApiData
-        )
-      ).rejects.toThrow(BeebopError);
     });
 
     it("should return samples with data from the store if no API data is provided", async () => {
