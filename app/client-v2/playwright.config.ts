@@ -43,33 +43,33 @@ export default defineConfig({
     headless: !!process.env.CI
   },
 
-  /* Configure projects for major browsers */
+  /* Configure projects for chrome. Slow running tests thus not worth running on all browsers*/
   projects: [
-    { name: "setup", testMatch: /.*\.setup\.ts/ },
     {
       name: "chromium",
       use: {
         ...devices["Desktop Chrome"],
-        storageState: "./e2e/.auth/user.json"
+        storageState: "e2e/.auth/user.json"
       },
       dependencies: ["setup"]
     },
-    {
-      name: "firefox",
-      use: {
-        ...devices["Desktop Firefox"],
-        storageState: "./e2e/.auth/user.json"
-      },
-      dependencies: ["setup"]
-    },
-    {
-      name: "webkit",
-      use: {
-        ...devices["Desktop Safari"],
-        storageState: "./e2e/.auth/user.json"
-      },
-      dependencies: ["setup"]
-    }
+    // {
+    //   name: "firefox",
+    //   use: {
+    //     ...devices["Desktop Firefox"],
+    //     storageState: "e2e/.auth/user.json"
+    //   },
+    //   dependencies: ["setup"]
+    // },
+    // {
+    //   name: "webkit",
+    //   use: {
+    //     ...devices["Desktop Safari"],
+    //     storageState: "e2e/.auth/user.json"
+    //   },
+    //   dependencies: ["setup"]
+    // },
+    { name: "setup", testMatch: "auth.setup.ts" }
 
     /* Test against mobile viewports. */
     // {
