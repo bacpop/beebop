@@ -468,7 +468,7 @@ describe("projectStore", () => {
       const analysisStatus: AnalysisStatus = { assign: "failed", network: "deferred", microreact: "waiting" };
       const store = useProjectStore();
 
-      const stopPolling = await store.processStatusAndGetPolling(analysisStatus, "waiting");
+      const stopPolling = await store.processStatusAndGetStopPolling(analysisStatus, "waiting");
 
       expect(stopPolling).toBe(true);
       expect(store.project.status).toStrictEqual({ assign: "failed", network: "failed", microreact: "failed" });
