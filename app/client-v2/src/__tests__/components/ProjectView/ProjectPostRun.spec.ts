@@ -279,4 +279,36 @@ describe("RunProject", () => {
 
     expect(screen.getByRole("button", { name: /microreact settings/i })).toBeDisabled();
   });
+
+  it("should display failed tags on cluster, network, microreact if status is finished but no cluster", () => {
+    render(ProjectPostRun, {
+      global: {
+        plugins: [
+          PrimeVue,
+          createTestingPinia({
+            initialState: {
+              project: {
+                project: {
+                  samples: [{ ...MOCK_PROJECT_SAMPLES[0], cluster: undefined }],
+                  status: {
+                    assign: "finished",
+                    microreact: "finished",
+                    network: "finished"
+                  }
+                }
+              }
+            }
+          })
+        ],
+        stubs: {
+          MicroReactTokenDialog: true
+        },
+        directives: {
+          tooltip: Tooltip
+        }
+      }
+    });
+
+    expect(screen.getAllByText("failed").length).toBe(3);
+  });
 });

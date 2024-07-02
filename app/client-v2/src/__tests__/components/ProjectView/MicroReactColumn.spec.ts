@@ -71,11 +71,10 @@ describe("MicroReactColumn", () => {
     expect(screen.getByText(/started/i)).toBeInTheDocument();
   });
 
-  it("should disable buttons if no cluster passed in", () => {
+  it("should show failed tag if no cluster passed in", () => {
     renderComponent("finished");
 
-    expect(screen.getByRole("button", { name: /Download/ })).toBeDisabled();
-    expect(screen.getByRole("button", { name: /Visit/ })).toBeDisabled();
+    expect(screen.getByText(/failed/i)).toBeInTheDocument();
   });
 
   describe("Save token Dialog", () => {

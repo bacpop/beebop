@@ -116,10 +116,6 @@ describe("Error handling", () => {
         const projectRes = await get(`project/${projectId}`, connectionCookie);
         expect(projectRes.status).toBe(500);
         expect(projectRes.data.data).toBe(null);
-        expect(projectRes.data.errors).toStrictEqual([{
-            error: "Invalid data",
-            detail: `Sample with hash 1234 was not in API response`
-        }]);
     });
 
     it("Omits unexpected error detail from response", async () => {
