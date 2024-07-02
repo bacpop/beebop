@@ -115,7 +115,7 @@ describe("Project Page", () => {
     const testPinia = createTestingPinia();
     const store = useProjectStore(testPinia);
     // @ts-expect-error: getter is read-only
-    store.isProjectComplete = true;
+    store.isFinishedRun = true;
     const wrapper = mount(AsyncProjectPage, {
       global: {
         plugins: [PrimeVue, testPinia],

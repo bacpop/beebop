@@ -36,7 +36,7 @@ const onSaveMicroreactToken = async (cluster: string, token: string) => {
     @closeDialog="closeDialog"
     @saveMicroreactToken="onSaveMicroreactToken(props.data.cluster, $event)"
   />
-  <div v-if="hasSamplePassed(projectStore.project.status?.microreact, data.cluster)" class="flex gap-2">
+  <div v-if="!data.hasRun || hasSamplePassed(projectStore.project.status?.microreact, data.cluster)" class="flex gap-2">
     <Button
       outlined
       icon="pi pi-download"

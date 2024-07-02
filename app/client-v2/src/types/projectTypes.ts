@@ -29,6 +29,7 @@ export interface ProjectSample {
   sketch?: Record<string, unknown>;
   cluster?: string;
   failReason?: string;
+  hasRun?: boolean;
 }
 
 export interface Project {

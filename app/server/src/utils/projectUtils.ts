@@ -14,7 +14,7 @@ export class ProjectUtils {
         const apiSample = apiData
           ? apiData.samples.find((s) => s.hash === sample.hash)
           : null;
-        const { amr, sketch } = await store.getSample(
+        const { amr, sketch, hasRun } = await store.getSample(
           projectId,
           sample.hash,
           sample.filename
@@ -24,6 +24,7 @@ export class ProjectUtils {
           ...sample,
           amr,
           sketch,
+          hasRun
         };
       })
     );

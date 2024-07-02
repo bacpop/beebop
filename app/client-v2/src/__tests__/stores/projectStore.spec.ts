@@ -37,14 +37,14 @@ describe("projectStore", () => {
     it("isProjectComplete returns true when all analysisStatus are complete", () => {
       const store = useProjectStore();
       store.project.status = { assign: "finished", microreact: "failed", network: "finished" };
-      expect(store.isProjectComplete).toBe(true);
+      expect(store.isFinishedRun).toBe(true);
     });
 
     it("isProjectComplete returns false when not all analysisStatus are complete", () => {
       const store = useProjectStore();
       store.project.status = { assign: "started", microreact: "finished", network: "finished" };
 
-      expect(store.isProjectComplete).toBe(false);
+      expect(store.isFinishedRun).toBe(false);
     });
 
     it("numOfStatus returns the number of analysisStatus", () => {

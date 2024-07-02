@@ -58,11 +58,17 @@ export class UserStore {
         await this._redis.hset(this._projectKey(projectId), "deletedAt", Date.now());
     }
 
-    async saveProjectHash(request, projectId: string, projectHash: string) {
-        // TODO: verify that this project belongs to the request user:
+    async saveProjectHash(request, projectId: string, projectHash: string, samples: Record<string, string>) {
+        // TODO: verify that this project belongs to the request user/*  */:
         // https://mrc-ide.myjetbrains.com/youtrack/issue/bacpop-96
+        const multi = this._redis.multi();
         await this._validateProject(projectId);
-        await this._redis.hset(this._projectKey(projectId), "hash", projectHash);
+        for (const key in samples) {
+            const sampleId = this._sampleId(key, samples[key]);
+            multi.hset(this._projectSampleKey(projectId, sampleId), "hasRun", 1);
+        }
+        multi.hset(this._projectKey(projectId), "hash", projectHash);
+        await multi.exec();
     }
 
     async getProjectHash(request, projectId: string) {
@@ -134,11 +140,11 @@ export class UserStore {
         await this._redis.del(this._projectSampleKey(projectId, sampleId));
     }
 
-    async getSample(projectId: string, sampleHash: string, filename: string): Promise<{ sketch: Record<string, unknown>; amr: AMR }> {
+    async getSample(projectId: string, sampleHash: string, filename: string): Promise<{ sketch: Record<string, unknown>; amr: AMR; hasRun: boolean }> {
         await this._validateProject(projectId);
         const sampleId = this._sampleId(sampleHash, filename);
         const samples = await this._redis.hgetall(this._projectSampleKey(projectId, sampleId));
-        return { sketch: JSON.parse(samples.sketch), amr: JSON.parse(samples.amr) };
+        return { sketch: JSON.parse(samples.sketch), amr: JSON.parse(samples.amr), hasRun: !!samples.hasRun  };
     }
 
     async getProjectSplitSampleIds(projectId: string): Promise<SplitSampleId[]> {
