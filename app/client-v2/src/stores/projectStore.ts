@@ -134,7 +134,7 @@ export const useProjectStore = defineStore("project", {
       let stopPolling = false;
       try {
         const statusRes = await baseApi.post<ApiResponse<AnalysisStatus>>("/status", { hash: this.project.hash });
-        stopPolling = await this.processStatusAndGetPolling(statusRes.data, prevClusterAssign);
+        stopPolling = await this.processStatusAndGetStopPolling(statusRes.data, prevClusterAssign);
       } catch (error) {
         this.toast.showErrorToast("Error fetching analysis status. Try refreshing the page, or create a new project.");
         console.error(error);
@@ -145,7 +145,7 @@ export const useProjectStore = defineStore("project", {
         }
       }
     },
-    async processStatusAndGetPolling(data: AnalysisStatus, prevClusterAssign: StatusTypes | undefined) {
+    async processStatusAndGetStopPolling(data: AnalysisStatus, prevClusterAssign: StatusTypes | undefined) {
       const { assign, network, microreact } = data;
       this.project.status = data;
 
