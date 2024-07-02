@@ -280,7 +280,7 @@ describe("RunProject", () => {
     expect(screen.getByRole("button", { name: /microreact settings/i })).toBeDisabled();
   });
 
-  it("should display failed tag on cluster if status is finished but no cluster", () => {
+  it("should display failed tags on cluster, network, microreact if status is finished but no cluster", () => {
     render(ProjectPostRun, {
       global: {
         plugins: [
@@ -301,8 +301,7 @@ describe("RunProject", () => {
           })
         ],
         stubs: {
-          MicroReactTokenDialog: true,
-          MicroReactColumn: true
+          MicroReactTokenDialog: true
         },
         directives: {
           tooltip: Tooltip
@@ -310,6 +309,6 @@ describe("RunProject", () => {
       }
     });
 
-    expect(screen.getByText("failed")).toBeVisible();
+    expect(screen.getAllByText("failed").length).toBe(3);
   });
 });
