@@ -70,7 +70,7 @@ export const convertProbabilityToWord = (
       return word;
     }
   }
-  return "Unsure";
+  return "Unknown";
 };
 
 export const getProbabilityColor = (probabilityWord: ProbabilityWord) => {

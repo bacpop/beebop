@@ -1,5 +1,3 @@
 #!/usr/bin/env bash
-# TODO: revert back to pull always adn change back common api_branch
-
-export API_BRANCH="bacpop-113-failed-sample"
+export API_BRANCH="main"
 export DB_LOCATION="./storage/GPS_v8_ref"
