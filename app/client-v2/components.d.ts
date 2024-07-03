@@ -29,6 +29,7 @@ declare module 'vue' {
     ProgressBar: typeof import('primevue/progressbar')['default']
     ProgressSpinner: typeof import('primevue/progressspinner')['default']
     ProjectDataTable: typeof import('./src/components/ProjectView/ProjectDataTable.vue')['default']
+    ProjectFileUpload: typeof import('./src/components/ProjectView/ProjectFileUpload.vue')['default']
     ProjectPage: typeof import('./src/components/ProjectView/ProjectPage.vue')['default']
     ProjectPostRun: typeof import('./src/components/ProjectView/ProjectPostRun.vue')['default']
     ProjectPreRun: typeof import('./src/components/ProjectView/ProjectPreRun.vue')['default']

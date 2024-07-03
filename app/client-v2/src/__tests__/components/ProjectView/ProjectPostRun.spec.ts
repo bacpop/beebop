@@ -12,36 +12,6 @@ vitest.mock("primevue/usetoast", () => ({
 }));
 
 describe("RunProject", () => {
-  it("should render progress bar if progress is not 100%", () => {
-    const testingPinia = createTestingPinia();
-    const store = useProjectStore(testingPinia);
-    // @ts-expect-error: Getter is read only
-    store.analysisProgressPercentage = 50;
-    render(ProjectPostRun, {
-      global: {
-        plugins: [PrimeVue, testingPinia],
-        stubs: {
-          MicroReactColumn: true,
-          MicroReactTokenDialog: true,
-          ProjectDataTable: {
-            template: `<div>Data Table</div>`
-          },
-          NetworkTab: {
-            template: `<div>Network Graphs</div>`
-          }
-        },
-        directives: {
-          tooltip: Tooltip
-        }
-      }
-    });
-
-    const progressBar = screen.getByRole("progressbar");
-
-    expect(progressBar).toBeVisible();
-    expect(progressBar).toHaveAttribute("aria-valuenow", "50");
-    expect(screen.getByText(/running analysis/i)).toBeVisible();
-  });
   it("should display correct content for tabs when switching", async () => {
     render(ProjectPostRun, {
       global: {
@@ -53,7 +23,8 @@ describe("RunProject", () => {
                 project: {
                   status: {
                     network: "finished"
-                  }
+                  },
+                  samples: MOCK_PROJECT_SAMPLES
                 }
               }
             }
@@ -85,10 +56,14 @@ describe("RunProject", () => {
     expect(screen.getByText(/network graphs/i)).toBeVisible();
     expect(dataTable).not.toBeVisible();
   });
+
   it("should enable network tab on network finished", async () => {
+    const testPinia = createTestingPinia();
+    const store = useProjectStore();
+    store.project.samples = MOCK_PROJECT_SAMPLES;
     render(ProjectPostRun, {
       global: {
-        plugins: [PrimeVue, createTestingPinia()],
+        plugins: [PrimeVue, testPinia],
         stubs: {
           MicroReactColumn: true,
           MicroReactTokenDialog: true,
@@ -104,7 +79,6 @@ describe("RunProject", () => {
         }
       }
     });
-    const store = useProjectStore();
 
     const tabPanel = screen.getByRole("tab", { name: /network/i });
 
@@ -118,7 +92,8 @@ describe("RunProject", () => {
       expect(tabPanel).toHaveAttribute("aria-disabled", "false");
     });
   });
-  it("should render extra columns for data table slot  when project complete", async () => {
+
+  it("should render extra columns for data table slot when project has run", async () => {
     render(ProjectPostRun, {
       global: {
         plugins: [
@@ -153,8 +128,12 @@ describe("RunProject", () => {
       expect(screen.getByText(sample.cluster!)).toBeVisible();
     });
   });
-  it("should render pending for cluster cells if no cluster assigned ", async () => {
-    const copyMockSamples = structuredClone(MOCK_PROJECT_SAMPLES).map((sample) => ({ ...sample, cluster: undefined }));
+
+  it("should render pending for cluster cells if no cluster assigned and sample hasRun", async () => {
+    const copyMockSamples = structuredClone(MOCK_PROJECT_SAMPLES).map((sample) => ({
+      ...sample,
+      hasRun: true
+    }));
     render(ProjectPostRun, {
       global: {
         plugins: [
@@ -164,7 +143,7 @@ describe("RunProject", () => {
               project: {
                 project: {
                   samples: copyMockSamples,
-                  analysisStatus: undefined
+                  status: undefined
                 }
               }
             }
@@ -182,6 +161,41 @@ describe("RunProject", () => {
 
     expect(screen.getAllByText(/pending/i).length).toBe(copyMockSamples.length);
   });
+
+  it("should render not run for cluster cells if no cluster assigned and sample has not run", async () => {
+    const copyMockSamples = structuredClone(MOCK_PROJECT_SAMPLES).map((sample) => ({
+      ...sample,
+      cluster: undefined,
+      hasRun: false
+    }));
+    render(ProjectPostRun, {
+      global: {
+        plugins: [
+          PrimeVue,
+          createTestingPinia({
+            initialState: {
+              project: {
+                project: {
+                  samples: copyMockSamples,
+                  status: undefined
+                }
+              }
+            }
+          })
+        ],
+        stubs: {
+          MicroReactColumn: true,
+          MicroReactTokenDialog: true
+        },
+        directives: {
+          tooltip: Tooltip
+        }
+      }
+    });
+
+    expect(screen.getAllByText(/not run/i).length).toBe(copyMockSamples.length);
+  });
+
   it("should render failed network status if network analysis failed", async () => {
     render(ProjectPostRun, {
       global: {
@@ -214,6 +228,48 @@ describe("RunProject", () => {
 
     expect(screen.queryAllByText(/failed/i).length).toBe(MOCK_PROJECT_SAMPLES.length);
   });
+
+  it("should render disabled network download if finished and sample not run", async () => {
+    const copyMockSamples = structuredClone(MOCK_PROJECT_SAMPLES).map((sample) => ({
+      ...sample,
+      cluster: undefined,
+      hasRun: false
+    }));
+
+    render(ProjectPostRun, {
+      global: {
+        plugins: [
+          PrimeVue,
+          createTestingPinia({
+            initialState: {
+              project: {
+                project: {
+                  samples: copyMockSamples,
+                  status: {
+                    assign: "finished",
+                    microreact: "finished",
+                    network: "finished"
+                  }
+                }
+              }
+            }
+          })
+        ],
+        stubs: {
+          MicroReactTokenDialog: true,
+          MicroReactColumn: true
+        },
+        directives: {
+          tooltip: Tooltip
+        }
+      }
+    });
+
+    screen.getAllByRole("button", { name: /download network zip/i }).forEach((button) => {
+      expect(button).toBeDisabled();
+    });
+  });
+
   it("should render network status if not failed or finished", async () => {
     render(ProjectPostRun, {
       global: {

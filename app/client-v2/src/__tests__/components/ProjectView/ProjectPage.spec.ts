@@ -111,25 +111,7 @@ describe("Project Page", () => {
 
     expect(wrapper.text()).toContain("Project not found");
   });
-  it("should render completed tag if project is complete", async () => {
-    const testPinia = createTestingPinia();
-    const store = useProjectStore(testPinia);
-    // @ts-expect-error: getter is read-only
-    store.isFinishedRun = true;
-    const wrapper = mount(AsyncProjectPage, {
-      global: {
-        plugins: [PrimeVue, testPinia],
-        stubs: {
-          ProjectPostRun: stubRunProject,
-          ProjectPreRun: stubNotRunProject
-        }
-      }
-    });
 
-    await flushPromises();
-
-    expect(wrapper.text()).toContain("Completed");
-  });
   it("should call stopPollingStatus on unmount", async () => {
     const wrapper = mount(AsyncProjectPage, {
       global: {

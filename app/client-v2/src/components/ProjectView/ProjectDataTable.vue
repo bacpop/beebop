@@ -6,9 +6,6 @@ const store = useProjectStore();
 
 <template>
   <DataTable :value="store.project.samples" tableStyle="min-width: 50rem">
-    <template #header>
-      <slot name="table-header" />
-    </template>
     <Column field="filename" header="File Name"></Column>
     <Column field="sketch" header="Sketch">
       <template #body="{ data }">
@@ -22,5 +19,19 @@ const store = useProjectStore();
       </template>
     </Column>
     <slot name="extra-cols" />
+    <Column>
+      <template #body="props">
+        <Button
+          icon="pi pi-times"
+          @click="store.removeUploadedFile(props.index)"
+          outlined
+          rounded
+          size="small"
+          severity="danger"
+          :aria-label="`Remove ${props.data.filename}`"
+          :disabled="!store.isReadyToRun || store.isRunning"
+        />
+      </template>
+    </Column>
   </DataTable>
 </template>

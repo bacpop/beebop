@@ -21,11 +21,12 @@ vitest.mock("primevue/usetoast", () => ({
 vitest.mock("@/composables/useMicroreact", () => ({
   useMicroreact: () => mockUseMicroreact
 }));
-const renderComponent = (status: string, cluster?: string) =>
+const renderComponent = (status: string, cluster?: string, hasRun = true) =>
   render(MicroReactColumnVue, {
     props: {
       data: {
-        cluster
+        cluster,
+        hasRun
       }
     },
     global: {
@@ -60,6 +61,16 @@ describe("MicroReactColumn", () => {
     expect(store.downloadZip).toHaveBeenCalledWith(AnalysisType.MICROREACT, "GPSC1");
     expect(mockUseMicroreact.onMicroReactVisit).toHaveBeenCalledWith("GPSC1");
   });
+
+  it("should disable download and visit buttons if sample not ran and no cluster", async () => {
+    renderComponent("finished", undefined, false);
+
+    const downloadButton = screen.getByRole("button", { name: /Download/ });
+    const visitButton = screen.getByRole("button", { name: /Visit/ });
+    expect(downloadButton).toBeDisabled();
+    expect(visitButton).toBeDisabled();
+  });
+
   it("should render failed tag if status is failed", () => {
     renderComponent("failed", "GPSC1");
 

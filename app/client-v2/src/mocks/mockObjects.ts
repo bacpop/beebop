@@ -44,7 +44,8 @@ export const MOCK_PROJECT_SAMPLES: ProjectSample[] = [
       filename: "sample1.fasta",
       md5: "sample1-md5"
     },
-    cluster: "GPSC1"
+    cluster: "GPSC1",
+    hasRun: true
   },
   {
     hash: "sample2-test-hash",
@@ -60,7 +61,8 @@ export const MOCK_PROJECT_SAMPLES: ProjectSample[] = [
       species: true
     },
     sketch: { filename: "sample2.fasta", md5: "sample2-md5" },
-    cluster: "GPSC2"
+    cluster: "GPSC2",
+    hasRun: true
   },
   {
     hash: "sample3-test-hash",
@@ -76,7 +78,8 @@ export const MOCK_PROJECT_SAMPLES: ProjectSample[] = [
       species: true
     },
     sketch: { filename: "sample3.fasta", md5: "sample3-md5" },
-    cluster: "GPSC3"
+    cluster: "GPSC3",
+    hasRun: true
   }
 ];
 export const MOCK_PROJECT_SAMPLES_BEFORE_RUN: ProjectSample[] = [
