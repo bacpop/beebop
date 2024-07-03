@@ -62,12 +62,12 @@ describe("projectStore", () => {
     it("startedRun returns true when project status is set", () => {
       const store = useProjectStore();
       store.project.status = { assign: "started", microreact: "finished", network: "finished" };
-      expect(store.startedRun).toBe(true);
+      expect(store.hasStartedAtLeastOneRun).toBe(true);
     });
     it("startedRun returns false when project status is not set", () => {
       const store = useProjectStore();
       store.project.status = undefined;
-      expect(store.startedRun).toBe(false);
+      expect(store.hasStartedAtLeastOneRun).toBe(false);
     });
   });
 
@@ -114,7 +114,7 @@ describe("projectStore", () => {
         samples: MOCK_PROJECT.samples,
         status: MOCK_PROJECT.status
       });
-      expect(store.startedRun).toBe(true);
+      expect(store.hasStartedAtLeastOneRun).toBe(true);
     });
 
     it("should not upload duplicates when onFilesUpload is called", async () => {
@@ -336,7 +336,7 @@ describe("projectStore", () => {
 
       expect(store.buildRunAnalysisPostBody).toHaveBeenCalled();
       expect(store.pollAnalysisStatus).toHaveBeenCalled();
-      expect(store.startedRun).toBe(true);
+      expect(store.hasStartedAtLeastOneRun).toBe(true);
       expect(store.project.hash).toBe("test-hash");
       expect(store.project.status).toEqual({ assign: "submitted", microreact: "submitted", network: "submitted" });
     });
@@ -350,7 +350,7 @@ describe("projectStore", () => {
 
       expect(store.pollAnalysisStatus).not.toHaveBeenCalled();
       expect(store.project.status).toBeUndefined();
-      expect(store.startedRun).toBe(false);
+      expect(store.hasStartedAtLeastOneRun).toBe(false);
       expect(store.project.hash).toBeUndefined();
     });
     it("should correctly create post body when buildRunAnalysisPostBody is called", () => {

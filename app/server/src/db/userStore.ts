@@ -58,11 +58,12 @@ export class UserStore {
         await this._redis.hset(this._projectKey(projectId), "deletedAt", Date.now());
     }
 
-    async saveProjectHash(request, projectId: string, projectHash: string, samples: Record<string, string>) {
+    async saveHashAndSampleHasRun(request, projectId: string, projectHash: string, samples: Record<string, string>) {
         // TODO: verify that this project belongs to the request user/*  */:
         // https://mrc-ide.myjetbrains.com/youtrack/issue/bacpop-96
-        const multi = this._redis.multi();
         await this._validateProject(projectId);
+
+        const multi = this._redis.multi();
         for (const key in samples) {
             const sampleId = this._sampleId(key, samples[key]);
             multi.hset(this._projectSampleKey(projectId, sampleId), "hasRun", 1);

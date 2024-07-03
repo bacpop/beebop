@@ -35,7 +35,7 @@ describe("Project Page", () => {
     const store = useProjectStore(testPinia);
     store.project.name = "Test Project";
     // @ts-expect-error: getter is read-only
-    store.startedRun = true;
+    store.hasStartedAtLeastOneRun = true;
     const wrapper = mount(AsyncProjectPage, {
       global: {
         plugins: [PrimeVue, testPinia],
@@ -58,7 +58,7 @@ describe("Project Page", () => {
     const store = useProjectStore(testPinia);
     store.project.name = "Test Project";
     // @ts-expect-error: getter is read-only
-    store.startedRun = false;
+    store.hasStartedAtLeastOneRun = false;
     const wrapper = mount(AsyncProjectPage, {
       global: {
         plugins: [PrimeVue, testPinia],

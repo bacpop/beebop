@@ -37,7 +37,10 @@ export const useProjectStore = defineStore("project", {
       );
     },
     numOfStatus: (state) => Object.keys(state.project.status || {}).length,
-    startedRun: (state) => !!state.project.status,
+    hasStartedAtLeastOneRun: (state) => !!state.project.status,
+    isRunning(): boolean {
+      return this.hasStartedAtLeastOneRun && !this.isFinishedRun;
+    },
     analysisProgressPercentage(state): number {
       return Math.round(
         (Object.values(state.project.status || {}).filter((value) => COMPLETE_STATUS_TYPES.includes(value)).length /
@@ -54,7 +57,7 @@ export const useProjectStore = defineStore("project", {
         const projectRes = await baseApi.get<ApiResponse<Project>>(`/project/${id}`);
         this.project = projectRes.data;
 
-        if (this.startedRun && !this.isFinishedRun) {
+        if (this.hasStartedAtLeastOneRun && !this.isFinishedRun) {
           this.pollAnalysisStatus();
         }
       } catch (error) {

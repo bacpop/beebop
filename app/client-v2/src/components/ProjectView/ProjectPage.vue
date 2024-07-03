@@ -33,7 +33,7 @@ onUnmounted(() => {
       <span class="text-color-secondary">Upload genomics data and run analysis on them</span>
     </div>
     <div class="surface-card p-4 shadow-2 border-round">
-      <ProjectPostRun v-if="store.startedRun" />
+      <ProjectPostRun v-if="store.hasStartedAtLeastOneRun" />
       <ProjectPreRun v-else />
     </div>
   </div>

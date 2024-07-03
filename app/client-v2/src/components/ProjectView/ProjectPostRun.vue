@@ -45,10 +45,10 @@ const getMicroreactSettingsTooltip = () => {
     @uploader="store.onFilesUpload($event.files)"
     :multiple="true"
     accept=".fa, .fasta"
-    :disabled="projectStore.startedRun && !projectStore.isFinishedRun"
+    :disabled="store.isRunning"
   >
     <template #header="{ chooseCallback }">
-      <div v-if="projectStore.startedRun && !projectStore.isFinishedRun" class="flex-1">
+      <div v-if="store.isRunning" class="flex-1">
         <div class="mb-2 fadein animation-duration-2000 animation-iteration-infinite">Running Analysis...</div>
         <ProgressBar style="height: 20px" :value="projectStore.analysisProgressPercentage"></ProgressBar>
       </div>
@@ -134,7 +134,7 @@ const getMicroreactSettingsTooltip = () => {
                       size="small"
                       severity="danger"
                       :aria-label="`Remove ${props.data.filename}`"
-                      :disabled="!store.isReadyToRun || (projectStore.startedRun && !projectStore.isFinishedRun)"
+                      :disabled="!store.isReadyToRun || store.isRunning"
                     />
                   </template>
                 </Column>

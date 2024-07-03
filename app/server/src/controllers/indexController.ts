@@ -16,7 +16,7 @@ export default (config) => {
                 const poppunkRequest = request.body as BeebopRunRequest;
                 const {projectHash, projectId, names, sketches} = poppunkRequest;
                 const {redis} = request.app.locals;
-                await userStore(redis).saveProjectHash(request, projectId, projectHash, names);
+                await userStore(redis).saveHashAndSampleHasRun(request, projectId, projectHash, names);
                 const apiRequest = {names, projectHash, sketches} as PoppunkRequest;
                 await axios.post(`${config.api_url}/poppunk`,
                     apiRequest,
