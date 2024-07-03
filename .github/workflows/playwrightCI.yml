@@ -19,6 +19,8 @@ jobs:
       matrix:
         shardIndex: [1, 2, 3, 4]
         browser: [chromium, firefox, webkit]
+        include:
+          - shardTotal: 4
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js 20
@@ -41,7 +43,7 @@ jobs:
         env:
           MICROREACT_TOKEN: ${{ secrets.MICROREACT_TOKEN }}
         working-directory: ./app/client-v2
-        run: npm run test:e2e:${{ matrix.browser}} -- --shard=${{ matrix.shardIndex }}/4
+        run: npm run test:e2e:${{ matrix.browser}} -- --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
       - name: Stop all components
         if: always()
         working-directory: .
@@ -63,7 +65,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - name: Install dependencies
         run: npm ci
 
