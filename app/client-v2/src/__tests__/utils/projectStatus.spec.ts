@@ -16,8 +16,8 @@ describe("projectStatus utilities", () => {
     });
 
     test('returns false when statusType is neither "failed" nor "finished"', () => {
-      expect(hasSampleFailed("running", "someCluster")).toBeFalsy();
-      expect(hasSampleFailed("running", undefined)).toBeFalsy();
+      expect(hasSampleFailed("waiting", "someCluster")).toBeFalsy();
+      expect(hasSampleFailed("waiting", undefined)).toBeFalsy();
     });
 
     test("returns false when statusType is undefined", () => {
