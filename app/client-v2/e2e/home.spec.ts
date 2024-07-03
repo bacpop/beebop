@@ -23,13 +23,13 @@ test("can add new project from home screen and cannot create duplicate name", as
   await expect(page.getByText("Project name already exists or is empty")).toBeVisible();
 });
 
-test("can not add duplicate project name or empty name", async ({ page }) => {
+test("can not add project with an empty name", async ({ page }) => {
   await page.getByPlaceholder("Create new Project").fill("");
   await page.getByPlaceholder("Create new Project").press("Enter");
   await expect(page.getByText("Project name already exists or is empty")).toBeVisible();
 });
 
-test("can navigate delete project", async ({ page }) => {
+test("can delete project", async ({ page }) => {
   const projectName = randomProjectName();
   await addProjectNavigateHome(page, projectName);
 
@@ -45,8 +45,8 @@ test("can edit project name", async ({ page }) => {
   await addProjectNavigateHome(page, projectName);
 
   await page.getByLabel("Row Edit").first().click();
-  await page.getByRole("row", { name: "Save Edit Cancel Edit 0 01/07" }).getByRole("textbox").click();
-  await page.getByRole("row", { name: "Save Edit Cancel Edit 0 01/07" }).getByRole("textbox").fill(newProjectName);
+  await page.getByRole("row", { name: "Save Edit Cancel Edit 0" }).getByRole("textbox").click();
+  await page.getByRole("row", { name: "Save Edit Cancel Edit 0" }).getByRole("textbox").fill(newProjectName);
   await page.getByLabel("Save Edit").click();
   await expect(page.getByRole("link", { name: newProjectName })).toBeVisible();
 });
