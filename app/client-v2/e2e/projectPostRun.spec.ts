@@ -13,10 +13,10 @@ test("can run project and view results", async ({ page }) => {
   uploadFiles(page, ["e2e/fastaFiles/good_1.fa"]);
   await page.getByLabel("Run Analysis").click();
 
-  await expect(page.getByText("Running Analysis...33%")).toBeVisible({ timeout: 120000 });
-  await expect(page.getByText("Running Analysis...67%")).toBeVisible({ timeout: 120000 });
+  await expect(page.getByText("Running Analysis...33%")).toBeVisible();
+  await expect(page.getByText("Running Analysis...67%")).toBeVisible();
 
-  await expect(page.getByLabel("Visit")).toBeVisible({ timeout: 120000 });
+  await expect(page.getByLabel("Visit")).toBeVisible();
   await expect(page.getByLabel("Download microreact zip")).toBeVisible();
   await expect(page.getByLabel("Download network zip")).toBeVisible();
   await expect(page.getByText("GPSC7")).toBeVisible();
@@ -54,7 +54,7 @@ test("bad samples after run displays failed chips", async ({ page }) => {
   uploadFiles(page, ["e2e/fastaFiles/bad_1.fasta"]);
   await page.getByLabel("Run Analysis").click();
 
-  await expect(page.getByRole("cell", { name: "failed" })).toHaveCount(3, { timeout: 120000 });
+  await expect(page.getByRole("cell", { name: "failed" })).toHaveCount(3);
   await page.locator("td:nth-child(4) > .p-tag").first().hover();
   await expect(page.getByText("Invalid Sample")).toBeVisible();
 });
@@ -66,8 +66,8 @@ test("can load up already run project even if loading", async ({ page }) => {
   await page.getByRole("link", { name: projectName }).click();
 
   await expect(page.getByText("Running Analysis...33%")).toBeVisible();
-  await expect(page.getByText("Running Analysis...67%")).toBeVisible({ timeout: 120000 });
-  await expect(page.getByLabel("Visit")).toBeVisible({ timeout: 120000 });
+  await expect(page.getByText("Running Analysis...67%")).toBeVisible();
+  await expect(page.getByLabel("Visit")).toBeVisible();
   await expect(page.getByLabel("Download microreact zip")).toBeVisible();
   await expect(page.getByLabel("Download network zip")).toBeVisible();
   await expect(page.getByText("GPSC7")).toBeVisible();
@@ -77,13 +77,15 @@ test("can run project multiple times", async ({ page }) => {
   await uploadFiles(page, ["e2e/fastaFiles/good_1.fa"]);
   await page.getByLabel("Run Analysis").click();
 
-  await expect(page.getByText("Running Analysis...67%")).toBeVisible({ timeout: 120000 });
-  await expect(page.getByLabel("Upload")).toBeVisible({ timeout: 120000 });
+  await expect(page.getByText("Running Analysis...33%")).toBeVisible();
+  await expect(page.getByText("Running Analysis...67%")).toBeVisible();
+  await expect(page.getByLabel("Upload")).toBeVisible();
 
   await uploadFiles(page, ["e2e/fastaFiles/good_2.fa"]);
   await page.getByLabel("Run Analysis").click();
 
-  await expect(page.getByText("Running Analysis...67%")).toBeVisible({ timeout: 90000 });
-  await expect(page.getByText("GPSC7")).toBeVisible({ timeout: 90000 });
-  await expect(page.getByText("GPSC4")).toBeVisible({ timeout: 90000 });
+  await expect(page.getByText("Running Analysis...33%")).toBeVisible();
+  await expect(page.getByText("Running Analysis...67%")).toBeVisible();
+  await expect(page.getByText("GPSC7")).toBeVisible();
+  await expect(page.getByText("GPSC4")).toBeVisible();
 });
