@@ -1,8 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { randomProjectName, uploadFiles } from "./utils.js";
 
-test.describe.configure({ mode: "parallel", timeout: 180000 });
-test.slow();
+test.describe.configure({ timeout: 180000 });
 let projectName: string;
 test.beforeEach(async ({ page }) => {
   await page.goto("");
