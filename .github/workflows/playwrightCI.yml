@@ -16,10 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shardIndex: [1, 2, 3, 4]
         browser: [chromium, firefox, webkit]
-        include:
-          - shardTotal: 4
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js 20
@@ -42,48 +39,15 @@ jobs:
         env:
           MICROREACT_TOKEN: ${{ secrets.MICROREACT_TOKEN }}
         working-directory: ./app/client-v2
-        run: npm run test:e2e:${{ matrix.browser}} -- --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        run: npm run test:e2e:${{ matrix.browser}}
       - name: Stop all components
         if: always()
         working-directory: .
         run: ./scripts/stop_test
-      - name: Upload blob report to GitHub Actions Artifacts
+      - name: Upload Html report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
-          name: blob-report-${{ matrix.browser }}-${{ matrix.shardIndex }}
-          path: app/client-v2/blob-report
-          retention-days: 1
-  merge-reports:
-    defaults:
-      run:
-        working-directory: ./app/client-v2
-    # Merge reports after playwright-tests, even if some shards have failed
-    if: ${{ !cancelled() }}
-    needs: [playwright-tests]
-
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Download blob reports from GitHub Actions Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: app/client-v2/all-blob-reports
-          pattern: blob-report-*
-          merge-multiple: true
-
-      - name: Merge into HTML Report
-        run: npx playwright merge-reports --reporter html ./all-blob-reports
-
-      - name: Upload HTML report
-        uses: actions/upload-artifact@v4
-        with:
-          name: html-report--attempt-${{ github.run_attempt }}
+          name: playwright-report
           path: app/client-v2/playwright-report
           retention-days: 14
