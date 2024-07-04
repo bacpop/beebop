@@ -13,7 +13,6 @@ jobs:
   playwright-tests:
     timeout-minutes: 60
     runs-on: ubuntu-latest
-
     strategy:
       fail-fast: false
       matrix:
@@ -53,7 +52,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: blob-report-${{ matrix.browser }}-${{ matrix.shardIndex }}
-          path: blob-report
+          path: app/client-v2/blob-report
           retention-days: 1
   merge-reports:
     # Merge reports after playwright-tests, even if some shards have failed
@@ -67,6 +66,7 @@ jobs:
         with:
           node-version: 20
       - name: Install dependencies
+        working-directory: ./app/client-v2
         run: npm ci
 
       - name: Download blob reports from GitHub Actions Artifacts
@@ -83,5 +83,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: html-report--attempt-${{ github.run_attempt }}
-          path: playwright-report
+          path: app/client-v2/playwright-report/
           retention-days: 14
