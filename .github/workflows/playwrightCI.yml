@@ -16,16 +16,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shardIndex: [1, 2, 3, 4]
         browser: [chromium, firefox, webkit]
-        include:
-          - shardTotal: 4
+        node-version: [20.x]
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js 20
+      - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ matrix.node-version }}
           cache: "npm"
           cache-dependency-path: ./app/client-v2/package-lock.json
       - name: get config file
@@ -42,7 +40,7 @@ jobs:
         env:
           MICROREACT_TOKEN: ${{ secrets.MICROREACT_TOKEN }}
         working-directory: ./app/client-v2
-        run: npm run test:e2e:${{ matrix.browser}} -- --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        run: npm run test:e2e:${{ matrix.browser}}
       - name: Stop all components
         if: always()
         working-directory: .
@@ -51,14 +49,14 @@ jobs:
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
-          name: blob-report-${{ matrix.browser }}-${{ matrix.shardIndex }}
+          name: blob-report-${{ matrix.browser }}
           path: app/client-v2/blob-report
           retention-days: 1
   merge-reports:
     defaults:
       run:
         working-directory: ./app/client-v2
-    # Merge reports after playwright-tests, even if some shards have failed
+    # Merge reports after playwright-tests
     if: ${{ !cancelled() }}
     needs: [playwright-tests]
 
