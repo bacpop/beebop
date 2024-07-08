@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
-export API_BRANCH="main"
+export API_BRANCH="bacpop-174-return-qc-errors"
 export DB_LOCATION="./storage/GPS_v8_ref"
