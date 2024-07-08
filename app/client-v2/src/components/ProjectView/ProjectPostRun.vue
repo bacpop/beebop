@@ -51,7 +51,7 @@ const getMicroreactSettingsTooltip = () => {
                 </span>
                 <Tag
                   v-else-if="hasSampleFailed(projectStore.project.status?.assign, data.cluster)"
-                  v-tooltip.top="`${data.failReason ?? 'Invalid Sample'}`"
+                  v-tooltip.top="`${data.failReasons ?? 'Invalid Sample'}`"
                   value="failed"
                   severity="danger"
                 />

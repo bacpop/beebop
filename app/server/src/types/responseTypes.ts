@@ -10,12 +10,13 @@ export interface APIResponse<T> {
 }
 
 export interface APIProjectResponse {
-  samples: {
+  samples: Record<string, {
     hash: string;
     amr?: AMR;
-    cluster: number;
+    cluster?: number;
     sketch: Record<string, unknown>;
-  }[];
+    failReasons?: string;
+  }>;
   status: {
     assign: string;
     microreact: string;

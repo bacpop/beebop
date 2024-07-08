@@ -11,9 +11,7 @@ export class ProjectUtils {
   ): Promise<ProjectSample[]> {
     return await Promise.all(
       projectSamples.map(async (sample) => {
-        const apiSample = apiData
-          ? apiData.samples.find((s) => s.hash === sample.hash)
-          : null;
+        const apiSample = apiData?.samples[sample.hash];
         const { amr, sketch, hasRun } = await store.getSample(
           projectId,
           sample.hash,
@@ -24,7 +22,7 @@ export class ProjectUtils {
           ...sample,
           amr,
           sketch,
-          hasRun
+          hasRun,
         };
       })
     );

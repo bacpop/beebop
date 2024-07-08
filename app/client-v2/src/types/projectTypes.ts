@@ -28,7 +28,7 @@ export interface ProjectSample {
   amr?: AMR;
   sketch?: Record<string, unknown>;
   cluster?: string;
-  failReason?: string;
+  failReasons?: string;
   hasRun?: boolean;
 }
 
@@ -58,11 +58,10 @@ export interface ApiResponse<T> {
   errors: string[];
   status: string;
 }
-export interface AssignCluster {
-  [key: number]: ClusterInfo;
-}
+
 export interface ClusterInfo {
-  cluster: string;
+  cluster?: string;
+  failReasons?: string 
   hash: string;
 }
 
