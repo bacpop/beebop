@@ -61,7 +61,7 @@ export interface ApiResponse<T> {
 
 export interface ClusterInfo {
   cluster?: string;
-  failReasons?: string 
+  failReasons?: string;
   hash: string;
 }
 
