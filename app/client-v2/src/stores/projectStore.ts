@@ -171,6 +171,7 @@ export const useProjectStore = defineStore("project", {
           const matchedHashIndex = this.project.samples.findIndex(
             (sample: ProjectSample) => clusterInfo.hash === sample.hash
           );
+
           if (matchedHashIndex !== -1) {
             this.project.samples[matchedHashIndex].cluster = clusterInfo.cluster;
             this.project.samples[matchedHashIndex].failReasons = clusterInfo.failReasons;

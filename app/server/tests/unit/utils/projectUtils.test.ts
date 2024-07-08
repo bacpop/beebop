@@ -13,11 +13,11 @@ describe("ProjectUtils", () => {
       { hash: "1236", filename: "test3.fa" },
     ];
     const apiData = {
-      samples: [
-        { hash: "1234", filename: "test1.fa", data: "data1" },
-        { hash: "1235", filename: "test2.fa", data: "data2" },
-        { hash: "1236", filename: "test3.fa", data: "data3" },
-      ],
+      samples: {
+        "1234": { hash: "1234", filename: "test1.fa", data: "data1" },
+        "1235": { hash: "1235", filename: "test2.fa", data: "data2" },
+        "1236": { hash: "1236", filename: "test3.fa", data: "data3" },
+      },
     } as any;
     const mockGetSample = jest.spyOn(mockUserStore, "getSample");
 
@@ -41,17 +41,17 @@ describe("ProjectUtils", () => {
       );
       expect(result).toEqual([
         {
-          ...apiData.samples[0],
+          ...apiData.samples["1234"],
           amr: "AMR for testProjectId-1234-test1.fa",
           sketch: "Sketch for testProjectId-1234-test1.fa",
         },
         {
-          ...apiData.samples[1],
+          ...apiData.samples["1235"],
           amr: "AMR for testProjectId-1235-test2.fa",
           sketch: "Sketch for testProjectId-1235-test2.fa",
         },
         {
-          ...apiData.samples[2],
+          ...apiData.samples["1236"],
           amr: "AMR for testProjectId-1236-test3.fa",
           sketch: "Sketch for testProjectId-1236-test3.fa",
         },
