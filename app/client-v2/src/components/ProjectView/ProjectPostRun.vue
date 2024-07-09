@@ -38,7 +38,7 @@ const getMicroreactSettingsTooltip = () => {
     @closeDialog="closeDialog"
     @saveMicroreactToken="saveMicroreactToken(projectStore.project.samples[0].cluster, $event)"
   />
-  <ProjectFileUpload>
+  <ProjectFileUpload @onRunAnalysis="hasVisitedNetworkTab && (hasVisitedNetworkTab = false)">
     <TabView @update:active-index="tabChange">
       <TabPanel header="Samples">
         <ProjectDataTable>

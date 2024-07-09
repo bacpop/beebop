@@ -4,6 +4,14 @@ import { ref } from "vue";
 
 const projectStore = useProjectStore();
 const tableIsHovered = ref(false);
+const emit = defineEmits<{
+  onRunAnalysis: [];
+}>();
+
+const runAnalysis = () => {
+  projectStore.runAnalysis()
+  emit("onRunAnalysis");
+}
 </script>
 
 <template>
@@ -25,7 +33,7 @@ const tableIsHovered = ref(false);
         <Button
           label="Run Analysis"
           outlined
-          @click="projectStore.runAnalysis"
+          @click="runAnalysis"
           :disabled="!projectStore.isReadyToRun"
         />
       </div>

@@ -1,6 +1,6 @@
 const mockUserStoreConstructor = jest.fn();
 const mockUserStore = {
-  saveHashAndSampleHasRun: jest.fn(),
+  saveHashAndSamplesRun: jest.fn(),
 };
 jest.mock("../../../src/db/userStore", () => ({
   userStore: mockUserStoreConstructor.mockReturnValue(mockUserStore),
@@ -54,12 +54,12 @@ describe("indexController", () => {
     await indexController(config).runPoppunk(req, {}, jest.fn());
     expect(mockUserStoreConstructor).toHaveBeenCalledTimes(1);
     expect(mockUserStoreConstructor.mock.calls[0][0]).toBe(mockRedis);
-    expect(mockUserStore.saveHashAndSampleHasRun).toHaveBeenCalledTimes(1);
-    expect(mockUserStore.saveHashAndSampleHasRun.mock.calls[0][0]).toBe(req);
-    expect(mockUserStore.saveHashAndSampleHasRun.mock.calls[0][1]).toBe(
+    expect(mockUserStore.saveHashAndSamplesRun).toHaveBeenCalledTimes(1);
+    expect(mockUserStore.saveHashAndSamplesRun.mock.calls[0][0]).toBe(req);
+    expect(mockUserStore.saveHashAndSamplesRun.mock.calls[0][1]).toBe(
       "test-project-id"
     );
-    expect(mockUserStore.saveHashAndSampleHasRun.mock.calls[0][2]).toBe("1234");
+    expect(mockUserStore.saveHashAndSamplesRun.mock.calls[0][2]).toBe("1234");
 
     expect(mockAxios.history.post[0].url).toBe("http://localhost:5000/poppunk");
     expect(JSON.parse(mockAxios.history.post[0].data)).toStrictEqual(

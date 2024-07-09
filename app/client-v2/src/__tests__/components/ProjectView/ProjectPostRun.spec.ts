@@ -1,7 +1,7 @@
 import ProjectPostRun from "@/components/ProjectView/ProjectPostRun.vue";
 import { MOCK_PROJECT_SAMPLES } from "@/mocks/mockObjects";
 import { useProjectStore } from "@/stores/projectStore";
-import { createTestingPinia } from "@pinia/testing";
+import { createTestingPinia, type TestingPinia } from "@pinia/testing";
 import userEvent from "@testing-library/user-event";
 import { render, screen, waitFor } from "@testing-library/vue";
 import PrimeVue from "primevue/config";
@@ -11,40 +11,40 @@ vitest.mock("primevue/usetoast", () => ({
   useToast: vitest.fn()
 }));
 
+const renderComponent = (testPinia: TestingPinia, shouldStubTable = true) =>
+  render(ProjectPostRun, {
+    global: {
+      plugins: [PrimeVue, testPinia],
+      stubs: {
+        MicroReactTokenDialog: true,
+        ProjectDataTable: shouldStubTable && {
+          template: `<div>Data Table</div>`
+        },
+        NetworkTab: {
+          template: `<div>Network Graphs</div>`
+        }
+      },
+      directives: {
+        tooltip: Tooltip
+      }
+    }
+  });
+const setupPinia = (storeState: Record<string, unknown>) => {
+  const testPinia = createTestingPinia();
+  const store = useProjectStore();
+  store.project = storeState as any;
+
+  return { testPinia, store };
+};
 describe("RunProject", () => {
   it("should display correct content for tabs when switching", async () => {
-    render(ProjectPostRun, {
-      global: {
-        plugins: [
-          PrimeVue,
-          createTestingPinia({
-            initialState: {
-              project: {
-                project: {
-                  status: {
-                    network: "finished"
-                  },
-                  samples: MOCK_PROJECT_SAMPLES
-                }
-              }
-            }
-          })
-        ],
-        stubs: {
-          MicroReactColumn: true,
-          MicroReactTokenDialog: true,
-          ProjectDataTable: {
-            template: `<div>Data Table</div>`
-          },
-          NetworkTab: {
-            template: `<div>Network Graphs</div>`
-          }
-        },
-        directives: {
-          tooltip: Tooltip
-        }
+    const { testPinia } = setupPinia({
+      samples: MOCK_PROJECT_SAMPLES,
+      status: {
+        network: "finished"
       }
     });
+    renderComponent(testPinia);
 
     const dataTable = screen.getByText(/data table/i);
 
@@ -58,27 +58,10 @@ describe("RunProject", () => {
   });
 
   it("should enable network tab on network finished", async () => {
-    const testPinia = createTestingPinia();
-    const store = useProjectStore();
-    store.project.samples = MOCK_PROJECT_SAMPLES;
-    render(ProjectPostRun, {
-      global: {
-        plugins: [PrimeVue, testPinia],
-        stubs: {
-          MicroReactColumn: true,
-          MicroReactTokenDialog: true,
-          ProjectDataTable: {
-            template: `<div>Data Table</div>`
-          },
-          NetworkTab: {
-            template: `<div>Network Graphs</div>`
-          }
-        },
-        directives: {
-          tooltip: Tooltip
-        }
-      }
+    const { testPinia, store } = setupPinia({
+      samples: MOCK_PROJECT_SAMPLES
     });
+    renderComponent(testPinia);
 
     const tabPanel = screen.getByRole("tab", { name: /network/i });
 
@@ -94,34 +77,15 @@ describe("RunProject", () => {
   });
 
   it("should render extra columns for data table slot when project has run", async () => {
-    render(ProjectPostRun, {
-      global: {
-        plugins: [
-          PrimeVue,
-          createTestingPinia({
-            initialState: {
-              project: {
-                project: {
-                  samples: MOCK_PROJECT_SAMPLES,
-                  status: {
-                    assign: "finished",
-                    microreact: "finished",
-                    network: "finished"
-                  }
-                }
-              }
-            }
-          })
-        ],
-        stubs: {
-          MicroReactColumn: true,
-          MicroReactTokenDialog: true
-        },
-        directives: {
-          tooltip: Tooltip
-        }
+    const { testPinia } = setupPinia({
+      samples: MOCK_PROJECT_SAMPLES,
+      status: {
+        assign: "finished",
+        microreact: "finished",
+        network: "finished"
       }
     });
+    renderComponent(testPinia, false);
 
     expect(screen.getAllByRole("button", { name: /download network zip/i }).length).toBe(MOCK_PROJECT_SAMPLES.length);
     MOCK_PROJECT_SAMPLES.forEach((sample) => {
@@ -134,30 +98,11 @@ describe("RunProject", () => {
       ...sample,
       hasRun: true
     }));
-    render(ProjectPostRun, {
-      global: {
-        plugins: [
-          PrimeVue,
-          createTestingPinia({
-            initialState: {
-              project: {
-                project: {
-                  samples: copyMockSamples,
-                  status: undefined
-                }
-              }
-            }
-          })
-        ],
-        stubs: {
-          MicroReactColumn: true,
-          MicroReactTokenDialog: true
-        },
-        directives: {
-          tooltip: Tooltip
-        }
-      }
+    const { testPinia } = setupPinia({
+      samples: copyMockSamples,
+      status: undefined
     });
+    renderComponent(testPinia, false);
 
     expect(screen.getAllByText(/pending/i).length).toBe(copyMockSamples.length);
   });
@@ -168,63 +113,25 @@ describe("RunProject", () => {
       cluster: undefined,
       hasRun: false
     }));
-    render(ProjectPostRun, {
-      global: {
-        plugins: [
-          PrimeVue,
-          createTestingPinia({
-            initialState: {
-              project: {
-                project: {
-                  samples: copyMockSamples,
-                  status: undefined
-                }
-              }
-            }
-          })
-        ],
-        stubs: {
-          MicroReactColumn: true,
-          MicroReactTokenDialog: true
-        },
-        directives: {
-          tooltip: Tooltip
-        }
-      }
+    const { testPinia } = setupPinia({
+      samples: copyMockSamples,
+      status: undefined
     });
+    renderComponent(testPinia, false);
 
     expect(screen.getAllByText(/not run/i).length).toBe(copyMockSamples.length);
   });
 
   it("should render failed network status if network analysis failed", async () => {
-    render(ProjectPostRun, {
-      global: {
-        plugins: [
-          PrimeVue,
-          createTestingPinia({
-            initialState: {
-              project: {
-                project: {
-                  samples: MOCK_PROJECT_SAMPLES,
-                  status: {
-                    assign: "finished",
-                    microreact: "finished",
-                    network: "failed"
-                  }
-                }
-              }
-            }
-          })
-        ],
-        stubs: {
-          MicroReactTokenDialog: true,
-          MicroReactColumn: true
-        },
-        directives: {
-          tooltip: Tooltip
-        }
+    const { testPinia } = setupPinia({
+      samples: MOCK_PROJECT_SAMPLES,
+      status: {
+        assign: "finished",
+        microreact: "finished",
+        network: "failed"
       }
     });
+    renderComponent(testPinia, false);
 
     expect(screen.queryAllByText(/failed/i).length).toBe(MOCK_PROJECT_SAMPLES.length);
   });
@@ -235,35 +142,15 @@ describe("RunProject", () => {
       cluster: undefined,
       hasRun: false
     }));
-
-    render(ProjectPostRun, {
-      global: {
-        plugins: [
-          PrimeVue,
-          createTestingPinia({
-            initialState: {
-              project: {
-                project: {
-                  samples: copyMockSamples,
-                  status: {
-                    assign: "finished",
-                    microreact: "finished",
-                    network: "finished"
-                  }
-                }
-              }
-            }
-          })
-        ],
-        stubs: {
-          MicroReactTokenDialog: true,
-          MicroReactColumn: true
-        },
-        directives: {
-          tooltip: Tooltip
-        }
+    const { testPinia } = setupPinia({
+      samples: copyMockSamples,
+      status: {
+        assign: "finished",
+        microreact: "finished",
+        network: "finished"
       }
     });
+    renderComponent(testPinia, false);
 
     screen.getAllByRole("button", { name: /download network zip/i }).forEach((button) => {
       expect(button).toBeDisabled();
@@ -271,100 +158,64 @@ describe("RunProject", () => {
   });
 
   it("should render network status if not failed or finished", async () => {
-    render(ProjectPostRun, {
-      global: {
-        plugins: [
-          PrimeVue,
-          createTestingPinia({
-            initialState: {
-              project: {
-                project: {
-                  samples: MOCK_PROJECT_SAMPLES,
-                  status: {
-                    assign: "finished",
-                    microreact: "finished",
-                    network: "started"
-                  }
-                }
-              }
-            }
-          })
-        ],
-        stubs: {
-          MicroReactTokenDialog: true,
-          MicroReactColumn: true
-        },
-        directives: {
-          tooltip: Tooltip
-        }
+    const { testPinia } = setupPinia({
+      samples: MOCK_PROJECT_SAMPLES,
+      status: {
+        assign: "finished",
+        microreact: "finished",
+        network: "started"
       }
     });
+    renderComponent(testPinia, false);
 
     expect(screen.queryAllByText(/started/i).length).toBe(MOCK_PROJECT_SAMPLES.length);
   });
 
   it("should render disabled microreact setting button when microreact is not finished", async () => {
-    render(ProjectPostRun, {
-      global: {
-        plugins: [
-          PrimeVue,
-          createTestingPinia({
-            initialState: {
-              project: {
-                project: {
-                  samples: MOCK_PROJECT_SAMPLES,
-                  status: {
-                    assign: "finished",
-                    microreact: "started",
-                    network: "finished"
-                  }
-                }
-              }
-            }
-          })
-        ],
-        stubs: {
-          MicroReactTokenDialog: true,
-          MicroReactColumn: true
-        },
-        directives: {
-          tooltip: Tooltip
-        }
+    const { testPinia } = setupPinia({
+      samples: MOCK_PROJECT_SAMPLES,
+      status: {
+        assign: "finished",
+        microreact: "started",
+        network: "finished"
       }
     });
+    renderComponent(testPinia, false);
 
     expect(screen.getByRole("button", { name: /microreact settings/i })).toBeDisabled();
   });
 
   it("should display failed tags on cluster, network, microreact if status is finished but no cluster", () => {
-    render(ProjectPostRun, {
-      global: {
-        plugins: [
-          PrimeVue,
-          createTestingPinia({
-            initialState: {
-              project: {
-                project: {
-                  samples: [{ ...MOCK_PROJECT_SAMPLES[0], cluster: undefined }],
-                  status: {
-                    assign: "finished",
-                    microreact: "finished",
-                    network: "finished"
-                  }
-                }
-              }
-            }
-          })
-        ],
-        stubs: {
-          MicroReactTokenDialog: true
-        },
-        directives: {
-          tooltip: Tooltip
-        }
+    const { testPinia } = setupPinia({
+      samples: [{ ...MOCK_PROJECT_SAMPLES[0], cluster: undefined }],
+      status: {
+        assign: "finished",
+        microreact: "finished",
+        network: "finished"
       }
     });
+    renderComponent(testPinia, false);
 
     expect(screen.getAllByText("failed").length).toBe(3);
+  });
+
+  it("should unmount network tab after running project", async () => {
+    const { testPinia } = setupPinia({
+      samples: MOCK_PROJECT_SAMPLES,
+      status: {
+        network: "finished"
+      }
+    });
+    renderComponent(testPinia);
+
+    expect(screen.queryByText(/network graphs/i)).not.toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole("tab", { name: /network/i }));
+    await userEvent.click(screen.getByRole("tab", { name: /samples/i }));
+    expect(screen.getByText(/network graphs/i)).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole("button", { name: /run analysis/i }));
+
+    expect(screen.queryByText(/network graphs/i)).not.toBeInTheDocument();
   });
 });

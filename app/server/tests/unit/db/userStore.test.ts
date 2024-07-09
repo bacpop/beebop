@@ -72,7 +72,7 @@ describe("UserStore", () => {
     it("saves project hash and samples hasRun flag", async () => {
         const sut = new UserStore(mockRedis);
         const sampleNames = {"sampleHash": "sampleFileName"}
-        await sut.saveHashAndSampleHasRun(mockRequest, "testProjectId", "testProjectHash", sampleNames);
+        await sut.saveHashAndSamplesRun(mockRequest, "testProjectId", "testProjectHash", sampleNames);
 
         expect(mockRedis.multi).toHaveBeenCalledTimes(1);
         expect(mockChainableCommander.exec).toHaveBeenCalledTimes(1);
@@ -82,7 +82,7 @@ describe("UserStore", () => {
 
     it("does not save project hash if it has been deleted", async () => {
         const sut = new UserStore(mockRedis);
-        await expect(sut.saveHashAndSampleHasRun(mockRequest, "789", "testProjectHash", {})).rejects.toThrow("This project has been deleted");
+        await expect(sut.saveHashAndSamplesRun(mockRequest, "789", "testProjectHash", {})).rejects.toThrow("This project has been deleted");
         expect(mockRedis.hset).not.toHaveBeenCalled();
     });
 

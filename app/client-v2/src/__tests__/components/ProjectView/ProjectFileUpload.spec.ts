@@ -11,7 +11,7 @@ vitest.mock("primevue/usetoast", () => ({
 }));
 
 describe("ProjectFile upload", () => {
-  it("should render drag and drop section no files uploaded", () => {
+  it("should render drag and drop section when no files uploaded", () => {
     const testPinia = createTestingPinia();
     const store = useProjectStore(testPinia);
     store.project.samples = [];
@@ -24,7 +24,7 @@ describe("ProjectFile upload", () => {
     expect(screen.getByText(/drag and drop/i)).toBeVisible();
   });
 
-  it("should call store.RunAnalysis on run analysis click and not disabled", async () => {
+  it("should enable and run analysis when isReadyToRun is true", async () => {
     const testPinia = createTestingPinia();
     const store = useProjectStore(testPinia);
     // @ts-expect-error: Getter is read only
@@ -139,5 +139,22 @@ describe("ProjectFile upload", () => {
     expect(dropZone).not.toHaveClass("opacity-20");
     expect(container.querySelector('input[type="file"]')).toBeDisabled();
     expect(screen.getByTestId("drop-zone-info")).toHaveClass("hidden");
+  });
+
+  it("should emit onRunAnalysis event when run analysis button is clicked", async () => {
+    const testPinia = createTestingPinia();
+    const store = useProjectStore(testPinia);
+    // @ts-expect-error: Getter is read only
+    store.isReadyToRun = true;
+    store.project.samples = [];
+    const { emitted } = render(ProjectFileUpload, {
+      global: {
+        plugins: [testPinia, PrimeVue]
+      }
+    });
+
+    await userEvent.click(screen.getByRole("button", { name: /run analysis/i }));
+
+    expect(emitted()).toHaveProperty("onRunAnalysis");
   });
 });
