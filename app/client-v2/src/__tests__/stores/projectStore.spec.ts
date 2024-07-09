@@ -279,7 +279,7 @@ describe("projectStore", () => {
             data: {
               sample1: {
                 hash: "sample1",
-                failReasons: ["length too short"]
+                failReasons: ["length too short", "failed distance qc"]
               }
             },
             errors: [],
@@ -292,7 +292,7 @@ describe("projectStore", () => {
 
       await store.getClusterAssignResult();
 
-      expect(store.project.samples[0].failReasons).toBe("length too short");
+      expect(store.project.samples[0].failReasons).toStrictEqual(["length too short", "failed distance qc"]);
     });
     it("should stop polling if status request returns complete status & sets stores analysisStatus", async () => {
       const store = useProjectStore();
