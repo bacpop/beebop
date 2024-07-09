@@ -9,9 +9,9 @@ const emit = defineEmits<{
 }>();
 
 const runAnalysis = () => {
-  projectStore.runAnalysis()
+  projectStore.runAnalysis();
   emit("onRunAnalysis");
-}
+};
 </script>
 
 <template>
@@ -30,12 +30,7 @@ const runAnalysis = () => {
       </div>
       <div v-else class="flex flex-wrap justify-content-between align-items-center flex-1 gap-2">
         <Button label="Upload" outlined icon="pi pi-upload" @click="chooseCallback()" />
-        <Button
-          label="Run Analysis"
-          outlined
-          @click="runAnalysis"
-          :disabled="!projectStore.isReadyToRun"
-        />
+        <Button label="Run Analysis" outlined @click="runAnalysis" :disabled="!projectStore.isReadyToRun" />
       </div>
     </template>
     <template #empty>
