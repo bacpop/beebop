@@ -279,7 +279,7 @@ describe("projectStore", () => {
             data: {
               sample1: {
                 hash: "sample1",
-                failReasons: "length too short"
+                failReasons: ["length too short"]
               }
             },
             errors: [],
