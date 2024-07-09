@@ -37,14 +37,14 @@ describe("projectStore", () => {
     it("isProjectComplete returns true when all analysisStatus are complete", () => {
       const store = useProjectStore();
       store.project.status = { assign: "finished", microreact: "failed", network: "finished" };
-      expect(store.isProjectComplete).toBe(true);
+      expect(store.isFinishedRun).toBe(true);
     });
 
     it("isProjectComplete returns false when not all analysisStatus are complete", () => {
       const store = useProjectStore();
       store.project.status = { assign: "started", microreact: "finished", network: "finished" };
 
-      expect(store.isProjectComplete).toBe(false);
+      expect(store.isFinishedRun).toBe(false);
     });
 
     it("numOfStatus returns the number of analysisStatus", () => {
@@ -62,12 +62,12 @@ describe("projectStore", () => {
     it("startedRun returns true when project status is set", () => {
       const store = useProjectStore();
       store.project.status = { assign: "started", microreact: "finished", network: "finished" };
-      expect(store.startedRun).toBe(true);
+      expect(store.hasStartedAtLeastOneRun).toBe(true);
     });
     it("startedRun returns false when project status is not set", () => {
       const store = useProjectStore();
       store.project.status = undefined;
-      expect(store.startedRun).toBe(false);
+      expect(store.hasStartedAtLeastOneRun).toBe(false);
     });
   });
 
@@ -114,7 +114,7 @@ describe("projectStore", () => {
         samples: MOCK_PROJECT.samples,
         status: MOCK_PROJECT.status
       });
-      expect(store.startedRun).toBe(true);
+      expect(store.hasStartedAtLeastOneRun).toBe(true);
     });
 
     it("should not upload duplicates when onFilesUpload is called", async () => {
@@ -327,8 +327,10 @@ describe("projectStore", () => {
       expect(store.project.status).toEqual({ assign: "failed", microreact: "failed", network: "failed" });
       expect(store.stopPollingStatus).toHaveBeenCalled();
     });
-    it("should set state, call buildRunAnalysisPostBody and pollAnalysisStatus when runAnalysis is called", async () => {
+    it("should set state, call buildRunAnalysisPostBody, pollAnalysisStatus and update sample hasRun when runAnalysis is called", async () => {
       const store = useProjectStore();
+      const samples = structuredClone(MOCK_PROJECT_SAMPLES_BEFORE_RUN);
+      store.project.samples = samples;
       store.buildRunAnalysisPostBody = vitest.fn().mockReturnValue({ projectHash: "test-hash" });
       store.pollAnalysisStatus = vitest.fn();
 
@@ -336,9 +338,12 @@ describe("projectStore", () => {
 
       expect(store.buildRunAnalysisPostBody).toHaveBeenCalled();
       expect(store.pollAnalysisStatus).toHaveBeenCalled();
-      expect(store.startedRun).toBe(true);
+      expect(store.hasStartedAtLeastOneRun).toBe(true);
       expect(store.project.hash).toBe("test-hash");
       expect(store.project.status).toEqual({ assign: "submitted", microreact: "submitted", network: "submitted" });
+      samples.forEach((sample) => {
+        expect(sample.hasRun).toBe(true);
+      });
     });
     it("should not call pollAnalysisStatus & not change status when runAnalysis fails", () => {
       const store = useProjectStore();
@@ -350,7 +355,7 @@ describe("projectStore", () => {
 
       expect(store.pollAnalysisStatus).not.toHaveBeenCalled();
       expect(store.project.status).toBeUndefined();
-      expect(store.startedRun).toBe(false);
+      expect(store.hasStartedAtLeastOneRun).toBe(false);
       expect(store.project.hash).toBeUndefined();
     });
     it("should correctly create post body when buildRunAnalysisPostBody is called", () => {

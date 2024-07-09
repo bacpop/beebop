@@ -30,14 +30,17 @@ export const useProjectStore = defineStore("project", {
     isReadyToRun: (state) =>
       state.project.samples.length > 0 &&
       state.project.samples.every((sample: ProjectSample) => sample.sketch && sample.amr),
-    isProjectComplete: (state) => {
+    isFinishedRun: (state) => {
       const analysisStatusValues = Object.values(state.project.status || {});
       return (
         analysisStatusValues.length > 0 && analysisStatusValues.every((value) => COMPLETE_STATUS_TYPES.includes(value))
       );
     },
     numOfStatus: (state) => Object.keys(state.project.status || {}).length,
-    startedRun: (state) => !!state.project.status,
+    hasStartedAtLeastOneRun: (state) => !!state.project.status,
+    isRunning(): boolean {
+      return this.hasStartedAtLeastOneRun && !this.isFinishedRun;
+    },
     analysisProgressPercentage(state): number {
       return Math.round(
         (Object.values(state.project.status || {}).filter((value) => COMPLETE_STATUS_TYPES.includes(value)).length /
@@ -54,7 +57,7 @@ export const useProjectStore = defineStore("project", {
         const projectRes = await baseApi.get<ApiResponse<Project>>(`/project/${id}`);
         this.project = projectRes.data;
 
-        if (this.startedRun && !this.isProjectComplete) {
+        if (this.hasStartedAtLeastOneRun && !this.isFinishedRun) {
           this.pollAnalysisStatus();
         }
       } catch (error) {
@@ -203,6 +206,7 @@ export const useProjectStore = defineStore("project", {
 
         this.project.hash = body.projectHash;
         this.project.status = { assign: "submitted", microreact: "submitted", network: "submitted" };
+        this.project.samples.forEach((sample: ProjectSample) => (sample.hasRun = true));
         this.pollAnalysisStatus();
       } catch (error) {
         console.error("Error running analysis", error);
