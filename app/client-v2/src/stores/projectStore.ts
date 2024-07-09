@@ -9,7 +9,6 @@ import {
   type WorkerResponse,
   WorkerResponseValueTypes,
   AnalysisType,
-  type AssignCluster,
   type ClusterInfo,
   type StatusTypes
 } from "@/types/projectTypes";
@@ -152,7 +151,7 @@ export const useProjectStore = defineStore("project", {
       const { assign, network, microreact } = data;
       this.project.status = data;
 
-      if (assign === "finished" && prevClusterAssign !== "finished") {
+      if (COMPLETE_STATUS_TYPES.includes(assign) && prevClusterAssign !== "finished") {
         await this.getClusterAssignResult();
       }
       if (assign === "failed") {
@@ -164,7 +163,7 @@ export const useProjectStore = defineStore("project", {
 
     async getClusterAssignResult() {
       try {
-        const assignClusterRes = await baseApi.post<ApiResponse<AssignCluster>>("/assignResult", {
+        const assignClusterRes = await baseApi.post<ApiResponse<Record<string, ClusterInfo>>>("/assignResult", {
           projectHash: this.project.hash
         });
 
@@ -172,8 +171,10 @@ export const useProjectStore = defineStore("project", {
           const matchedHashIndex = this.project.samples.findIndex(
             (sample: ProjectSample) => clusterInfo.hash === sample.hash
           );
+
           if (matchedHashIndex !== -1) {
             this.project.samples[matchedHashIndex].cluster = clusterInfo.cluster;
+            this.project.samples[matchedHashIndex].failReasons = clusterInfo.failReasons;
           }
         });
       } catch (error) {

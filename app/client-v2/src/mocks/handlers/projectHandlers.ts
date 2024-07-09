@@ -36,9 +36,18 @@ export const projectHandlers: HttpHandler[] = [
   http.post(assignResultUri, () =>
     HttpResponse.json({
       data: {
-        0: { hash: MOCK_PROJECT_SAMPLES[0].hash, cluster: MOCK_PROJECT_SAMPLES[0].cluster } as ClusterInfo,
-        1: { hash: MOCK_PROJECT_SAMPLES[1].hash, cluster: MOCK_PROJECT_SAMPLES[1].cluster } as ClusterInfo,
-        2: { hash: MOCK_PROJECT_SAMPLES[2].hash, cluster: MOCK_PROJECT_SAMPLES[2].cluster } as ClusterInfo
+        [MOCK_PROJECT_SAMPLES[0].hash]: {
+          hash: MOCK_PROJECT_SAMPLES[0].hash,
+          cluster: MOCK_PROJECT_SAMPLES[0].cluster
+        } as ClusterInfo,
+        [MOCK_PROJECT_SAMPLES[1].hash]: {
+          hash: MOCK_PROJECT_SAMPLES[1].hash,
+          cluster: MOCK_PROJECT_SAMPLES[1].cluster
+        } as ClusterInfo,
+        [MOCK_PROJECT_SAMPLES[2].hash]: {
+          hash: MOCK_PROJECT_SAMPLES[2].hash,
+          cluster: MOCK_PROJECT_SAMPLES[2].cluster
+        } as ClusterInfo
       },
       errors: [],
       status: "success"

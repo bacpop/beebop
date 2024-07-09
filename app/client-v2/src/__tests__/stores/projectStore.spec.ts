@@ -272,6 +272,28 @@ describe("projectStore", () => {
         expect(sample.cluster).toBeUndefined();
       });
     });
+    it("should set failReasons if present when getClusterAssignResult is called", async () => {
+      server.use(
+        http.post(assignResultUri, () =>
+          HttpResponse.json({
+            data: {
+              sample1: {
+                hash: "sample1",
+                failReasons: ["length too short", "failed distance qc"]
+              }
+            },
+            errors: [],
+            status: "success"
+          })
+        )
+      );
+      const store = useProjectStore();
+      store.project.samples = [{ hash: "sample1", filename: "sample1.fasta" }];
+
+      await store.getClusterAssignResult();
+
+      expect(store.project.samples[0].failReasons).toStrictEqual(["length too short", "failed distance qc"]);
+    });
     it("should stop polling if status request returns complete status & sets stores analysisStatus", async () => {
       const store = useProjectStore();
       store.stopPollingStatus = vitest.fn();
@@ -477,6 +499,15 @@ describe("projectStore", () => {
 
       expect(stopPolling).toBe(true);
       expect(store.project.status).toStrictEqual({ assign: "failed", network: "failed", microreact: "failed" });
+    });
+    it("should call getClusterAssignResult if assign is failed when processStatusAndGetPolling called", async () => {
+      const analysisStatus: AnalysisStatus = { assign: "failed", network: "deferred", microreact: "waiting" };
+      const store = useProjectStore();
+      store.getClusterAssignResult = vitest.fn();
+
+      await store.processStatusAndGetStopPolling(analysisStatus, "waiting");
+
+      expect(store.getClusterAssignResult).toHaveBeenCalled();
     });
   });
 });
