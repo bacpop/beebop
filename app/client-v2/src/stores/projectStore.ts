@@ -75,17 +75,23 @@ export const useProjectStore = defineStore("project", {
     },
 
     async processFiles(files: File[]) {
-      for (const file of files) {
-        const content = await file.text();
-        const fileHash = Md5.hashStr(content);
-        this.project.samples.push({ hash: fileHash, filename: file.name });
+      const hashedFiles = await Promise.all(
+        files.map(async (file) => {
+          const content = await file.text();
+          const fileHash = Md5.hashStr(content);
+          return { hash: fileHash, filename: file.name, file };
+        })
+      );
+      const batches = [];
+      for (let i = 0; i < hashedFiles.length; i += 10) {
+        batches.push(hashedFiles.slice(i, i + 10));
+      }
 
-        // run web worker to get sketch and amr data and then post to server
+      for (const batch of batches) {
         const worker = new Worker("/worker.js");
-        worker.postMessage({ hash: fileHash, fileObject: file });
-
-        worker.onmessage = async (event: MessageEvent<WorkerResponse>) => {
-          this.handleWorkerResponse(file.name, event);
+        worker.postMessage(batch);
+        worker.onmessage = async (event: MessageEvent<WorkerResponse[]>) => {
+          this.handleWorkerResponse(event.data);
         };
         worker.onerror = (error) => {
           console.error(error);
@@ -94,31 +100,14 @@ export const useProjectStore = defineStore("project", {
       }
     },
 
-    async handleWorkerResponse(filename: string, event: MessageEvent<WorkerResponse>) {
-      const { hash, result, type } = event.data;
-      const parsedAmrOrSketch = JSON.parse(result);
-
-      const matchedHashIndex = this.project.samples.findIndex((sample: ProjectSample) => hash === sample.hash);
-      if (matchedHashIndex !== -1) {
-        this.project.samples[matchedHashIndex][type] = parsedAmrOrSketch;
-      }
-
+    async handleWorkerResponse(samples: WorkerResponse[]) {
+      console.log(samples);
+      this.project.samples.push(...samples);
       try {
-        await baseApi.post(
-          `/project/${this.project.id}/${type}/${hash}`,
-          type === WorkerResponseValueTypes.AMR
-            ? parsedAmrOrSketch
-            : {
-                sketch: parsedAmrOrSketch,
-                filename
-              }
-        );
+        await baseApi.post(`/project/${this.project.id}/sample`, samples);
       } catch (error) {
         console.error(error);
-        this.toast.showErrorToast("Ensure uploaded sample file is correct or try again later.");
-        if (matchedHashIndex !== -1) {
-          this.project.samples.splice(matchedHashIndex, 1);
-        }
+        this.toast.showErrorToast("Ensure uploaded sample files is correct or try again later.");
       }
     },
 

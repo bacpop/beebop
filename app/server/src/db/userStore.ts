@@ -121,6 +121,27 @@ export class UserStore {
         await this._redis.hset(this._projectSampleKey(projectId, sampleId), "amr", JSON.stringify(amr));
     }
 
+    async saveSamples(projectId: string, samples: {
+        sketch: Record<string, unknown>;
+        hash: string;
+        amr: AMR;
+        filename: string
+      }[]) {
+        await this._validateProject(projectId);
+        const multi = this._redis.multi();
+        for (const sample of samples) {
+            const sampleId = this._sampleId(sample.hash, sample.filename);
+            multi.sadd(this._projectSamplesKey(projectId), sampleId);
+            multi.hset(
+                this._projectSampleKey(projectId, sampleId),
+                {
+                  "sketch": JSON.stringify(sample.sketch),
+                  "amr": JSON.stringify(sample.amr)
+                }
+              );
+        }
+        await multi.exec();
+    }
     async getSketch(projectId: string, sampleHash: string, filename: string): Promise<Record<string, unknown>> {
         await this._validateProject(projectId);
         const sampleId = this._sampleId(sampleHash, filename);

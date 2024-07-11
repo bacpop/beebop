@@ -72,8 +72,9 @@ export enum WorkerResponseValueTypes {
 
 export interface WorkerResponse {
   hash: string;
-  type: WorkerResponseValueTypes;
-  result: string;
+  filename: string;
+  amr: AMR;
+  sketch: Record<string, unknown>;
 }
 
 export enum AnalysisType {

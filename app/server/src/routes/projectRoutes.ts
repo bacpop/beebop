@@ -30,5 +30,8 @@ export default {
         app.patch(`/project/:projectId/sample/:sampleHash/delete`,
             authCheck, 
             controller.deleteSample);
+        app.post("/project/:projectId/sample", 
+            authCheck,
+            controller.addSamples);
     }
 } as BeebopRoutes;

@@ -24,7 +24,7 @@ export default (config) => {
         const { redis } = request.app.locals;
         const projectId = await userStore(redis).saveNewProject(request, name);
         sendSuccess(response, projectId);
-      })
+      });
     },
 
     async renameProject(request, response, next) {
@@ -34,7 +34,7 @@ export default (config) => {
         const { redis } = request.app.locals;
         await userStore(redis).renameProject(request, projectId, name);
         sendSuccess(response, null);
-      })
+      });
     },
 
     async getProject(request, response, next) {
@@ -137,6 +137,22 @@ export default (config) => {
         };
         const { redis } = request.app.locals;
         await userStore(redis).deleteSample(projectId, sampleHash, filename);
+        sendSuccess(response, null);
+      });
+    },
+
+    async addSamples(request, response, next) {
+      await asyncHandler(next, async () => {
+        const samples = request.body as {
+          sketch: Record<string, unknown>;
+          hash: string;
+          amr: AMR;
+          filename: string
+        }[];
+        const { projectId } = request.params;
+        const { redis } = request.app.locals;
+
+        await userStore(redis).saveSamples(projectId, samples);
         sendSuccess(response, null);
       });
     },
