@@ -75,6 +75,10 @@ export const useProjectStore = defineStore("project", {
     },
 
     async processFiles(files: File[]) {
+      const hashedFileBatches = await this.batchFilesForProcessing(files);
+      this.processFileBatches(hashedFileBatches);
+    },
+    async batchFilesForProcessing(files: File[]) {
       const hashedFiles: HashedFile[] = await Promise.all(
         files.map(async (file) => {
           const content = await file.text();
@@ -82,12 +86,15 @@ export const useProjectStore = defineStore("project", {
           return { hash: fileHash, filename: file.name, file };
         })
       );
-      const maxWorkers = this.getOptimalWorkerCount();
-      const BATCH_SIZE = 10;
+      const BATCH_SIZE = 8;
       const hashedFileBatches: HashedFile[][] = [];
       for (let i = 0; i < hashedFiles.length; i += BATCH_SIZE) {
         hashedFileBatches.push(hashedFiles.slice(i, i + BATCH_SIZE));
       }
+      return hashedFileBatches;
+    },
+    async processFileBatches(hashedFileBatches: HashedFile[][]) {
+      const maxWorkers = this.getOptimalWorkerCount();
 
       const activeBatches: Set<Promise<void>> = new Set();
       for (const hashedFileBatch of hashedFileBatches) {
@@ -97,7 +104,6 @@ export const useProjectStore = defineStore("project", {
         const batchPromise = this.computeAmrAndSketch(hashedFileBatch);
         activeBatches.add(batchPromise);
 
-        // cleanup promises that have finished
         batchPromise
           .then(() => {
             activeBatches.delete(batchPromise);
