@@ -82,34 +82,54 @@ export const useProjectStore = defineStore("project", {
           return { hash: fileHash, filename: file.name, file };
         })
       );
-      const MAX_WORKERS = 10;
-      const BATCH_SIZE = 20;
-      const batchSize = Math.ceil(hashedFiles.length / MAX_WORKERS);
+      const maxWorkers = this.getOptimalWorkerCount();
+      const BATCH_SIZE = 10;
       const hashedFileBatches: HashedFile[][] = [];
-      for (let i = 0; i < hashedFiles.length; i += batchSize) {
-        hashedFileBatches.push(hashedFiles.slice(i, i + batchSize));
+      for (let i = 0; i < hashedFiles.length; i += BATCH_SIZE) {
+        hashedFileBatches.push(hashedFiles.slice(i, i + BATCH_SIZE));
       }
+
+      const activeBatches: Set<Promise<void>> = new Set();
       for (const hashedFileBatch of hashedFileBatches) {
-        this.computeAmrAndSketch(hashedFileBatch);
+        if (activeBatches.size >= maxWorkers) {
+          await Promise.race(activeBatches); // wait for at least 1 batch to finish
+        }
+        const batchPromise = this.computeAmrAndSketch(hashedFileBatch);
+        activeBatches.add(batchPromise);
+
+        // cleanup promises that have finished
+        batchPromise
+          .then(() => {
+            activeBatches.delete(batchPromise);
+          })
+          .catch((error) => {
+            console.log(error);
+            activeBatches.delete(batchPromise);
+          });
       }
+    },
+    getOptimalWorkerCount() {
+      return Math.floor(navigator.hardwareConcurrency * 0.5) || 4;
     },
     async computeAmrAndSketch(hashedFiles: HashedFile[]): Promise<void> {
-      const worker = new Worker("/worker.js");
-      worker.postMessage(hashedFiles);
+      return new Promise((resolve, reject) => {
+        const worker = new Worker("/worker.js");
+        worker.postMessage(hashedFiles);
 
-      worker.onmessage = async (event: MessageEvent<WorkerResponse[]>) => {
-        this.handleWorkerResponse(event.data);
-        worker.terminate();
-      };
+        worker.onmessage = async (event: MessageEvent<WorkerResponse[]>) => {
+          this.handleWorkerResponse(event.data);
+          worker.terminate();
+          resolve();
+        };
 
-      worker.onerror = (error) => {
-        console.error(error);
-        this.toast.showErrorToast("Ensure uploaded sample files are correct, or try again later.");
-      };
+        worker.onerror = (error) => {
+          console.error(error);
+          this.toast.showErrorToast("Ensure uploaded sample files are correct, or try again later.");
+          reject();
+        };
+      });
     },
     async handleWorkerResponse(samples: WorkerResponse[]) {
-      console.log(samples);
-
       this.project.samples.push(...samples);
       try {
         await baseApi.post(`/project/${this.project.id}/sample`, samples);
