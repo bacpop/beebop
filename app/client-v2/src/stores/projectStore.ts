@@ -22,7 +22,8 @@ export const useProjectStore = defineStore("project", {
   state: () => ({
     project: {} as Project,
     pollingIntervalId: null as ReturnType<typeof setInterval> | null,
-    toast: useToastService() as ReturnType<typeof useToastService>
+    toast: useToastService() as ReturnType<typeof useToastService>,
+    uploadingPercentage: null as number | null
   }),
 
   getters: {
@@ -75,6 +76,7 @@ export const useProjectStore = defineStore("project", {
     },
 
     async processFiles(files: File[]) {
+      this.uploadingPercentage = 0;
       const hashedFileBatches = await this.batchFilesForProcessing(files);
       this.processFileBatches(hashedFileBatches);
     },
@@ -96,6 +98,8 @@ export const useProjectStore = defineStore("project", {
     async processFileBatches(hashedFileBatches: HashedFile[][]) {
       const maxWorkers = this.getOptimalWorkerCount();
       const activeBatches: Set<Promise<void>> = new Set();
+      let uploadPercentNumerator = 0;
+
       for (const hashedFileBatch of hashedFileBatches) {
         if (activeBatches.size >= maxWorkers) {
           await Promise.race(activeBatches); // wait for at least 1 batch to finish
@@ -105,7 +109,11 @@ export const useProjectStore = defineStore("project", {
 
         batchPromise
           .catch(() => console.log("error processing batch"))
-          .finally(() => activeBatches.delete(batchPromise));
+          .finally(() => {
+            activeBatches.delete(batchPromise);
+            uploadPercentNumerator++;
+            this.uploadingPercentage = Math.round((uploadPercentNumerator / hashedFileBatches.length) * 100);
+          });
       }
     },
     getOptimalWorkerCount() {

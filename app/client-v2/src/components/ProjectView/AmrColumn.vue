@@ -53,5 +53,4 @@ const displayAMR = computed(() => {
       </div>
     </Tag>
   </div>
-  <Tag v-else value="pending" severity="warning" />
 </template>
