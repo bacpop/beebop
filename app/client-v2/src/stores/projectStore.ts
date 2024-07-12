@@ -7,10 +7,10 @@ import {
   type Project,
   type ProjectSample,
   type WorkerResponse,
-  WorkerResponseValueTypes,
   AnalysisType,
   type ClusterInfo,
-  type StatusTypes
+  type StatusTypes,
+  type HashedFile
 } from "@/types/projectTypes";
 import { mande } from "mande";
 import { defineStore } from "pinia";
@@ -75,33 +75,41 @@ export const useProjectStore = defineStore("project", {
     },
 
     async processFiles(files: File[]) {
-      const hashedFiles = await Promise.all(
+      const hashedFiles: HashedFile[] = await Promise.all(
         files.map(async (file) => {
           const content = await file.text();
           const fileHash = Md5.hashStr(content);
           return { hash: fileHash, filename: file.name, file };
         })
       );
-      const batches = [];
-      for (let i = 0; i < hashedFiles.length; i += 10) {
-        batches.push(hashedFiles.slice(i, i + 10));
+      const MAX_WORKERS = 10;
+      const BATCH_SIZE = 20;
+      const batchSize = Math.ceil(hashedFiles.length / MAX_WORKERS);
+      const hashedFileBatches: HashedFile[][] = [];
+      for (let i = 0; i < hashedFiles.length; i += batchSize) {
+        hashedFileBatches.push(hashedFiles.slice(i, i + batchSize));
       }
-
-      for (const batch of batches) {
-        const worker = new Worker("/worker.js");
-        worker.postMessage(batch);
-        worker.onmessage = async (event: MessageEvent<WorkerResponse[]>) => {
-          this.handleWorkerResponse(event.data);
-        };
-        worker.onerror = (error) => {
-          console.error(error);
-          this.toast.showErrorToast("Ensure uploaded sample file is correct");
-        };
+      for (const hashedFileBatch of hashedFileBatches) {
+        this.computeAmrAndSketch(hashedFileBatch);
       }
     },
+    async computeAmrAndSketch(hashedFiles: HashedFile[]): Promise<void> {
+      const worker = new Worker("/worker.js");
+      worker.postMessage(hashedFiles);
 
+      worker.onmessage = async (event: MessageEvent<WorkerResponse[]>) => {
+        this.handleWorkerResponse(event.data);
+        worker.terminate();
+      };
+
+      worker.onerror = (error) => {
+        console.error(error);
+        this.toast.showErrorToast("Ensure uploaded sample files are correct, or try again later.");
+      };
+    },
     async handleWorkerResponse(samples: WorkerResponse[]) {
       console.log(samples);
+
       this.project.samples.push(...samples);
       try {
         await baseApi.post(`/project/${this.project.id}/sample`, samples);
@@ -190,12 +198,13 @@ export const useProjectStore = defineStore("project", {
     },
 
     async runAnalysis() {
+      this.project.status = { assign: "submitted", microreact: "submitted", network: "submitted" };
+
       const body = this.buildRunAnalysisPostBody();
       try {
         await baseApi.post("/poppunk", body);
 
         this.project.hash = body.projectHash;
-        this.project.status = { assign: "submitted", microreact: "submitted", network: "submitted" };
         this.project.samples.forEach((sample: ProjectSample) => (sample.hasRun = true));
         this.pollAnalysisStatus();
       } catch (error) {

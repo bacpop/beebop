@@ -35,6 +35,5 @@ onmessage = async function (message) {
     const { hash, amr, sketch } = await computeSample(fileObject.hash, fileObject.file, fileObject.filename);
     samples.push({ hash, amr: JSON.parse(amr), sketch: JSON.parse(sketch), filename: fileObject.filename });
   }
-  this.postMessage(samples);
-  this.self.close();
+  postMessage(samples);
 };
