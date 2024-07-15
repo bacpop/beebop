@@ -81,7 +81,7 @@ export const useProjectStore = defineStore("project", {
       this.processFileBatches(hashedFileBatches);
     },
     async batchFilesForProcessing(files: File[]) {
-      const BATCH_SIZE = 6;
+      const BATCH_SIZE = 5;
       const hashedFiles: HashedFile[] = await Promise.all(
         files.map(async (file) => {
           const content = await file.text();
@@ -133,6 +133,7 @@ export const useProjectStore = defineStore("project", {
         worker.onerror = (error) => {
           console.error(error);
           this.toast.showErrorToast("Ensure uploaded sample files are correct, or try again later.");
+          worker.terminate();
           reject();
         };
       });
