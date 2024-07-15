@@ -236,12 +236,12 @@ describe("User persistence", () => {
     ];
     await post("project/testProjectId/sample", testSamples, connectionCookie);
 
-    const persistedSampleIds = await getRedisSet(
+    const persistedSampleIds: string[] = await getRedisSet(
       "beebop:project:testProjectId:samples"
     );
-    expect(persistedSampleIds).toEqual([
-      "sampleHash2:sampleFile2",
+    expect(persistedSampleIds.sort()).toEqual([
       "sampleHash1:sampleFile1",
+      "sampleHash2:sampleFile2",
     ]);
 
     const persistedSample1 = await getRedisHash(
