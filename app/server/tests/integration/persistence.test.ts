@@ -1,3 +1,4 @@
+import { userStore } from './../../src/db/userStore';
 import {
   get,
   post,
@@ -12,6 +13,7 @@ import {
   withRedis,
 } from "./utils";
 import { UserStore } from "../../src/db/userStore";
+import { AMR } from '../../src/types/models';
 describe("User persistence", () => {
   let connectionCookie = "";
   beforeEach(async () => {
@@ -204,6 +206,47 @@ describe("User persistence", () => {
         { hash: "1234", filename: "test1.fa" },
         { hash: "5678", filename: "test2.fa" },
       ]);
+    });
+  });
+
+  it("saves samples to redis with sketch and amr data", async () => {
+    const testSamples = [
+      {
+        sketch: { data: "sketchData" },
+        hash: "sampleHash1",
+        amr: { filename: "amrFile1", data: "amrData1" } as unknown as AMR,
+        filename: "sampleFile1",
+      },
+      {
+        sketch: { data: "sketchData2" },
+        hash: "sampleHash2",
+        amr: { filename: "amrFile2", data: "amrData2" } as unknown as AMR,
+        filename: "sampleFile2",
+      },
+    ];
+    await post("project/testProjectId/sample", testSamples, connectionCookie);
+
+    const persistedSampleIds = await getRedisSet(
+      "beebop:project:testProjectId:samples"
+    );
+    expect(persistedSampleIds).toEqual([
+      "sampleHash1:sampleFile1",
+      "sampleHash2:sampleFile2",
+    ]);
+
+    const persistedSample1 = await getRedisHash(
+      "beebop:project:testProjectId:sample:sampleHash1:sampleFile1"
+    );
+    expect(persistedSample1).toEqual({
+      amr: JSON.stringify(testSamples[0].amr),
+      sketch: JSON.stringify(testSamples[0].sketch),
+    });
+    const persistedSample2 = await getRedisHash(
+      "beebop:project:testProjectId:sample:sampleHash2:sampleFile2"
+    );
+    expect(persistedSample2).toEqual({
+      amr: JSON.stringify(testSamples[1].amr),
+      sketch: JSON.stringify(testSamples[1].sketch),
     });
   });
 });

@@ -28,6 +28,7 @@ const mockUserStore = {
         amr: "test amr"
     })),
     deleteSample: jest.fn(),
+    saveSamples: jest.fn(),
 };
 jest.mock("../../../src/db/userStore", () => ({
     userStore: mockUserStoreConstructor.mockReturnValue(mockUserStore)
@@ -330,4 +331,30 @@ describe("projectController", () => {
         expect(mockUserStore.deleteSample).toHaveBeenCalledTimes(1);
         expect(mockUserStore.deleteSample).toHaveBeenCalledWith("testProjectId", "1234", "test1.fa");
     })
+    it("add Sample calls userStore with correct params", async () => {
+        const req = {
+            app: mockApp,
+            params: {
+                projectId: "testProjectId",
+            },
+            body: [
+            {
+                sketch: "test sketch 1",
+                amr: "test amr 1",
+                hash: "test hash 1",
+                filename: "test filename 1"
+            },{
+                sketch: "test sketch 2",
+                amr: "test amr 2",
+                hash: "test hash 2",
+                filename: "test filename 2"   
+            }]
+                
+        };
+
+        await projectController(config).addSamples(req, mockResponse(), jest.fn());
+
+        expect(mockUserStore.saveSamples).toHaveBeenCalledTimes(1);
+        expect(mockUserStore.saveSamples).toHaveBeenCalledWith("testProjectId", req.body);
+    }) 
 });

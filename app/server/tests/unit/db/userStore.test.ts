@@ -1,8 +1,10 @@
 import {UserStore} from "../../../src/db/userStore";
+import { AMR } from "../../../src/types/models";
 
 describe("UserStore", () => {
   const mockChainableCommander = {
     hset: jest.fn(),
+    sadd: jest.fn(),
     exec: jest.fn().mockResolvedValue(true)
   }
     const mockRedis = {
@@ -313,4 +315,50 @@ describe("UserStore", () => {
         expect(mockRedis.srem).toHaveBeenCalledWith(expectedProjectSamplesKey, expectedSampleId);
         expect(mockRedis.del).toHaveBeenCalledWith(expectedProjectSampleKey);
     })
+
+    it("saves multiple samples for a project", async () => {
+      const sampleData = [
+        {
+          sketch: { data: "sketchData" },
+          hash: "sampleHash1",
+          amr: { filename: "amrFile1", data: "amrData1" } as unknown as AMR,
+          filename: "sampleFile1",
+        },
+        {
+          sketch: { data: "sketchData2" },
+          hash: "sampleHash2",
+          amr: { filename: "amrFile2", data: "amrData2" } as unknown as AMR,
+          filename: "sampleFile2",
+        },
+      ];
+      const sut = new UserStore(mockRedis);
+
+      await sut.saveSamples("testProjectId", sampleData);
+
+      expect(mockRedis.multi).toHaveBeenCalledTimes(1);
+
+      expect(mockChainableCommander.sadd.mock.calls[0]).toEqual([
+        "beebop:project:testProjectId:samples",
+        "sampleHash1:sampleFile1",
+      ]);
+      expect(mockChainableCommander.sadd.mock.calls[1]).toEqual([
+        "beebop:project:testProjectId:samples",
+        "sampleHash2:sampleFile2",
+      ]);
+      expect(mockChainableCommander.hset.mock.calls[0]).toEqual([
+        "beebop:project:testProjectId:sample:sampleHash1:sampleFile1",
+        {
+          sketch: JSON.stringify({ data: "sketchData" }),
+          amr: JSON.stringify({ filename: "amrFile1", data: "amrData1" }),
+        },
+      ]);
+      expect(mockChainableCommander.hset.mock.calls[1]).toEqual([
+        "beebop:project:testProjectId:sample:sampleHash2:sampleFile2",
+        {
+          sketch: JSON.stringify({ data: "sketchData2" }),
+          amr: JSON.stringify({ filename: "amrFile2", data: "amrData2" }),
+        },
+      ]);
+    });
+    
 });
