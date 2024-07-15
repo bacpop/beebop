@@ -3,7 +3,13 @@ import { assignResultUri, projectIndexUri, statusUri } from "@/mocks/handlers/pr
 import { MOCK_PROJECT, MOCK_PROJECT_SAMPLES, MOCK_PROJECT_SAMPLES_BEFORE_RUN } from "@/mocks/mockObjects";
 import { server } from "@/mocks/server";
 import { useProjectStore } from "@/stores/projectStore";
-import { WorkerResponseValueTypes, type ProjectSample, AnalysisType, type AnalysisStatus } from "@/types/projectTypes";
+import {
+  type ProjectSample,
+  AnalysisType,
+  type AnalysisStatus,
+  type WorkerResponse,
+  type HashedFile
+} from "@/types/projectTypes";
 import { flushPromises } from "@vue/test-utils";
 import { HttpResponse, http } from "msw";
 import { createPinia, setActivePinia } from "pinia";
@@ -84,15 +90,12 @@ describe("projectStore", () => {
 
       constructor(stringUrl: any) {
         this.url = stringUrl;
-        this.onmessage = () => {};
+        this.onmessage = async () => {};
       }
 
       postMessage(msg: any) {
         this.onmessage({
-          data: {
-            ...msg,
-            type: "sketch"
-          }
+          data: msg
         });
       }
     }
@@ -118,103 +121,70 @@ describe("projectStore", () => {
     });
 
     it("should not upload duplicates when onFilesUpload is called", async () => {
+      const newFileWithHash = {
+        name: "sampleNew.fasta",
+        text: () => Promise.resolve("sampleNew"),
+        hash: Md5.hashStr("New")
+      };
       const store = useProjectStore();
-      store.project.samples = [];
+      const processFilesSpy = vitest.spyOn(store, "processFiles");
+      store.project.samples = mockFilesWithHashes.map((file) => ({ hash: file.hash, filename: file.name }));
 
-      store.onFilesUpload(mockFilesWithHashes);
-      await flushPromises();
-      store.onFilesUpload(mockFilesWithHashes[0]);
-      await flushPromises();
+      store.onFilesUpload([mockFilesWithHashes[0], newFileWithHash]);
 
-      expect(store.project.samples.length).toBe(3);
+      expect(processFilesSpy).toHaveBeenCalledWith([newFileWithHash]);
     });
-    it("should call worker and set fileSamples correctly when processFiles is called", async () => {
+    it("should call batchFilesForProcessing and processFileBatches when processFiles is called", async () => {
+      const mockHashedFileBatches = [[{ hash: "test-hash" }], [{ hash: "test-hash" }]] as HashedFile[][];
       const store = useProjectStore();
       store.project.samples = [];
 
-      const workerPostMessageSpy = vitest.spyOn(MockWorker.prototype, "postMessage");
+      const batchFilesForProcessingSpy = vitest
+        .spyOn(store, "batchFilesForProcessing")
+        .mockResolvedValueOnce(mockHashedFileBatches);
+      const processFileBatchesSpy = vitest.spyOn(store, "processFileBatches");
 
       await store.processFiles(mockFilesWithHashes);
 
-      expect(store.project.samples).toEqual([
-        { hash: mockFilesWithHashes[0].hash, filename: mockFilesWithHashes[0].name },
-        { hash: mockFilesWithHashes[1].hash, filename: mockFilesWithHashes[1].name },
-        { hash: mockFilesWithHashes[2].hash, filename: mockFilesWithHashes[2].name }
-      ]);
-      mockFilesWithHashes.forEach((file: any, index: any) => {
-        expect(workerPostMessageSpy).toHaveBeenNthCalledWith(index + 1, {
-          hash: file.hash,
-          fileObject: file
-        });
-      });
+      expect(batchFilesForProcessingSpy).toHaveBeenCalledWith(mockFilesWithHashes);
+      expect(processFileBatchesSpy).toHaveBeenCalledWith(mockHashedFileBatches);
     });
-    it("should save & post amr data to server when handleWorkerResponse is called", async () => {
+    it("should save and post samples to server when handleWorkerResponse is called", async () => {
+      const testSamples = [
+        { hash: "sample1", filename: "sample1.fasta", amr: { Penicillin: 0.24, Chloramphenicol: 0.24 }, sketch: {} },
+        { hash: "sample2", filename: "sample2.fasta", amr: { Penicillin: 0.24, Chloramphenicol: 0.24 }, sketch: {} }
+      ] as WorkerResponse[];
       const store = useProjectStore();
+      store.project.samples = [];
       store.project.id = "1";
-      store.project.samples = [...mockFilesWithHashes];
-      const eventData = {
-        hash: mockFilesWithHashes[0].hash,
-        result: JSON.stringify({ Penicillin: 0.24, Chloramphenicol: 0.24 }),
-        type: WorkerResponseValueTypes.AMR
-      };
       server.use(
-        http.post(`${projectIndexUri}/${store.project.id}/${eventData.type}/${eventData.hash}`, async ({ request }) => {
+        http.post(`${projectIndexUri}/${store.project.id}/sample`, async ({ request }) => {
           const body = await request.json();
-          expect(body).toEqual(JSON.parse(eventData.result));
+          expect(body).toEqual(testSamples);
           return HttpResponse.text("");
         })
       );
 
-      await store.handleWorkerResponse("sample1.fasta", {
-        data: eventData
-      } as any);
+      await store.handleWorkerResponse(testSamples);
 
-      expect(store.project.samples[0].amr).toEqual({ Penicillin: 0.24, Chloramphenicol: 0.24 });
+      expect(store.project.samples).toEqual(testSamples);
     });
-    it("should save & post sketch data to server when handleWorkerResponse is called", async () => {
+
+    it("should remove samples from fileSamples when handleWorkerResponse fails & call toast.showErrorToast", async () => {
+      const testSamples = [
+        { hash: "sample1", filename: "sample1.fasta", amr: { Penicillin: 0.24, Chloramphenicol: 0.24 }, sketch: {} }
+      ] as WorkerResponse[];
       const store = useProjectStore();
       store.project.id = "1";
-      store.project.samples = [...mockFilesWithHashes];
-      const eventData = {
-        hash: mockFilesWithHashes[0].hash,
-        result: JSON.stringify({ filename: "sample1.fasta", md5: "sample1-md5" }),
-        type: WorkerResponseValueTypes.SKETCH
-      };
-      server.use(
-        http.post(`${projectIndexUri}/${store.project.id}/${eventData.type}/${eventData.hash}`, async ({ request }) => {
-          const body = await request.json();
-          expect(body).toEqual({ sketch: JSON.parse(eventData.result), filename: "sample1.fasta" });
-          return HttpResponse.text("");
-        })
-      );
-
-      await store.handleWorkerResponse("sample1.fasta", {
-        data: eventData
-      } as any);
-
-      expect(store.project.samples[0].sketch).toEqual({ filename: "sample1.fasta", md5: "sample1-md5" });
-    });
-    it("should remove sample from fileSamples when handleWorkerResponse fails & call toast.showErrorToast", async () => {
-      const store = useProjectStore();
-      store.project.id = "1";
-      store.project.samples = [...mockFilesWithHashes];
       store.toast.showErrorToast = vitest.fn();
-      const eventData = {
-        hash: mockFilesWithHashes[0].hash,
-        result: JSON.stringify({ Penicillin: 0.24, Chloramphenicol: 0.24 }),
-        type: WorkerResponseValueTypes.AMR
-      };
-      server.use(
-        http.post(`${projectIndexUri}/${store.project.id}/${eventData.type}/${eventData.hash}`, () =>
-          HttpResponse.error()
-        )
-      );
+      store.project.samples = [];
+      server.use(http.post(`${projectIndexUri}/${store.project.id}/sample`, () => HttpResponse.error()));
 
-      await store.handleWorkerResponse("sample1.fasta", { data: eventData } as any);
+      await store.handleWorkerResponse(testSamples);
 
-      expect(store.project.samples).toEqual(mockFilesWithHashes.slice(1));
+      expect(store.project.samples).toEqual([]);
       expect(store.toast.showErrorToast).toHaveBeenCalledWith(
-        "Ensure uploaded sample file is correct or try again later."
+        "Ensure uploaded sample files is correct or try again later."
       );
     });
 
@@ -508,6 +478,50 @@ describe("projectStore", () => {
       await store.processStatusAndGetStopPolling(analysisStatus, "waiting");
 
       expect(store.getClusterAssignResult).toHaveBeenCalled();
+    });
+    it("should return 10 when navigator.hardwareConcurrency is 20 when getOptimalWorkerCount is called", () => {
+      Object.defineProperty(navigator, "hardwareConcurrency", { value: 20, writable: true });
+      const store = useProjectStore();
+
+      expect(store.getOptimalWorkerCount()).toBe(10);
+    });
+    it("returns 4 when navigator.hardwareConcurrency is not available", () => {
+      Object.defineProperty(navigator, "hardwareConcurrency", {
+        value: undefined,
+        writable: true
+      });
+      const store = useProjectStore();
+      expect(store.getOptimalWorkerCount()).toBe(4);
+    });
+    it("should batch files correctly when batchFilesForProcessing is called", async () => {
+      const mockFilesWithHashes = Array.from({ length: 98 }, (_, index) => ({
+        name: `sample${index + 1}.fasta`,
+        text: () => Promise.resolve(`sample${index + 1}`)
+      })) as unknown as File[];
+      const store = useProjectStore();
+
+      const fileBatches = await store.batchFilesForProcessing(mockFilesWithHashes);
+
+      expect(fileBatches.length).toBe(Math.ceil(mockFilesWithHashes.length / 5));
+    });
+
+    it("should process file batches correctly when processFileBatches is called", async () => {
+      const mockFilesWithHashes = Array.from({ length: 98 }, (_, index) => ({
+        name: `sample${index + 1}.fasta`,
+        text: () => Promise.resolve(`sample${index + 1}`)
+      })) as unknown as File[];
+      const store = useProjectStore();
+      store.getOptimalWorkerCount = vitest.fn().mockReturnValue(8);
+      const batchPromise = vitest.spyOn(store, "computeAmrAndSketch").mockResolvedValue();
+      const hashedFileBatches = await store.batchFilesForProcessing(mockFilesWithHashes);
+
+      await store.processFileBatches(hashedFileBatches);
+      await flushPromises();
+
+      expect(store.uploadingPercentage).toEqual(100);
+      hashedFileBatches.forEach((batch) => {
+        expect(batchPromise).toHaveBeenCalledWith(batch);
+      });
     });
   });
 });

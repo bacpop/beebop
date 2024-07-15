@@ -15,7 +15,7 @@ export const moduleMock = {
     }
   },
   make_prediction_json(path: string) {
-    return path;
+    return JSON.stringify({ amr: path });
   },
   sketch(
     path: string,
@@ -29,7 +29,7 @@ export const moduleMock = {
     bool2: boolean
     /* eslint-enable */
   ) {
-    return path;
+    return JSON.stringify({ sketch: path });
   }
 };
 

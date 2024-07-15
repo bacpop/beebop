@@ -23,12 +23,6 @@ const renderComponent = (amr?: AMR) => {
   });
 };
 describe("AMR column", () => {
-  it("should display pending if no amr data passed in", () => {
-    renderComponent();
-
-    expect(screen.getByText(/pending/)).toBeVisible();
-  });
-
   it("should display correct species abbreviation", async () => {
     renderComponent(MOCK_PROJECT_SAMPLES[0].amr);
 

@@ -81,7 +81,7 @@ export const useProjectStore = defineStore("project", {
       this.processFileBatches(hashedFileBatches);
     },
     async batchFilesForProcessing(files: File[]) {
-      const BATCH_SIZE = 5;
+      const batchSize = 5; // found to be best balance of throughput and memory usage
       const hashedFiles: HashedFile[] = await Promise.all(
         files.map(async (file) => {
           const content = await file.text();
@@ -90,8 +90,8 @@ export const useProjectStore = defineStore("project", {
         })
       );
       const hashedFileBatches: HashedFile[][] = [];
-      for (let i = 0; i < hashedFiles.length; i += BATCH_SIZE) {
-        hashedFileBatches.push(hashedFiles.slice(i, i + BATCH_SIZE));
+      for (let i = 0; i < hashedFiles.length; i += batchSize) {
+        hashedFileBatches.push(hashedFiles.slice(i, i + batchSize));
       }
       return hashedFileBatches;
     },
@@ -145,6 +145,7 @@ export const useProjectStore = defineStore("project", {
       } catch (error) {
         console.error(error);
         this.toast.showErrorToast("Ensure uploaded sample files is correct or try again later.");
+        this.project.samples.splice(-samples.length);
       }
     },
 
@@ -227,13 +228,12 @@ export const useProjectStore = defineStore("project", {
     },
 
     async runAnalysis() {
-      this.project.status = { assign: "submitted", microreact: "submitted", network: "submitted" };
-
       const body = this.buildRunAnalysisPostBody();
       try {
         await baseApi.post("/poppunk", body);
 
         this.project.hash = body.projectHash;
+        this.project.status = { assign: "submitted", microreact: "submitted", network: "submitted" };
         this.project.samples.forEach((sample: ProjectSample) => (sample.hasRun = true));
         this.pollAnalysisStatus();
       } catch (error) {
