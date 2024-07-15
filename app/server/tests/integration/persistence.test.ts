@@ -1,4 +1,4 @@
-import { userStore } from './../../src/db/userStore';
+import { userStore } from "./../../src/db/userStore";
 import {
   get,
   post,
@@ -13,7 +13,7 @@ import {
   withRedis,
 } from "./utils";
 import { UserStore } from "../../src/db/userStore";
-import { AMR } from '../../src/types/models';
+import { AMR } from "../../src/types/models";
 describe("User persistence", () => {
   let connectionCookie = "";
   beforeEach(async () => {
@@ -109,11 +109,11 @@ describe("User persistence", () => {
       { name: "new name" },
       connectionCookie
     );
-    
+
     expect(response.status).toBe(200);
     // can get user projects with new name
     const projectsResponse = await get("projects", connectionCookie);
-    
+
     expect(projectsResponse.data).toStrictEqual({
       status: "success",
       data: [
@@ -132,7 +132,10 @@ describe("User persistence", () => {
     const now = Date.now();
 
     const projectId = "test-delete-project-id";
-    await saveRedisList("beebop:userprojects:mock:1234", [projectId, "other-project-id"]);
+    await saveRedisList("beebop:userprojects:mock:1234", [
+      projectId,
+      "other-project-id",
+    ]);
     await saveRedisHash(`beebop:project:${projectId}`, {
       name: "project to delete",
       timestamp: now.toString(),
@@ -142,13 +145,20 @@ describe("User persistence", () => {
       timestamp: now.toString(),
     });
 
-    const projectDetailsBeforeDelete = await getRedisHash(`beebop:project:${projectId}`);
+    const projectDetailsBeforeDelete = await getRedisHash(
+      `beebop:project:${projectId}`
+    );
     expect(projectDetailsBeforeDelete.deletedAt).toBeUndefined();
 
-    const deleteResponse = await deleteRequest(`project/${projectId}/delete`, connectionCookie);
+    const deleteResponse = await deleteRequest(
+      `project/${projectId}/delete`,
+      connectionCookie
+    );
     expect(deleteResponse.status).toBe(200);
 
-    const projectDetailsAfterDelete = await getRedisHash(`beebop:project:${projectId}`);
+    const projectDetailsAfterDelete = await getRedisHash(
+      `beebop:project:${projectId}`
+    );
     const deletedAt = parseInt(projectDetailsAfterDelete.deletedAt);
     expectTimestampIsSoonAfter(deletedAt, now);
 
@@ -162,7 +172,7 @@ describe("User persistence", () => {
           name: "other project",
           timestamp: now,
           samplesCount: 0,
-        }
+        },
       ],
       errors: [],
     });
@@ -230,8 +240,8 @@ describe("User persistence", () => {
       "beebop:project:testProjectId:samples"
     );
     expect(persistedSampleIds).toEqual([
-      "sampleHash1:sampleFile1",
       "sampleHash2:sampleFile2",
+      "sampleHash1:sampleFile1",
     ]);
 
     const persistedSample1 = await getRedisHash(
