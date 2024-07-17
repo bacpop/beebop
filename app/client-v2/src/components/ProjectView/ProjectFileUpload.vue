@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useProjectStore } from "@/stores/projectStore";
 import { ref } from "vue";
-
+import ProjectFileUploadHeader from "./ProjectFileUploadHeader.vue";
 const projectStore = useProjectStore();
 const tableIsHovered = ref(false);
 const emit = defineEmits<{
@@ -24,14 +24,7 @@ const runAnalysis = () => {
     :disabled="projectStore.isRunning"
   >
     <template #header="{ chooseCallback }">
-      <div v-if="projectStore.isRunning" class="flex-1">
-        <div class="mb-2 fadein animation-duration-2000 animation-iteration-infinite">Running Analysis...</div>
-        <ProgressBar style="height: 20px" :value="projectStore.analysisProgressPercentage"></ProgressBar>
-      </div>
-      <div v-else class="flex flex-wrap justify-content-between align-items-center flex-1 gap-2">
-        <Button label="Upload" outlined icon="pi pi-upload" @click="chooseCallback()" />
-        <Button label="Run Analysis" outlined @click="runAnalysis" :disabled="!projectStore.isReadyToRun" />
-      </div>
+      <ProjectFileUploadHeader :chooseCallback="chooseCallback" :runAnalysis="runAnalysis" />
     </template>
     <template #empty>
       <div

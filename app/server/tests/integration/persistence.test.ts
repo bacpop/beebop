@@ -1,3 +1,4 @@
+import { userStore } from "./../../src/db/userStore";
 import {
   get,
   post,
@@ -12,6 +13,7 @@ import {
   withRedis,
 } from "./utils";
 import { UserStore } from "../../src/db/userStore";
+import { AMR } from "../../src/types/models";
 describe("User persistence", () => {
   let connectionCookie = "";
   beforeEach(async () => {
@@ -107,11 +109,11 @@ describe("User persistence", () => {
       { name: "new name" },
       connectionCookie
     );
-    
+
     expect(response.status).toBe(200);
     // can get user projects with new name
     const projectsResponse = await get("projects", connectionCookie);
-    
+
     expect(projectsResponse.data).toStrictEqual({
       status: "success",
       data: [
@@ -130,7 +132,10 @@ describe("User persistence", () => {
     const now = Date.now();
 
     const projectId = "test-delete-project-id";
-    await saveRedisList("beebop:userprojects:mock:1234", [projectId, "other-project-id"]);
+    await saveRedisList("beebop:userprojects:mock:1234", [
+      projectId,
+      "other-project-id",
+    ]);
     await saveRedisHash(`beebop:project:${projectId}`, {
       name: "project to delete",
       timestamp: now.toString(),
@@ -140,13 +145,20 @@ describe("User persistence", () => {
       timestamp: now.toString(),
     });
 
-    const projectDetailsBeforeDelete = await getRedisHash(`beebop:project:${projectId}`);
+    const projectDetailsBeforeDelete = await getRedisHash(
+      `beebop:project:${projectId}`
+    );
     expect(projectDetailsBeforeDelete.deletedAt).toBeUndefined();
 
-    const deleteResponse = await deleteRequest(`project/${projectId}/delete`, connectionCookie);
+    const deleteResponse = await deleteRequest(
+      `project/${projectId}/delete`,
+      connectionCookie
+    );
     expect(deleteResponse.status).toBe(200);
 
-    const projectDetailsAfterDelete = await getRedisHash(`beebop:project:${projectId}`);
+    const projectDetailsAfterDelete = await getRedisHash(
+      `beebop:project:${projectId}`
+    );
     const deletedAt = parseInt(projectDetailsAfterDelete.deletedAt);
     expectTimestampIsSoonAfter(deletedAt, now);
 
@@ -160,23 +172,10 @@ describe("User persistence", () => {
           name: "other project",
           timestamp: now,
           samplesCount: 0,
-        }
+        },
       ],
       errors: [],
     });
-  });
-
-  it("saves amr data to redis", async () => {
-    const testAMR = { filename: "test.fa", Penicillin: 0.5 };
-    await post("project/testProjectId/amr/1234", testAMR, connectionCookie);
-    const persistedSampleIds = await getRedisSet(
-      "beebop:project:testProjectId:samples"
-    );
-    expect(persistedSampleIds).toStrictEqual(["1234:test.fa"]);
-    const persisted = await getRedisHash(
-      "beebop:project:testProjectId:sample:1234:test.fa"
-    );
-    expect(persisted).toStrictEqual({ amr: JSON.stringify(testAMR) });
   });
 
   it("gets amr data from redis", async () => {
@@ -204,6 +203,47 @@ describe("User persistence", () => {
         { hash: "1234", filename: "test1.fa" },
         { hash: "5678", filename: "test2.fa" },
       ]);
+    });
+  });
+
+  it("saves samples to redis with sketch and amr data", async () => {
+    const testSamples = [
+      {
+        sketch: { data: "sketchData" },
+        hash: "sampleHash1",
+        amr: { filename: "amrFile1", data: "amrData1" } as unknown as AMR,
+        filename: "sampleFile1",
+      },
+      {
+        sketch: { data: "sketchData2" },
+        hash: "sampleHash2",
+        amr: { filename: "amrFile2", data: "amrData2" } as unknown as AMR,
+        filename: "sampleFile2",
+      },
+    ];
+    await post("project/testProjectId/sample", testSamples, connectionCookie);
+
+    const persistedSampleIds: string[] = await getRedisSet(
+      "beebop:project:testProjectId:samples"
+    );
+    expect(persistedSampleIds.sort()).toEqual([
+      "sampleHash1:sampleFile1",
+      "sampleHash2:sampleFile2",
+    ]);
+
+    const persistedSample1 = await getRedisHash(
+      "beebop:project:testProjectId:sample:sampleHash1:sampleFile1"
+    );
+    expect(persistedSample1).toEqual({
+      amr: JSON.stringify(testSamples[0].amr),
+      sketch: JSON.stringify(testSamples[0].sketch),
+    });
+    const persistedSample2 = await getRedisHash(
+      "beebop:project:testProjectId:sample:sampleHash2:sampleFile2"
+    );
+    expect(persistedSample2).toEqual({
+      amr: JSON.stringify(testSamples[1].amr),
+      sketch: JSON.stringify(testSamples[1].sketch),
     });
   });
 });

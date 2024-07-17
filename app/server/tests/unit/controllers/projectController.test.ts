@@ -9,8 +9,6 @@ const mockUserStore = {
     saveNewProject: jest.fn().mockImplementation(() => "test-project-id"),
     getUserProjects: jest.fn().mockImplementation(() => mockUserProjects),
     getProjectHash: jest.fn().mockImplementation(() => "123"),
-    saveAMR: jest.fn(),
-    saveSketch: jest.fn(),
     getProjectSplitSampleIds: jest.fn().mockImplementation(() => getProjectSplitSampleIds),
     getSketch: jest.fn().mockImplementation((projectId: string, sampleHash: string, fileName: string) =>
         ({ sketch: `sketch for ${projectId}-${sampleHash}-${fileName}` })),
@@ -28,6 +26,7 @@ const mockUserStore = {
         amr: "test amr"
     })),
     deleteSample: jest.fn(),
+    saveSamples: jest.fn(),
 };
 jest.mock("../../../src/db/userStore", () => ({
     userStore: mockUserStoreConstructor.mockReturnValue(mockUserStore)
@@ -138,53 +137,6 @@ describe("projectController", () => {
             status: "success",
             errors: [],
             data: mockUserProjects
-        });
-    });
-
-    it("saved amr data", async () => {
-        const req = {
-            app: mockApp,
-            body: {
-                filename: "test.fa",
-                Penicillin: 0.5
-            },
-            params: {
-                projectId: "testProjectId",
-                sampleHash: "1234"
-            }
-        };
-        const res = mockResponse();
-        await projectController(config).postAMR(req, res, jest.fn());
-        expect(mockUserStoreConstructor.mock.calls[0][0]).toBe(mockRedis);
-        expect(mockUserStore.saveAMR).toHaveBeenCalledWith("testProjectId", "1234", req.body);
-    });
-
-    it("saves sketch data", async () => {
-        const req = {
-            body: {
-                sketch: { key: "value" },
-                filename: "test.fa"
-            },
-            params: {
-                projectId: "testProjectId",
-                sampleHash: "testSampleHash"
-            },
-            app: mockApp
-        };
-        const res = mockResponse();
-        await projectController(config).postSketch(req, res, jest.fn());
-        expect(mockUserStoreConstructor).toHaveBeenCalledTimes(1);
-        expect(mockUserStoreConstructor.mock.calls[0][0]).toBe(mockRedis);
-        expect(mockUserStore.saveSketch).toHaveBeenCalledTimes(1);
-        expect(mockUserStore.saveSketch.mock.calls[0][0]).toBe(req.params.projectId);
-        expect(mockUserStore.saveSketch.mock.calls[0][1]).toBe(req.params.sampleHash);
-        expect(mockUserStore.saveSketch.mock.calls[0][2]).toBe(req.body.filename);
-        expect(mockUserStore.saveSketch.mock.calls[0][3]).toBe(req.body.sketch);
-        expect(res.json).toHaveBeenCalledTimes(1);
-        expect(res.json.mock.calls[0][0]).toStrictEqual({
-            status: "success",
-            errors: [],
-            data: null
         });
     });
 
@@ -330,4 +282,30 @@ describe("projectController", () => {
         expect(mockUserStore.deleteSample).toHaveBeenCalledTimes(1);
         expect(mockUserStore.deleteSample).toHaveBeenCalledWith("testProjectId", "1234", "test1.fa");
     })
+    it("add Sample calls userStore with correct params", async () => {
+        const req = {
+            app: mockApp,
+            params: {
+                projectId: "testProjectId",
+            },
+            body: [
+            {
+                sketch: "test sketch 1",
+                amr: "test amr 1",
+                hash: "test hash 1",
+                filename: "test filename 1"
+            },{
+                sketch: "test sketch 2",
+                amr: "test amr 2",
+                hash: "test hash 2",
+                filename: "test filename 2"   
+            }]
+                
+        };
+
+        await projectController(config).addSamples(req, mockResponse(), jest.fn());
+
+        expect(mockUserStore.saveSamples).toHaveBeenCalledTimes(1);
+        expect(mockUserStore.saveSamples).toHaveBeenCalledWith("testProjectId", req.body);
+    }) 
 });

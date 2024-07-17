@@ -18,17 +18,14 @@ export default {
         app.delete('/project/:projectId/delete',
             authCheck,
             controller.deleteProject);
-        app.post('/project/:projectId/amr/:sampleHash',
-            authCheck,
-            controller.postAMR);
-        app.post('/project/:projectId/sketch/:sampleHash',
-            authCheck,
-            controller.postSketch);
         app.post('/project/:projectId/rename',
             authCheck,
             controller.renameProject);
         app.patch(`/project/:projectId/sample/:sampleHash/delete`,
             authCheck, 
             controller.deleteSample);
+        app.post("/project/:projectId/sample", 
+            authCheck,
+            controller.addSamples);
     }
 } as BeebopRoutes;

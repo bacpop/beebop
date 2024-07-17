@@ -157,4 +157,34 @@ describe("ProjectFile upload", () => {
 
     expect(emitted()).toHaveProperty("onRunAnalysis");
   });
+
+  it("should show uploadingPercentage with progress bar when samples are uploading", async () => {
+    const testPinia = createTestingPinia();
+    const store = useProjectStore(testPinia);
+    store.project.samples = MOCK_PROJECT_SAMPLES_BEFORE_RUN;
+    store.uploadingPercentage = 50;
+    render(ProjectFileUpload, {
+      global: {
+        plugins: [testPinia, PrimeVue]
+      }
+    });
+
+    const progressBar = screen.getByRole("progressbar");
+
+    expect(progressBar).toBeVisible();
+    expect(progressBar).toHaveAttribute("aria-valuenow", "50");
+  });
+  it("should not show uploadingPercentage with progress bar when samples finished uploading", async () => {
+    const testPinia = createTestingPinia();
+    const store = useProjectStore(testPinia);
+    store.project.samples = MOCK_PROJECT_SAMPLES_BEFORE_RUN;
+    store.uploadingPercentage = 100;
+    render(ProjectFileUpload, {
+      global: {
+        plugins: [testPinia, PrimeVue]
+      }
+    });
+
+    expect(screen.queryByRole("progressbar")).toBeNull();
+  });
 });

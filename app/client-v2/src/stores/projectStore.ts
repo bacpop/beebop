@@ -7,10 +7,10 @@ import {
   type Project,
   type ProjectSample,
   type WorkerResponse,
-  WorkerResponseValueTypes,
   AnalysisType,
   type ClusterInfo,
-  type StatusTypes
+  type StatusTypes,
+  type HashedFile
 } from "@/types/projectTypes";
 import { mande } from "mande";
 import { defineStore } from "pinia";
@@ -22,7 +22,8 @@ export const useProjectStore = defineStore("project", {
   state: () => ({
     project: {} as Project,
     pollingIntervalId: null as ReturnType<typeof setInterval> | null,
-    toast: useToastService() as ReturnType<typeof useToastService>
+    toast: useToastService() as ReturnType<typeof useToastService>,
+    uploadingPercentage: null as number | null
   }),
 
   getters: {
@@ -75,50 +76,76 @@ export const useProjectStore = defineStore("project", {
     },
 
     async processFiles(files: File[]) {
-      for (const file of files) {
-        const content = await file.text();
-        const fileHash = Md5.hashStr(content);
-        this.project.samples.push({ hash: fileHash, filename: file.name });
+      this.uploadingPercentage = 0;
+      const hashedFileBatches = await this.batchFilesForProcessing(files);
+      this.processFileBatches(hashedFileBatches);
+    },
+    async batchFilesForProcessing(files: File[]) {
+      const batchSize = 5; // found to be best balance of throughput and memory usage
+      const hashedFiles: HashedFile[] = await Promise.all(
+        files.map(async (file) => {
+          const content = await file.text();
+          const fileHash = Md5.hashStr(content);
+          return { hash: fileHash, filename: file.name, file };
+        })
+      );
+      const hashedFileBatches: HashedFile[][] = [];
+      for (let i = 0; i < hashedFiles.length; i += batchSize) {
+        hashedFileBatches.push(hashedFiles.slice(i, i + batchSize));
+      }
+      return hashedFileBatches;
+    },
+    async processFileBatches(hashedFileBatches: HashedFile[][]) {
+      const maxWorkers = this.getOptimalWorkerCount();
+      const activeBatches: Set<Promise<void>> = new Set();
+      let uploadPercentNumerator = 0;
 
-        // run web worker to get sketch and amr data and then post to server
-        const worker = new Worker("/worker.js");
-        worker.postMessage({ hash: fileHash, fileObject: file });
+      for (const hashedFileBatch of hashedFileBatches) {
+        if (activeBatches.size >= maxWorkers) {
+          await Promise.race(activeBatches); // wait for at least 1 batch to finish
+        }
+        const batchPromise = this.computeAmrAndSketch(hashedFileBatch);
+        activeBatches.add(batchPromise);
 
-        worker.onmessage = async (event: MessageEvent<WorkerResponse>) => {
-          this.handleWorkerResponse(file.name, event);
-        };
-        worker.onerror = (error) => {
-          console.error(error);
-          this.toast.showErrorToast("Ensure uploaded sample file is correct");
-        };
+        batchPromise
+          .catch(() => console.log("error processing batch"))
+          .finally(() => {
+            activeBatches.delete(batchPromise);
+            uploadPercentNumerator++;
+            this.uploadingPercentage = Math.round((uploadPercentNumerator / hashedFileBatches.length) * 100);
+          });
       }
     },
+    getOptimalWorkerCount() {
+      return Math.floor(navigator.hardwareConcurrency * 0.5) || 4;
+    },
+    async computeAmrAndSketch(hashedFiles: HashedFile[]): Promise<void> {
+      return new Promise((resolve, reject) => {
+        const worker = new Worker("/worker.js");
+        worker.postMessage(hashedFiles);
 
-    async handleWorkerResponse(filename: string, event: MessageEvent<WorkerResponse>) {
-      const { hash, result, type } = event.data;
-      const parsedAmrOrSketch = JSON.parse(result);
+        worker.onmessage = async (event: MessageEvent<WorkerResponse[]>) => {
+          this.handleWorkerResponse(event.data);
+          worker.terminate();
+          resolve();
+        };
 
-      const matchedHashIndex = this.project.samples.findIndex((sample: ProjectSample) => hash === sample.hash);
-      if (matchedHashIndex !== -1) {
-        this.project.samples[matchedHashIndex][type] = parsedAmrOrSketch;
-      }
-
+        worker.onerror = (error) => {
+          console.error(error);
+          this.toast.showErrorToast("Ensure uploaded sample files are correct, or try again later.");
+          worker.terminate();
+          reject();
+        };
+      });
+    },
+    async handleWorkerResponse(samples: WorkerResponse[]) {
+      this.project.samples.push(...samples);
       try {
-        await baseApi.post(
-          `/project/${this.project.id}/${type}/${hash}`,
-          type === WorkerResponseValueTypes.AMR
-            ? parsedAmrOrSketch
-            : {
-                sketch: parsedAmrOrSketch,
-                filename
-              }
-        );
+        await baseApi.post(`/project/${this.project.id}/sample`, samples);
       } catch (error) {
         console.error(error);
-        this.toast.showErrorToast("Ensure uploaded sample file is correct or try again later.");
-        if (matchedHashIndex !== -1) {
-          this.project.samples.splice(matchedHashIndex, 1);
-        }
+        this.toast.showErrorToast("Ensure uploaded sample files is correct or try again later.");
+        this.project.samples.splice(-samples.length);
       }
     },
 
@@ -201,17 +228,19 @@ export const useProjectStore = defineStore("project", {
     },
 
     async runAnalysis() {
+      this.project.status = { assign: "submitted", microreact: "submitted", network: "submitted" };
+      this.project.samples.forEach((sample: ProjectSample) => (sample.hasRun = true));
       const body = this.buildRunAnalysisPostBody();
       try {
         await baseApi.post("/poppunk", body);
 
         this.project.hash = body.projectHash;
-        this.project.status = { assign: "submitted", microreact: "submitted", network: "submitted" };
-        this.project.samples.forEach((sample: ProjectSample) => (sample.hasRun = true));
         this.pollAnalysisStatus();
       } catch (error) {
         console.error("Error running analysis", error);
         this.toast.showErrorToast("Error running analysis. Try again later.");
+        this.project.status = undefined;
+        this.project.samples.forEach((sample: ProjectSample) => (sample.hasRun = false));
         return;
       }
     },

@@ -55,8 +55,8 @@ test("bad samples after run displays failed chips", async ({ page }) => {
   await page.getByLabel("Run Analysis").click();
 
   await expect(page.getByRole("cell", { name: "failed" })).toHaveCount(3);
-  await page.locator("td:nth-child(4) > .p-tag").first().hover();
-  await expect(page.getByText("Invalid Sample")).toBeVisible();
+  await page.getByRole("cell", { name: "failed", exact: false }).locator("span").first().hover();
+  await expect(page.getByText("Below lower length threshold")).toBeVisible();
 });
 
 test("can load up already run project even if loading", async ({ page }) => {

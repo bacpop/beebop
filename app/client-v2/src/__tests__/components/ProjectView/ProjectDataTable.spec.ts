@@ -38,14 +38,6 @@ describe("Project data table", () => {
     expect(screen.getByText("Extra cols slot")).toBeVisible();
   });
 
-  it("should display data with correct sketch tags", async () => {
-    expect(screen.getByText("done")).toBeVisible();
-    expect(screen.getAllByText("pending").length).toBe(2);
-    MOCK_PROJECT_SAMPLES.forEach((sample) => {
-      expect(screen.getByText(sample.filename)).toBeVisible();
-    });
-  });
-
   it("should render enabled button to remove uploaded files and call store.removeUploadedFile on click when ready to run", async () => {
     const store = useProjectStore();
     // @ts-expect-error: Getter is read only

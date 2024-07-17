@@ -7,14 +7,17 @@ test.beforeEach(async ({ page }) => {
   await page.getByPlaceholder("Create new Project").press("Enter");
 });
 
-test("upload multiple files and display sketch and amr information", async ({ page }) => {
+test("upload multiple files and display amr information", async ({ page }) => {
   uploadFiles(page);
+
+  await expect(page.getByText("Sketching and calculating AMR")).toBeVisible();
+  await expect(page.getByRole("progressbar")).toBeVisible();
 
   await expect(page.getByText("good_1.fa")).toBeVisible();
   await expect(page.getByText("good_2.fa")).toBeVisible();
-  await expect(page.getByRole("cell", { name: "pending" })).toHaveCount(4);
-  await expect(page.getByRole("cell", { name: "done" })).toHaveCount(2);
   await expect(page.getByRole("cell", { name: "P C E Te Sxt" })).toHaveCount(2);
+
+  await expect(page.getByRole("progressbar")).not.toBeVisible();
 });
 
 test("can delete file samples from project", async ({ page }) => {
@@ -22,4 +25,14 @@ test("can delete file samples from project", async ({ page }) => {
 
   await page.getByLabel("Remove good_1").click();
   await expect(page.getByText("good_1.fa")).not.toBeVisible();
+});
+
+test("shows progress bar whilst uploading files & gone after full uploaded", async ({ page }) => {
+  uploadFiles(page);
+
+  await expect(page.getByRole("progressbar")).toBeVisible();
+
+  await expect(page.getByText("good_1.fa")).toBeVisible();
+
+  await expect(page.getByRole("progressbar")).not.toBeVisible();
 });

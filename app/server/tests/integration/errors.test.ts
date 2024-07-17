@@ -2,6 +2,7 @@ import {flushRedis, get, post, saveRedisHash, saveRedisSet, saveRedisList } from
 import {uid} from "uid";
 import {setTimeout} from "timers/promises";
 import {testSample} from "./testSample";
+import { AMR } from "../../src/types/models";
 
 describe("Error handling", () => {
     let connectionCookie = "";
@@ -26,20 +27,26 @@ describe("Error handling", () => {
     const runProjectToCompletion = async () => {
         // 1. Create project
         const projectId = await newProject();
-
-        // 2. Post sample AMR
-        const amr = {
-            filename: sampleFileName,
-            Penicillin: 0.944,
-            Chloramphenicol: 0.39,
-            Erythromycin: 0.151,
-            Tetracycline: 0.453,
-            Trim_sulfa: 0.98,
-            length: true,
-            species: true
-        };
-        const amrRes = await post(`project/${projectId}/amr/${sampleHash}`, amr, connectionCookie);
-        expect(amrRes.status).toBe(200);
+        // 2. Post sample
+        const testSamples = [
+            {
+              sketch: { data: "sketchData" },
+              hash: sampleHash,
+              amr: {
+                filename: sampleFileName,
+                Penicillin: 0.944,
+                Chloramphenicol: 0.39,
+                Erythromycin: 0.151,
+                Tetracycline: 0.453,
+                Trim_sulfa: 0.98,
+                length: true,
+                species: true
+            },
+              filename: sampleFileName,
+            },
+          ];
+          const sampleRes = await post(`project/${projectId}/sample`, testSamples, connectionCookie);
+          expect(sampleRes.status).toBe(200);
 
         // 3. Run poppunk and wait til it finishes
         const fakeProjectHash = `${projectId}ABC`;
@@ -123,9 +130,9 @@ describe("Error handling", () => {
         const projectId = await runProjectToCompletion();
         const redisKey = `beebop:project:${projectId}:sample:${sampleId}`
         await saveRedisHash(redisKey, {"amr": "{{{{nope"});
-
+        
         const projectRes = await get(`project/${projectId}`, connectionCookie);
-
+        
         expect(projectRes.status).toBe(500);
         expect(projectRes.data.data).toBe(null);
         expect(projectRes.data.errors.length).toBe(1);

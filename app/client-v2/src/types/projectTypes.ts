@@ -65,15 +65,17 @@ export interface ClusterInfo {
   hash: string;
 }
 
-export enum WorkerResponseValueTypes {
-  AMR = "amr",
-  SKETCH = "sketch"
-}
-
 export interface WorkerResponse {
   hash: string;
-  type: WorkerResponseValueTypes;
-  result: string;
+  filename: string;
+  amr: AMR;
+  sketch: Record<string, unknown>;
+}
+
+export interface HashedFile {
+  hash: string;
+  filename: string;
+  file: File;
 }
 
 export enum AnalysisType {

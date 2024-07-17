@@ -23,7 +23,10 @@ script.runInNewContext(worker);
 
 describe("Worker", () => {
   const message = {
-    data: { hash: "abc123", fileObject: { name: "mockfile.fa" } }
+    data: [
+      { hash: "abc123", file: { name: "mockfile1.fa" }, filename: "mockfile1.fa" },
+      { hash: "abc2234", file: { name: "mockfile2.fa" }, filename: "mockfile2.fa" }
+    ]
   };
 
   (worker.onmessage as any)(message);
@@ -33,16 +36,32 @@ describe("Worker", () => {
   });
 
   it("puts file into workdir of FS", async () => {
-    expect(worker.moduleMock.data.filedata).toEqual({ files: [message.data.fileObject] });
+    expect(worker.moduleMock.data.filedata).toEqual({ files: [message.data[1].file] });
     return expect(worker.moduleMock.data.dir).toBe(worker.moduleMock.workdir);
   });
 
   it("sends results back", async () => {
-    expect(worker.postMessage).toHaveBeenCalledWith({ hash: "abc123", type: "amr", result: "/working/mockfile.fa" });
-    return expect(worker.postMessage).toHaveBeenCalledWith({
-      hash: "abc123",
-      type: "sketch",
-      result: "/working/mockfile.fa"
-    });
+    return expect(worker.postMessage).toHaveBeenCalledWith([
+      {
+        amr: {
+          amr: "/working/mockfile1.fa"
+        },
+        filename: "mockfile1.fa",
+        hash: "abc123",
+        sketch: {
+          sketch: "/working/mockfile1.fa"
+        }
+      },
+      {
+        amr: {
+          amr: "/working/mockfile2.fa"
+        },
+        filename: "mockfile2.fa",
+        hash: "abc2234",
+        sketch: {
+          sketch: "/working/mockfile2.fa"
+        }
+      }
+    ]);
   });
 });

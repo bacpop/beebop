@@ -1,5 +1,5 @@
 import { ProjectUtils } from "./../utils/projectUtils";
-import { ProjectNameRequest } from "../types/requestTypes";
+import { AddSamplesRequest, ProjectNameRequest } from "../types/requestTypes";
 import { userStore } from "../db/userStore";
 import { handleAPIError, sendSuccess } from "../utils";
 import { handleError } from "../errors/handleError";
@@ -24,7 +24,7 @@ export default (config) => {
         const { redis } = request.app.locals;
         const projectId = await userStore(redis).saveNewProject(request, name);
         sendSuccess(response, projectId);
-      })
+      });
     },
 
     async renameProject(request, response, next) {
@@ -34,7 +34,7 @@ export default (config) => {
         const { redis } = request.app.locals;
         await userStore(redis).renameProject(request, projectId, name);
         sendSuccess(response, null);
-      })
+      });
     },
 
     async getProject(request, response, next) {
@@ -101,34 +101,6 @@ export default (config) => {
       });
     },
 
-    async postAMR(request, response, next) {
-      await asyncHandler(next, async () => {
-        const amr = request.body as AMR;
-        const { projectId, sampleHash } = request.params;
-        const { redis } = request.app.locals;
-        await userStore(redis).saveAMR(projectId, sampleHash, amr);
-        sendSuccess(response, null);
-      });
-    },
-
-    async postSketch(request, response, next) {
-      await asyncHandler(next, async () => {
-        const { sketch, filename } = request.body as {
-          sketch: Record<string, unknown>;
-          filename: string;
-        };
-        const { projectId, sampleHash } = request.params;
-        const { redis } = request.app.locals;
-        await userStore(redis).saveSketch(
-          projectId,
-          sampleHash,
-          filename,
-          sketch
-        );
-        sendSuccess(response, null);
-      });
-    },
-
     async deleteSample(request, response, next) {
       await asyncHandler(next, async () => {
         const { projectId, sampleHash } = request.params;
@@ -137,6 +109,17 @@ export default (config) => {
         };
         const { redis } = request.app.locals;
         await userStore(redis).deleteSample(projectId, sampleHash, filename);
+        sendSuccess(response, null);
+      });
+    },
+
+    async addSamples(request, response, next) {
+      await asyncHandler(next, async () => {
+        const samples = request.body as AddSamplesRequest[];
+        const { projectId } = request.params;
+        const { redis } = request.app.locals;
+
+        await userStore(redis).saveSamples(projectId, samples);
         sendSuccess(response, null);
       });
     },
