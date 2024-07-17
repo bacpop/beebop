@@ -107,20 +107,6 @@ export class UserStore {
         return result;
     }
 
-    async saveSketch(projectId: string, sampleHash: string, filename: string, sketch: Record<string,unknown> ) {
-        await this._validateProject(projectId);
-        const sampleId = this._sampleId(sampleHash, filename);
-        await this._redis.sadd(this._projectSamplesKey(projectId), sampleId);
-        await this._redis.hset(this._projectSampleKey(projectId, sampleId), "sketch", JSON.stringify(sketch));
-    }
-
-    async saveAMR(projectId: string, sampleHash: string, amr: AMR) {
-        await this._validateProject(projectId);
-        const sampleId = this._sampleId(sampleHash, amr.filename);
-        await this._redis.sadd(this._projectSamplesKey(projectId), sampleId);
-        await this._redis.hset(this._projectSampleKey(projectId, sampleId), "amr", JSON.stringify(amr));
-    }
-
     async saveSamples(projectId: string, samples: {
         sketch: Record<string, unknown>;
         hash: string;

@@ -18,12 +18,6 @@ export default {
         app.delete('/project/:projectId/delete',
             authCheck,
             controller.deleteProject);
-        app.post('/project/:projectId/amr/:sampleHash',
-            authCheck,
-            controller.postAMR);
-        app.post('/project/:projectId/sketch/:sampleHash',
-            authCheck,
-            controller.postSketch);
         app.post('/project/:projectId/rename',
             authCheck,
             controller.renameProject);

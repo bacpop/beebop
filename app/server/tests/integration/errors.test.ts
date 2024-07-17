@@ -27,20 +27,6 @@ describe("Error handling", () => {
         // 1. Create project
         const projectId = await newProject();
 
-        // 2. Post sample AMR
-        const amr = {
-            filename: sampleFileName,
-            Penicillin: 0.944,
-            Chloramphenicol: 0.39,
-            Erythromycin: 0.151,
-            Tetracycline: 0.453,
-            Trim_sulfa: 0.98,
-            length: true,
-            species: true
-        };
-        const amrRes = await post(`project/${projectId}/amr/${sampleHash}`, amr, connectionCookie);
-        expect(amrRes.status).toBe(200);
-
         // 3. Run poppunk and wait til it finishes
         const fakeProjectHash = `${projectId}ABC`;
         const projectData = testSample(fakeProjectHash, projectId);

@@ -8,7 +8,7 @@ import Project from "@/components/ProjectView/ProjectPage.vue";
 
     <template #fallback>
       <div class="flex align-items-center">
-        <ProgressSpinner strokeWidth="8" class="w-8rem h-8rem" animationDuration=".5s" /> />
+        <ProgressSpinner strokeWidth="8" class="w-8rem h-8rem" animationDuration=".5s" />
       </div>
     </template>
   </Suspense>
