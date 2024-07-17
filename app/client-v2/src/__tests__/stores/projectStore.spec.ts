@@ -337,14 +337,19 @@ describe("projectStore", () => {
         expect(sample.hasRun).toBe(true);
       });
     });
-    it("should not call pollAnalysisStatus & not change status when runAnalysis fails", () => {
+    it("should not call pollAnalysisStatus ,update hash & set status to null, and samples to not run when poppunk apu fails", async () => {
+      const mockSamples = structuredClone(MOCK_PROJECT_SAMPLES_BEFORE_RUN);
       const store = useProjectStore();
+      store.project.samples = mockSamples;
       store.buildRunAnalysisPostBody = vitest.fn().mockReturnValue({ projectHash: "test-hash" });
       store.pollAnalysisStatus = vitest.fn();
       server.use(http.post("*", () => HttpResponse.error()));
 
-      store.runAnalysis();
+      await store.runAnalysis();
 
+      mockSamples.forEach((sample) => {
+        expect(sample.hasRun).toBe(false);
+      });
       expect(store.pollAnalysisStatus).not.toHaveBeenCalled();
       expect(store.project.status).toBeUndefined();
       expect(store.hasStartedAtLeastOneRun).toBe(false);

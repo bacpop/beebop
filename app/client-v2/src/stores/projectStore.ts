@@ -228,17 +228,19 @@ export const useProjectStore = defineStore("project", {
     },
 
     async runAnalysis() {
+      this.project.status = { assign: "submitted", microreact: "submitted", network: "submitted" };
+      this.project.samples.forEach((sample: ProjectSample) => (sample.hasRun = true));
       const body = this.buildRunAnalysisPostBody();
       try {
         await baseApi.post("/poppunk", body);
 
         this.project.hash = body.projectHash;
-        this.project.status = { assign: "submitted", microreact: "submitted", network: "submitted" };
-        this.project.samples.forEach((sample: ProjectSample) => (sample.hasRun = true));
         this.pollAnalysisStatus();
       } catch (error) {
         console.error("Error running analysis", error);
         this.toast.showErrorToast("Error running analysis. Try again later.");
+        this.project.status = undefined;
+        this.project.samples.forEach((sample: ProjectSample) => (sample.hasRun = false));
         return;
       }
     },

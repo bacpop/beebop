@@ -26,3 +26,13 @@ test("can delete file samples from project", async ({ page }) => {
   await page.getByLabel("Remove good_1").click();
   await expect(page.getByText("good_1.fa")).not.toBeVisible();
 });
+
+test("shows progress bar whilst uploading files & gone after full uploaded", async ({ page }) => {
+  uploadFiles(page);
+
+  await expect(page.getByRole("progressbar")).toBeVisible();
+
+  await expect(page.getByText("good_1.fa")).toBeVisible();
+
+  await expect(page.getByRole("progressbar")).not.toBeVisible();
+});

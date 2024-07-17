@@ -56,7 +56,7 @@ test("bad samples after run displays failed chips", async ({ page }) => {
 
   await expect(page.getByRole("cell", { name: "failed" })).toHaveCount(3);
   await page.getByRole("cell", { name: "failed", exact: false }).locator("span").first().hover();
-  await expect(page.getByText("Invalid Sample")).toBeVisible();
+  await expect(page.getByText("Unknown error. Ensure sample is valid or try again")).toBeVisible();
 });
 
 test("can load up already run project even if loading", async ({ page }) => {

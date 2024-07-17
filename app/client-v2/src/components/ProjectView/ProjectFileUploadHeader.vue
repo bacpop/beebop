@@ -11,7 +11,7 @@ defineProps<{
 <template>
   <div v-if="projectStore.uploadingPercentage !== null && projectStore.uploadingPercentage !== 100" class="flex-1">
     <div class="mb-2 fadein animation-duration-2000 animation-iteration-infinite">
-      Sketching and calculating AMR for uploaded samples... do not exit the page.
+      Sketching and calculating AMR for uploaded samples... do not exit the page; any unprocessed will not be saved.
     </div>
     <ProgressBar style="height: 20px" :value="projectStore.uploadingPercentage"></ProgressBar>
   </div>
