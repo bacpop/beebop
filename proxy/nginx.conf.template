@@ -81,7 +81,7 @@ http {
         }
 
         # just pass this through to the front-end vue app
-        location /about {
+        location / {
             try_files /index.html =404;
         }
     }
