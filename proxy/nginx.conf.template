@@ -81,10 +81,6 @@ http {
         }
 
            # Just pass this through to the front-end Vue app
-            location /about {
-                try_files /index.html =404;
-            }
-
             # Catch-all to handle all other requests
             location / {
                 try_files $uri $uri/ /index.html;
