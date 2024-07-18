@@ -80,10 +80,11 @@ http {
             # proxy_redirect default;
         }
 
-        # just pass this through to the front-end vue app
-        location /about {
-            try_files /index.html =404;
-        }
+           # Just pass this through to the front-end Vue app
+            # Catch-all to handle all other requests
+            location / {
+                try_files $uri $uri/ /index.html;
+            }
     }
 
     # Redirect all http requests to the SSL endpoint and the correct domain name
