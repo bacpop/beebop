@@ -23,7 +23,7 @@ if (!fs.existsSync(filename)) {
 
 const configText = fs.readFileSync(filename, { encoding: "utf-8" });
 // const config = JSON.parse(configText);
-dotenv.config();
+dotenv.config({ path: ".env.development" });
 
 const config = {
   server_port: process.env.PORT || 4000,
