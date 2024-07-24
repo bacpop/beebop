@@ -31,7 +31,7 @@ const config = {
   redis_url: process.env.REDIS_URL || "redis://localhost:6379",
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
-  SESSION_SECRET: process.env.SESSION_SECRET || "beebop-is-great",
+  SESSION_SECRET: process.env.SESSION_SECRET,
   GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
   GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
 };
