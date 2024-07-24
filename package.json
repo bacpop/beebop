@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "dotenv": "^16.4.5",
     "pm2": "^5.4.2"
   }
 }
