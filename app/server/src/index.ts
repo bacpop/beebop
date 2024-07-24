@@ -23,6 +23,19 @@ const configText = fs.readFileSync(filename, { encoding: "utf-8" });
 // const config = JSON.parse(configText);
 dotenv.config();
 
+// const config = {
+//   server_port: process.env.PORT,
+//   api_url: process.env.API_URL,
+//   client_url: process.env.CLIENT_URL,
+//   server_url: process.env.SERVER_URL,
+//   redis_url: process.env.REDIS_URL,
+//   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+//   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+//   SESSION_SECRET: process.env.SESSION_SECRET,
+//   GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
+//   GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
+// };
+
 if (!fs.existsSync(filename)) {
     throw new Error(`File ${configPath} does not exist`);
 }
