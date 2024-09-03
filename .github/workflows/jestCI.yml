@@ -56,10 +56,6 @@ jobs:
           cache: "npm"
           cache-dependency-path: ./app/server/package-lock.json
       - run: npm ci
-      - name: get config file
-        run: |
-          pwd
-          cp ./src/resources/config.json.in.development ./src/resources/config.json
       - name: run all components
         working-directory: .
         run: ./scripts/run_test server-only
