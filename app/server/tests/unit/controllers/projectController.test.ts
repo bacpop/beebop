@@ -44,13 +44,16 @@ jest.mock("../../../src/utils/projectUtils", () => ({
 }));
 
 import {mockApp, mockRedis, mockResponse} from "../utils";
-import config from "../../../src/resources/config.json";
 import projectController from "../../../src/controllers/projectController";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { BeebopError } from "../../../src/errors/beebopError";
+import dotenv from "dotenv";
+import { buildConfig } from "../../../src/buildConfig";
 
 const mockAxios = new MockAdapter(axios);
+dotenv.config({ path: ".env.development" });
+const config = buildConfig()
 
 describe("projectController", () => {
     beforeEach(() => {
