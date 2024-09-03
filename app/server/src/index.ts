@@ -1,28 +1,15 @@
 import express from "express";
-import MockStrategy from "passport-mock-strategy";
 import passport from "passport";
+import MockStrategy from "passport-mock-strategy";
 
 import { configureApp } from "./configureApp";
 import { router } from "./routes/routes";
 
-import fs from "fs";
-import path from "path";
-
-import configPath from "./args";
-import { redisConnection } from "./db/redis";
-import { initialiseLogging } from "./logging";
-import { handleError } from "./errors/handleError";
 import dotenv from "dotenv";
+import { redisConnection } from "./db/redis";
+import { handleError } from "./errors/handleError";
+import { initialiseLogging } from "./logging";
 
-dotenv.config();
-// const filename = path.join(configPath, "config.json");
-
-// if (!fs.existsSync(filename)) {
-//   throw new Error(`File ${configPath} does not exist`);
-// }
-
-// const configText = fs.readFileSync(filename, { encoding: "utf-8" });
-// const config = JSON.parse(configText);
 dotenv.config({ path: ".env.development" });
 
 const config = {
@@ -38,9 +25,6 @@ const config = {
   GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
 };
 
-// if (!fs.existsSync(filename)) {
-//   throw new Error(`File ${configPath} does not exist`);
-// }
 const app = express();
 initialiseLogging(app);
 

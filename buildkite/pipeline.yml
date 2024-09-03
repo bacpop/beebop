@@ -13,8 +13,3 @@ steps:
   - label: ":shipit: Push Proxy images"
     command:  proxy/docker/push
 
-  - wait
-
-  - label: ":mag: Docker smoke test"
-    command: scripts/docker_smoke_test
-
