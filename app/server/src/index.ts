@@ -15,13 +15,13 @@ import { handleError } from "./errors/handleError";
 import dotenv from "dotenv";
 
 dotenv.config();
-const filename = path.join(configPath, "config.json");
+// const filename = path.join(configPath, "config.json");
 
-if (!fs.existsSync(filename)) {
-  throw new Error(`File ${configPath} does not exist`);
-}
+// if (!fs.existsSync(filename)) {
+//   throw new Error(`File ${configPath} does not exist`);
+// }
 
-const configText = fs.readFileSync(filename, { encoding: "utf-8" });
+// const configText = fs.readFileSync(filename, { encoding: "utf-8" });
 // const config = JSON.parse(configText);
 dotenv.config({ path: ".env.development" });
 
@@ -38,9 +38,9 @@ const config = {
   GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
 };
 
-if (!fs.existsSync(filename)) {
-  throw new Error(`File ${configPath} does not exist`);
-}
+// if (!fs.existsSync(filename)) {
+//   throw new Error(`File ${configPath} does not exist`);
+// }
 const app = express();
 initialiseLogging(app);
 
