@@ -26,10 +26,6 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
           cache-dependency-path: ./app/client-v2/package-lock.json
-      - name: get config file
-        run: |
-          pwd
-          cp ./app/server/src/resources/config.json.in.development ./app/server/src/resources/config.json
       - name: Run all components
         working-directory: .
         run: ./scripts/run_test
