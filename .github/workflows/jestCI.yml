@@ -55,12 +55,16 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
           cache-dependency-path: ./app/server/package-lock.json
-      - name: configure env variables
-        run: ./scripts/decrypt_config
       - run: npm ci
       - name: run all components
         working-directory: .
         run: ./scripts/run_test server-only
+        env:
+          GITHUB_CLIENT_ID: ${{ secrets.CLIENT_ID_GITHUB }}
+          GITHUB_CLIENT_SECRET: ${{ secrets.CLIENT_SECRET_GITHUB }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
       - name: Run unit and integration tests
         run: npm run test
       - name: stop all components
