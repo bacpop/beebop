@@ -11,7 +11,7 @@ import { handleError } from "./errors/handleError";
 import { initialiseLogging } from "./logging";
 import { buildConfig } from "./buildConfig";
 
-dotenv.config({ path: ".env.development" });
+dotenv.config();
 
 const config = buildConfig();
 

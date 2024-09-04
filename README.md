@@ -46,7 +46,7 @@ docker --version
 ```
 
 
-If you run the application for the first time in development you need to add the secrets into `env.development`. Run the following command to decrypt the secrets:
+If you run the application for the first time in development you need to env variables into `.env`.
 
 Login to the vault:
 ```
@@ -78,7 +78,7 @@ You can also run everything outside pm2, by separately running:
 - `./scripts/run_client`
 
 ## Config
-Config for the back-end should be done via env variables. All needed variables can be found at `./app/server/src/buildConfig.ts`. In development, these are set in `./app/server/.env.development`.
+Config for the back-end should be done via env variables. All needed variables can be found at `./app/server/src/buildConfig.ts`. In development, these are set in `./app/server/.env` which can be set by running `./scripts/decrypt_config`.
 
 ## Deploying with docker
 

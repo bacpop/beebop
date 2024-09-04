@@ -11,7 +11,7 @@ import MockStrategy from "passport-mock-strategy";
 import dotenv from "dotenv";
 import { buildConfig } from "../../src/buildConfig";
 
-dotenv.config({ path: ".env.development" });
+dotenv.config();
 const config = buildConfig();
 const app = express();
 configureApp(app, config);

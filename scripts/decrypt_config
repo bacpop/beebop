@@ -12,8 +12,12 @@ mkdir proxy/ssl/production -p
 vault read -field=key secret/beebop/ssl/production > proxy/ssl/production/key.pem
 vault read -field=cert secret/beebop/ssl/production > proxy/ssl/production/certificate.pem
 
-envsubst >> app/server/.env.development <<EOF
-
+envsubst > app/server/.env <<EOF
+SERVER_PORT=4000
+API_URL=http://localhost:5000
+CLIENT_URL=http://localhost:5173
+SERVER_URL=http://localhost:4000
+REDIS_URL=redis://localhost:6379
 GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID
 GOOGLE_CLIENT_SECRET=$GOOGLE_CLIENT_SECRET
 SESSION_SECRET=$SESSION_SECRET

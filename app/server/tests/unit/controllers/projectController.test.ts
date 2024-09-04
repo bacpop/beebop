@@ -52,7 +52,7 @@ import dotenv from "dotenv";
 import { buildConfig } from "../../../src/buildConfig";
 
 const mockAxios = new MockAdapter(axios);
-dotenv.config({ path: ".env.development" });
+dotenv.config();
 const config = buildConfig()
 
 describe("projectController", () => {

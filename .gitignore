@@ -5,4 +5,5 @@ app/server/coverage
 .idea
 proxy/ssl/production
 .vscode
+.env
 
