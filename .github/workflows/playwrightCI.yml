@@ -41,6 +41,11 @@ jobs:
       - name: Run e2e tests
         env:
           MICROREACT_TOKEN: ${{ secrets.MICROREACT_TOKEN }}
+          GITHUB_CLIENT_ID: ${{ secrets.CLIENT_ID_GITHUB }}
+          GITHUB_CLIENT_SECRET: ${{ secrets.CLIENT_SECRET_GITHUB }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
         working-directory: ./app/client-v2
         run: npm run test:e2e:${{ matrix.browser}}
       - name: Stop all components
