@@ -1,13 +1,19 @@
 import ProjectFileUpload from "@/components/ProjectView/ProjectFileUpload.vue";
-import { MOCK_PROJECT_SAMPLES_BEFORE_RUN } from "@/mocks/mockObjects";
+import { MOCK_PROJECT_SAMPLES, MOCK_PROJECT_SAMPLES_BEFORE_RUN } from "@/mocks/mockObjects";
 import { useProjectStore } from "@/stores/projectStore";
 import { createTestingPinia } from "@pinia/testing";
 import userEvent from "@testing-library/user-event";
 import { fireEvent, render, screen, waitFor } from "@testing-library/vue";
 import PrimeVue from "primevue/config";
+import { downloadCsv } from "@/utils/projectCsvUtils";
+import type { Mock } from "vitest";
 
 vitest.mock("primevue/usetoast", () => ({
   useToast: vitest.fn()
+}));
+const mockDownloadCsv = downloadCsv as Mock;
+vitest.mock("@/utils/projectCsvUtils", () => ({
+  downloadCsv: vitest.fn()
 }));
 
 describe("ProjectFile upload", () => {
@@ -186,5 +192,38 @@ describe("ProjectFile upload", () => {
     });
 
     expect(screen.queryByRole("progressbar")).toBeNull();
+  });
+
+  it("should disable export button if not ready to run analysis", async () => {
+    const testPinia = createTestingPinia();
+    const store = useProjectStore(testPinia);
+    // @ts-expect-error: Getter is read only
+    store.isReadyToRun = false;
+    store.project.samples = [];
+    render(ProjectFileUpload, {
+      global: {
+        plugins: [testPinia, PrimeVue]
+      }
+    });
+
+    expect(screen.getByRole("button", { name: /export/i })).toBeDisabled();
+  });
+
+  it("should export when ready to run analysis and clicked", async () => {
+    const testPinia = createTestingPinia();
+    const store = useProjectStore(testPinia);
+    // @ts-expect-error: Getter is read only
+    store.isReadyToRun = true;
+    store.project.name = "Test Project";
+    store.project.samples = MOCK_PROJECT_SAMPLES;
+    render(ProjectFileUpload, {
+      global: {
+        plugins: [testPinia, PrimeVue]
+      }
+    });
+
+    await userEvent.click(screen.getByRole("button", { name: /export/i }));
+
+    expect(mockDownloadCsv).toHaveBeenCalledWith(MOCK_PROJECT_SAMPLES, "Test Project");
   });
 });

@@ -89,3 +89,12 @@ test("can run project multiple times", async ({ page }) => {
   await expect(page.getByText("GPSC7")).toBeVisible();
   await expect(page.getByText("GPSC4")).toBeVisible();
 });
+
+test("can export project data as csv", async ({ page }) => {
+  uploadFiles(page);
+
+  const downloadPromise = page.waitForEvent("download");
+  await page.getByLabel("Export").click();
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toBe(`${projectName}.csv`);
+});

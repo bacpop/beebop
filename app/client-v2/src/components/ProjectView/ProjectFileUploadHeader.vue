@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useProjectStore } from "@/stores/projectStore";
+import { downloadCsv } from "@/utils/projectCsvUtils";
 
 const projectStore = useProjectStore();
 defineProps<{
@@ -22,6 +23,15 @@ defineProps<{
   </div>
   <div v-else class="flex flex-wrap justify-content-between align-items-center flex-1 gap-2">
     <Button label="Upload" outlined icon="pi pi-upload" @click="chooseCallback()" />
-    <Button label="Run Analysis" outlined @click="runAnalysis" :disabled="!projectStore.isReadyToRun" />
+    <div class="flex gap-2">
+      <Button label="Run Analysis" outlined @click="runAnalysis" :disabled="!projectStore.isReadyToRun" />
+      <Button
+        icon="pi pi-file-export"
+        outlined
+        :disabled="!projectStore.isReadyToRun"
+        @click="downloadCsv(projectStore.project.samples, projectStore.project.name)"
+        label="Export"
+      />
+    </div>
   </div>
 </template>
