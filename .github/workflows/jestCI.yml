@@ -9,6 +9,13 @@ on:
       - main
       - "bacpop-*"
 
+env:
+  GITHUB_CLIENT_ID: ${{ secrets.CLIENT_ID_GITHUB }}
+  GITHUB_CLIENT_SECRET: ${{ secrets.CLIENT_SECRET_GITHUB }}
+  GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+  GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+  SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+
 jobs:
   unit_frontend:
     runs-on: ubuntu-latest
@@ -59,20 +66,8 @@ jobs:
       - name: run all components
         working-directory: .
         run: ./scripts/run_test server-only
-        env:
-          GITHUB_CLIENT_ID: ${{ secrets.CLIENT_ID_GITHUB }}
-          GITHUB_CLIENT_SECRET: ${{ secrets.CLIENT_SECRET_GITHUB }}
-          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-          SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
       - name: Run unit and integration tests
         run: npm run test
-        env:
-          GITHUB_CLIENT_ID: ${{ secrets.CLIENT_ID_GITHUB }}
-          GITHUB_CLIENT_SECRET: ${{ secrets.CLIENT_SECRET_GITHUB }}
-          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-          SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
       - name: stop all components
         working-directory: .
         run: ./scripts/stop_test server-only
