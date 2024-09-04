@@ -46,8 +46,8 @@ docker --version
 ```
 
 
-If you run the application for the first time (or for the first time after running in docker), you need to replace the 
-secrets in the config file in `app/server/src/resources` first. 
+If you run the application for the first time in development you need to add the secrets into `env.development`. Run the following command to decrypt the secrets:
+
 Login to the vault:
 ```
 export VAULT_ADDR=https://vault.dide.ic.ac.uk:8200
@@ -78,27 +78,12 @@ You can also run everything outside pm2, by separately running:
 - `./scripts/run_client`
 
 ## Config
-Config for the front-end lives in `./app/client/src/settings` and by default webpack (via the vue-cli) will use the config 
-defined in `./app/client/src/settings/development`; this gets overriden by setting an env var called `BUILD_TARGET` - see `./proxy/Dockerfile`.
-
-Config for the back-end lives in `./app/server/src/resources`. When deploying using a docker image this file has to be 
-copied into the running container before the app will start - see `./app/server/docker/entrypoint.sh`.
+Config for the back-end should be done via env variables. All needed variables can be found at `./app/server/src/buildConfig.ts`. In development, these are set in `./app/server/.env.development`.
 
 ## Deploying with docker
 
 Docker images are built on CI using `./proxy/docker/build`, `./app/server/docker/build`. If you want 
 to generate them from changed local sources you can run those same scripts locally to build images. 
-
-Generate the correct server config file with
-```
-    ./scripts/decrypt_config docker
-```
-
-Then run the dockerised app with
-
-```
-    ./scripts/run_docker
-```
 
 By default this will configure the nginx proxy for host `localhost`. To deploy with a different hostname, pass
 it as an argument, e.g. 

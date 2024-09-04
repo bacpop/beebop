@@ -5,7 +5,6 @@ WORKDIR /app
 RUN npm install
 
 COPY app/client-v2 /app
-ENV BUILD_TARGET docker
 RUN npm install && npm run build
 
 RUN npm install -g serve 

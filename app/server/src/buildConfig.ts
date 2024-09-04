@@ -1,3 +1,4 @@
+// These environment variables can override the default values in the .env file
 export const buildConfig = () => ({
   server_port: process.env.PORT || 4000,
   api_url: process.env.API_URL || "http://localhost:5000",

@@ -1,31 +1,22 @@
 #!/usr/bin/env bash
 set -e
 
-if [ "$#" -eq 1 ]; then
-    FILE_IN_SERVER=app/server/src/resources/config.json.in.$1
-else
-    FILE_IN_SERVER=app/server/src/resources/config.json.in.development
-fi
+export GITHUB_CLIENT_ID=$(vault read -field=clientid secret/beebop/auth/github)
+export GITHUB_CLIENT_SECRET=$(vault read -field=secret secret/beebop/auth/github)
+export GOOGLE_CLIENT_ID=$(vault read -field=clientid secret/beebop/auth/google)
+export GOOGLE_CLIENT_SECRET=$(vault read -field=secret secret/beebop/auth/google)
+export SESSION_SECRET=$(vault read -field=secret secret/beebop/express-session)
 
-FILE_CLEAR_SERVER=app/server/src/resources/config.json
-
-export GITHUB_ID=$(vault read -field=clientid secret/beebop/auth/github)
-export GITHUB_SECRET=$(vault read -field=secret secret/beebop/auth/github)
-export DOCKER_GITHUB_ID=$(vault read -field=clientid secret/beebop/auth/devdocker/github)
-export DOCKER_GITHUB_SECRET=$(vault read -field=secret secret/beebop/auth/devdocker/github)
-export DOCKER_GOOGLE_ID=$(vault read -field=clientid secret/beebop/auth/devdocker/google)
-export DOCKER_GOOGLE_SECRET=$(vault read -field=secret secret/beebop/auth/devdocker/google)
-export PROD_GITHUB_ID=$(vault read -field=clientid secret/beebop/auth/production/github)
-export PROD_GITHUB_SECRET=$(vault read -field=secret secret/beebop/auth/production/github)
-export PROD_GOOGLE_ID=$(vault read -field=clientid secret/beebop/auth/production/google)
-export PROD_GOOGLE_SECRET=$(vault read -field=secret secret/beebop/auth/production/google)
-export PROD_EXPRESS_SESSION_SECRET=$(vault read -field=secret secret/beebop/express-session/production)
-export GOOGLE_ID=$(vault read -field=clientid secret/beebop/auth/google)
-export GOOGLE_SECRET=$(vault read -field=secret secret/beebop/auth/google)
-export EXPRESS_SESSION_SECRET=$(vault read -field=secret secret/beebop/express-session)
 
 mkdir proxy/ssl/production -p
-vault read -field=key secret/beebop/ssl > proxy/ssl/production/key.pem
-vault read -field=cert secret/beebop/ssl > proxy/ssl/production/certificate.pem
+vault read -field=key secret/beebop/ssl/production > proxy/ssl/production/key.pem
+vault read -field=cert secret/beebop/ssl/production > proxy/ssl/production/certificate.pem
 
-envsubst < $FILE_IN_SERVER > $FILE_CLEAR_SERVER
+envsubst >> app/server/.env.development <<EOF
+
+GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID
+GOOGLE_CLIENT_SECRET=$GOOGLE_CLIENT_SECRET
+SESSION_SECRET=$SESSION_SECRET
+GITHUB_CLIENT_ID=$GITHUB_CLIENT_ID
+GITHUB_CLIENT_SECRET=$GITHUB_CLIENT_SECRET
+EOF
