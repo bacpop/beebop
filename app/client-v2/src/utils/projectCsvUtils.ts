@@ -3,9 +3,9 @@ import { convertProbabilityToWord } from "./amrDisplayUtils";
 
 export const downloadCsv = (samples: ProjectSample[], filename: string) => {
   const csvData = samples.map((sample) => ({
-    filename: sample.filename,
+    Filename: sample.filename,
     ...(sample.amr && convertAmrForCsv(sample.amr)),
-    cluster: sample.cluster || "run for cluster assignment"
+    Cluster: sample.cluster || ""
   }));
 
   const csvContent = generateCsvContent(csvData);
@@ -24,7 +24,7 @@ export const generateCsvContent = (data: Record<string, string>[]) => {
   if (data.length === 0) return "";
 
   const headers = Object.keys(data[0]);
-  const rows = data.map((row) => headers.map((header) => row[header] || "").join(","));
+  const rows = data.map((row) => headers.map((header) => `"${row[header]}"`).join(","));
   return [headers.join(","), ...rows].join("\n");
 };
 

@@ -72,7 +72,7 @@ describe("projectCsvUtils", () => {
       const result = generateCsvContent(data);
 
       expect(result).toBe(
-        "filename,Penicillin,cluster\nsample1,Penicillin-0.9,cluster1\nsample2,Penicillin-0.8,cluster2"
+        'filename,Penicillin,cluster\n"sample1","Penicillin-0.9","cluster1"\n"sample2","Penicillin-0.8","cluster2"'
       );
     });
 
