@@ -1,4 +1,4 @@
-type ProbabilityWord =
+export type ProbabilityWord =
   | "Almost certainly"
   | "Highly likely"
   | "Very good chance"
