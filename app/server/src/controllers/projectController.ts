@@ -1,12 +1,16 @@
-import { ProjectUtils } from "./../utils/projectUtils";
-import { AddSamplesRequest, ProjectNameRequest } from "../types/requestTypes";
-import { userStore } from "../db/userStore";
-import { handleAPIError, sendSuccess } from "../utils";
-import { handleError } from "../errors/handleError";
-import asyncHandler from "../errors/asyncHandler";
 import axios, { AxiosResponse } from "axios";
-import { APIResponse, APIProjectResponse } from "../types/responseTypes";
-import { AMR, BaseProjectInfo } from "../types/models";
+import { userStore } from "../db/userStore";
+import asyncHandler from "../errors/asyncHandler";
+import { handleError } from "../errors/handleError";
+import { BaseProjectInfo } from "../types/models";
+import {
+  AddSamplesRequest,
+  CreateProjectRequest,
+  ProjectNameRequest,
+} from "../types/requestTypes";
+import { APIProjectResponse, APIResponse } from "../types/responseTypes";
+import { handleAPIError, sendSuccess } from "../utils";
+import { ProjectUtils } from "./../utils/projectUtils";
 
 export default (config) => {
   return {
@@ -20,9 +24,9 @@ export default (config) => {
 
     async newProject(request, response, next) {
       await asyncHandler(next, async () => {
-        const name = (request.body as ProjectNameRequest).name;
+        const { name, species } = request.body as CreateProjectRequest;
         const { redis } = request.app.locals;
-        const projectId = await userStore(redis).saveNewProject(request, name);
+        const projectId = await userStore(redis).saveNewProject(request, name, species);
         sendSuccess(response, projectId);
       });
     },

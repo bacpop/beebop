@@ -1,20 +1,18 @@
 <script setup lang="ts">
-import { getApiUrl } from "@/config";
-import { useFetch, useDateFormat } from "@vueuse/core";
-import { ref } from "vue";
-import InputGroup from "primevue/inputgroup";
-import ConfirmDialog from "primevue/confirmdialog";
-import { FilterMatchMode } from "primevue/api";
-import type { DataTableRowEditSaveEvent } from "primevue/datatable";
-import type { ProjectsResponse } from "@/types/projectTypes";
+import CreateProjectButton from "@/components/HomeView/CreateProjectButton.vue";
 import DeleteProjectButton from "@/components/HomeView/DeleteProjectButton.vue";
-import Toast from "primevue/toast";
-import { useRouter } from "vue-router";
 import { useToastService } from "@/composables/useToastService";
+import { getApiUrl } from "@/config";
+import type { ProjectsResponse } from "@/types/projectTypes";
+import { useDateFormat, useFetch } from "@vueuse/core";
+import { FilterMatchMode } from "primevue/api";
+import ConfirmDialog from "primevue/confirmdialog";
+import type { DataTableRowEditSaveEvent } from "primevue/datatable";
+import Toast from "primevue/toast";
 import { useConfirm } from "primevue/useconfirm";
+import { ref } from "vue";
 
 const confirm = useConfirm();
-const router = useRouter();
 const { showErrorToast, showSuccessToast } = useToastService();
 
 const apiUrl = getApiUrl();
@@ -29,28 +27,8 @@ const filters = ref({
   name: { value: null, matchMode: FilterMatchMode.CONTAINS }
 });
 
-const newProjectName = ref("");
 const isEmptyOrSameName = (projectName: string) =>
   !projectName.trim() || projects.value?.data.some((project) => project.name === projectName);
-
-const addProject = async () => {
-  if (isEmptyOrSameName(newProjectName.value)) {
-    showErrorToast("Project name already exists or is empty");
-    return;
-  }
-
-  const { error, data: project } = await useFetch(apiUrl + "/project", {
-    credentials: "include"
-  })
-    .post({ name: newProjectName.value })
-    .json();
-
-  if (error.value) {
-    showErrorToast("Error creating project");
-    return;
-  }
-  router.push(`/project/${project.value?.data}`);
-};
 
 const editingRows = ref([]);
 const onRowEditSave = async (event: DataTableRowEditSaveEvent) => {
@@ -122,10 +100,7 @@ const onRowEditSave = async (event: DataTableRowEditSaveEvent) => {
               />
             </span>
             <div>
-              <InputGroup>
-                <InputText placeholder="Create new Project" v-model="newProjectName" @keydown.enter="addProject" />
-                <Button aria-label="New project" icon="pi pi-plus-circle" @click="addProject" />
-              </InputGroup>
+              <CreateProjectButton :projects="projects?.data ?? []" />
             </div>
           </div>
         </template>
@@ -150,7 +125,8 @@ const onRowEditSave = async (event: DataTableRowEditSaveEvent) => {
           </template>
         </Column>
         <Column :rowEditor="true" bodyStyle="text-align:center" class="w-1"></Column>
-        <Column field="samplesCount" header="# Samples" sortable class="w-3"></Column>
+        <Column field="species" header="Species" sortable class="w-3"></Column>
+        <Column field="samplesCount" header="# Samples" sortable class="w-2"></Column>
         <!-- todo update to date modified -->
         <Column field="timestamp" header="Date Created" sortable class="w-3">
           <template #body="{ data }">

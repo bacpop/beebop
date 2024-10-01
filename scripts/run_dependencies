@@ -22,6 +22,8 @@ docker run -d --rm --name $NAME_WORKER --network=$NETWORK \
        --env=REDIS_HOST="$NAME_REDIS" \
        -v $VOLUME:/beebop/storage \
        mrcide/beebop-py:$API_BRANCH rqworker
+
+# TODO: remove DB_location and all related to V8_ref
 docker run -d --rm --name $NAME_API --network=$NETWORK \
        --pull always \
        --env=REDIS_HOST="$NAME_REDIS" \

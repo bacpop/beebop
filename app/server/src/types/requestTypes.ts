@@ -14,6 +14,9 @@ export interface ProjectNameRequest {
     name: string
 }
 
+export interface CreateProjectRequest extends ProjectNameRequest {
+    species: string
+}
 export interface AddSamplesRequest {
   sketch: Record<string, unknown>;
   hash: string;
