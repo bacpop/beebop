@@ -18,6 +18,7 @@ export default (config) => {
       });
     },
 
+    // TODO: take in species here and save!!
     async newProject(request, response, next) {
       await asyncHandler(next, async () => {
         const name = (request.body as ProjectNameRequest).name;

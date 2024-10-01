@@ -32,6 +32,10 @@ export interface ProjectSample {
   hasRun?: boolean;
 }
 
+const SPECIES = ["Streptococcus pneumoniae" , "Streptococcus agalactiae"] as const
+type Species = typeof SPECIES[number]
+
+// TODO: attach species to each project
 export interface Project {
   id: string;
   name: string;
@@ -44,6 +48,7 @@ export interface Project {
     network: StatusTypes;
   };
   deletedAt?: string;
+  species: Species
 }
 export type StatusTypes = "finished" | "failed" | "started" | "waiting" | "deferred" | "submitted";
 export const COMPLETE_STATUS_TYPES: StatusTypes[] = ["finished", "failed"] as const;

@@ -56,6 +56,7 @@ export const useProjectStore = defineStore("project", {
       try {
         const projectRes = await baseApi.get<ApiResponse<Project>>(`/project/${id}`);
         this.project = projectRes.data;
+        this.project.species = "Streptococcus agalactiae"; // TODO: get from response
 
         if (this.hasStartedAtLeastOneRun && !this.isFinishedRun) {
           this.pollAnalysisStatus();
@@ -258,7 +259,7 @@ export const useProjectStore = defineStore("project", {
         }, "");
       const projectHash = Md5.hashStr(projectHashKey);
 
-      return { projectHash, names, sketches, projectId: this.project.id };
+      return { projectHash, names, sketches, projectId: this.project.id, species: this.project.species };
     },
 
     async downloadZip(type: AnalysisType, cluster: string) {

@@ -23,7 +23,7 @@ async function computeSample(hash, file, filename) {
   const amr = amrModule.make_prediction_json(workdir + "/" + filename);
   // sketch() takes the followings arguments: filepath, kmer_min, kmer_max, kmer_step,
   // bbits, sketchsize64, codon_phased (boolean), use_rc (boolean)
-  const sketch = sketchModule.sketch(workdir + "/" + filename, 14, 29, 3, 14, 156, false, true);
+  const sketch = sketchModule.sketch(workdir + "/" + filename, 13, 29, 4, 14, 156, false, true); // TODO: needs to change per species. pass in min,max, step
 
   return { hash, amr, sketch };
 }
