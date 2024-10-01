@@ -32,9 +32,22 @@ export interface ProjectSample {
   hasRun?: boolean;
 }
 
-const SPECIES = ["Streptococcus pneumoniae" , "Streptococcus agalactiae"] as const
-type Species = typeof SPECIES[number]
+const SPECIES = ["Streptococcus pneumoniae", "Streptococcus agalactiae"] as const;
+type Species = (typeof SPECIES)[number];
+interface KmerArgs {
+  kmerMin: number;
+  kmerMax: number;
+  kmerStep: number;
+}
+const SPECIES_TO_KMER_ARGS: Record<Species, KmerArgs> = {
+  "Streptococcus pneumoniae": { kmerMin: 14, kmerMax: 29, kmerStep: 3 },
+  "Streptococcus agalactiae": { kmerMin: 13, kmerMax: 29, kmerStep: 4 }
+};
 
+// TODO: move to utils
+export function getKmerArgsForSpecies(species: Species): KmerArgs {
+  return SPECIES_TO_KMER_ARGS[species];
+}
 // TODO: attach species to each project
 export interface Project {
   id: string;
@@ -48,7 +61,7 @@ export interface Project {
     network: StatusTypes;
   };
   deletedAt?: string;
-  species: Species
+  species: Species;
 }
 export type StatusTypes = "finished" | "failed" | "started" | "waiting" | "deferred" | "submitted";
 export const COMPLETE_STATUS_TYPES: StatusTypes[] = ["finished", "failed"] as const;

@@ -10,7 +10,8 @@ import {
   AnalysisType,
   type ClusterInfo,
   type StatusTypes,
-  type HashedFile
+  type HashedFile,
+  getKmerArgsForSpecies
 } from "@/types/projectTypes";
 import { mande } from "mande";
 import { defineStore } from "pinia";
@@ -123,7 +124,7 @@ export const useProjectStore = defineStore("project", {
     async computeAmrAndSketch(hashedFiles: HashedFile[]): Promise<void> {
       return new Promise((resolve, reject) => {
         const worker = new Worker("/worker.js");
-        worker.postMessage(hashedFiles);
+        worker.postMessage({ hashedFiles, kmerArgs: getKmerArgsForSpecies(this.project.species) });
 
         worker.onmessage = async (event: MessageEvent<WorkerResponse[]>) => {
           this.handleWorkerResponse(event.data);

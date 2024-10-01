@@ -13,7 +13,9 @@ function createFS(module, f) {
   module.FS.mount(module.FS.filesystems.WORKERFS, { files: [f] }, workdir);
 }
 
-async function computeSample(hash, file, filename) {
+async function computeSample(fileObject, kmerArgs) {
+  const { file, hash, filename } = fileObject;
+  const { kmerMin, kmerMax, kmerStep } = kmerArgs;
   const amrModule = await AMRprediction();
   const sketchModule = await WebSketch();
   //create working directory and mount file
@@ -23,16 +25,16 @@ async function computeSample(hash, file, filename) {
   const amr = amrModule.make_prediction_json(workdir + "/" + filename);
   // sketch() takes the followings arguments: filepath, kmer_min, kmer_max, kmer_step,
   // bbits, sketchsize64, codon_phased (boolean), use_rc (boolean)
-  const sketch = sketchModule.sketch(workdir + "/" + filename, 13, 29, 4, 14, 156, false, true); // TODO: needs to change per species. pass in min,max, step
+  const sketch = sketchModule.sketch(workdir + "/" + filename, kmerMin, kmerMax, kmerStep, 14, 156, false, true);
 
   return { hash, amr, sketch };
 }
 
 onmessage = async function (message) {
-  const hashedFiles = message.data;
+  const { hashedFiles, kmerArgs } = message.data;
   const samples = [];
   for (const fileObject of hashedFiles) {
-    const { hash, amr, sketch } = await computeSample(fileObject.hash, fileObject.file, fileObject.filename);
+    const { hash, amr, sketch } = await computeSample(fileObject, kmerArgs);
     samples.push({ hash, amr: JSON.parse(amr), sketch: JSON.parse(sketch), filename: fileObject.filename });
   }
   postMessage(samples);
