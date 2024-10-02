@@ -6,27 +6,25 @@ test.beforeEach(async ({ page }) => {
 });
 
 const addProjectNavigateHome = async (page: Page, name: string) => {
-  await page.getByPlaceholder("Create new Project").fill(name);
-  await page.getByPlaceholder("Create new Project").press("Enter");
+  await page.getByLabel("Create project").click();
+  await page.getByLabel("Create", { exact: true }).click();
+  await page.getByLabel("Select a Species").click();
+  await page.getByLabel("Streptococcus pneumoniae").click();
+  await page.getByLabel("Name").fill(name);
+  await page.getByLabel("Create", { exact: true }).click();
+
   await expect(page.getByText(name)).toBeVisible();
 
   await page.getByRole("link", { name: "Beebop home" }).click();
   await expect(page.getByRole("link", { name: name })).toBeVisible();
 };
 
-test("can add new project from home screen and cannot create duplicate name", async ({ page }) => {
+test("can add new project from home screen", async ({ page }) => {
   const projectName = randomProjectName();
+
   await addProjectNavigateHome(page, projectName);
 
-  await page.getByPlaceholder("Create new Project").fill(projectName);
-  await page.getByPlaceholder("Create new Project").press("Enter");
-  await expect(page.getByText("Project name already exists or is empty")).toBeVisible();
-});
-
-test("can not add project with an empty name", async ({ page }) => {
-  await page.getByPlaceholder("Create new Project").fill("");
-  await page.getByPlaceholder("Create new Project").press("Enter");
-  await expect(page.getByText("Project name already exists or is empty")).toBeVisible();
+  await expect(page.getByText(projectName)).toBeVisible();
 });
 
 test("can delete project", async ({ page }) => {
@@ -45,8 +43,8 @@ test("can edit project name", async ({ page }) => {
   await addProjectNavigateHome(page, projectName);
 
   await page.getByLabel("Row Edit").first().click();
-  await page.getByRole("row", { name: "Save Edit Cancel Edit 0" }).getByRole("textbox").click();
-  await page.getByRole("row", { name: "Save Edit Cancel Edit 0" }).getByRole("textbox").fill(newProjectName);
+  await page.getByRole("row", { name: "Save Edit Cancel Edit" }).getByRole("textbox").click();
+  await page.getByRole("row", { name: "Save Edit Cancel Edit" }).getByRole("textbox").fill(newProjectName);
   await page.getByLabel("Save Edit").click();
   await expect(page.getByRole("link", { name: newProjectName })).toBeVisible();
 });

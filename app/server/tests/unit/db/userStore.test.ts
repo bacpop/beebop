@@ -13,7 +13,7 @@ describe("UserStore", () => {
         sadd: jest.fn(),
         hget: jest.fn(),
         hgetall: jest.fn().mockImplementation((key: string) => {
-            const valueNames = ["id", "name", "samples", "timestamp", "hash", "status", ...(key === "beebop:project:789" ? ["deletedAt"] : [])];
+            const valueNames = ["id", "name", "samples", "timestamp", "hash", "status", "species", ...(key === "beebop:project:789" ? ["deletedAt"] : [])];
             return valueNames.reduce((acc, v) => ({...acc, [v]: (v === "timestamp" || v === "deletedAt") ? 1687879913811 : `${v} for ${key}`}), {});
         }),
         lrange: jest.fn().mockImplementation(() => ["123", "456", "789"]),
@@ -21,7 +21,8 @@ describe("UserStore", () => {
         smembers: jest.fn(),
         srem: jest.fn(),
         del: jest.fn(),
-        multi: jest.fn().mockReturnValue(mockChainableCommander)
+        multi: jest.fn().mockReturnValue(mockChainableCommander),
+        hmset: jest.fn()
     } as any;
 
     const mockRequest = {
@@ -45,15 +46,14 @@ describe("UserStore", () => {
 
     it("saves new project data", async () => {
         const sut = new UserStore(mockRedis);
-        await sut.saveNewProject(mockRequest, "test project name");
+        await sut.saveNewProject(mockRequest, "test project name", "test species");
         expect(mockRedis.lpush).toHaveBeenCalledTimes(1);
         expect(mockRedis.lpush.mock.calls[0][0]).toBe("beebop:userprojects:testProvider:testId");
         const projectId = mockRedis.lpush.mock.calls[0][1];
         expect(projectId.length).toBe(32);
 
-        expect(mockRedis.hset).toHaveBeenCalledTimes(2);
         expect(mockRedis.hset).toHaveBeenNthCalledWith(1, `beebop:project:${projectId}`, "name", "test project name");
-        expect(mockRedis.hset).toHaveBeenNthCalledWith(2, `beebop:project:${projectId}`, "timestamp", 1687879913811);
+        expect(mockRedis.hmset).toHaveBeenNthCalledWith(1, `beebop:project:${projectId}`, { timestamp: 1687879913811, species: "test species" });
     });
 
     it("renames project", async () => {
@@ -97,11 +97,13 @@ describe("UserStore", () => {
     it("gets user projects, excluding deleted projects", async () => {
         const sut = new UserStore(mockRedis);
         const result = await sut.getUserProjects(mockRequest);
+
         expect(result).toStrictEqual([
             {
                 id: "123",
                 name: "name for beebop:project:123",
                 hash: "hash for beebop:project:123",
+                species: "species for beebop:project:123",
                 timestamp: 1687879913811,
                 samplesCount: 2
             },
@@ -109,11 +111,11 @@ describe("UserStore", () => {
                 id: "456",
                 name: "name for beebop:project:456",
                 hash: "hash for beebop:project:456",
+                species: "species for beebop:project:456",
                 timestamp: 1687879913811,
                 samplesCount: 2
             }
         ]);
-
         expect(mockRedis.lrange).toHaveBeenCalledTimes(1);
         expect(mockRedis.lrange.mock.calls[0][0]).toBe("beebop:userprojects:testProvider:testId");
         expect(mockRedis.lrange.mock.calls[0][1]).toBe(0);
@@ -176,12 +178,13 @@ describe("UserStore", () => {
         expect(mockRedis.hgetall).toHaveBeenCalledTimes(1);
         expect(mockRedis.hgetall.mock.calls[0][0]).toBe(expectedProjectKey);
         expect(result).toStrictEqual({
-            "hash": "hash for beebop:project:testProjectId",
-            "id": "id for beebop:project:testProjectId",
-            "name": "name for beebop:project:testProjectId",
-            "samples": "samples for beebop:project:testProjectId",
-            "status": "status for beebop:project:testProjectId",
-            "timestamp": 1687879913811,
+            hash: "hash for beebop:project:testProjectId",
+            id: "id for beebop:project:testProjectId",
+            name: "name for beebop:project:testProjectId",
+            samples: "samples for beebop:project:testProjectId",
+            status: "status for beebop:project:testProjectId",
+            species: "species for beebop:project:testProjectId",
+            timestamp: 1687879913811,
         });
     });
 

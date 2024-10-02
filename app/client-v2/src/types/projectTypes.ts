@@ -4,7 +4,7 @@ export interface ProjectOverview {
   name: string;
   samplesCount: number;
   timestamp: string;
-  species: string;
+  species: Species;
 }
 export interface ProjectsResponse {
   data: ProjectOverview[];
@@ -45,7 +45,7 @@ export interface Project {
     network: StatusTypes;
   };
   deletedAt?: string;
-  species: string;
+  species: Species;
 }
 export type StatusTypes = "finished" | "failed" | "started" | "waiting" | "deferred" | "submitted";
 export const COMPLETE_STATUS_TYPES: StatusTypes[] = ["finished", "failed"] as const;

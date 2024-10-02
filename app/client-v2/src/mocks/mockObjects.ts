@@ -10,19 +10,22 @@ export const MOCK_PROJECTS: ProjectOverview[] = [
     id: "1",
     name: "Test Project",
     samplesCount: 10,
-    timestamp: "2021-01-01"
+    timestamp: "2021-01-01",
+    species: "Streptococcus pneumoniae"
   },
   {
     id: "2",
     name: "Another Project",
     samplesCount: 5,
-    timestamp: "2021-01-02"
+    timestamp: "2021-01-02",
+    species: "Streptococcus pneumoniae"
   },
   {
     id: "3",
     name: "Third Project",
     samplesCount: 15,
-    timestamp: "2021-01-03"
+    timestamp: "2021-01-03",
+    species: "Streptococcus agalactiae"
   }
 ];
 
@@ -117,7 +120,8 @@ export const MOCK_PROJECT: Project = {
     assign: "finished",
     microreact: "finished",
     network: "failed"
-  }
+  },
+  species: "Streptococcus pneumoniae"
 };
 
 export const MOCK_NETWORK_GRAPH = `<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">

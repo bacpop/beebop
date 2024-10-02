@@ -115,7 +115,8 @@ describe("projectStore", () => {
         name: MOCK_PROJECT.name,
         timestamp: MOCK_PROJECT.timestamp,
         samples: MOCK_PROJECT.samples,
-        status: MOCK_PROJECT.status
+        status: MOCK_PROJECT.status,
+        species: MOCK_PROJECT.species
       });
       expect(store.hasStartedAtLeastOneRun).toBe(true);
     });

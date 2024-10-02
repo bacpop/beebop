@@ -14,7 +14,6 @@ import { ref } from "vue";
 
 const confirm = useConfirm();
 const { showErrorToast, showSuccessToast } = useToastService();
-
 const apiUrl = getApiUrl();
 const {
   data: projects,
