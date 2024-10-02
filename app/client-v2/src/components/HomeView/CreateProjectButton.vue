@@ -3,7 +3,7 @@ import { useToastService } from "@/composables/useToastService";
 import { getApiUrl } from "@/config";
 import { SPECIES, type ProjectOverview } from "@/types/projectTypes";
 import { useFetch } from "@vueuse/core";
-import { defineProps, reactive, ref } from "vue";
+import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 
 const props = defineProps<{
