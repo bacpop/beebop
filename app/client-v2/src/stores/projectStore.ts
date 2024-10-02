@@ -1,20 +1,23 @@
 import { useToastService } from "@/composables/useToastService";
 import { getApiUrl } from "@/config";
 import {
+  AnalysisType,
   COMPLETE_STATUS_TYPES,
   type AnalysisStatus,
   type ApiResponse,
+  type ClusterInfo,
+  type HashedFile,
   type Project,
   type ProjectSample,
-  type WorkerResponse,
-  AnalysisType,
-  type ClusterInfo,
+  type SketchKmerArguments,
   type StatusTypes,
-  type HashedFile
+  type WorkerResponse
 } from "@/types/projectTypes";
 import { mande } from "mande";
 import { defineStore } from "pinia";
 import { Md5 } from "ts-md5";
+import { useArgumentsStore } from "./argumentsStore";
+import { toRaw } from "vue";
 
 const baseApi = mande(getApiUrl(), { credentials: "include" });
 
@@ -72,6 +75,11 @@ export const useProjectStore = defineStore("project", {
       const nonDuplicateFiles = arrayFiles.filter(
         (file: File) => !this.project.samples.some((sample: ProjectSample) => sample.filename === file.name)
       );
+
+      if (nonDuplicateFiles.length === 0) {
+        this.toast.showErrorToast("No new files to upload.");
+        return;
+      }
       this.processFiles(nonDuplicateFiles);
     },
 
@@ -98,17 +106,21 @@ export const useProjectStore = defineStore("project", {
     async processFileBatches(hashedFileBatches: HashedFile[][]) {
       const maxWorkers = this.getOptimalWorkerCount();
       const activeBatches: Set<Promise<void>> = new Set();
-      let uploadPercentNumerator = 0;
+      const argumentsStore = useArgumentsStore();
 
+      let uploadPercentNumerator = 0;
       for (const hashedFileBatch of hashedFileBatches) {
         if (activeBatches.size >= maxWorkers) {
           await Promise.race(activeBatches); // wait for at least 1 batch to finish
         }
-        const batchPromise = this.computeAmrAndSketch(hashedFileBatch);
+        const batchPromise = this.computeAmrAndSketch(
+          hashedFileBatch,
+          toRaw(argumentsStore.getSketchKmerArguments(this.project.species))
+        );
         activeBatches.add(batchPromise);
 
         batchPromise
-          .catch(() => console.log("error processing batch"))
+          .catch(() => console.error("error processing batch"))
           .finally(() => {
             activeBatches.delete(batchPromise);
             uploadPercentNumerator++;
@@ -119,10 +131,13 @@ export const useProjectStore = defineStore("project", {
     getOptimalWorkerCount() {
       return Math.floor(navigator.hardwareConcurrency * 0.5) || 4;
     },
-    async computeAmrAndSketch(hashedFiles: HashedFile[]): Promise<void> {
+    async computeAmrAndSketch(hashedFiles: HashedFile[], sketchKmerArguments: SketchKmerArguments): Promise<void> {
       return new Promise((resolve, reject) => {
         const worker = new Worker("/worker.js");
-        worker.postMessage(hashedFiles);
+        worker.postMessage({
+          hashedFiles,
+          sketchKmerArguments
+        });
 
         worker.onmessage = async (event: MessageEvent<WorkerResponse[]>) => {
           this.handleWorkerResponse(event.data);
@@ -258,7 +273,7 @@ export const useProjectStore = defineStore("project", {
         }, "");
       const projectHash = Md5.hashStr(projectHashKey);
 
-      return { projectHash, names, sketches, projectId: this.project.id };
+      return { projectHash, names, sketches, projectId: this.project.id, species: this.project.species };
     },
 
     async downloadZip(type: AnalysisType, cluster: string) {

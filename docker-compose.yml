@@ -23,7 +23,6 @@ services:
     environment:
       - REDIS_HOST=beebop-redis
       - STORAGE_LOCATION=./storage
-      - DB_LOCATION=${DB_LOCATION}
   beebop-redis:
     image: redis:5.0
   beebop-py-worker:

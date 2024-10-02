@@ -33,5 +33,7 @@ export default {
             controller.microreactURL);
         app.post('/downloadGraphml',
             controller.downloadGraphml);
+        app.post("/sketchKmerArguments", 
+            controller.getSketchKmerArguments);
     }
 } as BeebopRoutes;

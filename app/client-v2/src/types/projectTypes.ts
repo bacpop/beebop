@@ -94,3 +94,9 @@ export type CyGraphml = cytoscape.Core & GraphmlExtension;
 
 export const SPECIES = ["Streptococcus pneumoniae", "Streptococcus agalactiae"] as const;
 export type Species = (typeof SPECIES)[number];
+
+export interface SketchKmerArguments {
+  kmerMin: number;
+  kmerMax: number;
+  kmerStep: number;
+}

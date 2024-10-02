@@ -1,8 +1,9 @@
 import axios from "axios";
+import { userStore } from "../db/userStore";
 import asyncHandler from "../errors/asyncHandler";
-import {BeebopRunRequest, PoppunkRequest} from "../types/requestTypes";
-import {userStore} from "../db/userStore";
-import {handleAPIError} from "../utils";
+import { BeebopRunRequest, PoppunkRequest } from "../types/requestTypes";
+import { handleAPIError, sendSuccess } from "../utils";
+import { IndexUtils } from "../utils/indexUtils";
 
 export default (config) => {
     return {
@@ -14,24 +15,22 @@ export default (config) => {
         async runPoppunk(request, response, next) {
             await asyncHandler(next, async () => {
                 const poppunkRequest = request.body as BeebopRunRequest;
-                const {projectHash, projectId, names, sketches} = poppunkRequest;
+                const {projectHash, projectId, names, sketches, species } = poppunkRequest;
                 const {redis} = request.app.locals;
                 await userStore(redis).saveHashAndSamplesRun(request, projectId, projectHash, names);
-                const apiRequest = {names, projectHash, sketches} as PoppunkRequest;
-                await axios.post(`${config.api_url}/poppunk`,
-                    apiRequest,
-                    {
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        maxContentLength: 1000000000,
-                        maxBodyLength: 1000000000
+                const apiRequest = { names, projectHash, sketches, species } as PoppunkRequest;
+                await axios
+                  .post(`${config.api_url}/poppunk`, apiRequest, {
+                    headers: {
+                      "Content-Type": "application/json",
                     },
-                )
-                    .then(res => response.send(res.data))
-                    .catch(function (error) {
-                        handleAPIError(request, response, error);
-                    })
+                    maxContentLength: 1000000000,
+                    maxBodyLength: 1000000000,
+                  })
+                  .then((res) => response.send(res.data))
+                  .catch(function (error) {
+                    handleAPIError(request, response, error);
+                  });
             });
         },
 
@@ -109,5 +108,21 @@ export default (config) => {
                     handleAPIError(request, response, error);
                 });
         },
+
+        async getSketchKmerArguments(request, response) {
+            await axios.post(`${config.api_url}/db_kmers`,
+                request.body,
+                {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(res => {
+                    sendSuccess(response, IndexUtils.convertKmersToSketchKmerArguments(res.data.data));  
+                })
+                .catch(function (error) {
+                    handleAPIError(request, response, error);
+                });
+        }
     }
 }
