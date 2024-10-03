@@ -41,6 +41,7 @@ describe("indexController", () => {
         sample1: { 7: "abcd" },
         sample2: { 7: "efgh" },
       },
+      species: "test-species",
     };
 
     const req = {
@@ -85,5 +86,25 @@ describe("indexController", () => {
       `http://localhost:5000/results/networkGraphs/${projectHash}`
     );
     expect(mockRes.send).toHaveBeenCalledWith({ "1": "test-graph" });
+  });
+
+  it("should forward request to beebop_py api when getSketchKmerArguments is called", async () => {
+    const mockRes = mockResponse();
+    const mockSpeciesConfig = {
+      species1: { kmerMin: 1, kmerMax: 2, kmerStep: 3 },
+      species2: { kmerMin: 1, kmerMax: 5, kmerStep: 11 },
+    };
+    mockAxios.onGet(`${config.api_url}/speciesConfig`).reply(200, {
+      data: mockSpeciesConfig,
+    });
+
+    await indexController(config).getSketchKmerArguments({}, mockRes);
+
+    expect(mockAxios.history.get[2].url).toBe(
+      "http://localhost:5000/speciesConfig"
+    );
+    expect(mockRes.send).toHaveBeenCalledWith({
+      data: mockSpeciesConfig,
+    });
   });
 });

@@ -142,6 +142,16 @@ describe("projectStore", () => {
 
       expect(processFilesSpy).toHaveBeenCalledWith([newFileWithHash]);
     });
+    it("should show error toast and not call processFiles when onFilesUpload is called with 0 new files", async () => {
+      const store = useProjectStore();
+      store.toast.showErrorToast = vitest.fn();
+      store.project.samples = mockFilesWithHashes.map((file) => ({ hash: file.hash, filename: file.name }));
+      const processFilesSpy = vitest.spyOn(store, "processFiles");
+      store.onFilesUpload(mockFilesWithHashes[0]);
+
+      expect(store.toast.showErrorToast).toHaveBeenCalledWith("No new files to upload.");
+      expect(processFilesSpy).not.toHaveBeenCalled();
+    });
     it("should call batchFilesForProcessing and processFileBatches when processFiles is called", async () => {
       const mockHashedFileBatches = [[{ hash: "test-hash" }], [{ hash: "test-hash" }]] as HashedFile[][];
       const store = useProjectStore();
@@ -518,7 +528,7 @@ describe("projectStore", () => {
       expect(fileBatches.length).toBe(Math.ceil(mockFilesWithHashes.length / 5));
     });
 
-    it.only("should process file batches correctly with species kmer args when processFileBatches is called", async () => {
+    it("should process file batches correctly with species kmer args when processFileBatches is called", async () => {
       const mockFilesWithHashes = Array.from({ length: 98 }, (_, index) => ({
         name: `sample${index + 1}.fasta`,
         text: () => Promise.resolve(`sample${index + 1}`)
