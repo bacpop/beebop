@@ -162,5 +162,5 @@ To close all components once ready, run `./scripts/stop_test` from root.
 
 ### Adding new species
 
-1. Add new database to [mrcdata](https://mrcdata.dide.ic.ac.uk/beebop) and ensure `download_db` script in *beebop_py* downloads this.
+1. Add new database to [mrcdata](https://mrcdata.dide.ic.ac.uk/beebop).
 2. Add new species to `args.json` in *beebop_py*
