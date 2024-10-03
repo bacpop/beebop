@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-export API_BRANCH="main"
+export API_BRANCH="poc-multi-db" # TODO: change back to main when done

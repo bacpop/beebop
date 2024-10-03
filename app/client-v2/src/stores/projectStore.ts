@@ -106,7 +106,6 @@ export const useProjectStore = defineStore("project", {
       const maxWorkers = this.getOptimalWorkerCount();
       const activeBatches: Set<Promise<void>> = new Set();
       const speciesStore = useSpeciesStore();
-      console.log(toRaw(speciesStore.getSketchKmerArguments(this.project.species)));
 
       let uploadPercentNumerator = 0;
       for (const hashedFileBatch of hashedFileBatches) {
