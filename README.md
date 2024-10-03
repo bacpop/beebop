@@ -162,5 +162,5 @@ To close all components once ready, run `./scripts/stop_test` from root.
 
 ### Adding new species
 
-1. In `projectTypes.ts` need to update **SPECIES** list.
-2. Add new database to [mrcdata](https://mrcdata.dide.ic.ac.uk/beebop) and ensure `download_db` script downloads this.
+1. Add new database to [mrcdata](https://mrcdata.dide.ic.ac.uk/beebop) and ensure `download_db` script in *beebop_py* downloads this.
+2. Add new species to `args.json` in *beebop_py*

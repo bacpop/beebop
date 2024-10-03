@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { useToastService } from "@/composables/useToastService";
 import { getApiUrl } from "@/config";
-import { SPECIES, type ProjectOverview } from "@/types/projectTypes";
+import { useSpeciesStore } from "@/stores/speciesStore";
+import { type ProjectOverview } from "@/types/projectTypes";
 import { useFetch } from "@vueuse/core";
 import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
@@ -11,6 +12,7 @@ const props = defineProps<{
 }>();
 
 const { showErrorToast } = useToastService();
+const speciesStore = useSpeciesStore();
 const router = useRouter();
 const apiUrl = getApiUrl();
 const visible = ref(false);
@@ -76,7 +78,7 @@ const createProject = async () => {
     <div class="mb-4 p-text-secondary">Create new project for a given species</div>
     <div class="flex flex-column gap-2 mb-4">
       <label for="species" class="font-semibold">Species</label>
-      <Dropdown v-model="species" :options="SPECIES" placeholder="Select a Species" class="w-full" />
+      <Dropdown v-model="species" :options="speciesStore.species" placeholder="Select a Species" class="w-full" />
       <small v-if="!!errors.species" id="species-error" class="text-red-500">{{ errors.species }}</small>
     </div>
     <div class="flex flex-column gap-2 mb-4">

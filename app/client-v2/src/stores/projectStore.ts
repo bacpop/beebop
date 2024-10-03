@@ -9,14 +9,13 @@ import {
   type HashedFile,
   type Project,
   type ProjectSample,
-  type SketchKmerArguments,
   type StatusTypes,
   type WorkerResponse
 } from "@/types/projectTypes";
 import { mande } from "mande";
 import { defineStore } from "pinia";
 import { Md5 } from "ts-md5";
-import { useArgumentsStore } from "./argumentsStore";
+import { useSpeciesStore, type SketchKmerArguments } from "./speciesStore";
 import { toRaw } from "vue";
 
 const baseApi = mande(getApiUrl(), { credentials: "include" });
@@ -106,7 +105,8 @@ export const useProjectStore = defineStore("project", {
     async processFileBatches(hashedFileBatches: HashedFile[][]) {
       const maxWorkers = this.getOptimalWorkerCount();
       const activeBatches: Set<Promise<void>> = new Set();
-      const argumentsStore = useArgumentsStore();
+      const speciesStore = useSpeciesStore();
+      console.log(toRaw(speciesStore.getSketchKmerArguments(this.project.species)));
 
       let uploadPercentNumerator = 0;
       for (const hashedFileBatch of hashedFileBatches) {
@@ -115,7 +115,7 @@ export const useProjectStore = defineStore("project", {
         }
         const batchPromise = this.computeAmrAndSketch(
           hashedFileBatch,
-          toRaw(argumentsStore.getSketchKmerArguments(this.project.species))
+          toRaw(speciesStore.getSketchKmerArguments(this.project.species))
         );
         activeBatches.add(batchPromise);
 

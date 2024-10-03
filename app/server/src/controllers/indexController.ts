@@ -2,8 +2,7 @@ import axios from "axios";
 import { userStore } from "../db/userStore";
 import asyncHandler from "../errors/asyncHandler";
 import { BeebopRunRequest, PoppunkRequest } from "../types/requestTypes";
-import { handleAPIError, sendSuccess } from "../utils";
-import { IndexUtils } from "../utils/indexUtils";
+import { handleAPIError } from "../utils";
 
 export default (config) => {
     return {
@@ -110,19 +109,12 @@ export default (config) => {
         },
 
         async getSketchKmerArguments(request, response) {
-            await axios.post(`${config.api_url}/db_kmers`,
-                request.body,
-                {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
-                .then(res => {
-                    sendSuccess(response, IndexUtils.convertKmersToSketchKmerArguments(res.data.data));  
-                })
-                .catch(function (error) {
-                    handleAPIError(request, response, error);
-                });
+            try {
+                const res = await axios.get(`${config.api_url}/speciesConfig`);
+                response.send(res.data);
+            } catch (error) {
+                handleAPIError(request, response, error);
+            }
         }
     }
 }

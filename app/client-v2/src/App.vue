@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import AppNav from "@/layouts/AppNav.vue";
 import { useTheme } from "@/composables/useTheme";
-import { useArgumentsStore } from "./stores/argumentsStore";
+import { useSpeciesStore } from "./stores/speciesStore";
 
 const { setInitialTheme } = useTheme();
-const { setSketchKmerArguments } = useArgumentsStore();
+const { setSpeciesConfig } = useSpeciesStore();
 setInitialTheme();
-setSketchKmerArguments();
+setSpeciesConfig();
 </script>
 
 <template>

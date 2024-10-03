@@ -23,10 +23,19 @@ script.runInNewContext(worker);
 
 describe("Worker", () => {
   const message = {
-    data: [
-      { hash: "abc123", file: { name: "mockfile1.fa" }, filename: "mockfile1.fa" },
-      { hash: "abc2234", file: { name: "mockfile2.fa" }, filename: "mockfile2.fa" }
-    ]
+    data: {
+      hashedFiles: [
+        { hash: "abc123", file: { name: "mockfile1.fa" }, filename: "mockfile1.fa" },
+        { hash: "abc2234", file: { name: "mockfile2.fa" }, filename: "mockfile2.fa" }
+      ],
+      sketchKmerArguments: {
+        "Streptococcus pneumoniae": {
+          kmerMax: 14,
+          kmerMin: 3,
+          kmerStep: 3
+        }
+      }
+    }
   };
 
   (worker.onmessage as any)(message);
@@ -36,7 +45,7 @@ describe("Worker", () => {
   });
 
   it("puts file into workdir of FS", async () => {
-    expect(worker.moduleMock.data.filedata).toEqual({ files: [message.data[1].file] });
+    expect(worker.moduleMock.data.filedata).toEqual({ files: [message.data.hashedFiles[1].file] });
     return expect(worker.moduleMock.data.dir).toBe(worker.moduleMock.workdir);
   });
 
