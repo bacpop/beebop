@@ -98,7 +98,7 @@ describe("indexController", () => {
       data: mockSpeciesConfig,
     });
 
-    await indexController(config).getSketchKmerArguments({}, mockRes);
+    await indexController(config).getSpeciesConfig({}, mockRes);
 
     expect(mockAxios.history.get[2].url).toBe(
       "http://localhost:5000/speciesConfig"

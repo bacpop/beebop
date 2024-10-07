@@ -34,6 +34,6 @@ export default {
         app.post('/downloadGraphml',
             controller.downloadGraphml);
         app.get("/speciesConfig", 
-            controller.getSketchKmerArguments);
+            controller.getSpeciesConfig);
     }
 } as BeebopRoutes;

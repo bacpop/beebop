@@ -108,7 +108,7 @@ export default (config) => {
                 });
         },
 
-        async getSketchKmerArguments(request, response) {
+        async getSpeciesConfig(request, response) {
             try {
                 const res = await axios.get(`${config.api_url}/speciesConfig`);
                 response.send(res.data);
