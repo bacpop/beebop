@@ -13,7 +13,7 @@ PORT=5000
 
 docker volume create $VOLUME
 docker run --rm -v $VOLUME:/beebop/storage mrcide/beebop-py:$API_BRANCH \
-       ./scripts/download_db
+       ./scripts/download_databases
 docker network create $NETWORK > /dev/null || /bin/true
 
 docker run -d --rm --name $NAME_REDIS --network=$NETWORK -p 6379:6379 redis:5.0
