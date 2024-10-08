@@ -27,7 +27,7 @@ docker run -d --rm --name $NAME_API --network=$NETWORK \
        --pull always \
        --env=REDIS_HOST="$NAME_REDIS" \
        --env=STORAGE_LOCATION="./storage" \
-       --env=DBS_LOCATION="./storage" \
+       --env=DBS_LOCATION="./storage/dbs" \
        -v $VOLUME:/beebop/storage \
        -p $PORT:5000 \
        mrcide/beebop-py:$API_BRANCH
