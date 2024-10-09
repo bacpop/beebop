@@ -9,6 +9,13 @@ on:
       - main
       - "bacpop-*"
 
+env:
+  GITHUB_CLIENT_ID: ${{ secrets.CLIENT_ID_GITHUB }}
+  GITHUB_CLIENT_SECRET: ${{ secrets.CLIENT_SECRET_GITHUB }}
+  GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+  GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+  SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+
 jobs:
   unit_frontend:
     runs-on: ubuntu-latest
@@ -56,10 +63,6 @@ jobs:
           cache: "npm"
           cache-dependency-path: ./app/server/package-lock.json
       - run: npm ci
-      - name: get config file
-        run: |
-          pwd
-          cp ./src/resources/config.json.in.development ./src/resources/config.json
       - name: run all components
         working-directory: .
         run: ./scripts/run_test server-only

@@ -7,12 +7,15 @@ jest.mock("../../../src/db/userStore", () => ({
 }));
 
 import { mockApp, mockRedis, mockResponse } from "../utils";
-import config from "../../../src/resources/config.json";
 import versionInfo from "../../../resources/versionInfo.json";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import indexController from "../../../src/controllers/indexController";
+import { buildConfig } from "../../../src/buildConfig";
+import dotenv from "dotenv";
 
+dotenv.config();
+const config = buildConfig();
 describe("indexController", () => {
   const mockRequest: any = {};
 
