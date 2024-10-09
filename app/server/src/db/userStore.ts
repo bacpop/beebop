@@ -35,12 +35,13 @@ export class UserStore {
         }
     }
 
-    async saveNewProject(request, projectName: string) {
+    async saveNewProject(request, projectName: string, species: string) {
         const user = this._userIdFromRequest(request);
         const projectId = this._newProjectId();
         await this._redis.lpush(this._userProjectsKey(user), projectId);
         await this._setProjectName(projectId, projectName);
-        await this._redis.hset(this._projectKey(projectId), "timestamp", Date.now());
+        await this._redis.hmset(this._projectKey(projectId), { timestamp: Date.now(), species });
+
         return projectId;
     }
 
@@ -99,7 +100,8 @@ export class UserStore {
                     name: projectData.name,
                     hash: projectData.hash,
                     timestamp: parseInt(projectData.timestamp),
-                    samplesCount
+                    samplesCount,
+                    species: projectData.species
                 });
             }
         }));

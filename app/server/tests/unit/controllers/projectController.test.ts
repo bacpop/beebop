@@ -1,5 +1,5 @@
 const mockUserStoreConstructor = jest.fn();
-const mockUserProjects = [{name: "p1", hash: "123"}];
+const mockUserProjects = [{name: "p1", hash: "123", species: "test species"}];
 const getProjectSplitSampleIds = [
     {hash: "5678", filename: "test1.fa"},
     {hash: "1234", filename: "test2.fa"},
@@ -19,7 +19,8 @@ const mockUserStore = {
     getBaseProjectInfo: jest.fn().mockImplementation(() => ({
         hash: "123",
         timestamp: 12321,
-        name: "test project"
+        name: "test project",
+        species: "test species"
     })),
     getSample: jest.fn().mockImplementation(() => ({
         sketch: "test sketch",
@@ -60,7 +61,8 @@ describe("projectController", () => {
     it("saves new project", async () => {
         const req = {
             body: {
-                name: "test project name"
+                name: "test project name",
+                species: "test species"
             },
             app: mockApp
         };
@@ -71,6 +73,7 @@ describe("projectController", () => {
         expect(mockUserStore.saveNewProject).toHaveBeenCalledTimes(1);
         expect(mockUserStore.saveNewProject.mock.calls[0][0]).toBe(req);
         expect(mockUserStore.saveNewProject.mock.calls[0][1]).toBe("test project name");
+        expect(mockUserStore.saveNewProject.mock.calls[0][2]).toBe("test species");
         expect(res.json).toHaveBeenCalledTimes(1);
         expect(res.json.mock.calls[0][0]).toStrictEqual({
             status: "success",
@@ -175,13 +178,14 @@ describe("projectController", () => {
                 timestamp: 12321,
                 name: "test project",
                 id: "testProjectId",
-                status: mockRunStatus
+                status: mockRunStatus,
+                species: "test species"
             }
         });
     });
     
     it("gets an unrun project with no hash and does not include api data from py", async () => {
-        mockUserStore.getBaseProjectInfo.mockReturnValueOnce({hash: null, timestamp: 1111111, name: "test project"})
+        mockUserStore.getBaseProjectInfo.mockReturnValueOnce({hash: null, timestamp: 1111111, name: "test project", species: "test species"})
         const req = {
             app: mockApp,
             params: {
@@ -211,7 +215,8 @@ describe("projectController", () => {
                 samples: mockProjectSampleData,
                 timestamp: 1111111,
                 name: "test project",
-                id: "testProjectId"
+                id: "testProjectId",
+                species: "test species"
             }
         });
     });

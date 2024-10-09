@@ -1,3 +1,2 @@
 #!/usr/bin/env bash
-export API_BRANCH="main"
-export DB_LOCATION="./storage/GPS_v8_ref"
+export API_BRANCH="bacpop-192-multi-species" # TODO: change back to main when done

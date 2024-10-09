@@ -1,10 +1,11 @@
 import { expect, test } from "@playwright/test";
-import { randomProjectName, uploadFiles } from "./utils.js";
+import { createProject, randomProjectName, uploadFiles } from "./utils.js";
 
+let projectName: string;
 test.beforeEach(async ({ page }) => {
   await page.goto("");
-  await page.getByPlaceholder("Create new Project").fill(randomProjectName());
-  await page.getByPlaceholder("Create new Project").press("Enter");
+  projectName = randomProjectName();
+  await createProject(page, projectName);
 });
 
 test("upload multiple files and display amr information", async ({ page }) => {
@@ -35,4 +36,13 @@ test("shows progress bar whilst uploading files & gone after full uploaded", asy
   await expect(page.getByText("good_1.fa")).toBeVisible();
 
   await expect(page.getByRole("progressbar")).not.toBeVisible();
+});
+
+test("can export project data as csv", async ({ page }) => {
+  uploadFiles(page);
+
+  const downloadPromise = page.waitForEvent("download");
+  await page.getByLabel("Export").click();
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toBe(`${projectName}.csv`);
 });

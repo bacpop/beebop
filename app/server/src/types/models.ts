@@ -17,6 +17,7 @@ export interface BaseProjectInfo {
     name: string;
     hash?: string;
     timestamp: string;
+    species: string;
 }
 export interface ProjectSample extends SplitSampleId {
     amr: AMR;

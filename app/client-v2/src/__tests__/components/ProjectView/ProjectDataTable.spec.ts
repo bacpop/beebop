@@ -1,5 +1,5 @@
 import ProjectDataTableVue from "@/components/ProjectView/ProjectDataTable.vue";
-import { MOCK_PROJECT_SAMPLES, MOCK_PROJECT_SAMPLES_BEFORE_RUN } from "@/mocks/mockObjects";
+import { MOCK_PROJECT_SAMPLES_BEFORE_RUN } from "@/mocks/mockObjects";
 import { useProjectStore } from "@/stores/projectStore";
 import { createTestingPinia } from "@pinia/testing";
 import userEvent from "@testing-library/user-event";

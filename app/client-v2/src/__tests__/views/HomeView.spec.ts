@@ -1,19 +1,18 @@
-import ToastService from "primevue/toastservice";
-import ConfirmationService from "primevue/confirmationservice";
-import PrimeVue from "primevue/config";
-import HomeViewVue from "@/views/HomeView.vue";
-import { render, screen, waitFor, within } from "@testing-library/vue";
-import { mount } from "@vue/test-utils";
-import Ripple from "primevue/ripple";
-import { MOCK_PROJECTS } from "@/mocks/mockObjects";
-import { createRouter, createWebHistory } from "vue-router";
-import { defineComponent } from "vue";
-import { useDateFormat } from "@vueuse/core";
-import { server } from "@/mocks/server";
-import { HttpResponse, http } from "msw";
 import { projectIndexUri } from "@/mocks/handlers/projectHandlers";
-import { flushPromises } from "@vue/test-utils";
+import { MOCK_PROJECTS, MOCK_SPECIES_CONFIG } from "@/mocks/mockObjects";
+import { server } from "@/mocks/server";
+import HomeViewVue from "@/views/HomeView.vue";
 import userEvent from "@testing-library/user-event";
+import { render, screen, waitFor, within } from "@testing-library/vue";
+import { flushPromises } from "@vue/test-utils";
+import { useDateFormat } from "@vueuse/core";
+import { HttpResponse, http } from "msw";
+import PrimeVue from "primevue/config";
+import ConfirmationService from "primevue/confirmationservice";
+import Ripple from "primevue/ripple";
+import ToastService from "primevue/toastservice";
+import { defineComponent } from "vue";
+import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -22,18 +21,25 @@ const router = createRouter({
     { path: "/project/:id", component: defineComponent({ template: `<div>project page</div>` }) }
   ]
 });
+const stubCreateProjectButton = defineComponent({
+  template: '<button role="button">create project</button>'
+});
 
 const renderComponent = () => {
   render(HomeViewVue, {
     global: {
       plugins: [router, PrimeVue, ToastService, ConfirmationService],
-      directives: { ripple: Ripple }
+      directives: { ripple: Ripple },
+      stubs: {
+        CreateProjectButton: stubCreateProjectButton
+      }
     }
   });
 };
 
 describe("HomeView ", () => {
   it("should render projects with links to each project on initial render", async () => {
+    const mockSpecies = Object.keys(MOCK_SPECIES_CONFIG);
     renderComponent();
 
     await waitFor(() => {
@@ -43,6 +49,15 @@ describe("HomeView ", () => {
         expect(screen.getByText(useDateFormat(project.timestamp, "DD/MM/YYYY HH:mm").value)).toBeVisible();
         expect(screen.getByRole("button", { name: new RegExp(`delete ${project.name}`, "i") })).toBeVisible();
       });
+    });
+    expect(screen.getAllByText(mockSpecies[0]).length).toBe(2);
+    expect(screen.getAllByText(mockSpecies[1]).length).toBe(1);
+  });
+  it("should render create project button", async () => {
+    renderComponent();
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: /create project/i })).toBeVisible();
     });
   });
   it("should render no projects message when no projects are available", async () => {
@@ -74,54 +89,6 @@ describe("HomeView ", () => {
       expect(screen.getByRole("link", { name: MOCK_PROJECTS[0].name })).toBeVisible();
       expect(screen.queryByRole("link", { name: MOCK_PROJECTS[1].name })).not.toBeInTheDocument();
       expect(screen.queryByRole("link", { name: MOCK_PROJECTS[2].name })).not.toBeInTheDocument();
-    });
-  });
-  it("should show error message & not push new route when new project name is empty or exists", async () => {
-    renderComponent();
-    const push = vitest.spyOn(router, "push");
-
-    const createButton = screen.getByRole("button", { name: /new project/i });
-    const createInput = screen.getByPlaceholderText(/create/i);
-
-    await userEvent.click(createButton);
-
-    expect(screen.getByText(/error/i)).toBeVisible();
-
-    await userEvent.type(createInput, MOCK_PROJECTS[0].name);
-    await userEvent.click(createButton);
-
-    expect(push).not.toHaveBeenCalled();
-    expect(screen.getAllByText(/error/i).length).toBe(2);
-  });
-  it("should push router when new project is created with name", async () => {
-    const push = vitest.spyOn(router, "push");
-    renderComponent();
-
-    const createButton = screen.getByRole("button", { name: /new project/i });
-    const createInput = screen.getByPlaceholderText(/create/i);
-
-    await userEvent.click(createButton);
-    expect(push).not.toHaveBeenCalled();
-
-    await userEvent.type(createInput, "New Project");
-    await userEvent.click(createButton);
-
-    await waitFor(() => {
-      expect(push).toHaveBeenCalledWith(`/project/${MOCK_PROJECTS[0].id}`);
-    });
-  });
-  it("should show error message when new project creation fails", async () => {
-    server.use(http.post(projectIndexUri, () => HttpResponse.error()));
-    renderComponent();
-
-    const createButton = screen.getByRole("button", { name: /new project/i });
-    const createInput = screen.getByPlaceholderText(/create/i);
-
-    await userEvent.type(createInput, "New Project");
-    await userEvent.click(createButton);
-
-    await waitFor(() => {
-      expect(screen.getByText(/Error creating project/i)).toBeVisible();
     });
   });
 

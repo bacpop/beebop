@@ -18,7 +18,6 @@ const { data, error, isFetching } = useFetch(`${apiUrl}/networkGraphs/${store.pr
   </div>
   <div v-else-if="isFetching" class="text-center">
     <ProgressSpinner strokeWidth="8" class="w-4rem h-4rem" animationDuration=".5s" />
-    />
   </div>
   <div v-else-if="data?.data">
     <InlineMessage severity="info" class="mb-2"

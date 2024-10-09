@@ -29,8 +29,11 @@ onUnmounted(() => {
   </div>
   <div v-else class="single-project-card">
     <div class="flex flex-column gap-1 mb-3">
-      <span class="text-3xl font-bold mr-2">{{ store.project.name }}</span>
-      <span class="text-color-secondary">Upload genomics data and run analysis on them</span>
+      <span class="text-3xl font-bold">{{ store.project.name }}</span>
+      <span class="text-color-secondary"
+        >Upload genome sequences for <span class="font-bold">{{ store.project.species }}</span> and run analysis on
+        them</span
+      >
     </div>
     <div class="surface-card p-4 shadow-2 border-round">
       <ProjectPostRun v-if="store.hasStartedAtLeastOneRun" />

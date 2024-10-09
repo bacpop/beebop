@@ -1,3 +1,4 @@
+import type { SketchKmerArguments } from "@/stores/speciesStore";
 import type { Project, ProjectOverview, ProjectSample } from "@/types/projectTypes";
 
 export const MOCK_USER = {
@@ -5,24 +6,41 @@ export const MOCK_USER = {
   name: "Test User",
   provider: "test"
 };
+export const MOCK_SPECIES_CONFIG: Record<string, SketchKmerArguments> = {
+  "test species1": {
+    kmerMax: 14,
+    kmerMin: 3,
+    kmerStep: 3
+  },
+  "test species2": {
+    kmerMax: 17,
+    kmerMin: 5,
+    kmerStep: 4
+  }
+};
+export const MOCK_SPECIES = ["test species1", "test species2"];
+
 export const MOCK_PROJECTS: ProjectOverview[] = [
   {
     id: "1",
     name: "Test Project",
     samplesCount: 10,
-    timestamp: "2021-01-01"
+    timestamp: "2021-01-01",
+    species: MOCK_SPECIES[0]
   },
   {
     id: "2",
     name: "Another Project",
     samplesCount: 5,
-    timestamp: "2021-01-02"
+    timestamp: "2021-01-02",
+    species: MOCK_SPECIES[0]
   },
   {
     id: "3",
     name: "Third Project",
     samplesCount: 15,
-    timestamp: "2021-01-03"
+    timestamp: "2021-01-03",
+    species: MOCK_SPECIES[1]
   }
 ];
 
@@ -117,7 +135,8 @@ export const MOCK_PROJECT: Project = {
     assign: "finished",
     microreact: "finished",
     network: "failed"
-  }
+  },
+  species: MOCK_SPECIES[0]
 };
 
 export const MOCK_NETWORK_GRAPH = `<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
