@@ -1,14 +1,21 @@
 import { getApiUrl } from "@/config";
 import { assignResultUri, projectIndexUri, statusUri } from "@/mocks/handlers/projectHandlers";
-import { MOCK_PROJECT, MOCK_PROJECT_SAMPLES, MOCK_PROJECT_SAMPLES_BEFORE_RUN } from "@/mocks/mockObjects";
+import {
+  MOCK_PROJECT,
+  MOCK_PROJECT_SAMPLES,
+  MOCK_PROJECT_SAMPLES_BEFORE_RUN,
+  MOCK_SPECIES,
+  MOCK_SPECIES_CONFIG
+} from "@/mocks/mockObjects";
 import { server } from "@/mocks/server";
 import { useProjectStore } from "@/stores/projectStore";
+import { useSpeciesStore } from "@/stores/speciesStore";
 import {
-  type ProjectSample,
   AnalysisType,
   type AnalysisStatus,
-  type WorkerResponse,
-  type HashedFile
+  type HashedFile,
+  type ProjectSample,
+  type WorkerResponse
 } from "@/types/projectTypes";
 import { flushPromises } from "@vue/test-utils";
 import { HttpResponse, http } from "msw";
@@ -134,6 +141,16 @@ describe("projectStore", () => {
       store.onFilesUpload([mockFilesWithHashes[0], newFileWithHash]);
 
       expect(processFilesSpy).toHaveBeenCalledWith([newFileWithHash]);
+    });
+    it("should show error toast and not call processFiles when onFilesUpload is called with 0 new files", async () => {
+      const store = useProjectStore();
+      store.toast.showErrorToast = vitest.fn();
+      store.project.samples = mockFilesWithHashes.map((file) => ({ hash: file.hash, filename: file.name }));
+      const processFilesSpy = vitest.spyOn(store, "processFiles");
+      store.onFilesUpload(mockFilesWithHashes[0]);
+
+      expect(store.toast.showErrorToast).toHaveBeenCalledWith("No new files to upload.");
+      expect(processFilesSpy).not.toHaveBeenCalled();
     });
     it("should call batchFilesForProcessing and processFileBatches when processFiles is called", async () => {
       const mockHashedFileBatches = [[{ hash: "test-hash" }], [{ hash: "test-hash" }]] as HashedFile[][];
@@ -511,22 +528,27 @@ describe("projectStore", () => {
       expect(fileBatches.length).toBe(Math.ceil(mockFilesWithHashes.length / 5));
     });
 
-    it("should process file batches correctly when processFileBatches is called", async () => {
+    it("should process file batches correctly with species kmer args when processFileBatches is called", async () => {
       const mockFilesWithHashes = Array.from({ length: 98 }, (_, index) => ({
         name: `sample${index + 1}.fasta`,
         text: () => Promise.resolve(`sample${index + 1}`)
       })) as unknown as File[];
-      const store = useProjectStore();
-      store.getOptimalWorkerCount = vitest.fn().mockReturnValue(8);
-      const batchPromise = vitest.spyOn(store, "computeAmrAndSketch").mockResolvedValue();
-      const hashedFileBatches = await store.batchFilesForProcessing(mockFilesWithHashes);
+      const speciesStore = useSpeciesStore();
+      speciesStore.sketchKmerArguments = MOCK_SPECIES_CONFIG;
 
-      await store.processFileBatches(hashedFileBatches);
+      const projectStore = useProjectStore();
+      projectStore.project.species = MOCK_SPECIES[0];
+
+      projectStore.getOptimalWorkerCount = vitest.fn().mockReturnValue(8);
+      const batchPromise = vitest.spyOn(projectStore, "computeAmrAndSketch").mockResolvedValue();
+      const hashedFileBatches = await projectStore.batchFilesForProcessing(mockFilesWithHashes);
+
+      await projectStore.processFileBatches(hashedFileBatches);
       await flushPromises();
 
-      expect(store.uploadingPercentage).toEqual(100);
+      expect(projectStore.uploadingPercentage).toEqual(100);
       hashedFileBatches.forEach((batch) => {
-        expect(batchPromise).toHaveBeenCalledWith(batch);
+        expect(batchPromise).toHaveBeenCalledWith(batch, MOCK_SPECIES_CONFIG[MOCK_SPECIES[0]]);
       });
     });
   });

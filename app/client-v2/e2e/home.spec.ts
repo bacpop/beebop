@@ -1,17 +1,12 @@
 import { test, expect, Page } from "@playwright/test";
-import { randomProjectName } from "./utils.js";
+import { createProject, randomProjectName } from "./utils.js";
 
 test.beforeEach(async ({ page }) => {
   await page.goto("");
 });
 
 const addProjectNavigateHome = async (page: Page, name: string) => {
-  await page.getByLabel("Create project").click();
-  await page.getByLabel("Create", { exact: true }).click();
-  await page.getByLabel("Select a Species").click();
-  await page.getByLabel("Streptococcus pneumoniae").click();
-  await page.getByLabel("Name").fill(name);
-  await page.getByLabel("Create", { exact: true }).click();
+  await createProject(page, name)
 
   await expect(page.getByText(name)).toBeVisible();
 

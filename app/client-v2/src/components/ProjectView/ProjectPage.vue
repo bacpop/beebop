@@ -28,14 +28,12 @@ onUnmounted(() => {
     Error fetching project... Refresh or try again later
   </div>
   <div v-else class="single-project-card">
-    <div class="flex justify-content-between gap-4 mb-3">
-      <div class="flex flex-column gap-1">
-        <span class="text-3xl font-bold">{{ store.project.name }}</span>
-        <span class="text-color-secondary"
-          >Upload genome sequences for {{ store.project.species }} and run analysis on them</span
-        >
-      </div>
-      <Message severity="info" :closable="false">{{ store.project.species }}</Message>
+    <div class="flex flex-column gap-1 mb-3">
+      <span class="text-3xl font-bold">{{ store.project.name }}</span>
+      <span class="text-color-secondary"
+        >Upload genome sequences for <span class="font-bold">{{ store.project.species }}</span> and run analysis on
+        them</span
+      >
     </div>
     <div class="surface-card p-4 shadow-2 border-round">
       <ProjectPostRun v-if="store.hasStartedAtLeastOneRun" />

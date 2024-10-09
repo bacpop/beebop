@@ -26,3 +26,10 @@ export interface APIProjectResponse {
     network: string;
   };
 }
+export interface SketchKmerArguments {
+  kmerMin: number;
+  kmerMax: number;
+  kmerStep: number;
+}
+
+

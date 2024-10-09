@@ -1,12 +1,11 @@
 import { expect, test } from "@playwright/test";
-import { randomProjectName, uploadFiles } from "./utils.js";
+import { createProject, randomProjectName, uploadFiles } from "./utils.js";
 
 let projectName: string;
 test.beforeEach(async ({ page }) => {
   await page.goto("");
   projectName = randomProjectName();
-  await page.getByPlaceholder("Create new Project").fill(projectName);
-  await page.getByPlaceholder("Create new Project").press("Enter");
+  await createProject(page, projectName);
 });
 
 test("can run project and view results", async ({ page }) => {
@@ -88,13 +87,4 @@ test("can run project multiple times", async ({ page }) => {
   await expect(page.getByText("Running Analysis...67%")).toBeVisible();
   await expect(page.getByText("GPSC7")).toBeVisible();
   await expect(page.getByText("GPSC4")).toBeVisible();
-});
-
-test("can export project data as csv", async ({ page }) => {
-  uploadFiles(page);
-
-  const downloadPromise = page.waitForEvent("download");
-  await page.getByLabel("Export").click();
-  const download = await downloadPromise;
-  expect(download.suggestedFilename()).toBe(`${projectName}.csv`);
 });

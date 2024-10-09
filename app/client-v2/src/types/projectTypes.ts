@@ -4,7 +4,7 @@ export interface ProjectOverview {
   name: string;
   samplesCount: number;
   timestamp: string;
-  species: Species;
+  species: string;
 }
 export interface ProjectsResponse {
   data: ProjectOverview[];
@@ -45,7 +45,7 @@ export interface Project {
     network: StatusTypes;
   };
   deletedAt?: string;
-  species: Species;
+  species: string;
 }
 export type StatusTypes = "finished" | "failed" | "started" | "waiting" | "deferred" | "submitted";
 export const COMPLETE_STATUS_TYPES: StatusTypes[] = ["finished", "failed"] as const;
@@ -91,6 +91,3 @@ interface GraphmlExtension {
 }
 
 export type CyGraphml = cytoscape.Core & GraphmlExtension;
-
-export const SPECIES = ["Streptococcus pneumoniae", "Streptococcus agalactiae"] as const;
-export type Species = (typeof SPECIES)[number];

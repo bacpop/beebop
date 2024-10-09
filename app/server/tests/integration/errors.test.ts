@@ -1,8 +1,7 @@
-import {flushRedis, get, post, saveRedisHash, saveRedisSet, saveRedisList } from "./utils";
-import {uid} from "uid";
-import {setTimeout} from "timers/promises";
-import {testSample} from "./testSample";
-import { AMR } from "../../src/types/models";
+import { setTimeout } from "timers/promises";
+import { uid } from "uid";
+import { testSample } from "./testSample";
+import { flushRedis, get, post, saveRedisHash, saveRedisList, saveRedisSet } from "./utils";
 
 describe("Error handling", () => {
     let connectionCookie = "";
@@ -13,13 +12,14 @@ describe("Error handling", () => {
         connectionCookie = response.headers["set-cookie"][0];
     });
 
-    const names = testSample("" ,"").names;
+    const species = "Streptococcus pneumoniae";
+    const names = testSample("" ,"", species).names;
     const sampleHash = Object.keys(names)[0];
     const sampleFileName = names[sampleHash] ;
     const sampleId = `${sampleHash}:${sampleFileName}`;
 
     const newProject = async () => {
-        const newProjectRes = await post("project", {name: "test project"}, connectionCookie);
+        const newProjectRes = await post("project", { name: "test project", species }, connectionCookie);
         expect(newProjectRes.status).toBe(200);
         return newProjectRes.data.data;
     };
@@ -50,7 +50,7 @@ describe("Error handling", () => {
 
         // 3. Run poppunk and wait til it finishes
         const fakeProjectHash = `${projectId}ABC`;
-        const projectData = testSample(fakeProjectHash, projectId);
+        const projectData = testSample(fakeProjectHash, projectId, species);
         const poppunkRes = await post(`poppunk`, projectData, connectionCookie);
         expect(poppunkRes.status).toBe(200);
         expect(poppunkRes.data.data.assign).not.toBe("")

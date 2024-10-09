@@ -1,7 +1,6 @@
 import { projectIndexUri } from "@/mocks/handlers/projectHandlers";
-import { MOCK_PROJECTS } from "@/mocks/mockObjects";
+import { MOCK_PROJECTS, MOCK_SPECIES_CONFIG } from "@/mocks/mockObjects";
 import { server } from "@/mocks/server";
-import { SPECIES } from "@/types/projectTypes";
 import HomeViewVue from "@/views/HomeView.vue";
 import userEvent from "@testing-library/user-event";
 import { render, screen, waitFor, within } from "@testing-library/vue";
@@ -40,6 +39,7 @@ const renderComponent = () => {
 
 describe("HomeView ", () => {
   it("should render projects with links to each project on initial render", async () => {
+    const mockSpecies = Object.keys(MOCK_SPECIES_CONFIG);
     renderComponent();
 
     await waitFor(() => {
@@ -50,8 +50,8 @@ describe("HomeView ", () => {
         expect(screen.getByRole("button", { name: new RegExp(`delete ${project.name}`, "i") })).toBeVisible();
       });
     });
-    expect(screen.getAllByText(SPECIES[0]).length).toBe(2);
-    expect(screen.getAllByText(SPECIES[1]).length).toBe(1);
+    expect(screen.getAllByText(mockSpecies[0]).length).toBe(2);
+    expect(screen.getAllByText(mockSpecies[1]).length).toBe(1);
   });
   it("should render create project button", async () => {
     renderComponent();

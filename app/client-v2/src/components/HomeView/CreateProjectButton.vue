@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { useToastService } from "@/composables/useToastService";
 import { getApiUrl } from "@/config";
-import { SPECIES, type ProjectOverview } from "@/types/projectTypes";
+import { useSpeciesStore } from "@/stores/speciesStore";
+import { type ProjectOverview } from "@/types/projectTypes";
 import { useFetch } from "@vueuse/core";
 import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
@@ -20,6 +21,7 @@ const initialFormState = {
 };
 const form = reactive(structuredClone(initialFormState));
 const { showErrorToast } = useToastService();
+const speciesStore = useSpeciesStore();
 const router = useRouter();
 const apiUrl = getApiUrl();
 const visible = ref(false);
@@ -77,7 +79,7 @@ const createProject = async () => {
     <div class="mb-4 p-text-secondary">Create new project for a given species</div>
     <div class="flex flex-column gap-2 mb-4">
       <label for="species" class="font-semibold">Species</label>
-      <Dropdown v-model="form.species" :options="SPECIES" placeholder="Select a species" class="w-full" />
+      <Dropdown v-model="form.species" :options="speciesStore.species" placeholder="Select a species" class="w-full" />
       <small v-if="!!form.errors.species" id="species-error" class="text-red-500">{{ form.errors.species }}</small>
     </div>
     <div class="flex flex-column gap-2 mb-4">

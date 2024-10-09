@@ -4,11 +4,12 @@ import { createRouter, createWebHistory } from "vue-router";
 import { defineComponent } from "vue";
 import PrimeVue from "primevue/config";
 import ToastService from "primevue/toastservice";
-import { MOCK_PROJECTS } from "@/mocks/mockObjects";
+import { MOCK_PROJECTS, MOCK_SPECIES } from "@/mocks/mockObjects";
 import userEvent from "@testing-library/user-event";
 import { server } from "@/mocks/server";
 import { http, HttpResponse } from "msw";
 import { projectIndexUri } from "@/mocks/handlers/projectHandlers";
+import { createTestingPinia } from "@pinia/testing";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -20,7 +21,18 @@ const router = createRouter({
 const renderComponent = () => {
   render(CreateProjectButton, {
     global: {
-      plugins: [router, PrimeVue, ToastService]
+      plugins: [
+        router,
+        PrimeVue,
+        ToastService,
+        createTestingPinia({
+          initialState: {
+            species: {
+              species: MOCK_SPECIES
+            }
+          }
+        })
+      ]
     },
     props: {
       projects: MOCK_PROJECTS
