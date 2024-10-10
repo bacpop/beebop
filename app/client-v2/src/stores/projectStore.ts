@@ -51,7 +51,7 @@ export const useProjectStore = defineStore("project", {
       );
     },
     firstAssignedCluster(state): string | undefined {
-      return state.project.samples.find((sample: ProjectSample) => !!sample.cluster)?.cluster
+      return state.project.samples.find((sample: ProjectSample) => !!sample.cluster)?.cluster;
     }
   },
 

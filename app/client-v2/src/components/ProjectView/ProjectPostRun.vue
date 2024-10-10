@@ -90,7 +90,9 @@ const getMicroreactSettingsTooltip = () => {
                       text
                       icon="pi pi-cog"
                       @click="isMicroReactDialogVisible = true"
-                      :disabled="projectStore.project.status?.microreact !== 'finished' || !projectStore.firstAssignedCluster"
+                      :disabled="
+                        projectStore.project.status?.microreact !== 'finished' || !projectStore.firstAssignedCluster
+                      "
                       aria-label="Microreact settings"
                       size="small"
                     />
