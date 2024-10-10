@@ -49,6 +49,9 @@ export const useProjectStore = defineStore("project", {
           this.numOfStatus) *
           100
       );
+    },
+    firstAssignedCluster(state): string | undefined {
+      return state.project.samples.find((sample: ProjectSample) => !!sample.cluster)?.cluster
     }
   },
 
