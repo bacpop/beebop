@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-export API_BRANCH="bacpop-192-multi-species" # TODO: change back to main when done
+export API_BRANCH="main"
