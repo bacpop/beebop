@@ -82,6 +82,20 @@ describe("projectStore", () => {
       store.project.status = undefined;
       expect(store.hasStartedAtLeastOneRun).toBe(false);
     });
+    it("firstAssignedCluster returns the first assigned cluster", () => {
+      const store = useProjectStore();
+      store.project.samples = [
+        { hash: "sample3" },
+        { hash: "sample2" },
+        { hash: "sample1", cluster: "GPSC1" }
+      ] as unknown as ProjectSample[];
+      expect(store.firstAssignedCluster).toBe("GPSC1");
+    });
+    it("should return undefined when there is no assigned cluster", () => {
+      const store = useProjectStore();
+      store.project.samples = MOCK_PROJECT_SAMPLES_BEFORE_RUN;
+      expect(store.firstAssignedCluster).toBeUndefined();
+    });
   });
 
   describe("actions", () => {

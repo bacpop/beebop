@@ -1,5 +1,6 @@
+import { MOCK_PROJECT_SAMPLES_BEFORE_RUN } from "./../../../mocks/mockObjects";
 import ProjectPostRun from "@/components/ProjectView/ProjectPostRun.vue";
-import { MOCK_PROJECT_SAMPLES } from "@/mocks/mockObjects";
+import { MOCK_PROJECT_SAMPLES, MOCK_PROJECT_SAMPLES_BEFORE_RUN } from "@/mocks/mockObjects";
 import { useProjectStore } from "@/stores/projectStore";
 import { createTestingPinia, type TestingPinia } from "@pinia/testing";
 import userEvent from "@testing-library/user-event";
@@ -16,7 +17,9 @@ const renderComponent = (testPinia: TestingPinia, shouldStubTable = true) =>
     global: {
       plugins: [PrimeVue, testPinia],
       stubs: {
-        MicroReactTokenDialog: true,
+        MicroReactTokenDialog: {
+          template: `<div>MicroReactTokenDialog</div>`
+        },
         ProjectDataTable: shouldStubTable && {
           template: `<div>Data Table</div>`
         },
@@ -183,6 +186,30 @@ describe("RunProject", () => {
     renderComponent(testPinia, false);
 
     expect(screen.getByRole("button", { name: /microreact settings/i })).toBeDisabled();
+  });
+
+  it("should render disabled microreact setting button when no assigned clusters", async () => {
+    const { testPinia } = setupPinia({
+      samples: MOCK_PROJECT_SAMPLES_BEFORE_RUN,
+      status: {
+        assign: "finished",
+        microreact: "finished",
+        network: "finished"
+      }
+    });
+    renderComponent(testPinia, false);
+
+    expect(screen.getByRole("button", { name: /microreact settings/i })).toBeDisabled();
+  });
+
+  it("should render MicroReactTokenDialog token dialog when firstAssignedCluster is not undefined", async () => {
+    const { testPinia } = setupPinia({
+      samples: [...MOCK_PROJECT_SAMPLES_BEFORE_RUN, MOCK_PROJECT_SAMPLES[0]]
+    });
+
+    renderComponent(testPinia, true);
+
+    expect(screen.getByText(/MicroReactTokenDialog/i)).toBeVisible();
   });
 
   it("should display failed tags on cluster, network, microreact if status is finished but no cluster", () => {

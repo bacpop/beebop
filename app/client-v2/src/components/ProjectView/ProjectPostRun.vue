@@ -29,14 +29,14 @@ const getMicroreactSettingsTooltip = () => {
 
 <template>
   <MicroReactTokenDialog
-    v-if="projectStore.project.samples?.length > 0 && projectStore.project.samples[0]?.cluster"
+    v-if="projectStore.firstAssignedCluster"
     :isMicroReactDialogVisible="isMicroReactDialogVisible"
     :hasMicroReactError="hasMicroReactError"
     :isFetchingMicroreactUrl="isFetchingMicroreactUrl"
     :header="`${userStore.microreactToken ? 'Update or Delete' : 'Save'} Microreact Token`"
     :text="`${userStore.microreactToken ? 'Update token to change to utilize another Microreact account, or delete token if you no longer want to use Microreact.' : 'Please save Microreact token so Microreact graphs can be visited.'}`"
     @closeDialog="closeDialog"
-    @saveMicroreactToken="saveMicroreactToken(projectStore.project.samples[0].cluster, $event)"
+    @saveMicroreactToken="saveMicroreactToken(projectStore.firstAssignedCluster, $event)"
   />
   <ProjectFileUpload @onRunAnalysis="hasVisitedNetworkTab && (hasVisitedNetworkTab = false)">
     <TabView @update:active-index="tabChange">
@@ -90,7 +90,9 @@ const getMicroreactSettingsTooltip = () => {
                       text
                       icon="pi pi-cog"
                       @click="isMicroReactDialogVisible = true"
-                      :disabled="projectStore.project.status?.microreact !== 'finished'"
+                      :disabled="
+                        projectStore.project.status?.microreact !== 'finished' || !projectStore.firstAssignedCluster
+                      "
                       aria-label="Microreact settings"
                       size="small"
                     />
