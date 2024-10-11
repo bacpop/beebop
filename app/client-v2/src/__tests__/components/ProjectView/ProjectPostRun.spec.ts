@@ -1,4 +1,3 @@
-import { MOCK_PROJECT_SAMPLES_BEFORE_RUN } from "./../../../mocks/mockObjects";
 import ProjectPostRun from "@/components/ProjectView/ProjectPostRun.vue";
 import { MOCK_PROJECT_SAMPLES, MOCK_PROJECT_SAMPLES_BEFORE_RUN } from "@/mocks/mockObjects";
 import { useProjectStore } from "@/stores/projectStore";
