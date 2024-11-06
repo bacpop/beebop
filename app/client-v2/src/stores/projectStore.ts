@@ -32,28 +32,43 @@ export const useProjectStore = defineStore("project", {
     isReadyToRun: (state) =>
       state.project.samples.length > 0 &&
       state.project.samples.every((sample: ProjectSample) => sample.sketch && sample.amr),
-    isFinishedRun: (state) => {
-      const analysisStatusValues = Object.entries(state.project.status || {})
-        .filter(([key]) => key !== "microreactClusters")
-        .map(([, value]) => value);
+    extractStatuses(state): {
+      fullStatuses: Partial<Omit<AnalysisStatus, "microreactClusters">>;
+      microreactClusters: Record<string, StatusTypes>;
+    } {
+      const { microreactClusters, ...status } = state.project.status || {};
+      return { fullStatuses: status, microreactClusters: microreactClusters ?? {} };
+    },
+    isFinishedRun(): boolean {
+      const analysisStatusValues = Object.values(this.extractStatuses.fullStatuses);
       return (
         analysisStatusValues.length > 0 && analysisStatusValues.every((value) => COMPLETE_STATUS_TYPES.includes(value))
       );
     },
-    numOfStatus: (state) => Object.keys(state.project.status || {}).length,
+    numOfStatus(): number {
+      return Object.keys(this.extractStatuses).length + Object.keys(this.extractStatuses.microreactClusters).length;
+    },
     hasStartedAtLeastOneRun: (state) => !!state.project.status,
     isRunning(): boolean {
       return this.hasStartedAtLeastOneRun && !this.isFinishedRun;
     },
-    analysisProgressPercentage(state): number {
+    analysisProgressPercentage(): number {
+      const statusValues = [
+        ...Object.values(this.extractStatuses.fullStatuses),
+        ...Object.values(this.extractStatuses.microreactClusters)
+      ];
       return Math.round(
-        (Object.values(state.project.status || {}).filter((value) => COMPLETE_STATUS_TYPES.includes(value)).length /
-          this.numOfStatus) *
-          100
+        (statusValues.filter((value) => COMPLETE_STATUS_TYPES.includes(value)).length / this.numOfStatus) * 100
       );
     },
     firstAssignedCluster(state): string | undefined {
       return state.project.samples.find((sample: ProjectSample) => !!sample.cluster)?.cluster;
+    },
+    noMicroreactFinished(): boolean {
+      return (
+        !Object.values(this.extractStatuses.microreactClusters).some((status) => status == "finished") ||
+        !this.firstAssignedCluster
+      );
     }
   },
 
@@ -201,7 +216,7 @@ export const useProjectStore = defineStore("project", {
         await this.getClusterAssignResult();
       }
       if (assign === "failed") {
-        this.project.status = { assign: "failed", network: "failed", microreact: "failed" };
+        this.project.status = { assign: "failed", network: "failed", microreact: "failed", microreactClusters: {} };
       }
 
       return assign === "failed" || [network, microreact].every((status) => COMPLETE_STATUS_TYPES.includes(status));
@@ -247,7 +262,12 @@ export const useProjectStore = defineStore("project", {
     },
 
     async runAnalysis() {
-      this.project.status = { assign: "submitted", microreact: "submitted", network: "submitted" };
+      this.project.status = {
+        assign: "submitted",
+        microreact: "submitted",
+        network: "submitted",
+        microreactClusters: {}
+      };
       this.project.samples.forEach((sample: ProjectSample) => (sample.hasRun = true));
       const body = this.buildRunAnalysisPostBody();
       try {

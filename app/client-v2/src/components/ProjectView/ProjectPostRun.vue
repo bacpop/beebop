@@ -20,11 +20,12 @@ const tabChange = (num: number) => {
   }
 };
 const getMicroreactSettingsTooltip = () => {
-  if (projectStore.project.status?.microreact !== "finished") {
+  if (projectStore.noMicroreactFinished) {
     return "Microreact settings will become available when Microreact data has been generated";
   }
   return `${userStore.microreactToken ? "Update" : "Set"} Microreact token`;
 };
+
 </script>
 
 <template>
@@ -90,9 +91,7 @@ const getMicroreactSettingsTooltip = () => {
                       text
                       icon="pi pi-cog"
                       @click="isMicroReactDialogVisible = true"
-                      :disabled="
-                        projectStore.project.status?.microreact !== 'finished' || !projectStore.firstAssignedCluster
-                      "
+                      :disabled="projectStore.noMicroreactFinished"
                       aria-label="Microreact settings"
                       size="small"
                     />

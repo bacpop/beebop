@@ -39,16 +39,11 @@ export interface Project {
   samples: ProjectSample[];
   timestamp: string;
   hash?: string;
-  status?: ProjectStatus;
+  status?: AnalysisStatus;
   deletedAt?: string;
   species: string;
 }
-export interface ProjectStatus {
-  assign: StatusTypes;
-  microreact: StatusTypes;
-  network: StatusTypes;
-  microreactClusters: Record<string, StatusTypes>;
-}
+
 export type StatusTypes = "finished" | "failed" | "started" | "waiting" | "deferred" | "submitted";
 export const COMPLETE_STATUS_TYPES: StatusTypes[] = ["finished", "failed"] as const;
 
@@ -56,6 +51,7 @@ export interface AnalysisStatus {
   assign: StatusTypes;
   microreact: StatusTypes;
   network: StatusTypes;
+  microreactClusters: Record<string, StatusTypes>;
 }
 export interface ApiResponse<T> {
   data: T;
