@@ -33,7 +33,9 @@ export const useProjectStore = defineStore("project", {
       state.project.samples.length > 0 &&
       state.project.samples.every((sample: ProjectSample) => sample.sketch && sample.amr),
     isFinishedRun: (state) => {
-      const analysisStatusValues = Object.values(state.project.status || {});
+      const analysisStatusValues = Object.entries(state.project.status || {})
+        .filter(([key]) => key !== "microreactClusters")
+        .map(([, value]) => value);
       return (
         analysisStatusValues.length > 0 && analysisStatusValues.every((value) => COMPLETE_STATUS_TYPES.includes(value))
       );
