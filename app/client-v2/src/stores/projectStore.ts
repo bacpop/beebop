@@ -57,9 +57,6 @@ export const useProjectStore = defineStore("project", {
         ...Object.values(this.separatedStatuses.fullStatuses),
         ...Object.values(this.separatedStatuses.microreactClusters)
       ];
-      console.log("total", this.numOfStatus);
-      console.log("current", statusValues.length);
-
       return Math.round(
         (statusValues.filter((value) => COMPLETE_STATUS_TYPES.includes(value)).length / this.numOfStatus) * 100
       );
