@@ -4,7 +4,7 @@ import { useMicroreact } from "@/composables/useMicroreact";
 import { useProjectStore } from "@/stores/projectStore";
 import { useUserStore } from "@/stores/userStore";
 import { AnalysisType } from "@/types/projectTypes";
-import { hasSampleFailed, hasSamplePassed } from "@/utils/projectStatus";
+import { hasSampleFailed, hasSamplePassed, isAnyMicroreactFinished } from "@/utils/projectStatus";
 import { ref } from "vue";
 
 const projectStore = useProjectStore();
@@ -20,10 +20,10 @@ const tabChange = (num: number) => {
   }
 };
 const getMicroreactSettingsTooltip = () => {
-  if (projectStore.noMicroreactFinished) {
-    return "Microreact settings will become available when Microreact data has been generated";
+  if (isAnyMicroreactFinished(projectStore.project.status?.microreactClusters)) {
+      return `${userStore.microreactToken ? "Update" : "Set"} Microreact token`;
   }
-  return `${userStore.microreactToken ? "Update" : "Set"} Microreact token`;
+  return "Microreact settings will become available when Microreact data has been generated";
 };
 
 </script>
@@ -91,7 +91,7 @@ const getMicroreactSettingsTooltip = () => {
                       text
                       icon="pi pi-cog"
                       @click="isMicroReactDialogVisible = true"
-                      :disabled="projectStore.noMicroreactFinished"
+                      :disabled="!isAnyMicroreactFinished(projectStore.project.status?.microreactClusters)"
                       aria-label="Microreact settings"
                       size="small"
                     />

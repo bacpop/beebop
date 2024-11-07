@@ -20,8 +20,9 @@ export const hasMicroreactClusterFailed = (
   status: AnalysisStatus | undefined,
   cluster: string | undefined
 ): boolean => {
-  if (!cluster && Object.values(status?.microreactClusters || {}).some((status) => status == "finished")) return true;
-
+  // occurs when another sample has passed but this one fails
+  if (!cluster && isAnyMicroreactFinished(status?.microreactClusters)) return true;
+  
   if (status?.microreact == "failed" || (cluster && status?.microreactClusters?.[cluster] === "failed")) return true;
 
   return false;
@@ -36,4 +37,10 @@ export const getMicroreactClusterStatus = (
   }
 
   return status?.microreact || "waiting";
+};
+
+export const isAnyMicroreactFinished = (
+  microreactClusterStatuses: Record<string, StatusTypes> | undefined
+): boolean => {
+  return Object.values(microreactClusterStatuses || {}).some((status) => status == "finished");
 };
