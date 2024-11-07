@@ -56,7 +56,7 @@ const onSaveMicroreactToken = async (cluster: string, token: string) => {
     />
   </div>
   <Tag
-    v-else-if="hasMicroreactClusterFailed(projectStore.project.status?.microreactClusters, data.cluster)"
+    v-else-if="hasMicroreactClusterFailed(projectStore.project.status, data.cluster)"
     value="failed"
     severity="danger"
   />

@@ -17,12 +17,12 @@ export const hasMicroreactClusterPassed = (
 };
 
 export const hasMicroreactClusterFailed = (
-  microreactClusterStatuses: Record<string, StatusTypes> | undefined,
+  status: AnalysisStatus | undefined,
   cluster: string | undefined
 ): boolean => {
-  if (!cluster && Object.values(microreactClusterStatuses || {}).some((status) => status == "finished")) return true;
+  if (!cluster && Object.values(status?.microreactClusters || {}).some((status) => status == "finished")) return true;
 
-  if (cluster && microreactClusterStatuses?.[cluster] === "failed") return true;
+  if (status?.microreact == "failed" || (cluster && status?.microreactClusters?.[cluster] === "failed")) return true;
 
   return false;
 };
