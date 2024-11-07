@@ -32,7 +32,7 @@ export const useProjectStore = defineStore("project", {
     isReadyToRun: (state) =>
       state.project.samples.length > 0 &&
       state.project.samples.every((sample: ProjectSample) => sample.sketch && sample.amr),
-    extractStatuses(state): {
+    separatedStatuses(state): {
       fullStatuses: Partial<Omit<AnalysisStatus, "microreactClusters">>;
       microreactClusters: Record<string, StatusTypes>;
     } {
@@ -40,13 +40,13 @@ export const useProjectStore = defineStore("project", {
       return { fullStatuses: status, microreactClusters: microreactClusters ?? {} };
     },
     isFinishedRun(): boolean {
-      const analysisStatusValues = Object.values(this.extractStatuses.fullStatuses);
+      const analysisStatusValues = Object.values(this.separatedStatuses.fullStatuses);
       return (
         analysisStatusValues.length > 0 && analysisStatusValues.every((value) => COMPLETE_STATUS_TYPES.includes(value))
       );
     },
-    numOfStatus(): number {
-      return Object.keys(this.extractStatuses).length + Object.keys(this.extractStatuses.microreactClusters).length;
+    numOfStatus(): number { 
+      return Object.keys(this.separatedStatuses.fullStatuses).length + Object.keys(this.separatedStatuses.microreactClusters).length;
     },
     hasStartedAtLeastOneRun: (state) => !!state.project.status,
     isRunning(): boolean {
@@ -54,9 +54,12 @@ export const useProjectStore = defineStore("project", {
     },
     analysisProgressPercentage(): number {
       const statusValues = [
-        ...Object.values(this.extractStatuses.fullStatuses),
-        ...Object.values(this.extractStatuses.microreactClusters)
+        ...Object.values(this.separatedStatuses.fullStatuses),
+        ...Object.values(this.separatedStatuses.microreactClusters)
       ];
+      console.log("total", this.numOfStatus);
+      console.log("current", statusValues.length);
+
       return Math.round(
         (statusValues.filter((value) => COMPLETE_STATUS_TYPES.includes(value)).length / this.numOfStatus) * 100
       );
@@ -65,10 +68,7 @@ export const useProjectStore = defineStore("project", {
       return state.project.samples.find((sample: ProjectSample) => !!sample.cluster)?.cluster;
     },
     noMicroreactFinished(): boolean {
-      return (
-        !Object.values(this.extractStatuses.microreactClusters).some((status) => status == "finished") ||
-        !this.firstAssignedCluster
-      );
+      return !Object.values(this.separatedStatuses.microreactClusters).some((status) => status == "finished");
     }
   },
 
