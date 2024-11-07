@@ -24,6 +24,7 @@ export interface APIProjectResponse {
     assign: string;
     microreact: string;
     network: string;
+    microreactClusters: Record<string, string>;
   };
 }
 export interface SketchKmerArguments {

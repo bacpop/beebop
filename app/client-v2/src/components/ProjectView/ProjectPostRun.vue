@@ -75,7 +75,7 @@ const getMicroreactSettingsTooltip = () => {
                   v-tooltip.top="'Download zip'"
                 />
                 <Tag
-                  v-else-if="hasSampleFailed(projectStore.project.status?.network, data.cluster)"
+                  v-else-if="hasSampleFailed(projectStore.project.status?.assign, data.cluster)"
                   value="failed"
                   severity="danger"
                 />
