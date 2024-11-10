@@ -21,7 +21,12 @@ vitest.mock("primevue/usetoast", () => ({
 vitest.mock("@/composables/useMicroreact", () => ({
   useMicroreact: () => mockUseMicroreact
 }));
-const renderComponent = (status: string, cluster?: string, hasRun = true) =>
+const renderComponent = (
+  microreactStatus: string | null = "finished",
+  microreactClusterStatuses: Record<string, unknown> = { GPSC1: "finished" },
+  cluster: string | null = "GPSC1",
+  hasRun = true
+) =>
   render(MicroReactColumnVue, {
     props: {
       data: {
@@ -35,7 +40,7 @@ const renderComponent = (status: string, cluster?: string, hasRun = true) =>
           initialState: {
             project: {
               project: {
-                status: { microreact: status }
+                status: { microreact: microreactStatus, microreactClusters: microreactClusterStatuses }
               }
             }
           }
@@ -49,7 +54,7 @@ const renderComponent = (status: string, cluster?: string, hasRun = true) =>
   });
 describe("MicroReactColumn", () => {
   it("should call correct actions on download and visit buttons if status finished and cluster assigned", async () => {
-    renderComponent("finished", "GPSC1");
+    renderComponent();
     const store = useProjectStore();
 
     const downloadButton = screen.getByRole("button", { name: /Download/ });
@@ -63,7 +68,7 @@ describe("MicroReactColumn", () => {
   });
 
   it("should disable download and visit buttons if sample not ran and no cluster", async () => {
-    renderComponent("finished", undefined, false);
+    renderComponent(undefined, undefined, null, false);
 
     const downloadButton = screen.getByRole("button", { name: /Download/ });
     const visitButton = screen.getByRole("button", { name: /Visit/ });
@@ -72,26 +77,33 @@ describe("MicroReactColumn", () => {
   });
 
   it("should render failed tag if status is failed", () => {
-    renderComponent("failed", "GPSC1");
+    renderComponent(undefined, { GPSC1: "failed" });
 
     expect(screen.getByText(/failed/i)).toBeInTheDocument();
   });
+
   it("should render status tag if status is not finished or failed", () => {
-    renderComponent("started", "GPSC1");
+    renderComponent("deferred", { GPSC1: "started" });
 
     expect(screen.getByText(/started/i)).toBeInTheDocument();
   });
 
-  it("should show failed tag if no cluster passed in", () => {
-    renderComponent("finished");
+  it("should render micororeact status tag if no cluster status", () => {
+    renderComponent("deferred", {});
 
-    expect(screen.getByText(/failed/i)).toBeInTheDocument();
+    expect(screen.getByText(/deferred/i)).toBeInTheDocument();
+  });
+
+  it("should show waiting tag if no cluster status or microreact status", () => {
+    renderComponent(null, {});
+
+    expect(screen.getByText(/waiting/i)).toBeInTheDocument();
   });
 
   describe("Save token Dialog", () => {
     it("should display dialog if isMicroReactDialogVisible is true & cluster is present", async () => {
       mockUseMicroreact.isMicroReactDialogVisible = true;
-      renderComponent("finished", "GPSC1");
+      renderComponent();
 
       await waitFor(() => {
         expect(screen.getByRole("dialog")).toBeVisible();
@@ -105,7 +117,7 @@ describe("MicroReactColumn", () => {
 
     it("should show error text & red border when hasMicroReactError is true", async () => {
       mockUseMicroreact.hasMicroReactError = true;
-      renderComponent("finished", "GPSC1");
+      renderComponent();
 
       await waitFor(() => {
         expect(screen.getByText(/error occurred/i)).toBeVisible();
@@ -120,7 +132,7 @@ describe("MicroReactColumn", () => {
       mockUseMicroreact.saveMicroreactToken.mockResolvedValue(MOCK_MICROREACT_DICT.url);
       mockUseMicroreact.isMicroReactDialogVisible = true;
 
-      renderComponent("finished", "GPSC1");
+      renderComponent();
 
       const tokenInput = await screen.findByPlaceholderText(/enter token/i);
       await userEvent.type(tokenInput, "token");

@@ -22,6 +22,7 @@ const onSaveMicroreactToken = async (cluster: string, token: string) => {
   const url = await saveMicroreactToken(cluster, token);
   if (url) window.open(url, "_blank");
 };
+
 </script>
 
 <template>

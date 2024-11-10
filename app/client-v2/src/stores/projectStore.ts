@@ -45,8 +45,11 @@ export const useProjectStore = defineStore("project", {
         analysisStatusValues.length > 0 && analysisStatusValues.every((value) => COMPLETE_STATUS_TYPES.includes(value))
       );
     },
-    numOfStatus(): number { 
-      return Object.keys(this.separatedStatuses.fullStatuses).length + Object.keys(this.separatedStatuses.microreactClusters).length;
+    numOfStatus(): number {
+      return (
+        Object.keys(this.separatedStatuses.fullStatuses).length +
+        Object.keys(this.separatedStatuses.microreactClusters).length
+      );
     },
     hasStartedAtLeastOneRun: (state) => !!state.project.status,
     isRunning(): boolean {
@@ -57,9 +60,11 @@ export const useProjectStore = defineStore("project", {
         ...Object.values(this.separatedStatuses.fullStatuses),
         ...Object.values(this.separatedStatuses.microreactClusters)
       ];
-      return Math.round(
-        (statusValues.filter((value) => COMPLETE_STATUS_TYPES.includes(value)).length / this.numOfStatus) * 100
-      );
+      return statusValues.length > 0
+        ? Math.round(
+            (statusValues.filter((value) => COMPLETE_STATUS_TYPES.includes(value)).length / this.numOfStatus) * 100
+          )
+        : 0;
     },
     firstAssignedCluster(state): string | undefined {
       return state.project.samples.find((sample: ProjectSample) => !!sample.cluster)?.cluster;

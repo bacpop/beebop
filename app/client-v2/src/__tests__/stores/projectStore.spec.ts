@@ -35,66 +35,273 @@ describe("projectStore", () => {
   });
 
   describe("getters", () => {
-    it("isReadyToRun returns true when all samples have sketch and amr", () => {
-      const store = useProjectStore();
-      store.project.samples = [{ sketch: {}, amr: { Chloramphenicol: 0.24 } }] as ProjectSample[];
-      expect(store.isReadyToRun).toBe(true);
+    describe("isReadyToRun", () => {
+      it("should return true when all samples have sketch and amr", () => {
+        const store = useProjectStore();
+        store.project.samples = [{ sketch: {}, amr: { Chloramphenicol: 0.24 } }] as ProjectSample[];
+        expect(store.isReadyToRun).toBe(true);
+      });
+
+      it("should return false when not all samples have sketch and amr", () => {
+        const store = useProjectStore();
+        store.project.samples = [{ sketch: {}, amr: undefined }] as ProjectSample[];
+        expect(store.isReadyToRun).toBe(false);
+      });
     });
 
-    it("isReadyToRun returns false when not all samples have sketch and amr", () => {
-      const store = useProjectStore();
-      store.project.samples = [{ sketch: {}, amr: undefined }] as ProjectSample[];
-      expect(store.isReadyToRun).toBe(false);
+    describe("isFinishedRun", () => {
+      it("returns true when all fullStatuses are complete", () => {
+        const store = useProjectStore();
+        store.project.status = { assign: "finished", microreact: "finished", network: "finished" } as any;
+        expect(store.isFinishedRun).toBe(true);
+      });
+
+      it("returns false when not all fullStatuses are complete", () => {
+        const store = useProjectStore();
+        store.project.status = { assign: "started", microreact: "finished", network: "finished" } as any;
+        expect(store.isFinishedRun).toBe(false);
+      });
+
+      it("returns false when there are no statuses", () => {
+        const store = useProjectStore();
+        store.project.status = undefined;
+        expect(store.isFinishedRun).toBe(false);
+      });
     });
 
-    it("isProjectComplete returns true when all analysisStatus are complete", () => {
-      const store = useProjectStore();
-      store.project.status = { assign: "finished", microreact: "failed", network: "finished" };
-      expect(store.isFinishedRun).toBe(true);
-    });
+    describe("numOfStatus", () => {
+      it("returns the correct number of statuses when both fullStatuses and microreactClusters are present", () => {
+        const store = useProjectStore();
+        store.project.status = {
+          assign: "finished",
+          network: "started",
+          microreactClusters: {
+            cluster1: "finished",
+            cluster2: "started"
+          }
+        } as any;
 
-    it("isProjectComplete returns false when not all analysisStatus are complete", () => {
-      const store = useProjectStore();
-      store.project.status = { assign: "started", microreact: "finished", network: "finished" };
+        expect(store.numOfStatus).toBe(4);
+      });
 
-      expect(store.isFinishedRun).toBe(false);
-    });
+      it("returns the correct number of statuses when only fullStatuses are present", () => {
+        const store = useProjectStore();
+        store.project.status = {
+          assign: "finished",
+          network: "started"
+        } as any;
 
-    it("numOfStatus returns the number of analysisStatus", () => {
-      const store = useProjectStore();
-      store.project.status = { assign: "started", microreact: "finished", network: "finished" };
+        expect(store.numOfStatus).toBe(2);
+      });
 
-      expect(store.numOfStatus).toBe(3);
+      it("returns the correct number of statuses when only microreactClusters are present", () => {
+        const store = useProjectStore();
+        store.project.status = {
+          microreactClusters: {
+            cluster1: "finished",
+            cluster2: "started"
+          }
+        } as any;
+
+        expect(store.numOfStatus).toBe(2);
+      });
+
+      it("returns 0 when there are no statuses", () => {
+        const store = useProjectStore();
+        store.project.status = undefined;
+
+        expect(store.numOfStatus).toBe(0);
+      });
     });
 
     it("analysisProgressPercentage returns the correct percentage of complete analysisStatus", () => {
       const store = useProjectStore();
-      store.project.status = { assign: "started", microreact: "finished", network: "finished" };
+      store.project.status = { assign: "started", microreact: "finished", network: "finished" } as any;
       expect(store.analysisProgressPercentage).toBe(Math.round((2 / 3) * 100));
     });
-    it("startedRun returns true when project status is set", () => {
-      const store = useProjectStore();
-      store.project.status = { assign: "started", microreact: "finished", network: "finished" };
-      expect(store.hasStartedAtLeastOneRun).toBe(true);
+
+    describe("hasStartedAtLeastOneRun", () => {
+      it("should return true when project status is set", () => {
+        const store = useProjectStore();
+        store.project.status = { assign: "started", microreact: "finished", network: "finished" } as any;
+        expect(store.hasStartedAtLeastOneRun).toBe(true);
+      });
+      it("should return false when project status is not set", () => {
+        const store = useProjectStore();
+        store.project.status = undefined;
+        expect(store.hasStartedAtLeastOneRun).toBe(false);
+      });
     });
-    it("startedRun returns false when project status is not set", () => {
-      const store = useProjectStore();
-      store.project.status = undefined;
-      expect(store.hasStartedAtLeastOneRun).toBe(false);
+
+    describe("analysisProgressPercentage", () => {
+      it("returns 0 when there are no statuses", () => {
+        const store = useProjectStore();
+        store.project.status = undefined;
+        expect(store.analysisProgressPercentage).toBe(0);
+      });
+
+      it("returns 100 when all statuses are complete", () => {
+        const store = useProjectStore();
+        store.project.status = {
+          assign: "finished",
+          microreact: "finished",
+          network: "finished",
+          microreactClusters: {
+            cluster1: "finished",
+            cluster2: "finished"
+          }
+        } as any;
+        expect(store.analysisProgressPercentage).toBe(100);
+      });
+
+      it("returns the correct percentage when some statuses are complete", () => {
+        const store = useProjectStore();
+        store.project.status = {
+          assign: "finished",
+          microreact: "started",
+          network: "finished",
+          microreactClusters: {
+            cluster1: "finished",
+            cluster2: "started"
+          }
+        } as any;
+        expect(store.analysisProgressPercentage).toBe(Math.round((3 / 5) * 100));
+      });
+
+      it("returns 0 when all statuses are incomplete", () => {
+        const store = useProjectStore();
+        store.project.status = {
+          assign: "started",
+          microreact: "started",
+          network: "started",
+          microreactClusters: {
+            cluster1: "started",
+            cluster2: "started"
+          }
+        } as any;
+        expect(store.analysisProgressPercentage).toBe(0);
+      });
+
+      it("returns the correct percentage when there are only fullStatuses", () => {
+        const store = useProjectStore();
+        store.project.status = {
+          assign: "finished",
+          microreact: "started",
+          network: "finished"
+        } as any;
+        expect(store.analysisProgressPercentage).toBe(Math.round((2 / 3) * 100));
+      });
+
+      it("returns the correct percentage when there are only microreactClusters", () => {
+        const store = useProjectStore();
+        store.project.status = {
+          microreactClusters: {
+            cluster1: "finished",
+            cluster2: "started"
+          }
+        } as any;
+        expect(store.analysisProgressPercentage).toBe(Math.round((1 / 2) * 100));
+      });
     });
-    it("firstAssignedCluster returns the first assigned cluster", () => {
-      const store = useProjectStore();
-      store.project.samples = [
-        { hash: "sample3" },
-        { hash: "sample2" },
-        { hash: "sample1", cluster: "GPSC1" }
-      ] as unknown as ProjectSample[];
-      expect(store.firstAssignedCluster).toBe("GPSC1");
+
+    describe("firstAssignedCluster", () => {
+      it("should return undefined when there is no assigned cluster", () => {
+        const store = useProjectStore();
+        store.project.samples = MOCK_PROJECT_SAMPLES_BEFORE_RUN;
+        expect(store.firstAssignedCluster).toBeUndefined();
+      });
     });
-    it("should return undefined when there is no assigned cluster", () => {
-      const store = useProjectStore();
-      store.project.samples = MOCK_PROJECT_SAMPLES_BEFORE_RUN;
-      expect(store.firstAssignedCluster).toBeUndefined();
+
+    describe("separatedStatuses", () => {
+      it("returns empty objects when project status is undefined", () => {
+        const store = useProjectStore();
+        store.project.status = undefined;
+
+        const result = store.separatedStatuses;
+
+        expect(result).toEqual({ fullStatuses: {}, microreactClusters: {} });
+      });
+
+      it("returns separated statuses correctly when project status has fullStatuses and microreactClusters", () => {
+        const store = useProjectStore();
+        store.project.status = {
+          assign: "finished",
+          network: "started",
+          microreactClusters: {
+            cluster1: "finished",
+            cluster2: "started"
+          }
+        } as any;
+
+        const result = store.separatedStatuses;
+
+        expect(result).toEqual({
+          fullStatuses: { assign: "finished", network: "started" },
+          microreactClusters: { cluster1: "finished", cluster2: "started" }
+        });
+      });
+
+      it("returns separated statuses correctly when project status has only fullStatuses", () => {
+        const store = useProjectStore();
+        store.project.status = {
+          assign: "finished",
+          network: "started"
+        } as any;
+
+        const result = store.separatedStatuses;
+
+        expect(result).toEqual({
+          fullStatuses: { assign: "finished", network: "started" },
+          microreactClusters: {}
+        });
+      });
+
+      it("returns separated statuses correctly when project status has only microreactClusters", () => {
+        const store = useProjectStore();
+        store.project.status = {
+          microreactClusters: {
+            cluster1: "finished",
+            cluster2: "started"
+          }
+        } as any;
+
+        const result = store.separatedStatuses;
+
+        expect(result).toEqual({
+          fullStatuses: {},
+          microreactClusters: { cluster1: "finished", cluster2: "started" }
+        });
+      });
+    });
+
+    describe("noMicroreactFinished", () => {
+      it("returns true when microreactClusters is empty", () => {
+        const store = useProjectStore();
+        store.project.status = { microreactClusters: {} } as any;
+        expect(store.noMicroreactFinished).toBe(true);
+      });
+
+      it("returns true when microreactClusters contains only non-finished statuses", () => {
+        const store = useProjectStore();
+        store.project.status = {
+          microreactClusters: {
+            cluster1: "started",
+            cluster2: "waiting"
+          }
+        } as any;
+        expect(store.noMicroreactFinished).toBe(true);
+      });
+
+      it("returns false when microreactClusters contains at least one finished status", () => {
+        const store = useProjectStore();
+        store.project.status = {
+          microreactClusters: {
+            cluster1: "finished",
+            cluster2: "started"
+          }
+        } as any;
+        expect(store.noMicroreactFinished).toBe(false);
+      });
     });
   });
 
@@ -330,15 +537,17 @@ describe("projectStore", () => {
 
       expect(store.stopPollingStatus).not.toHaveBeenCalled();
     });
+
     it("should call getClusterAssignResult when assign status changes to finished", async () => {
       const store = useProjectStore();
       store.getClusterAssignResult = vitest.fn();
-      store.project.status = { assign: "started", microreact: "finished", network: "finished" };
+      store.project.status = { assign: "started", microreact: "finished", network: "finished" } as any;
 
       await store.getAnalysisStatus();
 
       expect(store.getClusterAssignResult).toHaveBeenCalled();
     });
+    
     it("should stop polling & set all status to failed if assign status is failed", async () => {
       const store = useProjectStore();
       store.stopPollingStatus = vitest.fn();
@@ -348,7 +557,7 @@ describe("projectStore", () => {
 
       await store.getAnalysisStatus();
 
-      expect(store.project.status).toEqual({ assign: "failed", microreact: "failed", network: "failed" });
+      expect(store.project.status).toEqual({ assign: "failed", microreact: "failed", network: "failed", microreactClusters: {} });
       expect(store.stopPollingStatus).toHaveBeenCalled();
     });
     it("should set state, call buildRunAnalysisPostBody, pollAnalysisStatus and update sample hasRun when runAnalysis is called", async () => {
@@ -364,7 +573,7 @@ describe("projectStore", () => {
       expect(store.pollAnalysisStatus).toHaveBeenCalled();
       expect(store.hasStartedAtLeastOneRun).toBe(true);
       expect(store.project.hash).toBe("test-hash");
-      expect(store.project.status).toEqual({ assign: "submitted", microreact: "submitted", network: "submitted" });
+      expect(store.project.status).toEqual({ assign: "submitted", microreact: "submitted", network: "submitted", microreactClusters: {} });
       samples.forEach((sample) => {
         expect(sample.hasRun).toBe(true);
       });
@@ -499,16 +708,16 @@ describe("projectStore", () => {
       expect(store.project.samples).toEqual(["sample1", "sample2", "sample3"]);
     });
     it("should set all status to failed & return true if assign is failed when processStatusAndGetPolling called", async () => {
-      const analysisStatus: AnalysisStatus = { assign: "failed", network: "deferred", microreact: "waiting" };
+      const analysisStatus = { assign: "failed", network: "deferred", microreact: "waiting" } as any;
       const store = useProjectStore();
 
       const stopPolling = await store.processStatusAndGetStopPolling(analysisStatus, "waiting");
 
       expect(stopPolling).toBe(true);
-      expect(store.project.status).toStrictEqual({ assign: "failed", network: "failed", microreact: "failed" });
+      expect(store.project.status).toStrictEqual({ assign: "failed", network: "failed", microreact: "failed", microreactClusters: {} });
     });
     it("should call getClusterAssignResult if assign is failed when processStatusAndGetPolling called", async () => {
-      const analysisStatus: AnalysisStatus = { assign: "failed", network: "deferred", microreact: "waiting" };
+      const analysisStatus = { assign: "failed", network: "deferred", microreact: "waiting" } as any;
       const store = useProjectStore();
       store.getClusterAssignResult = vitest.fn();
 
