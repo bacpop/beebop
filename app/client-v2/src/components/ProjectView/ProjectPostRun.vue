@@ -21,11 +21,10 @@ const tabChange = (num: number) => {
 };
 const getMicroreactSettingsTooltip = () => {
   if (isAnyMicroreactFinished(projectStore.project.status?.microreactClusters)) {
-      return `${userStore.microreactToken ? "Update" : "Set"} Microreact token`;
+    return `${userStore.microreactToken ? "Update" : "Set"} Microreact token`;
   }
   return "Microreact settings will become available when Microreact data has been generated";
 };
-
 </script>
 
 <template>

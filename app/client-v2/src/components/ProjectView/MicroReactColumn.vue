@@ -4,7 +4,11 @@ import { useProjectStore } from "@/stores/projectStore";
 import { type ProjectSample, AnalysisType } from "@/types/projectTypes";
 import Toast from "primevue/toast";
 import MicroReactTokenDialog from "./MicroReactTokenDialog.vue";
-import { hasMicroreactClusterPassed, hasMicroreactClusterFailed, getMicroreactClusterStatus } from "@/utils/projectStatus";
+import {
+  hasMicroreactClusterPassed,
+  hasMicroreactClusterFailed,
+  getMicroreactClusterStatus
+} from "@/utils/projectStatus";
 const props = defineProps<{
   data: ProjectSample;
 }>();
@@ -22,7 +26,6 @@ const onSaveMicroreactToken = async (cluster: string, token: string) => {
   const url = await saveMicroreactToken(cluster, token);
   if (url) window.open(url, "_blank");
 };
-
 </script>
 
 <template>
@@ -37,7 +40,10 @@ const onSaveMicroreactToken = async (cluster: string, token: string) => {
     @closeDialog="closeDialog"
     @saveMicroreactToken="onSaveMicroreactToken(props.data.cluster, $event)"
   />
-  <div v-if="!data.hasRun || hasMicroreactClusterPassed(projectStore.project.status?.microreactClusters, data.cluster)" class="flex gap-2">
+  <div
+    v-if="!data.hasRun || hasMicroreactClusterPassed(projectStore.project.status?.microreactClusters, data.cluster)"
+    class="flex gap-2"
+  >
     <Button
       outlined
       icon="pi pi-download"

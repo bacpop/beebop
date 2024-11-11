@@ -547,7 +547,7 @@ describe("projectStore", () => {
 
       expect(store.getClusterAssignResult).toHaveBeenCalled();
     });
-    
+
     it("should stop polling & set all status to failed if assign status is failed", async () => {
       const store = useProjectStore();
       store.stopPollingStatus = vitest.fn();
@@ -557,7 +557,12 @@ describe("projectStore", () => {
 
       await store.getAnalysisStatus();
 
-      expect(store.project.status).toEqual({ assign: "failed", microreact: "failed", network: "failed", microreactClusters: {} });
+      expect(store.project.status).toEqual({
+        assign: "failed",
+        microreact: "failed",
+        network: "failed",
+        microreactClusters: {}
+      });
       expect(store.stopPollingStatus).toHaveBeenCalled();
     });
     it("should set state, call buildRunAnalysisPostBody, pollAnalysisStatus and update sample hasRun when runAnalysis is called", async () => {
@@ -573,7 +578,12 @@ describe("projectStore", () => {
       expect(store.pollAnalysisStatus).toHaveBeenCalled();
       expect(store.hasStartedAtLeastOneRun).toBe(true);
       expect(store.project.hash).toBe("test-hash");
-      expect(store.project.status).toEqual({ assign: "submitted", microreact: "submitted", network: "submitted", microreactClusters: {} });
+      expect(store.project.status).toEqual({
+        assign: "submitted",
+        microreact: "submitted",
+        network: "submitted",
+        microreactClusters: {}
+      });
       samples.forEach((sample) => {
         expect(sample.hasRun).toBe(true);
       });
@@ -714,7 +724,12 @@ describe("projectStore", () => {
       const stopPolling = await store.processStatusAndGetStopPolling(analysisStatus, "waiting");
 
       expect(stopPolling).toBe(true);
-      expect(store.project.status).toStrictEqual({ assign: "failed", network: "failed", microreact: "failed", microreactClusters: {} });
+      expect(store.project.status).toStrictEqual({
+        assign: "failed",
+        network: "failed",
+        microreact: "failed",
+        microreactClusters: {}
+      });
     });
     it("should call getClusterAssignResult if assign is failed when processStatusAndGetPolling called", async () => {
       const analysisStatus = { assign: "failed", network: "deferred", microreact: "waiting" } as any;

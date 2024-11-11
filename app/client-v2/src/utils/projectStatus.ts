@@ -22,7 +22,7 @@ export const hasMicroreactClusterFailed = (
 ): boolean => {
   // occurs when another sample has passed but this one fails
   if (!cluster && isAnyMicroreactFinished(status?.microreactClusters)) return true;
-  
+
   if (status?.microreact == "failed" || (cluster && status?.microreactClusters?.[cluster] === "failed")) return true;
 
   return false;
