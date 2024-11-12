@@ -220,12 +220,6 @@ export const useProjectStore = defineStore("project", {
         this.project.status = { assign: "failed", network: "failed", microreact: "failed", microreactClusters: {} };
         return true;
       }
-      console.log(
-        [network, microreact, ...Object.values(microreactClusters)].every((status) =>
-          COMPLETE_STATUS_TYPES.includes(status)
-        )
-      ),
-        "status";
 
       return [network, microreact, ...Object.values(microreactClusters)].every((status) =>
         COMPLETE_STATUS_TYPES.includes(status)

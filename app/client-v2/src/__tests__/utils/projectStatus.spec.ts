@@ -1,10 +1,12 @@
+import type { StatusTypes } from "@/types/projectTypes";
 import {
   getMicroreactClusterStatus,
   hasMicroreactClusterFailed,
   hasMicroreactClusterPassed,
   hasSampleFailed,
   hasSamplePassed,
-  isAnyMicroreactFinished
+  isAnyMicroreactFinished,
+  isAnyMicroreactQueued
 } from "@/utils/projectStatus";
 
 describe("projectStatus utilities", () => {
@@ -84,8 +86,8 @@ describe("projectStatus utilities", () => {
       expect(hasMicroreactClusterFailed(status, "cluster1")).toBeTruthy();
     });
 
-    test('returns true when cluster is undefined and any microreact cluster is "finished"', () => {
-      const status: any = { microreact: "waiting", microreactClusters: { cluster1: "finished" } };
+    test("returns true when cluster is undefined and any microreact cluster has started", () => {
+      const status: any = { microreact: "waiting", microreactClusters: { cluster1: "deferred" } };
       expect(hasMicroreactClusterFailed(status, undefined)).toBeTruthy();
     });
 
@@ -106,12 +108,12 @@ describe("projectStatus utilities", () => {
 
   describe("getMicroreactClusterStatus", () => {
     test("returns the status of the specified cluster", () => {
-      const status: any = { cluster1: "finished" };
+      const status: any = { microreact: "waiting", microreactClusters: { cluster1: "finished" } };
       expect(getMicroreactClusterStatus(status, "cluster1")).toBe("finished");
     });
 
-    test("returns waiting when cluster is undefined", () => {
-      const status: any = { cluster1: "finished" };
+    test("returns the microreact status when cluster is undefined", () => {
+      const status: any = { microreact: "waiting", microreactClusters: { cluster1: "finished" } };
       expect(getMicroreactClusterStatus(status, undefined)).toBe("waiting");
     });
 
@@ -120,7 +122,7 @@ describe("projectStatus utilities", () => {
     });
 
     test('returns "waiting" when cluster is not found in microreactClusters', () => {
-      const status: any = { cluster1: "finished" };
+      const status: any = { microreact: "waiting", microreactClusters: { cluster1: "finished" } };
       expect(getMicroreactClusterStatus(status, "cluster2")).toBe("waiting");
     });
   });
@@ -142,6 +144,22 @@ describe("projectStatus utilities", () => {
 
     test("returns false when microreactClusterStatuses is undefined", () => {
       expect(isAnyMicroreactFinished(undefined)).toBeFalsy();
+    });
+  });
+
+  describe("isAnyMicroreactQueued", () => {
+    test("returns true when microreactClusterStatuses is not empty", () => {
+      const statuses: Record<string, StatusTypes> = { cluster1: "finished" };
+      expect(isAnyMicroreactQueued(statuses)).toBeTruthy();
+    });
+
+    test("returns false when microreactClusterStatuses is empty", () => {
+      const statuses: Record<string, StatusTypes> = {};
+      expect(isAnyMicroreactQueued(statuses)).toBeFalsy();
+    });
+
+    test("returns false when microreactClusterStatuses is undefined", () => {
+      expect(isAnyMicroreactQueued(undefined)).toBeFalsy();
     });
   });
 });
