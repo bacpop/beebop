@@ -67,9 +67,5 @@ const onSaveMicroreactToken = async (cluster: string, token: string) => {
     value="failed"
     severity="danger"
   />
-  <Tag
-    v-else
-    :value="getMicroreactClusterStatus(projectStore.project.status, data.cluster)"
-    severity="warning"
-  />
+  <Tag v-else :value="getMicroreactClusterStatus(projectStore.project.status, data.cluster)" severity="warning" />
 </template>
