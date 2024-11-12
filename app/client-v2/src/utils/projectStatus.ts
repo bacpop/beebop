@@ -1,4 +1,4 @@
-import type { AnalysisStatus, StatusTypes } from "@/types/projectTypes";
+import { COMPLETE_STATUS_TYPES, type AnalysisStatus, type StatusTypes } from "@/types/projectTypes";
 
 export const hasSampleFailed = (statusType: StatusTypes | undefined, cluster: string | undefined) =>
   statusType === "failed" || (statusType === "finished" && !cluster);
@@ -29,18 +29,18 @@ export const hasMicroreactClusterFailed = (
 };
 
 export const getMicroreactClusterStatus = (
-  status: AnalysisStatus | undefined,
+  microreactClusterStatuses: Record<string, StatusTypes> | undefined,
   cluster: string | undefined
 ): StatusTypes => {
-  if (cluster && status?.microreactClusters?.[cluster]) {
-    return status.microreactClusters[cluster];
+  if (cluster && microreactClusterStatuses?.[cluster]) {
+    return microreactClusterStatuses[cluster];
   }
 
-  return status?.microreact || "waiting";
+  return "waiting";
 };
 
 export const isAnyMicroreactFinished = (
   microreactClusterStatuses: Record<string, StatusTypes> | undefined
 ): boolean => {
-  return Object.values(microreactClusterStatuses || {}).some((status) => status == "finished");
+  return Object.values(microreactClusterStatuses || {}).some((status) => COMPLETE_STATUS_TYPES.includes(status));
 };

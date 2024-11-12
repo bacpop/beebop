@@ -10,13 +10,7 @@ import {
 import { server } from "@/mocks/server";
 import { useProjectStore } from "@/stores/projectStore";
 import { useSpeciesStore } from "@/stores/speciesStore";
-import {
-  AnalysisType,
-  type AnalysisStatus,
-  type HashedFile,
-  type ProjectSample,
-  type WorkerResponse
-} from "@/types/projectTypes";
+import { AnalysisType, type HashedFile, type ProjectSample, type WorkerResponse } from "@/types/projectTypes";
 import { flushPromises } from "@vue/test-utils";
 import { HttpResponse, http } from "msw";
 import { createPinia, setActivePinia } from "pinia";
@@ -50,15 +44,31 @@ describe("projectStore", () => {
     });
 
     describe("isFinishedRun", () => {
-      it("returns true when all fullStatuses are complete", () => {
+      it("returns true when all status are complete", () => {
         const store = useProjectStore();
-        store.project.status = { assign: "finished", microreact: "finished", network: "finished" } as any;
+        store.project.status = {
+          assign: "finished",
+          microreact: "finished",
+          network: "finished",
+          microreactClusters: { cluster1: "finished" }
+        } as any;
         expect(store.isFinishedRun).toBe(true);
       });
 
       it("returns false when not all fullStatuses are complete", () => {
         const store = useProjectStore();
         store.project.status = { assign: "started", microreact: "finished", network: "finished" } as any;
+        expect(store.isFinishedRun).toBe(false);
+      });
+
+      it("returns false when not all microreactClusters are complete", () => {
+        const store = useProjectStore();
+        store.project.status = {
+          assign: "finished",
+          microreact: "finished",
+          network: "finished",
+          microreactClusters: { cluster1: "started" }
+        } as any;
         expect(store.isFinishedRun).toBe(false);
       });
 
@@ -274,33 +284,58 @@ describe("projectStore", () => {
       });
     });
 
-    describe("noMicroreactFinished", () => {
-      it("returns true when microreactClusters is empty", () => {
-        const store = useProjectStore();
-        store.project.status = { microreactClusters: {} } as any;
-        expect(store.noMicroreactFinished).toBe(true);
+    describe("statusValues", () => {
+      let store: ReturnType<typeof useProjectStore>;
+
+      beforeEach(() => {
+        store = useProjectStore();
       });
 
-      it("returns true when microreactClusters contains only non-finished statuses", () => {
-        const store = useProjectStore();
+      it("returns combined status values when both fullStatuses and microreactClusters are present", () => {
         store.project.status = {
+          assign: "finished",
+          network: "started",
           microreactClusters: {
-            cluster1: "started",
-            cluster2: "waiting"
+            cluster1: "finished",
+            cluster2: "started"
           }
         } as any;
-        expect(store.noMicroreactFinished).toBe(true);
+
+        const result = store.statusValues;
+
+        expect(result).toEqual(["finished", "started", "finished", "started"]);
       });
 
-      it("returns false when microreactClusters contains at least one finished status", () => {
-        const store = useProjectStore();
+      it("returns only fullStatuses when microreactClusters are not present", () => {
+        store.project.status = {
+          assign: "finished",
+          network: "started"
+        } as any;
+
+        const result = store.statusValues;
+
+        expect(result).toEqual(["finished", "started"]);
+      });
+
+      it("returns only microreactClusters when fullStatuses are not present", () => {
         store.project.status = {
           microreactClusters: {
             cluster1: "finished",
             cluster2: "started"
           }
         } as any;
-        expect(store.noMicroreactFinished).toBe(false);
+
+        const result = store.statusValues;
+
+        expect(result).toEqual(["finished", "started"]);
+      });
+
+      it("returns an empty array when there are no statuses", () => {
+        store.project.status = undefined;
+
+        const result = store.statusValues;
+
+        expect(result).toEqual([]);
       });
     });
   });
@@ -526,11 +561,41 @@ describe("projectStore", () => {
         "Error fetching analysis status. Try refreshing the page, or create a new project."
       );
     });
+
     it("should not stop polling if status request returns incomplete status", async () => {
       const store = useProjectStore();
       store.stopPollingStatus = vitest.fn();
       server.use(
-        http.post(statusUri, () => HttpResponse.json({ data: { assign: "started" }, errors: [], status: "success" }))
+        http.post(statusUri, () =>
+          HttpResponse.json({
+            data: { assign: "finished", network: "started", microreact: "finished", microreactClusters: {} },
+            errors: [],
+            status: "success"
+          })
+        )
+      );
+
+      await store.getAnalysisStatus();
+
+      expect(store.stopPollingStatus).not.toHaveBeenCalled();
+    });
+
+    it("should not stop polling if microreactClusters status not finished", async () => {
+      const store = useProjectStore();
+      store.stopPollingStatus = vitest.fn();
+      server.use(
+        http.post(statusUri, () =>
+          HttpResponse.json({
+            data: {
+              assign: "finished",
+              network: "finished",
+              microreact: "finished",
+              microreactClusters: { cluster1: "started" }
+            },
+            errors: [],
+            status: "success"
+          })
+        )
       );
 
       await store.getAnalysisStatus();

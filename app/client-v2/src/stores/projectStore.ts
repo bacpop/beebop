@@ -39,11 +39,14 @@ export const useProjectStore = defineStore("project", {
       const { microreactClusters, ...status } = state.project.status || {};
       return { fullStatuses: status, microreactClusters: microreactClusters ?? {} };
     },
+    statusValues(): StatusTypes[] {
+      return [
+        ...Object.values(this.separatedStatuses.fullStatuses),
+        ...Object.values(this.separatedStatuses.microreactClusters)
+      ];
+    },
     isFinishedRun(): boolean {
-      const analysisStatusValues = Object.values(this.separatedStatuses.fullStatuses);
-      return (
-        analysisStatusValues.length > 0 && analysisStatusValues.every((value) => COMPLETE_STATUS_TYPES.includes(value))
-      );
+      return this.statusValues.length > 0 && this.statusValues.every((value) => COMPLETE_STATUS_TYPES.includes(value));
     },
     numOfStatus(): number {
       return (
@@ -56,21 +59,14 @@ export const useProjectStore = defineStore("project", {
       return this.hasStartedAtLeastOneRun && !this.isFinishedRun;
     },
     analysisProgressPercentage(): number {
-      const statusValues = [
-        ...Object.values(this.separatedStatuses.fullStatuses),
-        ...Object.values(this.separatedStatuses.microreactClusters)
-      ];
-      return statusValues.length > 0
+      return this.statusValues.length > 0
         ? Math.round(
-            (statusValues.filter((value) => COMPLETE_STATUS_TYPES.includes(value)).length / this.numOfStatus) * 100
+            (this.statusValues.filter((value) => COMPLETE_STATUS_TYPES.includes(value)).length / this.numOfStatus) * 100
           )
         : 0;
     },
     firstAssignedCluster(state): string | undefined {
       return state.project.samples.find((sample: ProjectSample) => !!sample.cluster)?.cluster;
-    },
-    noMicroreactFinished(): boolean {
-      return !Object.values(this.separatedStatuses.microreactClusters).some((status) => status == "finished");
     }
   },
 
@@ -210,8 +206,11 @@ export const useProjectStore = defineStore("project", {
         }
       }
     },
-    async processStatusAndGetStopPolling(data: AnalysisStatus, prevClusterAssign: StatusTypes | undefined) {
-      const { assign, network, microreact } = data;
+    async processStatusAndGetStopPolling(
+      data: AnalysisStatus,
+      prevClusterAssign: StatusTypes | undefined
+    ): Promise<boolean> {
+      const { assign, network, microreact, microreactClusters } = data;
       this.project.status = data;
 
       if (COMPLETE_STATUS_TYPES.includes(assign) && prevClusterAssign !== "finished") {
@@ -219,9 +218,18 @@ export const useProjectStore = defineStore("project", {
       }
       if (assign === "failed") {
         this.project.status = { assign: "failed", network: "failed", microreact: "failed", microreactClusters: {} };
+        return true;
       }
+      console.log(
+        [network, microreact, ...Object.values(microreactClusters)].every((status) =>
+          COMPLETE_STATUS_TYPES.includes(status)
+        )
+      ),
+        "status";
 
-      return assign === "failed" || [network, microreact].every((status) => COMPLETE_STATUS_TYPES.includes(status));
+      return [network, microreact, ...Object.values(microreactClusters)].every((status) =>
+        COMPLETE_STATUS_TYPES.includes(status)
+      );
     },
 
     async getClusterAssignResult() {

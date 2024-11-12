@@ -88,12 +88,6 @@ describe("MicroReactColumn", () => {
     expect(screen.getByText(/started/i)).toBeInTheDocument();
   });
 
-  it("should render micororeact status tag if no cluster status", () => {
-    renderComponent("deferred", {});
-
-    expect(screen.getByText(/deferred/i)).toBeInTheDocument();
-  });
-
   it("should show waiting tag if no cluster status or microreact status", () => {
     renderComponent(null, {});
 
