@@ -84,7 +84,7 @@ test("can run project multiple times", async ({ page }) => {
   await page.getByLabel("Run Analysis").click();
 
   await expect(page.getByText("Running Analysis...33%")).toBeVisible();
-  await expect(page.getByText("Running Analysis...75%")).toBeVisible();
+  await expect(page.getByText("Running Analysis...60%")).toBeVisible();
   await expect(page.getByText("GPSC7")).toBeVisible();
   await expect(page.getByText("GPSC4")).toBeVisible();
 });
