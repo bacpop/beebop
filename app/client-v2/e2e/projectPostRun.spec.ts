@@ -77,14 +77,14 @@ test("can run project multiple times", async ({ page }) => {
   await page.getByLabel("Run Analysis").click();
 
   await expect(page.getByText("Running Analysis...33%")).toBeVisible();
-  await expect(page.getByText("Running Analysis...50%")).toBeVisible();
+  await expect(page.getByText("Running Analysis...75%")).toBeVisible();
   await expect(page.getByLabel("Upload")).toBeVisible();
 
   await uploadFiles(page, ["e2e/fastaFiles/good_2.fa"]);
   await page.getByLabel("Run Analysis").click();
 
   await expect(page.getByText("Running Analysis...33%")).toBeVisible();
-  await expect(page.getByText("Running Analysis...50%")).toBeVisible();
+  await expect(page.getByText("Running Analysis...75%")).toBeVisible();
   await expect(page.getByText("GPSC7")).toBeVisible();
   await expect(page.getByText("GPSC4")).toBeVisible();
 });
