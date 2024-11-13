@@ -13,7 +13,7 @@ test("can run project and view results", async ({ page }) => {
   await page.getByLabel("Run Analysis").click();
 
   await expect(page.getByText("Running Analysis...33%")).toBeVisible();
-  await expect(page.getByText("Running Analysis...50%")).toBeVisible();
+  await expect(page.getByText("Running Analysis...75%")).toBeVisible();
 
   await expect(page.getByLabel("Visit")).toBeVisible();
   await expect(page.getByLabel("Download microreact zip")).toBeVisible();
@@ -65,7 +65,7 @@ test("can load up already run project even if loading", async ({ page }) => {
   await page.getByRole("link", { name: projectName }).click();
 
   await expect(page.getByText("Running Analysis...33%")).toBeVisible();
-  await expect(page.getByText("Running Analysis...50%")).toBeVisible();
+  await expect(page.getByText("Running Analysis...75%")).toBeVisible();
   await expect(page.getByLabel("Visit")).toBeVisible();
   await expect(page.getByLabel("Download microreact zip")).toBeVisible();
   await expect(page.getByLabel("Download network zip")).toBeVisible();
