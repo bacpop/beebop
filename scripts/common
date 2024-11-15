@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-export API_BRANCH="bacpop-201-microract-stream"
+export API_BRANCH="bacpop-201-microract-stream" # TODO: change back to main before mergeS

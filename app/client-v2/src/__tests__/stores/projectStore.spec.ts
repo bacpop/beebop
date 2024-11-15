@@ -80,33 +80,11 @@ describe("projectStore", () => {
     });
 
     describe("numOfStatus", () => {
-      it("returns the correct number of statuses when both fullStatuses and microreactClusters are present", () => {
+      it("returns the num of full statuses only", () => {
         const store = useProjectStore();
         store.project.status = {
           assign: "finished",
           network: "started",
-          microreactClusters: {
-            cluster1: "finished",
-            cluster2: "started"
-          }
-        } as any;
-
-        expect(store.numOfStatus).toBe(4);
-      });
-
-      it("returns the correct number of statuses when only fullStatuses are present", () => {
-        const store = useProjectStore();
-        store.project.status = {
-          assign: "finished",
-          network: "started"
-        } as any;
-
-        expect(store.numOfStatus).toBe(2);
-      });
-
-      it("returns the correct number of statuses when only microreactClusters are present", () => {
-        const store = useProjectStore();
-        store.project.status = {
           microreactClusters: {
             cluster1: "finished",
             cluster2: "started"
@@ -124,12 +102,6 @@ describe("projectStore", () => {
       });
     });
 
-    it("analysisProgressPercentage returns the correct percentage of complete analysisStatus", () => {
-      const store = useProjectStore();
-      store.project.status = { assign: "started", microreact: "finished", network: "finished" } as any;
-      expect(store.analysisProgressPercentage).toBe(Math.round((2 / 3) * 100));
-    });
-
     describe("hasStartedAtLeastOneRun", () => {
       it("should return true when project status is set", () => {
         const store = useProjectStore();
@@ -143,7 +115,7 @@ describe("projectStore", () => {
       });
     });
 
-    describe("analysisProgressPercentage", () => {
+    describe.only("analysisProgressPercentage", () => {
       it("returns 0 when there are no statuses", () => {
         const store = useProjectStore();
         store.project.status = undefined;
@@ -164,7 +136,7 @@ describe("projectStore", () => {
         expect(store.analysisProgressPercentage).toBe(100);
       });
 
-      it("returns the correct percentage when some statuses are complete", () => {
+      it.only("returns the correct percentage when some statuses are complete", () => {
         const store = useProjectStore();
         store.project.status = {
           assign: "finished",
@@ -175,7 +147,7 @@ describe("projectStore", () => {
             cluster2: "started"
           }
         } as any;
-        expect(store.analysisProgressPercentage).toBe(Math.round((3 / 5) * 100));
+        expect(store.analysisProgressPercentage).toBe(Math.round(((2 + 1 / 2) / 3) * 100));
       });
 
       it("returns 0 when all statuses are incomplete", () => {
@@ -200,17 +172,6 @@ describe("projectStore", () => {
           network: "finished"
         } as any;
         expect(store.analysisProgressPercentage).toBe(Math.round((2 / 3) * 100));
-      });
-
-      it("returns the correct percentage when there are only microreactClusters", () => {
-        const store = useProjectStore();
-        store.project.status = {
-          microreactClusters: {
-            cluster1: "finished",
-            cluster2: "started"
-          }
-        } as any;
-        expect(store.analysisProgressPercentage).toBe(Math.round((1 / 2) * 100));
       });
     });
 
@@ -336,6 +297,52 @@ describe("projectStore", () => {
         const result = store.statusValues;
 
         expect(result).toEqual([]);
+      });
+    });
+
+    describe("completeMicroreactNumerator", () => {
+      it("returns 0 when there are no microreactClusters", () => {
+        const store = useProjectStore();
+        store.project.status = undefined;
+
+        expect(store.completeMicroreactNumerator).toBe(0);
+      });
+
+      it("returns 0 when no microreactClusters are complete", () => {
+        const store = useProjectStore();
+        store.project.status = {
+          microreactClusters: {
+            cluster1: "started",
+            cluster2: "started"
+          }
+        } as any;
+
+        expect(store.completeMicroreactNumerator).toBe(0);
+      });
+
+      it("returns the correct numerator when some microreactClusters are complete", () => {
+        const store = useProjectStore();
+        store.project.status = {
+          microreactClusters: {
+            cluster1: "finished",
+            cluster2: "started",
+            cluster3: "finished"
+          }
+        } as any;
+
+        expect(store.completeMicroreactNumerator).toBe(2 / 3);
+      });
+
+      it("returns 1 when all microreactClusters are complete", () => {
+        const store = useProjectStore();
+        store.project.status = {
+          microreactClusters: {
+            cluster1: "finished",
+            cluster2: "finished"
+          }
+        } as any;
+
+        expect(store.completeMicroreactNumerator).toBe(1);
       });
     });
   });

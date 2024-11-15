@@ -49,20 +49,31 @@ export const useProjectStore = defineStore("project", {
       return this.statusValues.length > 0 && this.statusValues.every((value) => COMPLETE_STATUS_TYPES.includes(value));
     },
     numOfStatus(): number {
-      return (
-        Object.keys(this.separatedStatuses.fullStatuses).length +
-        Object.keys(this.separatedStatuses.microreactClusters).length
-      );
+      return Object.keys(this.separatedStatuses.fullStatuses).length;
     },
     hasStartedAtLeastOneRun: (state) => !!state.project.status,
     isRunning(): boolean {
       return this.hasStartedAtLeastOneRun && !this.isFinishedRun;
     },
+    completeMicroreactNumerator(): number {
+      const { microreactClusters } = this.separatedStatuses;
+      const microreactClustersStatusValues = Object.values(microreactClusters);
+      return microreactClustersStatusValues.length > 0
+        ? microreactClustersStatusValues.filter((value) => COMPLETE_STATUS_TYPES.includes(value)).length /
+            microreactClustersStatusValues.length
+        : 0;
+    },
     analysisProgressPercentage(): number {
-      return this.statusValues.length > 0
-        ? Math.round(
-            (this.statusValues.filter((value) => COMPLETE_STATUS_TYPES.includes(value)).length / this.numOfStatus) * 100
-          )
+      const {
+        fullStatuses: { assign, network }
+      } = this.separatedStatuses;
+
+      const assignAndNetworkStatusNumerator = [assign, network].filter((status) =>
+        COMPLETE_STATUS_TYPES.includes(status as StatusTypes)
+      ).length;
+
+      return this.numOfStatus
+        ? Math.round(((assignAndNetworkStatusNumerator + this.completeMicroreactNumerator) / this.numOfStatus) * 100)
         : 0;
     },
     firstAssignedCluster(state): string | undefined {
