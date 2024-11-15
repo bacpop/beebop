@@ -48,7 +48,7 @@ export const useProjectStore = defineStore("project", {
     isFinishedRun(): boolean {
       return this.statusValues.length > 0 && this.statusValues.every((value) => COMPLETE_STATUS_TYPES.includes(value));
     },
-    numOfStatus(): number {
+    numOfFullStatus(): number {
       return Object.keys(this.separatedStatuses.fullStatuses).length;
     },
     hasStartedAtLeastOneRun: (state) => !!state.project.status,
@@ -72,8 +72,10 @@ export const useProjectStore = defineStore("project", {
         COMPLETE_STATUS_TYPES.includes(status as StatusTypes)
       ).length;
 
-      return this.numOfStatus
-        ? Math.round(((assignAndNetworkStatusNumerator + this.completeMicroreactNumerator) / this.numOfStatus) * 100)
+      return this.numOfFullStatus
+        ? Math.round(
+            ((assignAndNetworkStatusNumerator + this.completeMicroreactNumerator) / this.numOfFullStatus) * 100
+          )
         : 0;
     },
     firstAssignedCluster(state): string | undefined {

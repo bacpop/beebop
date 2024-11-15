@@ -6,7 +6,7 @@ import {
   hasSampleFailed,
   hasSamplePassed,
   isAnyMicroreactFinished,
-  isAnyMicroreactQueued
+  haveAnyMicroreactBeenQueued
 } from "@/utils/projectStatus";
 
 describe("projectStatus utilities", () => {
@@ -150,16 +150,16 @@ describe("projectStatus utilities", () => {
   describe("isAnyMicroreactQueued", () => {
     test("returns true when microreactClusterStatuses is not empty", () => {
       const statuses: Record<string, StatusTypes> = { cluster1: "finished" };
-      expect(isAnyMicroreactQueued(statuses)).toBeTruthy();
+      expect(haveAnyMicroreactBeenQueued(statuses)).toBeTruthy();
     });
 
     test("returns false when microreactClusterStatuses is empty", () => {
       const statuses: Record<string, StatusTypes> = {};
-      expect(isAnyMicroreactQueued(statuses)).toBeFalsy();
+      expect(haveAnyMicroreactBeenQueued(statuses)).toBeFalsy();
     });
 
     test("returns false when microreactClusterStatuses is undefined", () => {
-      expect(isAnyMicroreactQueued(undefined)).toBeFalsy();
+      expect(haveAnyMicroreactBeenQueued(undefined)).toBeFalsy();
     });
   });
 });

@@ -91,14 +91,14 @@ describe("projectStore", () => {
           }
         } as any;
 
-        expect(store.numOfStatus).toBe(2);
+        expect(store.numOfFullStatus).toBe(2);
       });
 
       it("returns 0 when there are no statuses", () => {
         const store = useProjectStore();
         store.project.status = undefined;
 
-        expect(store.numOfStatus).toBe(0);
+        expect(store.numOfFullStatus).toBe(0);
       });
     });
 
