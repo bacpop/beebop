@@ -115,7 +115,7 @@ describe("projectStore", () => {
       });
     });
 
-    describe.only("analysisProgressPercentage", () => {
+    describe("analysisProgressPercentage", () => {
       it("returns 0 when there are no statuses", () => {
         const store = useProjectStore();
         store.project.status = undefined;
@@ -136,7 +136,7 @@ describe("projectStore", () => {
         expect(store.analysisProgressPercentage).toBe(100);
       });
 
-      it.only("returns the correct percentage when some statuses are complete", () => {
+      it("returns the correct percentage when some statuses are complete", () => {
         const store = useProjectStore();
         store.project.status = {
           assign: "finished",
