@@ -4,7 +4,11 @@ import { useProjectStore } from "@/stores/projectStore";
 import { type ProjectSample, AnalysisType } from "@/types/projectTypes";
 import Toast from "primevue/toast";
 import MicroReactTokenDialog from "./MicroReactTokenDialog.vue";
-import { hasSampleFailed, hasSamplePassed } from "@/utils/projectStatus";
+import {
+  hasMicroreactClusterPassed,
+  hasMicroreactClusterFailed,
+  getMicroreactClusterStatus
+} from "@/utils/projectStatus";
 const props = defineProps<{
   data: ProjectSample;
 }>();
@@ -36,7 +40,10 @@ const onSaveMicroreactToken = async (cluster: string, token: string) => {
     @closeDialog="closeDialog"
     @saveMicroreactToken="onSaveMicroreactToken(props.data.cluster, $event)"
   />
-  <div v-if="!data.hasRun || hasSamplePassed(projectStore.project.status?.microreact, data.cluster)" class="flex gap-2">
+  <div
+    v-if="!data.hasRun || hasMicroreactClusterPassed(projectStore.project.status?.microreactClusters, data.cluster)"
+    class="flex gap-2"
+  >
     <Button
       outlined
       icon="pi pi-download"
@@ -56,9 +63,9 @@ const onSaveMicroreactToken = async (cluster: string, token: string) => {
     />
   </div>
   <Tag
-    v-else-if="hasSampleFailed(projectStore.project.status?.microreact, data.cluster)"
+    v-else-if="hasMicroreactClusterFailed(projectStore.project.status, data.cluster)"
     value="failed"
     severity="danger"
   />
-  <Tag v-else :value="projectStore.project.status?.microreact" severity="warning" />
+  <Tag v-else :value="getMicroreactClusterStatus(projectStore.project.status, data.cluster)" severity="warning" />
 </template>

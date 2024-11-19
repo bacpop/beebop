@@ -15,7 +15,7 @@ docker volume create $VOLUME
 docker run --rm -v $VOLUME:/beebop/storage \
        --pull always \
        mrcide/beebop-py:$API_BRANCH \
-       ./scripts/download_databases
+       ./scripts/download_databases --refs # remove --refs to download all databases
 docker network create $NETWORK > /dev/null || /bin/true
 
 docker run -d --rm --name $NAME_REDIS --network=$NETWORK -p 6379:6379 redis:5.0
