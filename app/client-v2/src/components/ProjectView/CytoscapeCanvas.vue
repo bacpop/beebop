@@ -29,7 +29,7 @@ onMounted(async () => {
         style: {
           width: "10px",
           height: "10px",
-          content: "data(key0)",
+          content: "data(key4)", // TODO: change to data(label) if needed
           "font-size": "7px",
           color: "#00CC66",
           "background-color": "rgba(45, 212, 191, 0.44)"
