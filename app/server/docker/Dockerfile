@@ -9,4 +9,4 @@ COPY . /app
 EXPOSE 4000
 RUN npm run build
 RUN npm install -g ts-node
-ENTRYPOINT ["docker/entrypoint.sh"]
+ENTRYPOINT ["ts-node", "--transpile-only", "src/index.ts"]
