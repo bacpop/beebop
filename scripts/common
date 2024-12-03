@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-export API_IMAGE="4ed745a-dev" # TODO: revert to main before merge
+export API_IMAGE="poppunk-version-dev" # TODO: revert to main before merge
