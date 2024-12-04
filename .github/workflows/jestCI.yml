@@ -22,6 +22,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - name: Login to GHCR (GitHub Packages)
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
@@ -63,6 +69,7 @@ jobs:
       - name: run all components
         working-directory: .
         run: ./scripts/run_test server-only
+
       - name: Run unit and integration tests
         run: npm run test
       - name: stop all components
