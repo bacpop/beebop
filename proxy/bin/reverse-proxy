@@ -6,7 +6,7 @@ if [ "$#" -eq 2 ]; then
     export SERVER_NAME=$2
 else
     echo "Usage: <hostname> <servername>"
-    echo "e.g. docker run ... mrcide/beebop-proxy:master localhost beebop-server"
+    echo "e.g. docker run ... ghcr.io/bacpop/beebop-proxy:master localhost beebop-server"
     exit 1
 fi
 

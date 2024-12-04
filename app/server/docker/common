@@ -4,7 +4,7 @@ set -e
 REGISTRY=ghcr.io
 PACKAGE_ROOT=$(realpath $HERE/..)
 PACKAGE_NAME=beebop-server
-PACKAGE_ORG=mrcide
+PACKAGE_ORG=bacpop
 
 GIT_SHA=$(git -C "$PACKAGE_ROOT" rev-parse --short=7 HEAD)
 if [[ -v "BRANCH_NAME" ]]; then
