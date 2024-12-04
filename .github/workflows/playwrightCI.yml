@@ -1,10 +1,6 @@
 name: playwright CI
 
 on:
-  workflow_run:
-    workflows: ["build and push docker images"]
-    types:
-      - completed
   push:
     branches:
       - main
