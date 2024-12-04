@@ -1,0 +1,31 @@
+name: build and push docker images
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - "bacpop-*"
+env:
+  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Login to GHCR (GitHub Packages)
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build Server image
+        run: app/server/docker/build
+      - name: Build Proxy image
+        run: proxy/docker/build
+      - name: Push Server image
+        run: app/server/docker/push
+      - name: Push Proxy image
+        run: proxy/docker/push
+      - name: Docker smoke test
+        run: scripts/docker_smoke_test
