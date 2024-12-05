@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-export API_IMAGE="buildkite-test-dev" # TODO: revert to main before merge
+export API_IMAGE="main"
