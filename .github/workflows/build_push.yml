@@ -23,9 +23,9 @@ jobs:
         run: app/server/docker/build
       - name: Build Proxy image
         run: proxy/docker/build
-      - name: Push Server image
-        run: app/server/docker/push
-      - name: Push Proxy image
-        run: proxy/docker/push
       - name: Docker smoke test
         run: scripts/docker_smoke_test
+      - name: Push Server image branch ${{ env.BRANCH_NAME }}
+        run: app/server/docker/push
+      - name: Push Proxy image branch ${{ env.BRANCH_NAME }}
+        run: proxy/docker/push
