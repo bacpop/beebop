@@ -26,7 +26,7 @@ Bring down the app with
 Docker images are built on CI using `./proxy/docker/build`, `./app/server/docker/build`. If you want
 to generate them from changed local sources you can run those same scripts locally to build images.
 
-To target a branch of `beebop_py`, set `API_BRANCH` in `scripts/common`.
+To target a branch of `beebop_py`, set `API_IMAGE` in `scripts/common`.
 
 When running locally in docker, the backend is serving from `beebop_beebop-server_1`, and the front end from the proxy
 container `beebop_proxy_1`.
