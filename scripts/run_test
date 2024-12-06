@@ -2,6 +2,21 @@ set -e
 
 HERE=$(realpath "$(dirname $0)")
 
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -mount)
+      MOUNT="$2"
+      shift 2
+      ;;
+    *)
+      shift
+      ;;
+  esac
+done
+. $HERE/run_dependencies -mount $MOUNT
+
+
+
 npm --prefix app/server ci
 npm install pm2
 
