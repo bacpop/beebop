@@ -4,18 +4,7 @@ set -ex
 HERE=$(realpath "$(dirname $0)")
 . $HERE/common
 
-NETWORK=beebop_nw
-VOLUME=beebop-storage
-NAME_REDIS=beebop-redis
-NAME_API=beebop-py-api
-NAME_WORKER=beebop-py-worker
-PORT=5000
 
-docker volume create $VOLUME
-docker run --rm -v $VOLUME:/beebop/storage \
-       --pull always \
-       ghcr.io/bacpop/beebop-py:$API_IMAGE \
-       ./scripts/download_databases --refs # remove --refs to download all databases
 docker network create $NETWORK > /dev/null || /bin/true
 
 docker run -d --rm --name $NAME_REDIS --network=$NETWORK -p 6379:6379 redis:5.0
