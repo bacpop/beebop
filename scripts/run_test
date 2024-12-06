@@ -1,8 +1,6 @@
 set -e
 
 HERE=$(realpath "$(dirname $0)")
-. $HERE/run_dependencies
-
 
 npm --prefix app/server ci
 npm install pm2

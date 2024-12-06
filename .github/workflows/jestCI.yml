@@ -73,14 +73,12 @@ jobs:
           key: db-cache-${{ runner.os }}
           restore-keys: |
             db-cache-
-      - name: download dbs
+      - name: run dependencies
         working-directory: .
-        run: ./scripts/download_dbs ${{ github.workspace }}/storage/dbs
-        
-      - name: run all components
+        run: ./scripts/run_dependencies ${{ github.workspace }}/storage/dbs
+      - name: run server
         working-directory: .
         run: ./scripts/run_test server-only
-
       - name: Run unit and integration tests
         run: npm run test
 
