@@ -66,12 +66,25 @@ jobs:
         run: |
           pwd
           cp ./src/resources/config.json.in.development ./src/resources/config.json
+      - name: Restore DB Cache
+        uses: actions/cache@v3
+        with:
+          path: /var/lib/docker/volumes/beebop-storage/_data
+          key: db-cache-${{ runner.os }}
+          restore-keys: |
+            db-cache-
       - name: run all components
         working-directory: .
         run: ./scripts/run_test server-only
 
       - name: Run unit and integration tests
         run: npm run test
+
+      - name: Save DB Cache
+        uses: actions/cache@v3
+        with:
+          path: /var/lib/docker/volumes/beebop-storage/_data
+          key: db-cache-${{ runner.os }}
       - name: stop all components
         working-directory: .
         run: ./scripts/stop_test server-only
