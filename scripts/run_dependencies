@@ -4,25 +4,28 @@ set -ex
 HERE=$(realpath "$(dirname $0)")
 . $HERE/common
 
-NETWORK=beebop_nw
-VOLUME=beebop-storage
-NAME_REDIS=beebop-redis
-NAME_API=beebop-py-api
-NAME_WORKER=beebop-py-worker
-PORT=5000
 
-docker volume create $VOLUME
-docker run --rm -v $VOLUME:/beebop/storage \
+. $HERE/parse_mount_arg
+MOUNT=$(parse_mount_arg "$@")
+
+if [ -z "$MOUNT" ]; then
+       echo "No mount path provided, using default: $VOLUME"
+       MOUNT=$VOLUME
+       docker volume create $VOLUME
+fi
+
+docker network create $NETWORK > /dev/null || /bin/true
+
+docker run --rm -v $MOUNT:/beebop/storage \
        --pull always \
        ghcr.io/bacpop/beebop-py:$API_IMAGE \
        ./scripts/download_databases --refs # remove --refs to download all databases
-docker network create $NETWORK > /dev/null || /bin/true
 
 docker run -d --rm --name $NAME_REDIS --network=$NETWORK -p 6379:6379 redis:5.0
 docker run -d --rm --name $NAME_WORKER --network=$NETWORK \
        --pull always \
        --env=REDIS_HOST="$NAME_REDIS" \
-       -v $VOLUME:/beebop/storage \
+       -v $MOUNT:/beebop/storage \
        ghcr.io/bacpop/beebop-py:$API_IMAGE rqworker
 
 docker run -d --rm --name $NAME_API --network=$NETWORK \
@@ -30,6 +33,6 @@ docker run -d --rm --name $NAME_API --network=$NETWORK \
        --env=REDIS_HOST="$NAME_REDIS" \
        --env=STORAGE_LOCATION="./storage" \
        --env=DBS_LOCATION="./storage/dbs" \
-       -v $VOLUME:/beebop/storage \
+       -v $MOUNT:/beebop/storage \
        -p $PORT:5000 \
        ghcr.io/bacpop/beebop-py:$API_IMAGE

@@ -1,7 +1,11 @@
 set -e
 
 HERE=$(realpath "$(dirname $0)")
-. $HERE/run_dependencies
+
+. $HERE/parse_mount_arg
+MOUNT=$(parse_mount_arg "$@")
+. $HERE/run_dependencies -mount $MOUNT
+
 
 
 npm --prefix app/server ci
