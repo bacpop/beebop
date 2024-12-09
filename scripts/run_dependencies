@@ -5,17 +5,9 @@ HERE=$(realpath "$(dirname $0)")
 . $HERE/common
 
 
-while [ $# -gt 0 ]; do
-  case "$1" in
-    -mount)
-      MOUNT="$2"
-      shift 2
-      ;;
-    *)
-      shift
-      ;;
-  esac
-done
+. $HERE/parse_mount_arg
+MOUNT=$(parse_mount_arg "$@")
+
 if [ -z "$MOUNT" ]; then
        echo "No mount path provided, using default: $VOLUME"
        MOUNT=$VOLUME

@@ -77,7 +77,7 @@ You can also run everything outside pm2, by separately running:
 - `./scripts/run_server`
 - `./scripts/run_client`
 
-*Note: If you wish to override the volune with a custom bind mount pass in -mount {MOUNT_NAME} into `run_test` script*
+*Note: If you wish to override the storage volume with a custom bind mount pass in -mount {MOUNT_NAME} into `run_test` script*
 
 ## Config
 Config for the front-end lives in `./app/client/src/settings` and by default webpack (via the vue-cli) will use the config 
