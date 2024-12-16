@@ -39,6 +39,8 @@ jobs:
 
   unit_and_integration_backend:
     runs-on: ubuntu-latest
+    env:
+      STORAGE_PATH: ${{ github.workspace }}/storage/dbs
     defaults:
       run:
         working-directory: ./app/server
@@ -49,6 +51,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - name: Login to GHCR (GitHub Packages)
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
@@ -60,9 +68,16 @@ jobs:
         run: |
           pwd
           cp ./src/resources/config.json.in.development ./src/resources/config.json
+      - name: Restore storage cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORAGE_PATH }}
+          key: dbs-cache-${{ runner.os }}
+          restore-keys: |
+            dbs-cache-
       - name: run all components
         working-directory: .
-        run: ./scripts/run_test server-only
+        run: ./scripts/run_test server-only -mount ${{ env.STORAGE_PATH }}
       - name: Run unit and integration tests
         run: npm run test
       - name: stop all components

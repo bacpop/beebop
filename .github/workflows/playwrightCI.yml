@@ -13,6 +13,8 @@ jobs:
   playwright-tests:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    env:
+      STORAGE_PATH: ${{ github.workspace }}/storage/dbs
     strategy:
       fail-fast: false
       matrix:
@@ -20,6 +22,19 @@ jobs:
         node-version: [20.x]
     steps:
       - uses: actions/checkout@v4
+      - name: Login to GHCR (GitHub Packages)
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Restore storage cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORAGE_PATH }}
+          key: dbs-cache-${{ runner.os }}
+          restore-keys: |
+            dbs-cache-
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
@@ -32,7 +47,7 @@ jobs:
           cp ./app/server/src/resources/config.json.in.development ./app/server/src/resources/config.json
       - name: Run all components
         working-directory: .
-        run: ./scripts/run_test
+        run: ./scripts/run_test -mount ${{ env.STORAGE_PATH }}
       - name: Install playwright
         working-directory: ./app/client-v2
         run: npx playwright install --with-deps

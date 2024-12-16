@@ -1,2 +1,9 @@
 #!/usr/bin/env bash
-export API_BRANCH="bacpop-202-fallback-to-refs"
+export API_IMAGE="bacpop-205-fix-network-dev"
+
+NETWORK=beebop_nw
+VOLUME=beebop-storage
+NAME_REDIS=beebop-redis
+NAME_API=beebop-py-api
+NAME_WORKER=beebop-py-worker
+PORT=5000

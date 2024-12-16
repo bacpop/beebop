@@ -1,7 +1,7 @@
 version: "3"
 services:
   proxy:
-    image: mrcide/beebop-proxy:${GIT_SHA}
+    image: ghcr.io/bacpop/beebop-proxy:${GIT_SHA}
     depends_on:
       - beebop-server
     ports:
@@ -10,12 +10,12 @@ services:
     command:
       $HOST beebop-server
   beebop-server:
-    image: mrcide/beebop-server:${GIT_SHA}
+    image: ghcr.io/bacpop/beebop-server:${GIT_SHA}
     depends_on:
       - beebop-py-api
       - beebop-redis
   beebop-py-api:
-    image: mrcide/beebop-py:${API_BRANCH}
+    image: ghcr.io/bacpop/beebop-py:${API_IMAGE}
     depends_on:
       - beebop-redis
     volumes:
@@ -26,7 +26,7 @@ services:
   beebop-redis:
     image: redis:5.0
   beebop-py-worker:
-    image: mrcide/beebop-py:${API_BRANCH}
+    image: ghcr.io/bacpop/beebop-py:${API_IMAGE}
     depends_on:
       - beebop-redis
     command:
