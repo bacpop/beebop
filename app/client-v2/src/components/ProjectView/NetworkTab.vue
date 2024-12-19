@@ -24,6 +24,9 @@ const { data, error, isFetching } = useFetch(`${apiUrl}/networkGraphs/${store.pr
       >View in fullscreen, reset layout or use mouse, touchpad or touchscreen gestures on graphs to zoom in and out, or
       move nodes around.</InlineMessage
     >
+    <InlineMessage severity="info" class="mb-2"
+      >Note: These graphs are pruned versions of the full graphs. To view full graphs, download the zip file and view the .graphml externally.</InlineMessage
+    >
     <div class="grid">
       <div v-for="(value, key) in data.data" :key="key" class="col">
         <NetworkGraph :cluster="key" :graph="value" />
