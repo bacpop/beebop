@@ -29,14 +29,14 @@ onMounted(async () => {
         style: {
           width: "10px",
           height: "10px",
-          content: "data(d3)",
+          content: "data(d1)",
           "font-size": "7px",
           color: "#00CC66",
           "background-color": "rgba(45, 212, 191, 0.44)"
         }
       },
       {
-        selector: 'node[d4 = "query"]',
+        selector: 'node[d2 = "query"]',
         style: {
           "background-color": "crimson",
           color: "crimson"
