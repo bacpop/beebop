@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-export API_IMAGE="bacpop-205-fix-network-dev"
+export API_IMAGE="bacpop-186-v9-db-support-dev"
 
 NETWORK=beebop_nw
 VOLUME=beebop-storage
