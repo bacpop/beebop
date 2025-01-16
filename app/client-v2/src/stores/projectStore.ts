@@ -3,6 +3,7 @@ import { getApiUrl } from "@/config";
 import {
   AnalysisType,
   COMPLETE_STATUS_TYPES,
+  type AMRMetadataCsv,
   type AnalysisStatus,
   type ApiResponse,
   type ClusterInfo,
@@ -17,6 +18,7 @@ import { defineStore } from "pinia";
 import { Md5 } from "ts-md5";
 import { useSpeciesStore, type SketchKmerArguments } from "./speciesStore";
 import { toRaw } from "vue";
+import { convertAmrForCsv } from "@/utils/projectCsvUtils";
 
 const baseApi = mande(getApiUrl(), { credentials: "include" });
 
@@ -184,6 +186,7 @@ export const useProjectStore = defineStore("project", {
       });
     },
     async handleWorkerResponse(samples: WorkerResponse[]) {
+      console.log("samples", samples);
       this.project.samples.push(...samples);
       try {
         await baseApi.post(`/project/${this.project.id}/sample`, samples);
@@ -304,6 +307,7 @@ export const useProjectStore = defineStore("project", {
     buildRunAnalysisPostBody() {
       const sketches: Record<string, unknown> = {};
       const names: Record<string, unknown> = {};
+      const amrForMetadataCsv: AMRMetadataCsv[] = [];
       let projectHashKey = "";
       this.project.samples
         .sort((a, b) => a.filename.localeCompare(b.filename))
@@ -311,10 +315,18 @@ export const useProjectStore = defineStore("project", {
           projectHashKey += sample.hash + sample.filename;
           sketches[sample.hash] = sample.sketch;
           names[sample.hash] = sample.filename;
+          amrForMetadataCsv.push({ ID: sample.hash, ...convertAmrForCsv(sample.amr!!) });
         }, "");
       const projectHash = Md5.hashStr(projectHashKey);
 
-      return { projectHash, names, sketches, projectId: this.project.id, species: this.project.species };
+      return {
+        projectHash,
+        names,
+        sketches,
+        projectId: this.project.id,
+        species: this.project.species,
+        amrForMetadataCsv
+      };
     },
 
     async downloadZip(type: AnalysisType, cluster: string) {

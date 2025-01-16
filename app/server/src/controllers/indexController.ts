@@ -14,10 +14,10 @@ export default (config) => {
         async runPoppunk(request, response, next) {
             await asyncHandler(next, async () => {
                 const poppunkRequest = request.body as BeebopRunRequest;
-                const {projectHash, projectId, names, sketches, species } = poppunkRequest;
+                const { projectHash, projectId, names, sketches, species, amrForMetadataCsv } = poppunkRequest;
                 const {redis} = request.app.locals;
                 await userStore(redis).saveHashAndSamplesRun(request, projectId, projectHash, names);
-                const apiRequest = { names, projectHash, sketches, species } as PoppunkRequest;
+                const apiRequest = { names, projectHash, sketches, species, amrForMetadataCsv } as PoppunkRequest;
                 await axios
                   .post(`${config.api_url}/poppunk`, apiRequest, {
                     headers: {
