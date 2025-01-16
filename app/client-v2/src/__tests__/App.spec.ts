@@ -4,7 +4,6 @@ import { createTestingPinia } from "@pinia/testing";
 import { render, screen } from "@testing-library/vue";
 import { defineComponent } from "vue";
 import { createRouter, createWebHistory } from "vue-router";
-import PrimeVue from "primevue/config";
 
 const mockedThemeValues = {
   setInitialTheme: vitest.fn(),
