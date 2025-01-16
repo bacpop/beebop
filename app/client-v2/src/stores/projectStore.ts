@@ -186,7 +186,6 @@ export const useProjectStore = defineStore("project", {
       });
     },
     async handleWorkerResponse(samples: WorkerResponse[]) {
-      console.log("samples", samples);
       this.project.samples.push(...samples);
       try {
         await baseApi.post(`/project/${this.project.id}/sample`, samples);
