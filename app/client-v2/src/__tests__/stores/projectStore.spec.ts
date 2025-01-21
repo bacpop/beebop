@@ -698,7 +698,33 @@ describe("projectStore", () => {
           [MOCK_PROJECT_SAMPLES[0].hash]: MOCK_PROJECT_SAMPLES[0].sketch,
           [MOCK_PROJECT_SAMPLES[1].hash]: MOCK_PROJECT_SAMPLES[1].sketch,
           [MOCK_PROJECT_SAMPLES[2].hash]: MOCK_PROJECT_SAMPLES[2].sketch
-        }
+        },
+        amrForMetadataCsv: [
+          {
+            "Chloramphenicol Resistance": "Probably",
+            "Cotrim Resistance": "Probably not",
+            "Erythromycin Resistance": "Probably not",
+            ID: "sample1-test-hash",
+            "Penicillin Resistance": "Unlikely",
+            "Tetracycline Resistance": "Highly unlikely"
+          },
+          {
+            "Chloramphenicol Resistance": "Probably",
+            "Cotrim Resistance": "Almost certainly",
+            "Erythromycin Resistance": "Almost certainly",
+            ID: "sample2-test-hash",
+            "Penicillin Resistance": "Highly unlikely",
+            "Tetracycline Resistance": "Highly unlikely"
+          },
+          {
+            "Chloramphenicol Resistance": "Probably",
+            "Cotrim Resistance": "Unlikely",
+            "Erythromycin Resistance": "Probably not",
+            ID: "sample3-test-hash",
+            "Penicillin Resistance": "Probably",
+            "Tetracycline Resistance": "Highly unlikely"
+          }
+        ]
       });
     });
     it("should get download url & download when downloadZip is called", async () => {

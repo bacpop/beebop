@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-export API_IMAGE="bacpop-186-v9-db-support-dev"
+export API_IMAGE="bacpop-209-amr-microreact-dev" # TODO revert back to main before merge into main
 
 NETWORK=beebop_nw
 VOLUME=beebop-storage

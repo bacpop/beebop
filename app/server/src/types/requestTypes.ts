@@ -5,8 +5,20 @@ export interface PoppunkRequest {
     projectHash: string,
     sketches: Record<string, never>
     species: string,
+    amrForMetadataCsv: AMRMetadataCsv[]
 }
 
+export interface AMRForCsv {
+    "Penicillin Resistance": string;
+    "Chloramphenicol Resistance": string;
+    "Erythromycin Resistance": string;
+    "Tetracycline Resistance": string;
+    "Cotrim Resistance": string;
+}
+
+export interface AMRMetadataCsv extends AMRForCsv {
+    ID: string;
+}
 export interface BeebopRunRequest extends PoppunkRequest {
     projectId: string,
 }
