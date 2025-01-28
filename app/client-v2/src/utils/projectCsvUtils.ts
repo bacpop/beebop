@@ -1,4 +1,4 @@
-import type { AMR, ProjectSample } from "@/types/projectTypes";
+import type { AMR, AMRForCsv, ProjectSample } from "@/types/projectTypes";
 import { convertProbabilityToWord } from "./amrDisplayUtils";
 
 export const downloadCsv = (samples: ProjectSample[], filename: string) => {
@@ -12,12 +12,12 @@ export const downloadCsv = (samples: ProjectSample[], filename: string) => {
   triggerCsvDownload(csvContent, `${filename}.csv`);
 };
 
-export const convertAmrForCsv = (amr: AMR) => ({
-  Penicillin: convertProbabilityToWord(amr.Penicillin, "Penicillin"),
-  Chloramphenicol: convertProbabilityToWord(amr.Chloramphenicol, "Chloramphenicol"),
-  Erythromycin: convertProbabilityToWord(amr.Erythromycin, "Erythromycin"),
-  Tetracycline: convertProbabilityToWord(amr.Tetracycline, "Tetracycline"),
-  Cotrim: convertProbabilityToWord(amr.Trim_sulfa, "Cotrim")
+export const convertAmrForCsv = (amr: AMR): AMRForCsv => ({
+  "Penicillin Resistance": convertProbabilityToWord(amr.Penicillin, "Penicillin"),
+  "Chloramphenicol Resistance": convertProbabilityToWord(amr.Chloramphenicol, "Chloramphenicol"),
+  "Erythromycin Resistance": convertProbabilityToWord(amr.Erythromycin, "Erythromycin"),
+  "Tetracycline Resistance": convertProbabilityToWord(amr.Tetracycline, "Tetracycline"),
+  "Cotrim Resistance": convertProbabilityToWord(amr.Trim_sulfa, "Cotrim")
 });
 
 export const generateCsvContent = (data: Record<string, string>[]) => {

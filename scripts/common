@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-export API_IMAGE="main"
+export API_IMAGE="main" # TODO revert back to main before merge into main
 
 NETWORK=beebop_nw
 VOLUME=beebop-storage

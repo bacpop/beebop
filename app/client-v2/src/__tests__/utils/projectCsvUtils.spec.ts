@@ -53,11 +53,11 @@ describe("projectCsvUtils", () => {
       const result = convertAmrForCsv(amr);
 
       expect(result).toEqual({
-        Penicillin: "word",
-        Chloramphenicol: "word",
-        Erythromycin: "word",
-        Tetracycline: "word",
-        Cotrim: "word"
+        "Penicillin Resistance": "word",
+        "Chloramphenicol Resistance": "word",
+        "Erythromycin Resistance": "word",
+        "Tetracycline Resistance": "word",
+        "Cotrim Resistance": "word"
       });
     });
   });

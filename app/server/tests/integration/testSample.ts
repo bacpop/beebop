@@ -13135,4 +13135,14 @@ export const testSample = (
     },
   },
   names: { fd38a3bc7197390fd3734240a67fb515: "7622_5#78.fa" },
+  amrForMetadataCsv: [
+    {
+      ID: "fd38a3bc7197390fd3734240a67fb515",
+      "Penicillin Resistance": "Highly unlikely",
+      "Chloramphenicol Resistance": "Unsure",
+      "Erythromycin Resistance": "Highly unlikely",
+      "Tetracycline Resistance": "Almost certainly",
+      "Cotrim Resistance": "Highly likely",
+    },
+  ],
 });

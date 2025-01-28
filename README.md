@@ -1,35 +1,10 @@
-# beebop
-
-## Docker Quick Start
-
-Run the dockerised app along with proxy and all dependencies:
-
-```
-    ./scripts/run_docker_decrypt
-```
-
-You may need to update your version of Docker and Docker Compose: see [here](https://docs.docker.com/engine/install/ubuntu/) for instructions on updating on Ubuntu. 
-
-By default this will configure the nginx proxy for host localhost. To deploy with a different hostname, pass it as an argument, e.g.
-```
-./scripts/run_docker_decrypt beebop.dide.ic.ac.uk
-```
-
-This will also populate app config with secrets from the vault. If you are not running the script for the first time,
-or not for the first time since running the app outside docker, you can omit this step by running the `run_docker` script.
-
-Bring down the app with
-```
-    ./scripts/stop_docker
-```
+# Beebop
 
 Docker images are built on CI using `./proxy/docker/build`, `./app/server/docker/build`. If you want
 to generate them from changed local sources you can run those same scripts locally to build images.
 
-To target a branch of `beebop_py`, set `API_IMAGE` in `scripts/common`.
-
-When running locally in docker, the backend is serving from `beebop_beebop-server_1`, and the front end from the proxy
-container `beebop_proxy_1`.
+To target a branch of `beebop_py`, set `API_IMAGE` in `scripts/common`. If there is a dev image available,
+that can be targeting by adding `-dev` to the image name.
 
 ## Local development
 
@@ -47,7 +22,7 @@ docker --version
 
 
 If you run the application for the first time (or for the first time after running in docker), you need to replace the 
-secrets in the config file in `app/server/src/resources` first. 
+secrets in the config file in `app/server/src/resources` first.
 Login to the vault:
 ```
 export VAULT_ADDR=https://vault.dide.ic.ac.uk:8200
@@ -63,6 +38,12 @@ To start all required components, run:
 ```
 ./scripts/run_test
 ```
+
+To run dependencies and server only, run:
+```
+./scripts/run_test server-only
+```
+*Note: These scripts call `run_dependencies` which downloads ref databases only. To download full databases, remove `--refs` from the `./scripts/download_databases --refs` command in `run_dependencies`*
 
 The website can be viewed at http://localhost:5173/ . You can stop the application with `./scripts/stop_test`.
 
