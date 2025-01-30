@@ -68,6 +68,7 @@ export default (config) => {
                     handleAPIError(request, response, error);
                 });
         },
+        // TODO: get all graphs that exist? maybe have to wait for all to be done or as they come in
         async getNetworkGraphs(request, response) {
             try {
                 const res = await axios.get(`${config.api_url}/results/networkGraphs/${request.params.projectHash}`);

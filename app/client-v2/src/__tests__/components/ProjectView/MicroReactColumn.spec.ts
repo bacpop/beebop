@@ -23,7 +23,7 @@ vitest.mock("@/composables/useMicroreact", () => ({
 }));
 const renderComponent = (
   microreactStatus: string | null = "finished",
-  microreactClusterStatuses: Record<string, unknown> = { GPSC1: "finished" },
+  visualiseClusterstatuses: Record<string, unknown> = { GPSC1: "finished" },
   cluster: string | null = "GPSC1",
   hasRun = true
 ) =>
@@ -40,7 +40,7 @@ const renderComponent = (
           initialState: {
             project: {
               project: {
-                status: { microreact: microreactStatus, microreactClusters: microreactClusterStatuses }
+                status: { microreact: microreactStatus, visualiseClusters: visualiseClusterstatuses }
               }
             }
           }
@@ -63,7 +63,7 @@ describe("MicroReactColumn", () => {
     await userEvent.click(downloadButton);
     await userEvent.click(visitButton);
 
-    expect(store.downloadZip).toHaveBeenCalledWith(AnalysisType.MICROREACT, "GPSC1");
+    expect(store.downloadZip).toHaveBeenCalledWith(AnalysisType.VISUALISE, "GPSC1");
     expect(mockUseMicroreact.onMicroReactVisit).toHaveBeenCalledWith("GPSC1");
   });
 

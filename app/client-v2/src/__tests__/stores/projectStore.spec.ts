@@ -50,7 +50,7 @@ describe("projectStore", () => {
           assign: "finished",
           microreact: "finished",
           network: "finished",
-          microreactClusters: { cluster1: "finished" }
+          visualiseClusters: { cluster1: "finished" }
         } as any;
         expect(store.isFinishedRun).toBe(true);
       });
@@ -61,13 +61,13 @@ describe("projectStore", () => {
         expect(store.isFinishedRun).toBe(false);
       });
 
-      it("returns false when not all microreactClusters are complete", () => {
+      it("returns false when not all visualiseClusters are complete", () => {
         const store = useProjectStore();
         store.project.status = {
           assign: "finished",
           microreact: "finished",
           network: "finished",
-          microreactClusters: { cluster1: "started" }
+          visualiseClusters: { cluster1: "started" }
         } as any;
         expect(store.isFinishedRun).toBe(false);
       });
@@ -85,7 +85,7 @@ describe("projectStore", () => {
         store.project.status = {
           assign: "finished",
           network: "started",
-          microreactClusters: {
+          visualiseClusters: {
             cluster1: "finished",
             cluster2: "started"
           }
@@ -128,7 +128,7 @@ describe("projectStore", () => {
           assign: "finished",
           microreact: "finished",
           network: "finished",
-          microreactClusters: {
+          visualiseClusters: {
             cluster1: "finished",
             cluster2: "finished"
           }
@@ -142,7 +142,7 @@ describe("projectStore", () => {
           assign: "finished",
           microreact: "started",
           network: "finished",
-          microreactClusters: {
+          visualiseClusters: {
             cluster1: "finished",
             cluster2: "started"
           }
@@ -156,7 +156,7 @@ describe("projectStore", () => {
           assign: "started",
           microreact: "started",
           network: "started",
-          microreactClusters: {
+          visualiseClusters: {
             cluster1: "started",
             cluster2: "started"
           }
@@ -190,15 +190,15 @@ describe("projectStore", () => {
 
         const result = store.separatedStatuses;
 
-        expect(result).toEqual({ fullStatuses: {}, microreactClusters: {} });
+        expect(result).toEqual({ fullStatuses: {}, visualiseClusters: {} });
       });
 
-      it("returns separated statuses correctly when project status has fullStatuses and microreactClusters", () => {
+      it("returns separated statuses correctly when project status has fullStatuses and visualiseClusters", () => {
         const store = useProjectStore();
         store.project.status = {
           assign: "finished",
           network: "started",
-          microreactClusters: {
+          visualiseClusters: {
             cluster1: "finished",
             cluster2: "started"
           }
@@ -208,7 +208,7 @@ describe("projectStore", () => {
 
         expect(result).toEqual({
           fullStatuses: { assign: "finished", network: "started" },
-          microreactClusters: { cluster1: "finished", cluster2: "started" }
+          visualiseClusters: { cluster1: "finished", cluster2: "started" }
         });
       });
 
@@ -223,14 +223,14 @@ describe("projectStore", () => {
 
         expect(result).toEqual({
           fullStatuses: { assign: "finished", network: "started" },
-          microreactClusters: {}
+          visualiseClusters: {}
         });
       });
 
-      it("returns separated statuses correctly when project status has only microreactClusters", () => {
+      it("returns separated statuses correctly when project status has only visualiseClusters", () => {
         const store = useProjectStore();
         store.project.status = {
-          microreactClusters: {
+          visualiseClusters: {
             cluster1: "finished",
             cluster2: "started"
           }
@@ -240,7 +240,7 @@ describe("projectStore", () => {
 
         expect(result).toEqual({
           fullStatuses: {},
-          microreactClusters: { cluster1: "finished", cluster2: "started" }
+          visualiseClusters: { cluster1: "finished", cluster2: "started" }
         });
       });
     });
@@ -252,11 +252,11 @@ describe("projectStore", () => {
         store = useProjectStore();
       });
 
-      it("returns combined status values when both fullStatuses and microreactClusters are present", () => {
+      it("returns combined status values when both fullStatuses and visualiseClusters are present", () => {
         store.project.status = {
           assign: "finished",
           network: "started",
-          microreactClusters: {
+          visualiseClusters: {
             cluster1: "finished",
             cluster2: "started"
           }
@@ -267,7 +267,7 @@ describe("projectStore", () => {
         expect(result).toEqual(["finished", "started", "finished", "started"]);
       });
 
-      it("returns only fullStatuses when microreactClusters are not present", () => {
+      it("returns only fullStatuses when visualiseClusters are not present", () => {
         store.project.status = {
           assign: "finished",
           network: "started"
@@ -278,9 +278,9 @@ describe("projectStore", () => {
         expect(result).toEqual(["finished", "started"]);
       });
 
-      it("returns only microreactClusters when fullStatuses are not present", () => {
+      it("returns only visualiseClusters when fullStatuses are not present", () => {
         store.project.status = {
-          microreactClusters: {
+          visualiseClusters: {
             cluster1: "finished",
             cluster2: "started"
           }
@@ -301,48 +301,48 @@ describe("projectStore", () => {
     });
 
     describe("completeMicroreactNumerator", () => {
-      it("returns 0 when there are no microreactClusters", () => {
+      it("returns 0 when there are no visualiseClusters", () => {
         const store = useProjectStore();
         store.project.status = undefined;
 
-        expect(store.completeMicroreactNumerator).toBe(0);
+        expect(store.completeVisualiseNumerator).toBe(0);
       });
 
-      it("returns 0 when no microreactClusters are complete", () => {
+      it("returns 0 when no visualiseClusters are complete", () => {
         const store = useProjectStore();
         store.project.status = {
-          microreactClusters: {
+          visualiseClusters: {
             cluster1: "started",
             cluster2: "started"
           }
         } as any;
 
-        expect(store.completeMicroreactNumerator).toBe(0);
+        expect(store.completeVisualiseNumerator).toBe(0);
       });
 
-      it("returns the correct numerator when some microreactClusters are complete", () => {
+      it("returns the correct numerator when some visualiseClusters are complete", () => {
         const store = useProjectStore();
         store.project.status = {
-          microreactClusters: {
+          visualiseClusters: {
             cluster1: "finished",
             cluster2: "started",
             cluster3: "finished"
           }
         } as any;
 
-        expect(store.completeMicroreactNumerator).toBe(2 / 3);
+        expect(store.completeVisualiseNumerator).toBe(2 / 3);
       });
 
-      it("returns 1 when all microreactClusters are complete", () => {
+      it("returns 1 when all visualiseClusters are complete", () => {
         const store = useProjectStore();
         store.project.status = {
-          microreactClusters: {
+          visualiseClusters: {
             cluster1: "finished",
             cluster2: "finished"
           }
         } as any;
 
-        expect(store.completeMicroreactNumerator).toBe(1);
+        expect(store.completeVisualiseNumerator).toBe(1);
       });
     });
   });
@@ -575,7 +575,7 @@ describe("projectStore", () => {
       server.use(
         http.post(statusUri, () =>
           HttpResponse.json({
-            data: { assign: "finished", network: "started", microreact: "finished", microreactClusters: {} },
+            data: { assign: "finished", network: "started", microreact: "finished", visualiseClusters: {} },
             errors: [],
             status: "success"
           })
@@ -587,7 +587,7 @@ describe("projectStore", () => {
       expect(store.stopPollingStatus).not.toHaveBeenCalled();
     });
 
-    it("should not stop polling if microreactClusters status not finished", async () => {
+    it("should not stop polling if visualiseClusters status not finished", async () => {
       const store = useProjectStore();
       store.stopPollingStatus = vitest.fn();
       server.use(
@@ -597,7 +597,7 @@ describe("projectStore", () => {
               assign: "finished",
               network: "finished",
               microreact: "finished",
-              microreactClusters: { cluster1: "started" }
+              visualiseClusters: { cluster1: "started" }
             },
             errors: [],
             status: "success"
@@ -633,7 +633,7 @@ describe("projectStore", () => {
         assign: "failed",
         microreact: "failed",
         network: "failed",
-        microreactClusters: {}
+        visualiseClusters: {}
       });
       expect(store.stopPollingStatus).toHaveBeenCalled();
     });
@@ -654,7 +654,7 @@ describe("projectStore", () => {
         assign: "submitted",
         microreact: "submitted",
         network: "submitted",
-        microreactClusters: {}
+        visualiseClusters: {}
       });
       samples.forEach((sample) => {
         expect(sample.hasRun).toBe(true);
@@ -744,7 +744,7 @@ describe("projectStore", () => {
       server.use(
         http.post(`${getApiUrl()}/downloadZip`, async ({ request }) => {
           const body = await request.json();
-          expect(body).toEqual({ type: AnalysisType.MICROREACT, cluster: "GPSC1", projectHash: store.project.hash });
+          expect(body).toEqual({ type: AnalysisType.VISUALISE, cluster: "GPSC1", projectHash: store.project.hash });
 
           return HttpResponse.arrayBuffer(mockBufferRes, {
             status: 201,
@@ -753,11 +753,11 @@ describe("projectStore", () => {
         })
       );
 
-      await store.downloadZip(AnalysisType.MICROREACT, "GPSC1");
+      await store.downloadZip(AnalysisType.VISUALISE, "GPSC1");
 
       expect(URL.createObjectURL).toHaveBeenCalledWith(expect.objectContaining({ size: 10, type: "application/zip" }));
       expect(mockFileLink.href).toBe(fakeObjectUrl);
-      expect(mockFileLink.download).toBe(`${AnalysisType.MICROREACT}_clusterGPSC1.zip`);
+      expect(mockFileLink.download).toBe(`${AnalysisType.VISUALISE}_clusterGPSC1.zip`);
       expect(mockFileLink.click).toHaveBeenCalled();
       expect(URL.revokeObjectURL).toHaveBeenCalledWith(fakeObjectUrl);
     });
@@ -767,7 +767,7 @@ describe("projectStore", () => {
 
       server.use(http.post(`${getApiUrl()}/downloadZip`, () => HttpResponse.error()));
 
-      await store.downloadZip(AnalysisType.MICROREACT, "GPSC1");
+      await store.downloadZip(AnalysisType.VISUALISE, "GPSC1");
 
       expect(URL.createObjectURL).not.toHaveBeenCalled();
     });
@@ -826,7 +826,7 @@ describe("projectStore", () => {
         assign: "failed",
         network: "failed",
         microreact: "failed",
-        microreactClusters: {}
+        visualiseClusters: {}
       });
     });
     it("should call getClusterAssignResult if assign is failed when processStatusAndGetPolling called", async () => {

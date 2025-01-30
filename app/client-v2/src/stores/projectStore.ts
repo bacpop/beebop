@@ -35,16 +35,16 @@ export const useProjectStore = defineStore("project", {
       state.project.samples.length > 0 &&
       state.project.samples.every((sample: ProjectSample) => sample.sketch && sample.amr),
     separatedStatuses(state): {
-      fullStatuses: Partial<Omit<AnalysisStatus, "microreactClusters">>;
-      microreactClusters: Record<string, StatusTypes>;
+      fullStatuses: Partial<Omit<AnalysisStatus, "visualiseClusters">>;
+      visualiseClusters: Record<string, StatusTypes>;
     } {
-      const { microreactClusters, ...status } = state.project.status || {};
-      return { fullStatuses: status, microreactClusters: microreactClusters ?? {} };
+      const { visualiseClusters, ...status } = state.project.status || {};
+      return { fullStatuses: status, visualiseClusters: visualiseClusters ?? {} };
     },
     statusValues(): StatusTypes[] {
       return [
         ...Object.values(this.separatedStatuses.fullStatuses),
-        ...Object.values(this.separatedStatuses.microreactClusters)
+        ...Object.values(this.separatedStatuses.visualiseClusters)
       ];
     },
     isFinishedRun(): boolean {
@@ -57,27 +57,23 @@ export const useProjectStore = defineStore("project", {
     isRunning(): boolean {
       return this.hasStartedAtLeastOneRun && !this.isFinishedRun;
     },
-    completeMicroreactNumerator(): number {
-      const { microreactClusters } = this.separatedStatuses;
-      const microreactClustersStatusValues = Object.values(microreactClusters);
-      return microreactClustersStatusValues.length > 0
-        ? microreactClustersStatusValues.filter((value) => COMPLETE_STATUS_TYPES.includes(value)).length /
-            microreactClustersStatusValues.length
+    completeVisualiseNumerator(): number {
+      const { visualiseClusters } = this.separatedStatuses;
+      const visualiseClustersStatusValues = Object.values(visualiseClusters);
+      return visualiseClustersStatusValues.length > 0
+        ? visualiseClustersStatusValues.filter((value) => COMPLETE_STATUS_TYPES.includes(value)).length /
+            visualiseClustersStatusValues.length
         : 0;
     },
+    // TODO network status... will change visualiseClusters to visualiseClusters
     analysisProgressPercentage(): number {
       const {
-        fullStatuses: { assign, network }
+        fullStatuses: { assign }
       } = this.separatedStatuses;
 
-      const assignAndNetworkStatusNumerator = [assign, network].filter((status) =>
-        COMPLETE_STATUS_TYPES.includes(status as StatusTypes)
-      ).length;
-
+      const isAssignComplete = Number(COMPLETE_STATUS_TYPES.includes(assign as StatusTypes));
       return this.numOfFullStatus
-        ? Math.round(
-            ((assignAndNetworkStatusNumerator + this.completeMicroreactNumerator) / this.numOfFullStatus) * 100
-          )
+        ? Math.round(((isAssignComplete + this.completeVisualiseNumerator) / this.numOfFullStatus) * 100)
         : 0;
     },
     firstAssignedCluster(state): string | undefined {
@@ -221,24 +217,23 @@ export const useProjectStore = defineStore("project", {
         }
       }
     },
+    // TODO: remove network
     async processStatusAndGetStopPolling(
       data: AnalysisStatus,
       prevClusterAssign: StatusTypes | undefined
     ): Promise<boolean> {
-      const { assign, network, microreact, microreactClusters } = data;
+      const { assign, visualise, visualiseClusters } = data;
       this.project.status = data;
 
       if (COMPLETE_STATUS_TYPES.includes(assign) && prevClusterAssign !== "finished") {
         await this.getClusterAssignResult();
       }
       if (assign === "failed") {
-        this.project.status = { assign: "failed", network: "failed", microreact: "failed", microreactClusters: {} };
+        this.project.status = { assign: "failed", visualise: "failed", visualiseClusters: {} };
         return true;
       }
 
-      return [network, microreact, ...Object.values(microreactClusters)].every((status) =>
-        COMPLETE_STATUS_TYPES.includes(status)
-      );
+      return [visualise, ...Object.values(visualiseClusters)].every((status) => COMPLETE_STATUS_TYPES.includes(status));
     },
 
     async getClusterAssignResult() {
@@ -283,9 +278,8 @@ export const useProjectStore = defineStore("project", {
     async runAnalysis() {
       this.project.status = {
         assign: "submitted",
-        microreact: "submitted",
-        network: "submitted",
-        microreactClusters: {}
+        visualise: "submitted",
+        visualiseClusters: {}
       };
       this.project.samples.forEach((sample: ProjectSample) => (sample.hasRun = true));
       const body = this.buildRunAnalysisPostBody();
@@ -327,7 +321,6 @@ export const useProjectStore = defineStore("project", {
         amrForMetadataCsv
       };
     },
-
     async downloadZip(type: AnalysisType, cluster: string) {
       try {
         const res = await baseApi.post<Response, "response">(

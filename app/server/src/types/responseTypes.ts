@@ -22,9 +22,8 @@ export interface APIProjectResponse {
   >;
   status: {
     assign: string;
-    microreact: string;
-    network: string;
-    microreactClusters: Record<string, string>;
+    visualise: string;
+    visualiseClusters: Record<string, string>;
   };
 }
 export interface SketchKmerArguments {
@@ -32,5 +31,3 @@ export interface SketchKmerArguments {
   kmerMax: number;
   kmerStep: number;
 }
-
-

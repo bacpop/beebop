@@ -1,12 +1,12 @@
 import type { StatusTypes } from "@/types/projectTypes";
 import {
-  getMicroreactClusterStatus,
-  hasMicroreactClusterFailed,
-  hasMicroreactClusterPassed,
+  getVisualiseClusterStatus,
+  hasVisualiseClusterFailed,
+  hasVisualiseClusterPassed,
   hasSampleFailed,
   hasSamplePassed,
-  isAnyMicroreactFinished,
-  haveAnyMicroreactBeenQueued
+  isAnyVisualiseFinished,
+  haveAnyVisualiseBeenQueued
 } from "@/utils/projectStatus";
 
 describe("projectStatus utilities", () => {
@@ -60,106 +60,106 @@ describe("projectStatus utilities", () => {
     });
   });
   describe("hasMicroreactClusterPassed", () => {
-    test('returns true when microreactClusterStatuses has the cluster with status "finished"', () => {
+    test('returns true when visualiseClusterstatuses has the cluster with status "finished"', () => {
       const statuses: any = { cluster1: "finished", cluster2: "failed" };
-      expect(hasMicroreactClusterPassed(statuses, "cluster1")).toBeTruthy();
+      expect(hasVisualiseClusterPassed(statuses, "cluster1")).toBeTruthy();
     });
 
-    test('returns false when microreactClusterStatuses has the cluster with status not "finished"', () => {
+    test('returns false when visualiseClusterstatuses has the cluster with status not "finished"', () => {
       const statuses: any = { cluster1: "failed", cluster2: "waiting" };
-      expect(hasMicroreactClusterPassed(statuses, "cluster1")).toBeFalsy();
+      expect(hasVisualiseClusterPassed(statuses, "cluster1")).toBeFalsy();
     });
 
-    test("returns false when microreactClusterStatuses is undefined", () => {
-      expect(hasMicroreactClusterPassed(undefined, "cluster1")).toBeFalsy();
+    test("returns false when visualiseClusterstatuses is undefined", () => {
+      expect(hasVisualiseClusterPassed(undefined, "cluster1")).toBeFalsy();
     });
 
     test("returns false when cluster is undefined", () => {
       const statuses: any = { cluster1: "finished" };
-      expect(hasMicroreactClusterPassed(statuses, undefined)).toBeFalsy();
+      expect(hasVisualiseClusterPassed(statuses, undefined)).toBeFalsy();
     });
   });
 
   describe("hasMicroreactClusterFailed", () => {
     test('returns true when status.microreact is "failed"', () => {
-      const status: any = { microreact: "failed", microreactClusters: {} };
-      expect(hasMicroreactClusterFailed(status, "cluster1")).toBeTruthy();
+      const status: any = { microreact: "failed", visualiseClusters: {} };
+      expect(hasVisualiseClusterFailed(status, "cluster1")).toBeTruthy();
     });
 
     test("returns true when cluster is undefined and any microreact cluster has started", () => {
-      const status: any = { microreact: "waiting", microreactClusters: { cluster1: "deferred" } };
-      expect(hasMicroreactClusterFailed(status, undefined)).toBeTruthy();
+      const status: any = { microreact: "waiting", visualiseClusters: { cluster1: "deferred" } };
+      expect(hasVisualiseClusterFailed(status, undefined)).toBeTruthy();
     });
 
-    test('returns true when microreactClusters has the cluster with status "failed"', () => {
-      const status: any = { microreact: "waiting", microreactClusters: { cluster1: "failed" } };
-      expect(hasMicroreactClusterFailed(status, "cluster1")).toBeTruthy();
+    test('returns true when visualiseClusters has the cluster with status "failed"', () => {
+      const status: any = { microreact: "waiting", visualiseClusters: { cluster1: "failed" } };
+      expect(hasVisualiseClusterFailed(status, "cluster1")).toBeTruthy();
     });
 
     test("returns false when status and cluster do not meet any failure conditions", () => {
-      const status: any = { microreact: "waiting", microreactClusters: { cluster1: "waiting" } };
-      expect(hasMicroreactClusterFailed(status, "cluster1")).toBeFalsy();
+      const status: any = { microreact: "waiting", visualiseClusters: { cluster1: "waiting" } };
+      expect(hasVisualiseClusterFailed(status, "cluster1")).toBeFalsy();
     });
 
     test("returns false when status is undefined", () => {
-      expect(hasMicroreactClusterFailed(undefined, "cluster1")).toBeFalsy();
+      expect(hasVisualiseClusterFailed(undefined, "cluster1")).toBeFalsy();
     });
   });
 
-  describe("getMicroreactClusterStatus", () => {
+  describe("getvisualiseClusterstatus", () => {
     test("returns the status of the specified cluster", () => {
-      const status: any = { microreact: "waiting", microreactClusters: { cluster1: "finished" } };
-      expect(getMicroreactClusterStatus(status, "cluster1")).toBe("finished");
+      const status: any = { microreact: "waiting", visualiseClusters: { cluster1: "finished" } };
+      expect(getVisualiseClusterStatus(status, "cluster1")).toBe("finished");
     });
 
     test("returns the microreact status when cluster is undefined", () => {
-      const status: any = { microreact: "waiting", microreactClusters: { cluster1: "finished" } };
-      expect(getMicroreactClusterStatus(status, undefined)).toBe("waiting");
+      const status: any = { microreact: "waiting", visualiseClusters: { cluster1: "finished" } };
+      expect(getVisualiseClusterStatus(status, undefined)).toBe("waiting");
     });
 
     test('returns "waiting" when status is undefined', () => {
-      expect(getMicroreactClusterStatus(undefined, "cluster1")).toBe("waiting");
+      expect(getVisualiseClusterStatus(undefined, "cluster1")).toBe("waiting");
     });
 
-    test('returns "waiting" when cluster is not found in microreactClusters', () => {
-      const status: any = { microreact: "waiting", microreactClusters: { cluster1: "finished" } };
-      expect(getMicroreactClusterStatus(status, "cluster2")).toBe("waiting");
+    test('returns "waiting" when cluster is not found in visualiseClusters', () => {
+      const status: any = { microreact: "waiting", visualiseClusters: { cluster1: "finished" } };
+      expect(getVisualiseClusterStatus(status, "cluster2")).toBe("waiting");
     });
   });
 
   describe("isAnyMicroreactFinished", () => {
     test('returns true when any microreact cluster status is "finished"', () => {
       const statuses: any = { cluster1: "finished", cluster2: "waiting" };
-      expect(isAnyMicroreactFinished(statuses)).toBeTruthy();
+      expect(isAnyVisualiseFinished(statuses)).toBeTruthy();
     });
     test('returns true when any microreact cluster status is "failed"', () => {
       const statuses: any = { cluster1: "failed", cluster2: "waiting" };
-      expect(isAnyMicroreactFinished(statuses)).toBeTruthy();
+      expect(isAnyVisualiseFinished(statuses)).toBeTruthy();
     });
 
     test("returns false when no microreact cluster status is finished", () => {
       const statuses: any = { cluster1: "waiting", cluster2: "deferred" };
-      expect(isAnyMicroreactFinished(statuses)).toBeFalsy();
+      expect(isAnyVisualiseFinished(statuses)).toBeFalsy();
     });
 
-    test("returns false when microreactClusterStatuses is undefined", () => {
-      expect(isAnyMicroreactFinished(undefined)).toBeFalsy();
+    test("returns false when visualiseClusterstatuses is undefined", () => {
+      expect(isAnyVisualiseFinished(undefined)).toBeFalsy();
     });
   });
 
   describe("isAnyMicroreactQueued", () => {
-    test("returns true when microreactClusterStatuses is not empty", () => {
+    test("returns true when visualiseClusterstatuses is not empty", () => {
       const statuses: Record<string, StatusTypes> = { cluster1: "finished" };
-      expect(haveAnyMicroreactBeenQueued(statuses)).toBeTruthy();
+      expect(haveAnyVisualiseBeenQueued(statuses)).toBeTruthy();
     });
 
-    test("returns false when microreactClusterStatuses is empty", () => {
+    test("returns false when visualiseClusterstatuses is empty", () => {
       const statuses: Record<string, StatusTypes> = {};
-      expect(haveAnyMicroreactBeenQueued(statuses)).toBeFalsy();
+      expect(haveAnyVisualiseBeenQueued(statuses)).toBeFalsy();
     });
 
-    test("returns false when microreactClusterStatuses is undefined", () => {
-      expect(haveAnyMicroreactBeenQueued(undefined)).toBeFalsy();
+    test("returns false when visualiseClusterstatuses is undefined", () => {
+      expect(haveAnyVisualiseBeenQueued(undefined)).toBeFalsy();
     });
   });
 });

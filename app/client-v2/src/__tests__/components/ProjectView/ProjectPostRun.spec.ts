@@ -218,7 +218,7 @@ describe("RunProject", () => {
         assign: "finished",
         microreact: "finished",
         network: "finished",
-        microreactClusters: { x: "finished" }
+        visualiseClusters: { x: "finished" }
       }
     });
     renderComponent(testPinia, false);

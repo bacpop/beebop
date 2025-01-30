@@ -58,11 +58,11 @@ export interface Project {
 export type StatusTypes = "finished" | "failed" | "started" | "waiting" | "deferred" | "submitted";
 export const COMPLETE_STATUS_TYPES: StatusTypes[] = ["finished", "failed"] as const;
 
+// TODO update
 export interface AnalysisStatus {
   assign: StatusTypes;
-  microreact: StatusTypes;
-  network: StatusTypes;
-  microreactClusters: Record<string, StatusTypes>;
+  visualise: StatusTypes;
+  visualiseClusters: Record<string, StatusTypes>;
 }
 export interface ApiResponse<T> {
   data: T;
@@ -89,6 +89,7 @@ export interface HashedFile {
   file: File;
 }
 
+// TODO: update
 export enum AnalysisType {
   ASSIGN = "assign",
   MICROREACT = "microreact",

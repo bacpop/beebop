@@ -134,8 +134,8 @@ export const MOCK_PROJECT: Project = {
   status: {
     assign: "finished",
     microreact: "finished",
-    network: "failed",
-    microreactClusters: {}
+    network: "failed", // TODO: remove
+    visualiseClusters: {}
   },
   species: MOCK_SPECIES[0]
 };
