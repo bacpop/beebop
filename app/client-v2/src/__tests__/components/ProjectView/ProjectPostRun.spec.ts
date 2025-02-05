@@ -43,7 +43,9 @@ describe("RunProject", () => {
     const { testPinia } = setupPinia({
       samples: MOCK_PROJECT_SAMPLES,
       status: {
-        network: "finished"
+        visualiseClusters: {
+          GPSC1: "finished"
+        }
       }
     });
     renderComponent(testPinia);
@@ -59,7 +61,7 @@ describe("RunProject", () => {
     expect(dataTable).not.toBeVisible();
   });
 
-  it("should enable network tab on network finished", async () => {
+  it("should enable network tab when all visualise finished", async () => {
     const { testPinia, store } = setupPinia({
       samples: MOCK_PROJECT_SAMPLES
     });
@@ -70,7 +72,9 @@ describe("RunProject", () => {
     expect(tabPanel).toHaveAttribute("aria-disabled", "true");
 
     store.project.status = {
-      network: "finished"
+      visualiseClusters: {
+        GPSC1: "finished"
+      }
     } as any;
 
     await waitFor(() => {
@@ -83,8 +87,8 @@ describe("RunProject", () => {
       samples: MOCK_PROJECT_SAMPLES,
       status: {
         assign: "finished",
-        microreact: "finished",
-        network: "finished"
+        visualise: "finished",
+        visualiseClusters: Object.fromEntries(MOCK_PROJECT_SAMPLES.map((sample) => [sample.cluster!, "finished"]))
       }
     });
     renderComponent(testPinia, false);
@@ -124,18 +128,17 @@ describe("RunProject", () => {
     expect(screen.getAllByText(/not run/i).length).toBe(copyMockSamples.length);
   });
 
-  it("should render failed network status if network analysis failed", async () => {
+  it("should render failed status chips if visualise analysis failed", async () => {
     const { testPinia } = setupPinia({
       samples: MOCK_PROJECT_SAMPLES,
       status: {
         assign: "finished",
-        microreact: "finished",
-        network: "failed"
+        visualise: "failed"
       }
     });
     renderComponent(testPinia, false);
 
-    expect(screen.queryAllByText(/failed/i).length).toBe(MOCK_PROJECT_SAMPLES.length);
+    expect(screen.queryAllByText(/failed/i).length).toBe(MOCK_PROJECT_SAMPLES.length * 2); // microreact and network
   });
 
   it("should render disabled network download if finished and sample not run", async () => {
@@ -148,8 +151,7 @@ describe("RunProject", () => {
       samples: copyMockSamples,
       status: {
         assign: "finished",
-        microreact: "finished",
-        network: "finished"
+        visualise: "finished"
       }
     });
     renderComponent(testPinia, false);
@@ -164,13 +166,12 @@ describe("RunProject", () => {
       samples: MOCK_PROJECT_SAMPLES,
       status: {
         assign: "finished",
-        microreact: "finished",
-        network: "started"
+        visualise: "started"
       }
     });
     renderComponent(testPinia, false);
 
-    expect(screen.queryAllByText(/started/i).length).toBe(MOCK_PROJECT_SAMPLES.length);
+    expect(screen.queryAllByText(/started/i).length).toBe(MOCK_PROJECT_SAMPLES.length * 2); // microreact and network
   });
 
   it("should render disabled microreact setting button when microreact is not finished", async () => {
@@ -178,8 +179,7 @@ describe("RunProject", () => {
       samples: MOCK_PROJECT_SAMPLES,
       status: {
         assign: "finished",
-        microreact: "started",
-        network: "finished"
+        visualise: "started"
       }
     });
     renderComponent(testPinia, false);
@@ -192,8 +192,7 @@ describe("RunProject", () => {
       samples: MOCK_PROJECT_SAMPLES_BEFORE_RUN,
       status: {
         assign: "finished",
-        microreact: "finished",
-        network: "finished"
+        visualise: "finished"
       }
     });
     renderComponent(testPinia, false);
@@ -216,8 +215,7 @@ describe("RunProject", () => {
       samples: [{ ...MOCK_PROJECT_SAMPLES[0], cluster: undefined }],
       status: {
         assign: "finished",
-        microreact: "finished",
-        network: "finished",
+        visualise: "finished",
         visualiseClusters: { x: "finished" }
       }
     });
@@ -230,7 +228,10 @@ describe("RunProject", () => {
     const { testPinia } = setupPinia({
       samples: MOCK_PROJECT_SAMPLES,
       status: {
-        network: "finished"
+        visualise: "finished",
+        visualiseClusters: {
+          GPSC1: "finished"
+        }
       }
     });
     renderComponent(testPinia);

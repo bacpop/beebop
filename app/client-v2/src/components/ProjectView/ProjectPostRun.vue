@@ -22,9 +22,6 @@ const shouldRenderNetwork = computed(() => isAllVisualiseFinished(projectStore.p
 const { closeDialog, hasMicroReactError, isMicroReactDialogVisible, saveMicroreactToken, isFetchingMicroreactUrl } =
   useMicroreact();
 
-// TODO: update all logic regards to network tab
-
-// TODO: may need to remove cache here
 // cache network graphs render after visiting it once
 const tabChange = (num: number) => {
   if (num == 1 && !hasVisitedNetworkTab.value) {
@@ -123,7 +120,6 @@ const getMicroreactSettingsTooltip = () => {
           </template>
         </ProjectDataTable>
       </TabPanel>
-      <!-- TODO: update logic here -->
       <TabPanel header="Network" :disabled="!shouldRenderNetwork">
         <NetworkTab v-if="shouldRenderNetwork && hasVisitedNetworkTab" />
       </TabPanel>

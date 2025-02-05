@@ -63,7 +63,7 @@ describe("MicroReactColumn", () => {
     await userEvent.click(downloadButton);
     await userEvent.click(visitButton);
 
-    expect(store.downloadZip).toHaveBeenCalledWith(AnalysisType.VISUALISE, "GPSC1");
+    expect(store.downloadZip).toHaveBeenCalledWith(AnalysisType.MICROREACT, "GPSC1");
     expect(mockUseMicroreact.onMicroReactVisit).toHaveBeenCalledWith("GPSC1");
   });
 

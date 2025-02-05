@@ -7,7 +7,6 @@ import NetworkGraph from "./NetworkGraph.vue";
 
 const apiUrl = getApiUrl();
 const store = useProjectStore();
-// TODO: get and show as they become available...
 const { data, error, isFetching } = useFetch(`${apiUrl}/networkGraphs/${store.project.hash}`, {
   credentials: "include"
 }).json<ApiResponse<Record<string, string>>>();

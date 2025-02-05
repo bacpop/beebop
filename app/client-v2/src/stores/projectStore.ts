@@ -65,7 +65,6 @@ export const useProjectStore = defineStore("project", {
             visualiseClustersStatusValues.length
         : 0;
     },
-    // TODO network status... will change visualiseClusters to visualiseClusters
     analysisProgressPercentage(): number {
       const {
         fullStatuses: { assign }
@@ -217,7 +216,6 @@ export const useProjectStore = defineStore("project", {
         }
       }
     },
-    // TODO: remove network
     async processStatusAndGetStopPolling(
       data: AnalysisStatus,
       prevClusterAssign: StatusTypes | undefined
