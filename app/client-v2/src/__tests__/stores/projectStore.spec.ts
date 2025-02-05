@@ -737,7 +737,7 @@ describe("projectStore", () => {
       server.use(
         http.post(`${getApiUrl()}/downloadZip`, async ({ request }) => {
           const body = await request.json();
-          expect(body).toEqual({ type: AnalysisType.VISUALISE, cluster: "GPSC1", projectHash: store.project.hash });
+          expect(body).toEqual({ type: AnalysisType.MICROREACT, cluster: "GPSC1", projectHash: store.project.hash });
 
           return HttpResponse.arrayBuffer(mockBufferRes, {
             status: 201,
@@ -746,11 +746,11 @@ describe("projectStore", () => {
         })
       );
 
-      await store.downloadZip(AnalysisType.VISUALISE, "GPSC1");
+      await store.downloadZip(AnalysisType.MICROREACT, "GPSC1");
 
       expect(URL.createObjectURL).toHaveBeenCalledWith(expect.objectContaining({ size: 10, type: "application/zip" }));
       expect(mockFileLink.href).toBe(fakeObjectUrl);
-      expect(mockFileLink.download).toBe(`${AnalysisType.VISUALISE}_clusterGPSC1.zip`);
+      expect(mockFileLink.download).toBe(`${AnalysisType.MICROREACT}_clusterGPSC1.zip`);
       expect(mockFileLink.click).toHaveBeenCalled();
       expect(URL.revokeObjectURL).toHaveBeenCalledWith(fakeObjectUrl);
     });
@@ -760,7 +760,7 @@ describe("projectStore", () => {
 
       server.use(http.post(`${getApiUrl()}/downloadZip`, () => HttpResponse.error()));
 
-      await store.downloadZip(AnalysisType.VISUALISE, "GPSC1");
+      await store.downloadZip(AnalysisType.MICROREACT, "GPSC1");
 
       expect(URL.createObjectURL).not.toHaveBeenCalled();
     });
