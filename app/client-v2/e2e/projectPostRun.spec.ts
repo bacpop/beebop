@@ -12,8 +12,7 @@ test("can run project and view results", async ({ page }) => {
   uploadFiles(page, ["e2e/fastaFiles/good_1.fa"]);
   await page.getByLabel("Run Analysis").click();
 
-  await expect(page.getByText("Running Analysis...33%")).toBeVisible();
-  await expect(page.getByText("Running Analysis...67%")).toBeVisible();
+  await expect(page.getByText("Running Analysis...50%")).toBeVisible();
 
   await expect(page.getByLabel("Visit")).toBeVisible();
   await expect(page.getByLabel("Download microreact zip")).toBeVisible();
@@ -64,8 +63,7 @@ test("can load up already run project even if loading", async ({ page }) => {
   await page.getByRole("link", { name: "Beebop home" }).click();
   await page.getByRole("link", { name: projectName }).click();
 
-  await expect(page.getByText("Running Analysis...33%")).toBeVisible();
-  await expect(page.getByText("Running Analysis...67%")).toBeVisible();
+  await expect(page.getByText("Running Analysis...50%")).toBeVisible();
   await expect(page.getByLabel("Visit")).toBeVisible();
   await expect(page.getByLabel("Download microreact zip")).toBeVisible();
   await expect(page.getByLabel("Download network zip")).toBeVisible();
@@ -76,15 +74,13 @@ test("can run project multiple times", async ({ page }) => {
   await uploadFiles(page, ["e2e/fastaFiles/good_1.fa"]);
   await page.getByLabel("Run Analysis").click();
 
-  await expect(page.getByText("Running Analysis...33%")).toBeVisible();
-  await expect(page.getByText("Running Analysis...67%")).toBeVisible();
+  await expect(page.getByText("Running Analysis...50%")).toBeVisible();
   await expect(page.getByLabel("Upload")).toBeVisible();
 
   await uploadFiles(page, ["e2e/fastaFiles/good_2.fa"]);
   await page.getByLabel("Run Analysis").click();
 
-  await expect(page.getByText("Running Analysis...33%")).toBeVisible();
-  await expect(page.getByText("Running Analysis...67%")).toBeVisible();
+  await expect(page.getByText("Running Analysis...50%")).toBeVisible();
   await expect(page.getByText("GPSC7")).toBeVisible();
   await expect(page.getByText("GPSC4")).toBeVisible();
 });

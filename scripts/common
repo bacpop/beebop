@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-export API_IMAGE="main" # TODO revert back to main before merge into main
+export API_IMAGE="bacpop-208-nw-mc-1-call" # TODO revert before merge
 
 NETWORK=beebop_nw
 VOLUME=beebop-storage

@@ -48,26 +48,24 @@ describe("projectStore", () => {
         const store = useProjectStore();
         store.project.status = {
           assign: "finished",
-          microreact: "finished",
-          network: "finished",
-          microreactClusters: { cluster1: "finished" }
+          visualise: "finished",
+          visualiseClusters: { cluster1: "finished" }
         } as any;
         expect(store.isFinishedRun).toBe(true);
       });
 
       it("returns false when not all fullStatuses are complete", () => {
         const store = useProjectStore();
-        store.project.status = { assign: "started", microreact: "finished", network: "finished" } as any;
+        store.project.status = { assign: "started", network: "visualise" } as any;
         expect(store.isFinishedRun).toBe(false);
       });
 
-      it("returns false when not all microreactClusters are complete", () => {
+      it("returns false when not all visualiseClusters are complete", () => {
         const store = useProjectStore();
         store.project.status = {
           assign: "finished",
-          microreact: "finished",
-          network: "finished",
-          microreactClusters: { cluster1: "started" }
+          visualise: "finished",
+          visualiseClusters: { cluster1: "started" }
         } as any;
         expect(store.isFinishedRun).toBe(false);
       });
@@ -84,8 +82,8 @@ describe("projectStore", () => {
         const store = useProjectStore();
         store.project.status = {
           assign: "finished",
-          network: "started",
-          microreactClusters: {
+          visualise: "started",
+          visualiseClusters: {
             cluster1: "finished",
             cluster2: "started"
           }
@@ -126,9 +124,8 @@ describe("projectStore", () => {
         const store = useProjectStore();
         store.project.status = {
           assign: "finished",
-          microreact: "finished",
-          network: "finished",
-          microreactClusters: {
+          visualise: "finished",
+          visualiseClusters: {
             cluster1: "finished",
             cluster2: "finished"
           }
@@ -140,14 +137,13 @@ describe("projectStore", () => {
         const store = useProjectStore();
         store.project.status = {
           assign: "finished",
-          microreact: "started",
-          network: "finished",
-          microreactClusters: {
+          visualise: "finished",
+          visualiseClusters: {
             cluster1: "finished",
             cluster2: "started"
           }
         } as any;
-        expect(store.analysisProgressPercentage).toBe(Math.round(((2 + 1 / 2) / 3) * 100));
+        expect(store.analysisProgressPercentage).toBe(Math.round(((1 + 1 / 2) / 2) * 100));
       });
 
       it("returns 0 when all statuses are incomplete", () => {
@@ -156,7 +152,7 @@ describe("projectStore", () => {
           assign: "started",
           microreact: "started",
           network: "started",
-          microreactClusters: {
+          visualiseClusters: {
             cluster1: "started",
             cluster2: "started"
           }
@@ -168,10 +164,9 @@ describe("projectStore", () => {
         const store = useProjectStore();
         store.project.status = {
           assign: "finished",
-          microreact: "started",
-          network: "finished"
+          visualise: "started"
         } as any;
-        expect(store.analysisProgressPercentage).toBe(Math.round((2 / 3) * 100));
+        expect(store.analysisProgressPercentage).toBe(Math.round((1 / 2) * 100));
       });
     });
 
@@ -190,15 +185,15 @@ describe("projectStore", () => {
 
         const result = store.separatedStatuses;
 
-        expect(result).toEqual({ fullStatuses: {}, microreactClusters: {} });
+        expect(result).toEqual({ fullStatuses: {}, visualiseClusters: {} });
       });
 
-      it("returns separated statuses correctly when project status has fullStatuses and microreactClusters", () => {
+      it("returns separated statuses correctly when project status has fullStatuses and visualiseClusters", () => {
         const store = useProjectStore();
         store.project.status = {
           assign: "finished",
           network: "started",
-          microreactClusters: {
+          visualiseClusters: {
             cluster1: "finished",
             cluster2: "started"
           }
@@ -208,7 +203,7 @@ describe("projectStore", () => {
 
         expect(result).toEqual({
           fullStatuses: { assign: "finished", network: "started" },
-          microreactClusters: { cluster1: "finished", cluster2: "started" }
+          visualiseClusters: { cluster1: "finished", cluster2: "started" }
         });
       });
 
@@ -223,14 +218,14 @@ describe("projectStore", () => {
 
         expect(result).toEqual({
           fullStatuses: { assign: "finished", network: "started" },
-          microreactClusters: {}
+          visualiseClusters: {}
         });
       });
 
-      it("returns separated statuses correctly when project status has only microreactClusters", () => {
+      it("returns separated statuses correctly when project status has only visualiseClusters", () => {
         const store = useProjectStore();
         store.project.status = {
-          microreactClusters: {
+          visualiseClusters: {
             cluster1: "finished",
             cluster2: "started"
           }
@@ -240,7 +235,7 @@ describe("projectStore", () => {
 
         expect(result).toEqual({
           fullStatuses: {},
-          microreactClusters: { cluster1: "finished", cluster2: "started" }
+          visualiseClusters: { cluster1: "finished", cluster2: "started" }
         });
       });
     });
@@ -252,11 +247,11 @@ describe("projectStore", () => {
         store = useProjectStore();
       });
 
-      it("returns combined status values when both fullStatuses and microreactClusters are present", () => {
+      it("returns combined status values when both fullStatuses and visualiseClusters are present", () => {
         store.project.status = {
           assign: "finished",
           network: "started",
-          microreactClusters: {
+          visualiseClusters: {
             cluster1: "finished",
             cluster2: "started"
           }
@@ -267,7 +262,7 @@ describe("projectStore", () => {
         expect(result).toEqual(["finished", "started", "finished", "started"]);
       });
 
-      it("returns only fullStatuses when microreactClusters are not present", () => {
+      it("returns only fullStatuses when visualiseClusters are not present", () => {
         store.project.status = {
           assign: "finished",
           network: "started"
@@ -278,9 +273,9 @@ describe("projectStore", () => {
         expect(result).toEqual(["finished", "started"]);
       });
 
-      it("returns only microreactClusters when fullStatuses are not present", () => {
+      it("returns only visualiseClusters when fullStatuses are not present", () => {
         store.project.status = {
-          microreactClusters: {
+          visualiseClusters: {
             cluster1: "finished",
             cluster2: "started"
           }
@@ -301,48 +296,48 @@ describe("projectStore", () => {
     });
 
     describe("completeMicroreactNumerator", () => {
-      it("returns 0 when there are no microreactClusters", () => {
+      it("returns 0 when there are no visualiseClusters", () => {
         const store = useProjectStore();
         store.project.status = undefined;
 
-        expect(store.completeMicroreactNumerator).toBe(0);
+        expect(store.completeVisualiseNumerator).toBe(0);
       });
 
-      it("returns 0 when no microreactClusters are complete", () => {
+      it("returns 0 when no visualiseClusters are complete", () => {
         const store = useProjectStore();
         store.project.status = {
-          microreactClusters: {
+          visualiseClusters: {
             cluster1: "started",
             cluster2: "started"
           }
         } as any;
 
-        expect(store.completeMicroreactNumerator).toBe(0);
+        expect(store.completeVisualiseNumerator).toBe(0);
       });
 
-      it("returns the correct numerator when some microreactClusters are complete", () => {
+      it("returns the correct numerator when some visualiseClusters are complete", () => {
         const store = useProjectStore();
         store.project.status = {
-          microreactClusters: {
+          visualiseClusters: {
             cluster1: "finished",
             cluster2: "started",
             cluster3: "finished"
           }
         } as any;
 
-        expect(store.completeMicroreactNumerator).toBe(2 / 3);
+        expect(store.completeVisualiseNumerator).toBe(2 / 3);
       });
 
-      it("returns 1 when all microreactClusters are complete", () => {
+      it("returns 1 when all visualiseClusters are complete", () => {
         const store = useProjectStore();
         store.project.status = {
-          microreactClusters: {
+          visualiseClusters: {
             cluster1: "finished",
             cluster2: "finished"
           }
         } as any;
 
-        expect(store.completeMicroreactNumerator).toBe(1);
+        expect(store.completeVisualiseNumerator).toBe(1);
       });
     });
   });
@@ -575,7 +570,7 @@ describe("projectStore", () => {
       server.use(
         http.post(statusUri, () =>
           HttpResponse.json({
-            data: { assign: "finished", network: "started", microreact: "finished", microreactClusters: {} },
+            data: { assign: "finished", network: "started", microreact: "finished", visualiseClusters: {} },
             errors: [],
             status: "success"
           })
@@ -587,7 +582,7 @@ describe("projectStore", () => {
       expect(store.stopPollingStatus).not.toHaveBeenCalled();
     });
 
-    it("should not stop polling if microreactClusters status not finished", async () => {
+    it("should not stop polling if visualiseClusters status not finished", async () => {
       const store = useProjectStore();
       store.stopPollingStatus = vitest.fn();
       server.use(
@@ -597,7 +592,7 @@ describe("projectStore", () => {
               assign: "finished",
               network: "finished",
               microreact: "finished",
-              microreactClusters: { cluster1: "started" }
+              visualiseClusters: { cluster1: "started" }
             },
             errors: [],
             status: "success"
@@ -631,9 +626,8 @@ describe("projectStore", () => {
 
       expect(store.project.status).toEqual({
         assign: "failed",
-        microreact: "failed",
-        network: "failed",
-        microreactClusters: {}
+        visualise: "failed",
+        visualiseClusters: {}
       });
       expect(store.stopPollingStatus).toHaveBeenCalled();
     });
@@ -652,9 +646,8 @@ describe("projectStore", () => {
       expect(store.project.hash).toBe("test-hash");
       expect(store.project.status).toEqual({
         assign: "submitted",
-        microreact: "submitted",
-        network: "submitted",
-        microreactClusters: {}
+        visualise: "submitted",
+        visualiseClusters: {}
       });
       samples.forEach((sample) => {
         expect(sample.hasRun).toBe(true);
@@ -816,7 +809,7 @@ describe("projectStore", () => {
       expect(store.project.samples).toEqual(["sample1", "sample2", "sample3"]);
     });
     it("should set all status to failed & return true if assign is failed when processStatusAndGetPolling called", async () => {
-      const analysisStatus = { assign: "failed", network: "deferred", microreact: "waiting" } as any;
+      const analysisStatus = { assign: "failed", visualise: "deferred" } as any;
       const store = useProjectStore();
 
       const stopPolling = await store.processStatusAndGetStopPolling(analysisStatus, "waiting");
@@ -824,13 +817,12 @@ describe("projectStore", () => {
       expect(stopPolling).toBe(true);
       expect(store.project.status).toStrictEqual({
         assign: "failed",
-        network: "failed",
-        microreact: "failed",
-        microreactClusters: {}
+        visualise: "failed",
+        visualiseClusters: {}
       });
     });
     it("should call getClusterAssignResult if assign is failed when processStatusAndGetPolling called", async () => {
-      const analysisStatus = { assign: "failed", network: "deferred", microreact: "waiting" } as any;
+      const analysisStatus = { assign: "failed", visualise: "waiting" } as any;
       const store = useProjectStore();
       store.getClusterAssignResult = vitest.fn();
 

@@ -6,47 +6,44 @@ export const hasSampleFailed = (statusType: StatusTypes | undefined, cluster: st
 export const hasSamplePassed = (statusType: StatusTypes | undefined, cluster: string | undefined) =>
   statusType === "finished" && !!cluster;
 
-export const hasMicroreactClusterPassed = (
-  microreactClusterStatuses: Record<string, StatusTypes> | undefined,
+export const hasVisualiseClusterPassed = (
+  visualiseClusterstatuses: Record<string, StatusTypes> | undefined,
   cluster: string | undefined
 ): boolean => {
-  if (microreactClusterStatuses && cluster) {
-    return microreactClusterStatuses[cluster] === "finished";
+  if (visualiseClusterstatuses && cluster) {
+    return visualiseClusterstatuses[cluster] === "finished";
   }
   return false;
 };
 
-export const hasMicroreactClusterFailed = (
-  status: AnalysisStatus | undefined,
-  cluster: string | undefined
-): boolean => {
+export const hasVisualiseClusterFailed = (status: AnalysisStatus | undefined, cluster: string | undefined): boolean => {
   // occurs when this sample could not be assigned to a cluster but at least one other sample was assigned
-  if (!cluster && haveAnyMicroreactBeenQueued(status?.microreactClusters)) return true;
+  if (!cluster && haveAnyVisualiseBeenQueued(status?.visualiseClusters)) return true;
 
-  if (status?.microreact == "failed" || (cluster && status?.microreactClusters?.[cluster] === "failed")) return true;
+  if (status?.visualise == "failed" || (cluster && status?.visualiseClusters?.[cluster] === "failed")) return true;
 
   return false;
 };
 
-export const getMicroreactClusterStatus = (
+export const getVisualiseClusterStatus = (
   status: AnalysisStatus | undefined,
   cluster: string | undefined
 ): StatusTypes => {
-  if (cluster && status?.microreactClusters?.[cluster]) {
-    return status.microreactClusters[cluster];
+  if (cluster && status?.visualiseClusters?.[cluster]) {
+    return status.visualiseClusters[cluster];
   }
 
-  return status?.microreact || "waiting";
+  return status?.visualise || "waiting";
 };
 
-export const haveAnyMicroreactBeenQueued = (
-  microreactClusterStatuses: Record<string, StatusTypes> | undefined
-): boolean => {
-  return Object.keys(microreactClusterStatuses || {}).length !== 0;
-};
+export const haveAnyVisualiseBeenQueued = (
+  visualiseClusterStatuses: Record<string, StatusTypes> | undefined
+): boolean => Object.keys(visualiseClusterStatuses || {}).length !== 0;
 
-export const isAnyMicroreactFinished = (
-  microreactClusterStatuses: Record<string, StatusTypes> | undefined
-): boolean => {
-  return Object.values(microreactClusterStatuses || {}).some((status) => COMPLETE_STATUS_TYPES.includes(status));
+export const isAnyVisualiseFinished = (visualiseClusterStatuses: Record<string, StatusTypes> | undefined): boolean =>
+  Object.values(visualiseClusterStatuses || {}).some((status) => COMPLETE_STATUS_TYPES.includes(status));
+
+export const isAllVisualiseFinished = (visualiseClusterStatuses: Record<string, StatusTypes> | undefined): boolean => {
+  const statusValues = Object.values(visualiseClusterStatuses || {});
+  return statusValues.length > 0 && statusValues.every((status) => COMPLETE_STATUS_TYPES.includes(status));
 };

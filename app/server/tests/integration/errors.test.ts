@@ -61,7 +61,7 @@ describe("Error handling", () => {
             const statusRes = await post("status", {hash: fakeProjectHash}, connectionCookie);
             expect(statusRes.status).toBe(200);
             const statusValues = statusRes.data.data;
-            if (statusValues && statusValues.assign === "finished" && statusValues.microreact === "finished" && statusValues.network === "finished") {
+            if (statusValues && statusValues.assign === "finished" && statusValues.visualise === "finished") {
                 finished = true;
                 break;
             }

@@ -4,12 +4,21 @@ import { useMicroreact } from "@/composables/useMicroreact";
 import { useProjectStore } from "@/stores/projectStore";
 import { useUserStore } from "@/stores/userStore";
 import { AnalysisType } from "@/types/projectTypes";
-import { hasSampleFailed, hasSamplePassed, isAnyMicroreactFinished } from "@/utils/projectStatus";
-import { ref } from "vue";
+import {
+  getVisualiseClusterStatus,
+  hasSampleFailed,
+  hasSamplePassed,
+  hasVisualiseClusterFailed,
+  hasVisualiseClusterPassed,
+  isAnyVisualiseFinished,
+  isAllVisualiseFinished
+} from "@/utils/projectStatus";
+import { computed, ref } from "vue";
 
 const projectStore = useProjectStore();
 const userStore = useUserStore();
 const hasVisitedNetworkTab = ref(false);
+const shouldRenderNetwork = computed(() => isAllVisualiseFinished(projectStore.project.status?.visualiseClusters));
 const { closeDialog, hasMicroReactError, isMicroReactDialogVisible, saveMicroreactToken, isFetchingMicroreactUrl } =
   useMicroreact();
 
@@ -20,7 +29,7 @@ const tabChange = (num: number) => {
   }
 };
 const getMicroreactSettingsTooltip = () => {
-  if (isAnyMicroreactFinished(projectStore.project.status?.microreactClusters)) {
+  if (isAnyVisualiseFinished(projectStore.project.status?.visualiseClusters)) {
     return `${userStore.microreactToken ? "Update" : "Set"} Microreact token`;
   }
   return "Microreact settings will become available when Microreact data has been generated";
@@ -65,7 +74,10 @@ const getMicroreactSettingsTooltip = () => {
             <Column header="Network">
               <template #body="{ data }">
                 <Button
-                  v-if="!data.hasRun || hasSamplePassed(projectStore.project.status?.network, data.cluster)"
+                  v-if="
+                    !data.hasRun ||
+                    hasVisualiseClusterPassed(projectStore.project.status?.visualiseClusters, data.cluster)
+                  "
                   outlined
                   icon="pi pi-download"
                   @click="data.cluster && projectStore.downloadZip(AnalysisType.NETWORK, data.cluster)"
@@ -74,11 +86,15 @@ const getMicroreactSettingsTooltip = () => {
                   v-tooltip.top="'Download zip'"
                 />
                 <Tag
-                  v-else-if="hasSampleFailed(projectStore.project.status?.network, data.cluster)"
+                  v-else-if="hasVisualiseClusterFailed(projectStore.project.status, data.cluster)"
                   value="failed"
                   severity="danger"
                 />
-                <Tag v-else :value="projectStore.project.status?.network" severity="warning" />
+                <Tag
+                  v-else
+                  :value="getVisualiseClusterStatus(projectStore.project.status, data.cluster)"
+                  severity="warning"
+                />
               </template>
             </Column>
             <Column>
@@ -90,7 +106,7 @@ const getMicroreactSettingsTooltip = () => {
                       text
                       icon="pi pi-cog"
                       @click="isMicroReactDialogVisible = true"
-                      :disabled="!isAnyMicroreactFinished(projectStore.project.status?.microreactClusters)"
+                      :disabled="!isAnyVisualiseFinished(projectStore.project.status?.visualiseClusters)"
                       aria-label="Microreact settings"
                       size="small"
                     />
@@ -104,8 +120,8 @@ const getMicroreactSettingsTooltip = () => {
           </template>
         </ProjectDataTable>
       </TabPanel>
-      <TabPanel header="Network" :disabled="projectStore.project.status?.network !== 'finished'">
-        <NetworkTab v-if="projectStore.project.status?.network === 'finished' && hasVisitedNetworkTab" />
+      <TabPanel header="Network" :disabled="!shouldRenderNetwork">
+        <NetworkTab v-if="shouldRenderNetwork && hasVisitedNetworkTab" />
       </TabPanel>
     </TabView>
   </ProjectFileUpload>

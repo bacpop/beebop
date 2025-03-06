@@ -60,9 +60,8 @@ export const COMPLETE_STATUS_TYPES: StatusTypes[] = ["finished", "failed"] as co
 
 export interface AnalysisStatus {
   assign: StatusTypes;
-  microreact: StatusTypes;
-  network: StatusTypes;
-  microreactClusters: Record<string, StatusTypes>;
+  visualise: StatusTypes;
+  visualiseClusters: Record<string, StatusTypes>;
 }
 export interface ApiResponse<T> {
   data: T;
