@@ -3,6 +3,12 @@ import { COMPLETE_STATUS_TYPES, type AnalysisStatus, type StatusTypes } from "@/
 export const hasSampleFailed = (statusType: StatusTypes | undefined, cluster: string | undefined) =>
   statusType === "failed" || (statusType === "finished" && !cluster);
 
+export const isSamplePotentiallyNovel = (
+  statusType: StatusTypes | undefined,
+  cluster: string | undefined,
+  failedReasons: string[] | undefined
+) => hasSampleFailed(statusType, cluster) && failedReasons?.some((reason) => reason.includes("novel genotype"));
+
 export const hasSamplePassed = (statusType: StatusTypes | undefined, cluster: string | undefined) =>
   statusType === "finished" && !!cluster;
 

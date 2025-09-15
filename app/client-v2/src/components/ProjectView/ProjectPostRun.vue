@@ -11,7 +11,8 @@ import {
   hasVisualiseClusterFailed,
   hasVisualiseClusterPassed,
   isAnyVisualiseFinished,
-  isAllVisualiseFinished
+  isAllVisualiseFinished,
+  isSamplePotentiallyNovel
 } from "@/utils/projectStatus";
 import { computed, ref } from "vue";
 
@@ -59,6 +60,15 @@ const getMicroreactSettingsTooltip = () => {
                   {{ data.cluster }}
                 </span>
                 <Tag
+                  v-else-if="
+                    isSamplePotentiallyNovel(projectStore.project.status?.assign, data.cluster, data.failReasons)
+                  "
+                  v-tooltip.top="`${data.failReasons.join(', ')}`"
+                  value="not in database"
+                  icon="pi pi-info-circle"
+                  severity="warning"
+                />
+                <Tag
                   v-else-if="hasSampleFailed(projectStore.project.status?.assign, data.cluster)"
                   v-tooltip.top="
                     `${data.failReasons?.join(', ') ?? 'Unknown error. Ensure sample is valid or try again'}`
@@ -66,8 +76,8 @@ const getMicroreactSettingsTooltip = () => {
                   value="failed"
                   icon="pi pi-info-circle"
                   severity="danger"
-                >
-                </Tag>
+                />
+
                 <Tag v-else value="pending" severity="warning" />
               </template>
             </Column>
