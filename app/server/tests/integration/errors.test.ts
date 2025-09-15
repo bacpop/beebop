@@ -75,21 +75,19 @@ describe("Error handling", () => {
         // Request status for a project hash which does not exist
         const nonexistentHash = uid();
         const response = await post("status", {hash: nonexistentHash}, connectionCookie);
-        expect(response.status).toBe(500);
+        expect(response.status).toBe(404);
         const responseData = response.data;
         expect(responseData.status).toBe("failure");
         expect(responseData.data).toBe(null);
         expect(responseData.errors).toStrictEqual([
             {
-                error: "Unknown project hash",
-                detail: ""
+                error: "Resource not found",
+                detail: "Unknown project hash"
             }
         ]);
     });
 
-    it("Returns expected response for malformed API error", async () => {
-        // Send rubbish to poppunk request - API responds with a 400 response, but unfortunately an HTML one -
-        // should be logged as a 400 response and error message returned indicating malformed response
+    it("Returns expected response for bad request body schema", async () => {
         const junk = {
             projectHash: "123",
             projectId: "nonexistent",
@@ -102,12 +100,7 @@ describe("Error handling", () => {
         const responseData = response.data;
         expect(responseData.status).toBe("failure");
         expect(responseData.data).toBe(null);
-        expect(responseData.errors).toStrictEqual([
-            {
-                error: "Malformed response from API",
-                detail: "The API returned a response which could not be parsed"
-            }
-        ]);
+        expect(responseData.errors[0].error).toBe("Bad Request");
     });
 
     it("Returns error on unexpected sample when get project", async () => {
