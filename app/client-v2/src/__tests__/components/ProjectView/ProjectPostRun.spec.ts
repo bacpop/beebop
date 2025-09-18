@@ -4,6 +4,7 @@ import { useProjectStore } from "@/stores/projectStore";
 import { createTestingPinia, type TestingPinia } from "@pinia/testing";
 import userEvent from "@testing-library/user-event";
 import { render, screen, waitFor } from "@testing-library/vue";
+import { fail } from "assert";
 import PrimeVue from "primevue/config";
 import Tooltip from "primevue/tooltip";
 
@@ -245,5 +246,31 @@ describe("RunProject", () => {
     await userEvent.click(screen.getByRole("button", { name: /run analysis/i }));
 
     expect(screen.queryByText(/network graphs/i)).not.toBeInTheDocument();
+  });
+
+  it.only("should show contact tag when sample failType is warning", async () => {
+    const copyMockSample = {
+      ...structuredClone(MOCK_PROJECT_SAMPLES[0]),
+      failType: "warning",
+      failReasons: ["novel genotype detected"]
+    };
+    const { testPinia } = setupPinia({
+      samples: [copyMockSample],
+      status: {
+        assign: "failed",
+        visualise: "failed",
+        visualiseClusters: {}
+      }
+    });
+
+    renderComponent(testPinia, false);
+
+    const link = screen.getByRole("link", { name: /contact support/i });
+    expect(link).toHaveAttribute("href", "mailto:n.croucher@imperial.ac.uk");
+    await userEvent.hover(link);
+    waitFor(() => {
+      expect(screen.getByText(/novel genotype detected/i)).toBeVisible();
+    });
+    expect(screen.getByText(/unable to assign/i)).toBeVisible();
   });
 });
