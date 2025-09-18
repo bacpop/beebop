@@ -248,7 +248,7 @@ describe("RunProject", () => {
     expect(screen.queryByText(/network graphs/i)).not.toBeInTheDocument();
   });
 
-  it.only("should show contact tag when sample failType is warning", async () => {
+  it("should show contact tag when sample failType is warning", async () => {
     const copyMockSample = {
       ...structuredClone(MOCK_PROJECT_SAMPLES[0]),
       failType: "warning",
