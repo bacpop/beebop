@@ -1,13 +1,18 @@
-import { COMPLETE_STATUS_TYPES, type AnalysisStatus, type StatusTypes } from "@/types/projectTypes";
+import {
+  COMPLETE_STATUS_TYPES,
+  type AnalysisStatus,
+  type SampleFailType,
+  type StatusTypes
+} from "@/types/projectTypes";
 
 export const hasSampleFailed = (statusType: StatusTypes | undefined, cluster: string | undefined) =>
   statusType === "failed" || (statusType === "finished" && !cluster);
 
-export const isSamplePotentiallyNovel = (
+export const hasSampleFailedWithWarning = (
   statusType: StatusTypes | undefined,
   cluster: string | undefined,
-  failedReasons: string[] | undefined
-) => hasSampleFailed(statusType, cluster) && failedReasons?.some((reason) => reason.includes("novel genotype"));
+  failType: SampleFailType | undefined
+) => hasSampleFailed(statusType, cluster) && failType === "warning";
 
 export const hasSamplePassed = (statusType: StatusTypes | undefined, cluster: string | undefined) =>
   statusType === "finished" && !!cluster;

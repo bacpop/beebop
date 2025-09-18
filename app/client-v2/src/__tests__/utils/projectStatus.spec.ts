@@ -8,7 +8,7 @@ import {
   isAnyVisualiseFinished,
   haveAnyVisualiseBeenQueued,
   isAllVisualiseFinished,
-  isSamplePotentiallyNovel
+  hasSampleFailedWithWarning
 } from "@/utils/projectStatus";
 
 describe("projectStatus utilities", () => {
@@ -200,29 +200,24 @@ describe("projectStatus utilities", () => {
     });
   });
 
-  describe("isSamplePotentiallyNovel", () => {
-    test("returns true when sample has failed and failedReasons includes 'novel genotype'", () => {
-      expect(
-        isSamplePotentiallyNovel("failed", undefined, ["some other reason", "this is a novel genotype issue"])
-      ).toBeTruthy();
-      expect(isSamplePotentiallyNovel("failed", "someCluster", ["novel genotype detected"])).toBeTruthy();
-      expect(isSamplePotentiallyNovel("finished", undefined, ["novel genotype found"])).toBeTruthy();
+  describe("hasSampleFailedWithWarning", () => {
+    test('returns true when sample has failed and failType is "warning"', () => {
+      expect(hasSampleFailedWithWarning("finished", undefined, "warning")).toBeTruthy();
     });
 
-    test("returns false when sample has not failed", () => {
-      expect(isSamplePotentiallyNovel("finished", "someCluster", ["novel genotype detected"])).toBeFalsy();
-      expect(isSamplePotentiallyNovel("waiting", undefined, ["novel genotype detected"])).toBeFalsy();
+    test('returns false when sample has failed but failType is not "warning"', () => {
+      expect(hasSampleFailedWithWarning("finished", undefined, "error")).toBeFalsy();
     });
 
-    test("returns false when failedReasons does not include 'novel genotype'", () => {
-      expect(isSamplePotentiallyNovel("failed", undefined, ["some other reason"])).toBeFalsy();
-      expect(isSamplePotentiallyNovel("failed", "someCluster", ["another issue"])).toBeFalsy();
-      expect(isSamplePotentiallyNovel("finished", undefined, ["different reason"])).toBeFalsy();
+    test("returns false when sample has failed but failType is undefined", () => {
+      expect(hasSampleFailedWithWarning("failed", "someCluster", undefined)).toBeFalsy();
     });
 
-    test("returns false when failedReasons is undefined or empty", () => {
-      expect(isSamplePotentiallyNovel("failed", undefined, undefined)).toBeFalsy();
-      expect(isSamplePotentiallyNovel("failed", "someCluster", [])).toBeFalsy();
+    test('returns false when sample has not failed even if failType is "warning"', () => {
+      expect(hasSampleFailedWithWarning("finished", "someCluster", "warning")).toBeFalsy();
+    });
+    test("returns false when both sample has not failed and failType is not warning", () => {
+      expect(hasSampleFailedWithWarning("finished", "someCluster", "error")).toBeFalsy();
     });
   });
 });
