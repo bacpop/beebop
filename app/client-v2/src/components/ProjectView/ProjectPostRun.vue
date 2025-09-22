@@ -72,7 +72,7 @@ const getMicroreactSettingsTooltip = () => {
                   <div class="flex flex-column">
                     <span>unable to assign</span>
                     <a
-                      href="mailto:n.croucher@imperial.ac.uk"
+                      href="mailto:gps@pneumogen.net"
                       class="text-blue-500 font-normal no-underline hover:underline"
                       target="_blank"
                       rel="noopener noreferrer"
