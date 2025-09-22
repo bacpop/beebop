@@ -7,7 +7,8 @@ import {
   hasSamplePassed,
   isAnyVisualiseFinished,
   haveAnyVisualiseBeenQueued,
-  isAllVisualiseFinished
+  isAllVisualiseFinished,
+  hasSampleFailedWithWarning
 } from "@/utils/projectStatus";
 
 describe("projectStatus utilities", () => {
@@ -196,6 +197,27 @@ describe("projectStatus utilities", () => {
 
     test("returns false when visualiseClusterStatuses is undefined", () => {
       expect(isAllVisualiseFinished(undefined)).toBeFalsy();
+    });
+  });
+
+  describe("hasSampleFailedWithWarning", () => {
+    test('returns true when sample has failed and failType is "warning"', () => {
+      expect(hasSampleFailedWithWarning("finished", undefined, "warning")).toBeTruthy();
+    });
+
+    test('returns false when sample has failed but failType is not "warning"', () => {
+      expect(hasSampleFailedWithWarning("finished", undefined, "error")).toBeFalsy();
+    });
+
+    test("returns false when sample has failed but failType is undefined", () => {
+      expect(hasSampleFailedWithWarning("failed", "someCluster", undefined)).toBeFalsy();
+    });
+
+    test('returns false when sample has not failed even if failType is "warning"', () => {
+      expect(hasSampleFailedWithWarning("finished", "someCluster", "warning")).toBeFalsy();
+    });
+    test("returns false when both sample has not failed and failType is not warning", () => {
+      expect(hasSampleFailedWithWarning("finished", "someCluster", "error")).toBeFalsy();
     });
   });
 });

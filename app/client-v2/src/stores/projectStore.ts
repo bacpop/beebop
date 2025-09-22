@@ -248,6 +248,7 @@ export const useProjectStore = defineStore("project", {
           if (matchedHashIndex !== -1) {
             this.project.samples[matchedHashIndex].cluster = clusterInfo.cluster;
             this.project.samples[matchedHashIndex].failReasons = clusterInfo.failReasons;
+            this.project.samples[matchedHashIndex].failType = clusterInfo.failType;
           }
         });
       } catch (error) {

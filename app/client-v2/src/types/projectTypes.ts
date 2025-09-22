@@ -34,6 +34,9 @@ export interface AMRForCsv {
 export interface AMRMetadataCsv extends AMRForCsv {
   ID: string;
 }
+
+export type SampleFailType = "error" | "warning";
+
 export interface ProjectSample {
   hash: string;
   filename: string;
@@ -41,6 +44,7 @@ export interface ProjectSample {
   sketch?: Record<string, unknown>;
   cluster?: string;
   failReasons?: string[];
+  failType?: SampleFailType;
   hasRun?: boolean;
 }
 
@@ -72,6 +76,7 @@ export interface ApiResponse<T> {
 export interface ClusterInfo {
   cluster?: string;
   failReasons?: string[];
+  failType?: SampleFailType;
   hash: string;
 }
 

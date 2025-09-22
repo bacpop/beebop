@@ -518,14 +518,15 @@ describe("projectStore", () => {
         expect(sample.cluster).toBeUndefined();
       });
     });
-    it("should set failReasons if present when getClusterAssignResult is called", async () => {
+    it("should set failReasons & failType if present when getClusterAssignResult is called", async () => {
       server.use(
         http.post(assignResultUri, () =>
           HttpResponse.json({
             data: {
               sample1: {
                 hash: "sample1",
-                failReasons: ["length too short", "failed distance qc"]
+                failReasons: ["length too short", "failed distance qc"],
+                failType: "warning"
               }
             },
             errors: [],
@@ -539,6 +540,7 @@ describe("projectStore", () => {
       await store.getClusterAssignResult();
 
       expect(store.project.samples[0].failReasons).toStrictEqual(["length too short", "failed distance qc"]);
+      expect(store.project.samples[0].failType).toBe("warning");
     });
     it("should stop polling if status request returns complete status & sets stores analysisStatus", async () => {
       const store = useProjectStore();
