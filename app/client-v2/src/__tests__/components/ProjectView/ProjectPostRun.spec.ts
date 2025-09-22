@@ -266,7 +266,7 @@ describe("RunProject", () => {
     renderComponent(testPinia, false);
 
     const link = screen.getByRole("link", { name: /contact support/i });
-    expect(link).toHaveAttribute("href", "mailto:n.croucher@imperial.ac.uk");
+    expect(link).toHaveAttribute("href", "mailto:gps@pneumogen.net");
     await userEvent.hover(link);
     waitFor(() => {
       expect(screen.getByText(/novel genotype detected/i)).toBeVisible();
