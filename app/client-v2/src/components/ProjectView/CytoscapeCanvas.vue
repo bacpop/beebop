@@ -29,14 +29,14 @@ onMounted(async () => {
         style: {
           width: "10px",
           height: "10px",
-          content: "data(key2)",
+          content: "data(key0)",
           "font-size": "7px",
           color: "#00CC66",
           "background-color": "rgba(45, 212, 191, 0.44)"
         }
       },
       {
-        selector: 'node[key3 = "query"]',
+        selector: 'node[key1 = "query"]',
         style: {
           "background-color": "crimson",
           color: "crimson"
@@ -59,6 +59,7 @@ onMounted(async () => {
     (cy as CyGraphml).graphml({ layoutBy: "cose" });
     (cy as CyGraphml).graphml(props.graph);
     cystoscapeObj.value = cy;
+    console.log(cy);
   });
 });
 </script>
