@@ -59,7 +59,6 @@ onMounted(async () => {
     (cy as CyGraphml).graphml({ layoutBy: "cose" });
     (cy as CyGraphml).graphml(props.graph);
     cystoscapeObj.value = cy;
-    console.log(cy);
   });
 });
 </script>
