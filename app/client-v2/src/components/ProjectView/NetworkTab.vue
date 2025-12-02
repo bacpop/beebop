@@ -3,7 +3,7 @@ import { getApiUrl } from "@/config";
 import { useProjectStore } from "@/stores/projectStore";
 import type { ApiResponse } from "@/types/projectTypes";
 import { useFetch } from "@vueuse/core";
-import NetworkGraph from "./NetworkGraph.vue";
+import NetworkGraphs from "./NetworkGraphs.vue";
 
 const apiUrl = getApiUrl();
 const store = useProjectStore();
@@ -20,18 +20,6 @@ const { data, error, isFetching } = useFetch(`${apiUrl}/networkGraphs/${store.pr
     <ProgressSpinner strokeWidth="8" class="w-4rem h-4rem" animationDuration=".5s" />
   </div>
   <div v-else-if="data?.data">
-    <InlineMessage severity="info" class="mb-2"
-      >These graphs are pruned versions of the full graphs. To view full graphs, download the zip file and view the
-      .graphml externally.</InlineMessage
-    >
-    <InlineMessage severity="info" class="mb-2"
-      >View in fullscreen, reset layout or use mouse, touchpad or touchscreen gestures on graphs to zoom in and out, or
-      move nodes around.</InlineMessage
-    >
-    <div class="grid">
-      <div v-for="(value, key) in data.data" :key="key" class="col">
-        <NetworkGraph :cluster="key" :graph="value" />
-      </div>
-    </div>
+    <NetworkGraphs :networkGraphs="data.data" />
   </div>
 </template>

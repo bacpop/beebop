@@ -5,10 +5,12 @@ import graphml from "cytoscape-graphml";
 import jquery from "jquery";
 import type { CyGraphml } from "@/types/projectTypes";
 import { onMounted, ref } from "vue";
+import type { GraphMLKeys } from "@/utils/graph";
 
 const props = defineProps<{
   graph: string;
   cluster: string;
+  graphMLKeys: GraphMLKeys;
   isFullScreen?: boolean;
 }>();
 defineEmits<{
@@ -29,14 +31,14 @@ onMounted(async () => {
         style: {
           width: "10px",
           height: "10px",
-          content: "data(key0)",
+          content: `data(${props.graphMLKeys.nodeNameKey})`,
           "font-size": "7px",
           color: "#00CC66",
           "background-color": "rgba(45, 212, 191, 0.44)"
         }
       },
       {
-        selector: 'node[key1 = "query"]',
+        selector: `node[${props.graphMLKeys.nodeTypeKey} = "query"]`, // key1 is type of the sample
         style: {
           "background-color": "crimson",
           color: "crimson"
