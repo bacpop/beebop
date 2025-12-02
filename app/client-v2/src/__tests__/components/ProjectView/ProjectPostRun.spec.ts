@@ -4,7 +4,6 @@ import { useProjectStore } from "@/stores/projectStore";
 import { createTestingPinia, type TestingPinia } from "@pinia/testing";
 import userEvent from "@testing-library/user-event";
 import { render, screen, waitFor } from "@testing-library/vue";
-import { fail } from "assert";
 import PrimeVue from "primevue/config";
 import Tooltip from "primevue/tooltip";
 
