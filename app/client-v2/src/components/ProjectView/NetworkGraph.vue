@@ -13,7 +13,7 @@ const fullScreenVisible = ref(false);
 
 <template>
   <Sidebar v-model:visible="fullScreenVisible" :header="`Cluster: ${cluster}`" position="full">
-    <CytoscapeCanvas :graph="graph" :cluster="cluster" isFullScreen />
+    <CytoscapeCanvas :graph="graph" :cluster="cluster" isFullScreen :graphMLKeys="graphMLKeys" />
   </Sidebar>
   <div class="cytoscape-graph">
     <CytoscapeCanvas
