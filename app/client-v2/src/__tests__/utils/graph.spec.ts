@@ -46,4 +46,14 @@ describe("extractGraphMLKeys", () => {
     const result = extractGraphMLKeys(graphML);
     expect(result).toEqual({ nodeNameKey: "key0", nodeTypeKey: "key1" });
   });
+
+  it("should return default for missing key when only one attr.name is found", () => {
+    const graphML = `
+    <graphml>
+      <key id="key2" for="node" attr.name="id" attr.type="string"/>
+    </graphml>
+  `;
+    const result = extractGraphMLKeys(graphML);
+    expect(result).toEqual({ nodeNameKey: "key2", nodeTypeKey: "key1" });
+  });
 });

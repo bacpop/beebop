@@ -38,7 +38,7 @@ onMounted(async () => {
         }
       },
       {
-        selector: `node[${props.graphMLKeys.nodeTypeKey} = "query"]`, // key1 is type of the sample
+        selector: `node[${props.graphMLKeys.nodeTypeKey} = "query"]`,
         style: {
           "background-color": "crimson",
           color: "crimson"
