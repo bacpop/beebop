@@ -25,6 +25,7 @@ declare module 'vue' {
     MicroReactColumn: typeof import('./src/components/ProjectView/MicroReactColumn.vue')['default']
     MicroReactTokenDialog: typeof import('./src/components/ProjectView/MicroReactTokenDialog.vue')['default']
     NetworkGraph: typeof import('./src/components/ProjectView/NetworkGraph.vue')['default']
+    NetworkGraphs: typeof import('./src/components/ProjectView/NetworkGraphs.vue')['default']
     NetworkTab: typeof import('./src/components/ProjectView/NetworkTab.vue')['default']
     ProgressBar: typeof import('primevue/progressbar')['default']
     ProgressSpinner: typeof import('primevue/progressspinner')['default']

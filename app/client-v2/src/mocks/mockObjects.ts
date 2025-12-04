@@ -1,5 +1,6 @@
 import type { SketchKmerArguments } from "@/stores/speciesStore";
 import type { Project, ProjectOverview, ProjectSample } from "@/types/projectTypes";
+import type { GraphMLKeys } from "@/utils/graph";
 
 export const MOCK_USER = {
   id: "1",
@@ -140,20 +141,26 @@ export const MOCK_PROJECT: Project = {
 };
 
 export const MOCK_NETWORK_GRAPH = `<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
-<key id="key0" for="node" attr.name="id" attr.type="string" />
+<key id="key5" for="node" attr.name="id" attr.type="string" />
+<key id="key6" for="node" attr.name="ref_query" attr.type="string" />
+
 <graph id="G" edgedefault="undirected" parse.nodeids="canonical" parse.edgeids="canonical" parse.order="nodesfirst">
   <node id="n0">
-    <data key="key0">24775_1#252</data>
-    <data key="ref_query">ref</data>
+    <data key="key5">24775_1#252</data>
+    <data key="key6">ref</data>
   </node>
   <node id="n1">
-    <data key="key0">S_pneumoniae_ASP0581_GCF_003967155_2.fa</data>
-    <data key="ref_query">query</data>
+    <data key="key5">S_pneumoniae_ASP0581_GCF_003967155_2.fa</data>
+    <data key="key6">query</data>
   </node>
   <edge id="e0" source="n0" target="n1">
   </edge>
 </graph>
 </graphml>`;
+export const MOCK_GRAPHML_KEYS: GraphMLKeys = {
+  nodeNameKey: "key5",
+  nodeTypeKey: "key6"
+};
 export const MOCK_CLUSTER_GRAPH_DICT: Record<string, string> = {
   GPSC1: "graph1",
   GPSC2: "graph2",

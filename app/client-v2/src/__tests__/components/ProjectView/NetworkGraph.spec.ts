@@ -11,7 +11,8 @@ describe("NetworkGraph", () => {
     render(NetworkGraph, {
       props: {
         graph: "test-graph",
-        cluster: "test-cluster"
+        cluster: "test-cluster",
+        graphMLKeys: { nodeNameKey: "key1", nodeTypeKey: "key2" }
       },
       global: {
         plugins: [PrimeVue],

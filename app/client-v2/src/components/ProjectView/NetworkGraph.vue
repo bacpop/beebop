@@ -1,20 +1,27 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import CytoscapeCanvas from "./CytoscapeCanvas.vue";
-const props = defineProps<{
+import type { GraphMLKeys } from "@/utils/graph";
+defineProps<{
   graph: string;
   cluster: string;
+  graphMLKeys: GraphMLKeys;
 }>();
 
 const fullScreenVisible = ref(false);
 </script>
 
 <template>
-  <Sidebar v-model:visible="fullScreenVisible" :header="`Cluster: ${props.cluster}`" position="full">
-    <CytoscapeCanvas :graph="props.graph" :cluster="props.cluster" isFullScreen />
+  <Sidebar v-model:visible="fullScreenVisible" :header="`Cluster: ${cluster}`" position="full">
+    <CytoscapeCanvas :graph="graph" :cluster="cluster" isFullScreen :graphMLKeys="graphMLKeys" />
   </Sidebar>
   <div class="cytoscape-graph">
-    <CytoscapeCanvas :cluster="props.cluster" :graph="props.graph" @onFullScreen="fullScreenVisible = true" />
+    <CytoscapeCanvas
+      :cluster="cluster"
+      :graph="graph"
+      @onFullScreen="fullScreenVisible = true"
+      :graphMLKeys="graphMLKeys"
+    />
   </div>
 </template>
 

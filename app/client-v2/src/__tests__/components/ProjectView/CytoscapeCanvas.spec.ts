@@ -1,5 +1,5 @@
 import CytoscapeCanvas from "@/components/ProjectView/CytoscapeCanvas.vue";
-import { MOCK_NETWORK_GRAPH } from "@/mocks/mockObjects";
+import { MOCK_GRAPHML_KEYS, MOCK_NETWORK_GRAPH } from "@/mocks/mockObjects";
 import userEvent from "@testing-library/user-event";
 import { render, screen } from "@testing-library/vue";
 import Tooltip from "primevue/tooltip";
@@ -15,6 +15,7 @@ describe("CytoscapeCanvas", () => {
     const { container } = render(CytoscapeCanvas, {
       props: {
         graph: MOCK_NETWORK_GRAPH,
+        graphMLKeys: MOCK_GRAPHML_KEYS,
         cluster: "test-cluster"
       },
       global: {
@@ -37,6 +38,7 @@ describe("CytoscapeCanvas", () => {
     const { emitted } = render(CytoscapeCanvas, {
       props: {
         graph: MOCK_NETWORK_GRAPH,
+        graphMLKeys: MOCK_GRAPHML_KEYS,
         cluster: "test-cluster"
       },
       global: {
@@ -55,6 +57,7 @@ describe("CytoscapeCanvas", () => {
     render(CytoscapeCanvas, {
       props: {
         graph: MOCK_NETWORK_GRAPH,
+        graphMLKeys: MOCK_GRAPHML_KEYS,
         cluster: "test-cluster",
         isFullScreen: true
       },
