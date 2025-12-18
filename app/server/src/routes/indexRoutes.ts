@@ -27,6 +27,9 @@ export default {
         app.post('/assignResult',
             authCheck,
             controller.getAssignResult);
+        app.post('/sublineageAssignResult',
+            authCheck,
+            controller.getSublineageAssignResult);
         app.post('/downloadZip',
             controller.downloadZip);
         app.post('/microreactURL',

@@ -2,7 +2,8 @@ import {
   COMPLETE_STATUS_TYPES,
   type AnalysisStatus,
   type SampleFailType,
-  type StatusTypes
+  type StatusTypes,
+  type Sublineage
 } from "@/types/projectTypes";
 
 export const hasSampleFailed = (statusType: StatusTypes | undefined, cluster: string | undefined) =>
@@ -15,7 +16,7 @@ export const hasSampleFailedWithWarning = (
 ) => hasSampleFailed(statusType, cluster) && failType === "warning";
 
 export const hasSamplePassed = (statusType: StatusTypes | undefined, cluster: string | undefined) =>
-  statusType === "finished" && !!cluster;
+  statusType === "finished" && Boolean(cluster);
 
 export const hasVisualiseClusterPassed = (
   visualiseClusterstatuses: Record<string, StatusTypes> | undefined,
@@ -58,3 +59,8 @@ export const isAllVisualiseFinished = (visualiseClusterStatuses: Record<string, 
   const statusValues = Object.values(visualiseClusterStatuses || {});
   return statusValues.length > 0 && statusValues.every((status) => COMPLETE_STATUS_TYPES.includes(status));
 };
+
+export const isSublineageUnavailable = (
+  status: AnalysisStatus | undefined,
+  sublineage: Sublineage | undefined
+): boolean => status?.sublineage_assign === "finished" && !sublineage;

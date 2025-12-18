@@ -2,6 +2,7 @@
 import ProjectDataTable from "@/components/ProjectView/ProjectDataTable.vue";
 import { useMicroreact } from "@/composables/useMicroreact";
 import { useProjectStore } from "@/stores/projectStore";
+import { useSpeciesStore } from "@/stores/speciesStore";
 import { useUserStore } from "@/stores/userStore";
 import { AnalysisType } from "@/types/projectTypes";
 import {
@@ -12,7 +13,8 @@ import {
   hasVisualiseClusterPassed,
   isAnyVisualiseFinished,
   isAllVisualiseFinished,
-  hasSampleFailedWithWarning
+  hasSampleFailedWithWarning,
+  isSublineageUnavailable
 } from "@/utils/projectStatus";
 import { computed, ref } from "vue";
 
@@ -22,7 +24,7 @@ const hasVisitedNetworkTab = ref(false);
 const shouldRenderNetwork = computed(() => isAllVisualiseFinished(projectStore.project.status?.visualiseClusters));
 const { closeDialog, hasMicroReactError, isMicroReactDialogVisible, saveMicroreactToken, isFetchingMicroreactUrl } =
   useMicroreact();
-
+const speciesStore = useSpeciesStore();
 // cache network graphs render after visiting it once
 const tabChange = (num: number) => {
   if (num == 1 && !hasVisitedNetworkTab.value) {
@@ -91,6 +93,37 @@ const getMicroreactSettingsTooltip = () => {
                 />
 
                 <Tag v-else value="pending" severity="warning" />
+              </template>
+            </Column>
+            <Column v-if="speciesStore.canAssignSublineages(projectStore.project.species)">
+              <template #header>
+                <div class="flex flex-column gap-1">
+                  <span>Sublineage</span>
+                  <small class="text-xs text-color-secondary font-medium">Rank 5 • 10 • 25 • 50</small>
+                </div>
+              </template>
+              <template #body="{ data }">
+                <div
+                  v-if="
+                    data.sublineage && hasSamplePassed(projectStore.project.status?.sublineage_assign, data.cluster)
+                  "
+                >
+                  {{ data.sublineage.Rank_5_Lineage }} • {{ data.sublineage.Rank_10_Lineage }} •
+                  {{ data.sublineage.Rank_25_Lineage }} •
+                  {{ data.sublineage.Rank_50_Lineage }}
+                </div>
+                <div v-else-if="!data.hasRun">
+                  <em v-if="!data.cluster">not run</em>
+                </div>
+                <Tag
+                  v-else-if="hasSampleFailed(projectStore.project.status?.sublineage_assign, data.cluster)"
+                  value="failed"
+                  severity="danger"
+                />
+                <div v-else-if="isSublineageUnavailable(projectStore.project.status, data.sublineage)">
+                  <Tag value="unavailable" severity="secondary" icon="pi pi-minus-circle" />
+                </div>
+                <Tag v-else :value="projectStore.project.status?.sublineage_assign" severity="warning" />
               </template>
             </Column>
             <Column header="Network">

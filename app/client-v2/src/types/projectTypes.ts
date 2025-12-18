@@ -37,6 +37,12 @@ export interface AMRMetadataCsv extends AMRForCsv {
 
 export type SampleFailType = "error" | "warning";
 
+export interface Sublineage {
+  Rank_5_Lineage: string;
+  Rank_10_Lineage: string;
+  Rank_25_Lineage: string;
+  Rank_50_Lineage: string;
+}
 export interface ProjectSample {
   hash: string;
   filename: string;
@@ -46,6 +52,7 @@ export interface ProjectSample {
   failReasons?: string[];
   failType?: SampleFailType;
   hasRun?: boolean;
+  sublineage?: Sublineage;
 }
 
 export interface Project {
@@ -66,6 +73,7 @@ export interface AnalysisStatus {
   assign: StatusTypes;
   visualise: StatusTypes;
   visualiseClusters: Record<string, StatusTypes>;
+  sublineage_assign?: StatusTypes;
 }
 export interface ApiResponse<T> {
   data: T;

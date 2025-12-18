@@ -11,6 +11,7 @@ import {
   type Project,
   type ProjectSample,
   type StatusTypes,
+  type Sublineage,
   type WorkerResponse
 } from "@/types/projectTypes";
 import { mande } from "mande";
@@ -67,12 +68,16 @@ export const useProjectStore = defineStore("project", {
     },
     analysisProgressPercentage(): number {
       const {
-        fullStatuses: { assign }
+        fullStatuses: { assign, sublineage_assign }
       } = this.separatedStatuses;
 
       const isAssignComplete = Number(COMPLETE_STATUS_TYPES.includes(assign as StatusTypes));
+      const isSublineageAssignComplete = Number(COMPLETE_STATUS_TYPES.includes(sublineage_assign as StatusTypes));
       return this.numOfFullStatus
-        ? Math.round(((isAssignComplete + this.completeVisualiseNumerator) / this.numOfFullStatus) * 100)
+        ? Math.round(
+            ((isAssignComplete + isSublineageAssignComplete + this.completeVisualiseNumerator) / this.numOfFullStatus) *
+              100
+          )
         : 0;
     },
     firstAssignedCluster(state): string | undefined {
@@ -201,11 +206,10 @@ export const useProjectStore = defineStore("project", {
     },
 
     async getAnalysisStatus() {
-      const prevClusterAssign = this.project.status?.assign;
       let stopPolling = false;
       try {
         const statusRes = await baseApi.post<ApiResponse<AnalysisStatus>>("/status", { hash: this.project.hash });
-        stopPolling = await this.processStatusAndGetStopPolling(statusRes.data, prevClusterAssign);
+        stopPolling = await this.processStatusAndGetStopPolling(statusRes.data, this.project.status);
       } catch (error) {
         this.toast.showErrorToast("Error fetching analysis status. Try refreshing the page, or create a new project.");
         console.error(error);
@@ -218,20 +222,53 @@ export const useProjectStore = defineStore("project", {
     },
     async processStatusAndGetStopPolling(
       data: AnalysisStatus,
-      prevClusterAssign: StatusTypes | undefined
+      prevStatus: AnalysisStatus | undefined
     ): Promise<boolean> {
-      const { assign, visualise, visualiseClusters } = data;
+      const { assign, visualise, visualiseClusters, sublineage_assign } = data;
       this.project.status = data;
 
-      if (COMPLETE_STATUS_TYPES.includes(assign) && prevClusterAssign !== "finished") {
+      if (COMPLETE_STATUS_TYPES.includes(assign) && prevStatus?.assign !== "finished") {
         await this.getClusterAssignResult();
       }
+
       if (assign === "failed") {
-        this.project.status = { assign: "failed", visualise: "failed", visualiseClusters: {} };
+        this.project.status = {
+          assign: "failed",
+          visualise: "failed",
+          sublineage_assign: "failed",
+          visualiseClusters: {}
+        };
         return true;
       }
 
+      if (
+        COMPLETE_STATUS_TYPES.includes(sublineage_assign as StatusTypes) &&
+        COMPLETE_STATUS_TYPES.includes(prevStatus?.sublineage_assign as StatusTypes) === false
+      ) {
+        await this.getSublineageAssignResult();
+      }
+
       return [visualise, ...Object.values(visualiseClusters)].every((status) => COMPLETE_STATUS_TYPES.includes(status));
+    },
+    async getSublineageAssignResult() {
+      const speciesStore = useSpeciesStore();
+      if (!speciesStore.canAssignSublineages(this.project.species)) {
+        return;
+      }
+      try {
+        const sublineagesRes = await baseApi.post<ApiResponse<Record<string, Sublineage>>>("/sublineageAssignResult", {
+          projectHash: this.project.hash
+        });
+
+        Object.entries(sublineagesRes.data).forEach(([hash, sublineage]) => {
+          const matchedHashIndex = this.project.samples.findIndex((sample) => hash === sample.hash);
+          if (matchedHashIndex !== -1) {
+            this.project.samples[matchedHashIndex].sublineage = sublineage;
+          }
+        });
+      } catch (error) {
+        console.error(error);
+      }
     },
 
     async getClusterAssignResult() {
@@ -275,10 +312,12 @@ export const useProjectStore = defineStore("project", {
     },
 
     async runAnalysis() {
+      const speciesStore = useSpeciesStore();
       this.project.status = {
         assign: "submitted",
         visualise: "submitted",
-        visualiseClusters: {}
+        visualiseClusters: {},
+        ...(speciesStore.canAssignSublineages(this.project.species) && { sublineage_assign: "submitted" })
       };
       this.project.samples.forEach((sample: ProjectSample) => (sample.hasRun = true));
       const body = this.buildRunAnalysisPostBody();

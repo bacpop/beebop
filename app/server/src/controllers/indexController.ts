@@ -54,6 +54,19 @@ export default (config) => {
                     handleAPIError(request, response, error);
                 });
         },
+        async getSublineageAssignResult(request, response) {
+            await axios.post(`${config.api_url}/results/sublineage_assign`,
+                request.body,
+                {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(res => response.send(res.data))
+                .catch(function (error) {
+                    handleAPIError(request, response, error);
+                });
+        },
 
         async downloadGraphml (request, response) {
             await axios.post(`${config.api_url}/results/graphml`,
