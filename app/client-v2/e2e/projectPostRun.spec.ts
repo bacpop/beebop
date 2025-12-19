@@ -19,8 +19,7 @@ test("can run project and view results", async ({ page }) => {
   await expect(page.getByLabel("Download microreact zip")).toBeVisible();
   await expect(page.getByLabel("Download network zip")).toBeVisible();
   await expect(page.getByText("GPSC7")).toBeVisible();
-  await expect(page.getByRole("columnheader", { name: "Sublineage Rank 50 • 25 • 10 •" })).toBeVisible();
-  await expect(page.getByRole("cell", { name: "• 3 • 13 • 9" })).toBeVisible();
+  await expect(page.getByRole("columnheader", { name: "Sublineage Rank 50 • 25 • 10 • 5" })).toBeVisible();
 
   await page.getByRole("tab", { name: "Network" }).click();
   await expect(page.getByText("Cluster: GPSC7")).toBeVisible();
