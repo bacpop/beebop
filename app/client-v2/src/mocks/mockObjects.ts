@@ -1,4 +1,3 @@
-import { handlers } from "./handlers";
 import type { SpeciesConfig } from "@/stores/speciesStore";
 import type { Project, ProjectOverview, ProjectSample } from "@/types/projectTypes";
 import type { GraphMLKeys } from "@/utils/graph";
@@ -71,7 +70,13 @@ export const MOCK_PROJECT_SAMPLES: ProjectSample[] = [
       md5: "sample1-md5"
     },
     cluster: "GPSC1",
-    hasRun: true
+    hasRun: true,
+    sublineage: {
+      Rank_5_Lineage: 2,
+      Rank_10_Lineage: 5,
+      Rank_25_Lineage: 12,
+      Rank_50_Lineage: 25
+    }
   },
   {
     hash: "sample2-test-hash",
@@ -88,7 +93,13 @@ export const MOCK_PROJECT_SAMPLES: ProjectSample[] = [
     },
     sketch: { filename: "sample2.fasta", md5: "sample2-md5" },
     cluster: "GPSC2",
-    hasRun: true
+    hasRun: true,
+    sublineage: {
+      Rank_5_Lineage: 1,
+      Rank_10_Lineage: 3,
+      Rank_25_Lineage: 8,
+      Rank_50_Lineage: 20
+    }
   },
   {
     hash: "sample3-test-hash",

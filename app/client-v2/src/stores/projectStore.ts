@@ -226,7 +226,6 @@ export const useProjectStore = defineStore("project", {
     ): Promise<boolean> {
       const { assign, visualise, visualiseClusters, sublineage_assign } = data;
       this.project.status = data;
-
       if (COMPLETE_STATUS_TYPES.includes(assign) && prevStatus?.assign !== "finished") {
         await this.getClusterAssignResult();
       }

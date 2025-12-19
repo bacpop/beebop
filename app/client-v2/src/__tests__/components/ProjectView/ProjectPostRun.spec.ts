@@ -1,6 +1,12 @@
 import ProjectPostRun from "@/components/ProjectView/ProjectPostRun.vue";
-import { MOCK_PROJECT_SAMPLES, MOCK_PROJECT_SAMPLES_BEFORE_RUN } from "@/mocks/mockObjects";
+import {
+  MOCK_PROJECT_SAMPLES,
+  MOCK_PROJECT_SAMPLES_BEFORE_RUN,
+  MOCK_SPECIES,
+  MOCK_SPECIES_CONFIG
+} from "@/mocks/mockObjects";
 import { useProjectStore } from "@/stores/projectStore";
+import { useSpeciesStore } from "@/stores/speciesStore";
 import { createTestingPinia, type TestingPinia } from "@pinia/testing";
 import userEvent from "@testing-library/user-event";
 import { render, screen, waitFor } from "@testing-library/vue";
@@ -31,13 +37,17 @@ const renderComponent = (testPinia: TestingPinia, shouldStubTable = true) =>
       }
     }
   });
-const setupPinia = (storeState: Record<string, unknown>) => {
-  const testPinia = createTestingPinia();
-  const store = useProjectStore();
-  store.project = storeState as any;
 
-  return { testPinia, store };
+const setupPinia = (projectStoreState: Record<string, unknown>) => {
+  const testPinia = createTestingPinia();
+  const projectStore = useProjectStore();
+  const speciesStore = useSpeciesStore();
+  projectStore.project = projectStoreState as any;
+  speciesStore.speciesConfig = MOCK_SPECIES_CONFIG;
+
+  return { testPinia, projectStore };
 };
+
 describe("RunProject", () => {
   it("should display correct content for tabs when switching", async () => {
     const { testPinia } = setupPinia({
@@ -62,7 +72,7 @@ describe("RunProject", () => {
   });
 
   it("should enable network tab when all visualise finished", async () => {
-    const { testPinia, store } = setupPinia({
+    const { testPinia, projectStore } = setupPinia({
       samples: MOCK_PROJECT_SAMPLES
     });
     renderComponent(testPinia);
@@ -71,7 +81,7 @@ describe("RunProject", () => {
 
     expect(tabPanel).toHaveAttribute("aria-disabled", "true");
 
-    store.project.status = {
+    projectStore.project.status = {
       visualiseClusters: {
         GPSC1: "finished"
       }
@@ -97,6 +107,18 @@ describe("RunProject", () => {
     MOCK_PROJECT_SAMPLES.forEach((sample) => {
       expect(screen.getByText(sample.cluster!)).toBeVisible();
     });
+  });
+
+  it("should render sublineage column if species supports sublineages", async () => {
+    const { testPinia } = setupPinia({
+      samples: MOCK_PROJECT_SAMPLES,
+      species: MOCK_SPECIES[0]
+    });
+
+    renderComponent(testPinia, false);
+
+    expect(screen.getByRole("columnheader", { name: /sublineage/i })).toBeVisible();
+    expect(screen.getByText(/Rank 50 • 25 • 10 • 5/i)).toBeVisible();
   });
 
   it("should render pending for cluster cells if no cluster assigned and sample hasRun", async () => {

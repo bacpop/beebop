@@ -41,6 +41,33 @@ describe("SpeciesStore", () => {
 
       expect(result).toBeUndefined();
     });
+
+    it("should return correct SpeciesConfig when getSpeciesConfig is called", () => {
+      const store = useSpeciesStore();
+      store.speciesConfig = MOCK_SPECIES_CONFIG;
+
+      const result = store.getSpeciesConfig("Streptococcus pneumoniae");
+
+      expect(result).toEqual(MOCK_SPECIES_CONFIG["Streptococcus pneumoniae"]);
+    });
+
+    it("should return false when canAssignSublineages is called with a species that has no sublineages", () => {
+      const store = useSpeciesStore();
+      store.speciesConfig = MOCK_SPECIES_CONFIG;
+
+      const result = store.canAssignSublineages("test species2");
+
+      expect(result).toBe(false);
+    });
+
+    it("should return true when canAssignSublineages is called with a species that has sublineages", () => {
+      const store = useSpeciesStore();
+      store.speciesConfig = MOCK_SPECIES_CONFIG;
+
+      const result = store.canAssignSublineages("test species1");
+
+      expect(result).toBe(true);
+    });
   });
   describe("actions", () => {
     it("should set speciesConfig from api when setSpeciesConfig is called", async () => {

@@ -22,8 +22,7 @@ vitest.mock("@/composables/useMicroreact", () => ({
   useMicroreact: () => mockUseMicroreact
 }));
 const renderComponent = (
-  microreactStatus: string | null = "finished",
-  visualiseClusterstatuses: Record<string, unknown> = { GPSC1: "finished" },
+  visualiseClusterStatuses: Record<string, unknown> = { GPSC1: "finished" },
   cluster: string | null = "GPSC1",
   hasRun = true
 ) =>
@@ -40,7 +39,7 @@ const renderComponent = (
           initialState: {
             project: {
               project: {
-                status: { microreact: microreactStatus, visualiseClusters: visualiseClusterstatuses }
+                status: { visualiseClusters: visualiseClusterStatuses }
               }
             }
           }
@@ -68,7 +67,7 @@ describe("MicroReactColumn", () => {
   });
 
   it("should disable download and visit buttons if sample not ran and no cluster", async () => {
-    renderComponent(undefined, undefined, null, false);
+    renderComponent(undefined, null, false);
 
     const downloadButton = screen.getByRole("button", { name: /Download/ });
     const visitButton = screen.getByRole("button", { name: /Visit/ });
@@ -77,19 +76,19 @@ describe("MicroReactColumn", () => {
   });
 
   it("should render failed tag if status is failed", () => {
-    renderComponent(undefined, { GPSC1: "failed" });
+    renderComponent({ GPSC1: "failed" });
 
     expect(screen.getByText(/failed/i)).toBeInTheDocument();
   });
 
   it("should render status tag if status is not finished or failed", () => {
-    renderComponent("deferred", { GPSC1: "started" });
+    renderComponent({ GPSC1: "started" });
 
     expect(screen.getByText(/started/i)).toBeInTheDocument();
   });
 
-  it("should show waiting tag if no cluster status or microreact status", () => {
-    renderComponent(null, {});
+  it("should show waiting tag if no cluster status or visualise status", () => {
+    renderComponent({});
 
     expect(screen.getByText(/waiting/i)).toBeInTheDocument();
   });

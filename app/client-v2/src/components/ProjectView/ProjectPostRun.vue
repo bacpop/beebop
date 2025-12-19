@@ -13,8 +13,7 @@ import {
   hasVisualiseClusterPassed,
   isAnyVisualiseFinished,
   isAllVisualiseFinished,
-  hasSampleFailedWithWarning,
-  isSublineageUnavailable
+  hasSampleFailedWithWarning
 } from "@/utils/projectStatus";
 import { computed, ref } from "vue";
 
@@ -99,7 +98,7 @@ const getMicroreactSettingsTooltip = () => {
               <template #header>
                 <div class="flex flex-column gap-1">
                   <span>Sublineage</span>
-                  <small class="text-xs text-color-secondary font-medium">Rank 5 • 10 • 25 • 50</small>
+                  <small class="text-xs text-color-secondary font-medium">Rank 50 • 25 • 10 • 5</small>
                 </div>
               </template>
               <template #body="{ data }">
