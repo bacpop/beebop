@@ -12,12 +12,15 @@ test("can run project and view results", async ({ page }) => {
   uploadFiles(page, ["e2e/fastaFiles/good_1.fa"]);
   await page.getByLabel("Run Analysis").click();
 
-  await expect(page.getByText("Running Analysis...50%")).toBeVisible();
+  await expect(page.getByText("Running Analysis...33%")).toBeVisible();
+  await expect(page.getByText("Running Analysis...67%")).toBeVisible();
 
   await expect(page.getByLabel("Visit")).toBeVisible();
   await expect(page.getByLabel("Download microreact zip")).toBeVisible();
   await expect(page.getByLabel("Download network zip")).toBeVisible();
   await expect(page.getByText("GPSC7")).toBeVisible();
+  await expect(page.getByRole("columnheader", { name: "Sublineage Rank 50 • 25 • 10 •" })).toBeVisible();
+  await expect(page.getByRole("cell", { name: "• 3 • 13 • 9" })).toBeVisible();
 
   await page.getByRole("tab", { name: "Network" }).click();
   await expect(page.getByText("Cluster: GPSC7")).toBeVisible();
@@ -28,6 +31,9 @@ test("can run project and view results", async ({ page }) => {
 test("can download network, microreact and visit opens microreact popup with link to get token", async ({ page }) => {
   uploadFiles(page, ["e2e/fastaFiles/good_1.fa"]);
   await page.getByLabel("Run Analysis").click();
+
+  await expect(page.getByText("Running Analysis...33%")).toBeVisible();
+  await expect(page.getByText("Running Analysis...67%")).toBeVisible();
 
   const downloadPromise = page.waitForEvent("download");
   await page.getByRole("row", { name: "good_1" }).getByLabel("Download network zip").click();
@@ -52,7 +58,7 @@ test("bad samples after run displays failed chips", async ({ page }) => {
   uploadFiles(page, ["e2e/fastaFiles/bad_1.fasta"]);
   await page.getByLabel("Run Analysis").click();
 
-  await expect(page.getByRole("cell", { name: "failed" })).toHaveCount(3);
+  await expect(page.getByRole("cell", { name: "failed" })).toHaveCount(4);
   await page.getByRole("cell", { name: "failed", exact: false }).locator("span").first().hover();
   await expect(page.getByText("Below lower length threshold")).toBeVisible();
 });
@@ -63,7 +69,9 @@ test("can load up already run project even if loading", async ({ page }) => {
   await page.getByRole("link", { name: "Beebop home" }).click();
   await page.getByRole("link", { name: projectName }).click();
 
-  await expect(page.getByText("Running Analysis...50%")).toBeVisible();
+  await expect(page.getByText("Running Analysis...33%")).toBeVisible();
+  await expect(page.getByText("Running Analysis...67%")).toBeVisible();
+
   await expect(page.getByLabel("Visit")).toBeVisible();
   await expect(page.getByLabel("Download microreact zip")).toBeVisible();
   await expect(page.getByLabel("Download network zip")).toBeVisible();
@@ -74,13 +82,17 @@ test("can run project multiple times", async ({ page }) => {
   await uploadFiles(page, ["e2e/fastaFiles/good_1.fa"]);
   await page.getByLabel("Run Analysis").click();
 
-  await expect(page.getByText("Running Analysis...50%")).toBeVisible();
+  await expect(page.getByText("Running Analysis...33%")).toBeVisible();
+  await expect(page.getByText("Running Analysis...67%")).toBeVisible();
+
   await expect(page.getByLabel("Upload")).toBeVisible();
 
   await uploadFiles(page, ["e2e/fastaFiles/good_2.fa"]);
   await page.getByLabel("Run Analysis").click();
 
-  await expect(page.getByText("Running Analysis...50%")).toBeVisible();
+  await expect(page.getByText("Running Analysis...33%")).toBeVisible();
+  await expect(page.getByText("Running Analysis...67%")).toBeVisible();
+
   await expect(page.getByText("GPSC7")).toBeVisible();
   await expect(page.getByText("GPSC4")).toBeVisible();
 });
