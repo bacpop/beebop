@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-export API_IMAGE="main"
+export API_IMAGE="bacpop-71-sublineage-dev" # TODO revert before merge
 
 NETWORK=beebop_nw
 VOLUME=beebop-storage
