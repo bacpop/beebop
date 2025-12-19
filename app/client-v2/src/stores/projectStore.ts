@@ -251,10 +251,6 @@ export const useProjectStore = defineStore("project", {
       return [visualise, ...Object.values(visualiseClusters)].every((status) => COMPLETE_STATUS_TYPES.includes(status));
     },
     async getSublineageAssignResult() {
-      const speciesStore = useSpeciesStore();
-      if (!speciesStore.canAssignSublineages(this.project.species)) {
-        return;
-      }
       try {
         const sublineagesRes = await baseApi.post<ApiResponse<Record<string, Sublineage>>>("/sublineageAssignResult", {
           projectHash: this.project.hash
@@ -312,12 +308,11 @@ export const useProjectStore = defineStore("project", {
     },
 
     async runAnalysis() {
-      const speciesStore = useSpeciesStore();
       this.project.status = {
         assign: "submitted",
         visualise: "submitted",
         visualiseClusters: {},
-        ...(speciesStore.canAssignSublineages(this.project.species) && { sublineage_assign: "submitted" })
+        sublineage_assign: "submitted"
       };
       this.project.samples.forEach((sample: ProjectSample) => (sample.hasRun = true));
       const body = this.buildRunAnalysisPostBody();

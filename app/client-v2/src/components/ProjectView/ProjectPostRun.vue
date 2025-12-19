@@ -103,27 +103,7 @@ const getMicroreactSettingsTooltip = () => {
                 </div>
               </template>
               <template #body="{ data }">
-                <div
-                  v-if="
-                    data.sublineage && hasSamplePassed(projectStore.project.status?.sublineage_assign, data.cluster)
-                  "
-                >
-                  {{ data.sublineage.Rank_5_Lineage }} • {{ data.sublineage.Rank_10_Lineage }} •
-                  {{ data.sublineage.Rank_25_Lineage }} •
-                  {{ data.sublineage.Rank_50_Lineage }}
-                </div>
-                <div v-else-if="!data.hasRun">
-                  <em v-if="!data.cluster">not run</em>
-                </div>
-                <Tag
-                  v-else-if="hasSampleFailed(projectStore.project.status?.sublineage_assign, data.cluster)"
-                  value="failed"
-                  severity="danger"
-                />
-                <div v-else-if="isSublineageUnavailable(projectStore.project.status, data.sublineage)">
-                  <Tag value="unavailable" severity="secondary" icon="pi pi-minus-circle" />
-                </div>
-                <Tag v-else :value="projectStore.project.status?.sublineage_assign" severity="warning" />
+                <SublineageColumn :data="data" />
               </template>
             </Column>
             <Column header="Network">

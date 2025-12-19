@@ -38,6 +38,7 @@ declare module 'vue' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Sidebar: typeof import('primevue/sidebar')['default']
+    SublineageColumn: typeof import('./src/components/ProjectView/SublineageColumn.vue')['default']
     TabPanel: typeof import('primevue/tabpanel')['default']
     TabView: typeof import('primevue/tabview')['default']
     Tag: typeof import('primevue/tag')['default']

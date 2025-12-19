@@ -814,7 +814,10 @@ describe("projectStore", () => {
       const analysisStatus = { assign: "failed", visualise: "deferred" } as any;
       const store = useProjectStore();
 
-      const stopPolling = await store.processStatusAndGetStopPolling(analysisStatus, "waiting");
+      const stopPolling = await store.processStatusAndGetStopPolling(analysisStatus, {
+        ...analysisStatus,
+        assign: "waiting"
+      });
 
       expect(stopPolling).toBe(true);
       expect(store.project.status).toStrictEqual({
@@ -828,7 +831,7 @@ describe("projectStore", () => {
       const store = useProjectStore();
       store.getClusterAssignResult = vitest.fn();
 
-      await store.processStatusAndGetStopPolling(analysisStatus, "waiting");
+      await store.processStatusAndGetStopPolling(analysisStatus, { ...analysisStatus, assign: "waiting" });
 
       expect(store.getClusterAssignResult).toHaveBeenCalled();
     });
@@ -864,7 +867,7 @@ describe("projectStore", () => {
         text: () => Promise.resolve(`sample${index + 1}`)
       })) as unknown as File[];
       const speciesStore = useSpeciesStore();
-      speciesStore.sketchKmerArguments = MOCK_SPECIES_CONFIG;
+      speciesStore.speciesConfig = MOCK_SPECIES_CONFIG;
 
       const projectStore = useProjectStore();
       projectStore.project.species = MOCK_SPECIES[0];

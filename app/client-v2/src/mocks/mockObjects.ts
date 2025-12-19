@@ -1,4 +1,5 @@
-import type { SketchKmerArguments } from "@/stores/speciesStore";
+import { handlers } from "./handlers";
+import type { SpeciesConfig } from "@/stores/speciesStore";
 import type { Project, ProjectOverview, ProjectSample } from "@/types/projectTypes";
 import type { GraphMLKeys } from "@/utils/graph";
 
@@ -7,16 +8,22 @@ export const MOCK_USER = {
   name: "Test User",
   provider: "test"
 };
-export const MOCK_SPECIES_CONFIG: Record<string, SketchKmerArguments> = {
+export const MOCK_SPECIES_CONFIG: Record<string, SpeciesConfig> = {
   "test species1": {
-    kmerMax: 14,
-    kmerMin: 3,
-    kmerStep: 3
+    hasSublineages: true,
+    kmerInfo: {
+      kmerMax: 14,
+      kmerMin: 3,
+      kmerStep: 3
+    }
   },
   "test species2": {
-    kmerMax: 17,
-    kmerMin: 5,
-    kmerStep: 4
+    hasSublineages: false,
+    kmerInfo: {
+      kmerMax: 17,
+      kmerMin: 5,
+      kmerStep: 4
+    }
   }
 };
 export const MOCK_SPECIES = ["test species1", "test species2"];

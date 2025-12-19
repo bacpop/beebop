@@ -20,7 +20,7 @@ describe("SpeciesStore", () => {
   describe("getters", () => {
     it("should return correct SketchArguments when getSketchKmerArguments is called", () => {
       const store = useSpeciesStore();
-      store.sketchKmerArguments = MOCK_SPECIES_CONFIG;
+      store.speciesConfig = MOCK_SPECIES_CONFIG;
 
       const result = store.getSketchKmerArguments("Streptococcus pneumoniae");
 
@@ -29,7 +29,7 @@ describe("SpeciesStore", () => {
 
     it("should return undefined when getSketchKmerArguments is called with an invalid species", () => {
       const store = useSpeciesStore();
-      store.sketchKmerArguments = {
+      store.speciesConfig = {
         "Streptococcus pneumoniae": {
           kmerMax: 14,
           kmerMin: 3,
@@ -48,7 +48,7 @@ describe("SpeciesStore", () => {
 
       await store.setSpeciesConfig();
 
-      expect(store.sketchKmerArguments).toEqual(MOCK_SPECIES_CONFIG);
+      expect(store.speciesConfig).toEqual(MOCK_SPECIES_CONFIG);
       expect(store.species).toEqual(Object.keys(MOCK_SPECIES_CONFIG));
     });
 
