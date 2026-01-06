@@ -21,7 +21,7 @@ docker --version
 ```
 
 
-If you run the application for the first time (or for the first time after running in docker), you need to replace the 
+If you run the application for the first time (or for the first time after running in docker), you need to replace the
 secrets in the config file in `app/server/src/resources` first.
 Login to the vault:
 ```
@@ -43,8 +43,6 @@ To run dependencies and server only, run:
 ```
 ./scripts/run_test server-only
 ```
-*Note: These scripts call `run_dependencies` which downloads ref databases only. To download full databases, remove `--refs` from the `./scripts/download_databases --refs` command in `run_dependencies`*
-
 The website can be viewed at http://localhost:5173/ . You can stop the application with `./scripts/stop_test`.
 
 The `run_test` script uses [pm2](https://github.com/Unitech/pm2) to manage running the client and server applications.
@@ -61,16 +59,16 @@ You can also run everything outside pm2, by separately running:
 *Note: If you wish to override the storage volume with a custom bind mount pass in -mount {MOUNT_NAME} into `run_test` script*
 
 ## Config
-Config for the front-end lives in `./app/client/src/settings` and by default webpack (via the vue-cli) will use the config 
+Config for the front-end lives in `./app/client/src/settings` and by default webpack (via the vue-cli) will use the config
 defined in `./app/client/src/settings/development`; this gets overriden by setting an env var called `BUILD_TARGET` - see `./proxy/Dockerfile`.
 
-Config for the back-end lives in `./app/server/src/resources`. When deploying using a docker image this file has to be 
+Config for the back-end lives in `./app/server/src/resources`. When deploying using a docker image this file has to be
 copied into the running container before the app will start - see `./app/server/docker/entrypoint.sh`.
 
 ## Deploying with docker
 
-Docker images are built on CI using `./proxy/docker/build`, `./app/server/docker/build`. If you want 
-to generate them from changed local sources you can run those same scripts locally to build images. 
+Docker images are built on CI using `./proxy/docker/build`, `./app/server/docker/build`. If you want
+to generate them from changed local sources you can run those same scripts locally to build images.
 
 Generate the correct server config file with
 ```
@@ -84,7 +82,7 @@ Then run the dockerised app with
 ```
 
 By default this will configure the nginx proxy for host `localhost`. To deploy with a different hostname, pass
-it as an argument, e.g. 
+it as an argument, e.g.
 
 ```
     ./scripts/run_docker beebop.dide.ic.ac.uk
@@ -104,7 +102,7 @@ There is a self-signed certificate in the repo for use in testing situations. It
 ```
 
 Auth will not work at this point unless there are configured oauth apps that match the deployed urls.
-In general the approach to getting secrets into the config could use some iteration and we should probably have a way to skip auth 
+In general the approach to getting secrets into the config could use some iteration and we should probably have a way to skip auth
 based on a config flag.
 
 ### Example fasta files
@@ -122,7 +120,7 @@ inside `app/client/`.
 
 ### Backend tests
 
-The backend can be tested in watch mode with 
+The backend can be tested in watch mode with
 ```
 npm run test:dev
 ```
