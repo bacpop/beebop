@@ -25,7 +25,7 @@ export const useSpeciesStore = defineStore("species", {
   getters: {
     getSketchKmerArguments: (state) => (species: string) => state.speciesConfig[species]?.kmerInfo,
     getSpeciesConfig: (state) => (species: string) => state.speciesConfig[species],
-    canAssignSublineages: (state) => (species: string) => state.speciesConfig[species]?.hasSublineages || false
+    canAssignSublineages: (state) => (species: string) => state.speciesConfig[species]?.hasSublineages
   },
   actions: {
     async setSpeciesConfig() {

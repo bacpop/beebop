@@ -73,7 +73,7 @@ export interface AnalysisStatus {
   assign: StatusTypes;
   visualise: StatusTypes;
   visualiseClusters: Record<string, StatusTypes>;
-  sublineage_assign?: StatusTypes;
+  sublineageAssign?: StatusTypes;
 }
 export interface ApiResponse<T> {
   data: T;

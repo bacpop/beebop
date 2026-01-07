@@ -121,6 +121,17 @@ describe("RunProject", () => {
     expect(screen.getByText(/Rank 50 • 25 • 10 • 5/i)).toBeVisible();
   });
 
+  it("should not render sublineage column if species does not support sublineages", async () => {
+    const { testPinia } = setupPinia({
+      samples: MOCK_PROJECT_SAMPLES,
+      species: MOCK_SPECIES[1]
+    });
+
+    renderComponent(testPinia, false);
+
+    expect(screen.queryByRole("columnheader", { name: /sublineage/i })).not.toBeInTheDocument();
+  });
+
   it("should render pending for cluster cells if no cluster assigned and sample hasRun", async () => {
     const copyMockSamples = structuredClone(MOCK_PROJECT_SAMPLES).map((sample) => ({
       ...sample,

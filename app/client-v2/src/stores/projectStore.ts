@@ -68,11 +68,11 @@ export const useProjectStore = defineStore("project", {
     },
     analysisProgressPercentage(): number {
       const {
-        fullStatuses: { assign, sublineage_assign }
+        fullStatuses: { assign, sublineageAssign }
       } = this.separatedStatuses;
 
       const isAssignComplete = Number(COMPLETE_STATUS_TYPES.includes(assign as StatusTypes));
-      const isSublineageAssignComplete = Number(COMPLETE_STATUS_TYPES.includes(sublineage_assign as StatusTypes));
+      const isSublineageAssignComplete = Number(COMPLETE_STATUS_TYPES.includes(sublineageAssign as StatusTypes));
       return this.numOfFullStatus
         ? Math.round(
             ((isAssignComplete + isSublineageAssignComplete + this.completeVisualiseNumerator) / this.numOfFullStatus) *
@@ -224,7 +224,7 @@ export const useProjectStore = defineStore("project", {
       data: AnalysisStatus,
       prevStatus: AnalysisStatus | undefined
     ): Promise<boolean> {
-      const { assign, visualise, visualiseClusters, sublineage_assign } = data;
+      const { assign, visualise, visualiseClusters, sublineageAssign } = data;
       this.project.status = data;
       if (COMPLETE_STATUS_TYPES.includes(assign) && prevStatus?.assign !== "finished") {
         await this.getClusterAssignResult();
@@ -234,15 +234,15 @@ export const useProjectStore = defineStore("project", {
         this.project.status = {
           assign: "failed",
           visualise: "failed",
-          sublineage_assign: "failed",
+          sublineageAssign: "failed",
           visualiseClusters: {}
         };
         return true;
       }
 
       if (
-        COMPLETE_STATUS_TYPES.includes(sublineage_assign as StatusTypes) &&
-        COMPLETE_STATUS_TYPES.includes(prevStatus?.sublineage_assign as StatusTypes) === false
+        COMPLETE_STATUS_TYPES.includes(sublineageAssign as StatusTypes) &&
+        COMPLETE_STATUS_TYPES.includes(prevStatus?.sublineageAssign as StatusTypes) === false
       ) {
         await this.getSublineageAssignResult();
       }
@@ -311,7 +311,7 @@ export const useProjectStore = defineStore("project", {
         assign: "submitted",
         visualise: "submitted",
         visualiseClusters: {},
-        sublineage_assign: "submitted"
+        sublineageAssign: "submitted"
       };
       this.project.samples.forEach((sample: ProjectSample) => (sample.hasRun = true));
       const body = this.buildRunAnalysisPostBody();

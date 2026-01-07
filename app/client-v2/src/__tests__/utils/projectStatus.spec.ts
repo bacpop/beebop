@@ -225,19 +225,19 @@ describe("projectStatus utilities", () => {
   });
 
   describe("isSublineageUnavailable", () => {
-    test('returns true when sublineage_assign is "finished" and sublineage is undefined', () => {
-      const status: any = { sublineage_assign: "finished" };
+    test('returns true when sublineageAssign is "finished" and sublineage is undefined', () => {
+      const status: any = { sublineageAssign: "finished" };
       expect(isSublineageUnavailable(status, undefined)).toBeTruthy();
     });
 
-    test('returns false when sublineage_assign is "finished" and sublineage is defined', () => {
-      const status: any = { sublineage_assign: "finished" };
+    test('returns false when sublineageAssign is "finished" and sublineage is defined', () => {
+      const status: any = { sublineageAssign: "finished" };
       const sublineage: any = { name: "someSublineage" };
       expect(isSublineageUnavailable(status, sublineage)).toBeFalsy();
     });
 
-    test('returns false when sublineage_assign is not "finished"', () => {
-      const status: any = { sublineage_assign: "waiting" };
+    test('returns false when sublineageAssign is not "finished"', () => {
+      const status: any = { sublineageAssign: "waiting" };
       expect(isSublineageUnavailable(status, undefined)).toBeFalsy();
     });
 
@@ -278,24 +278,24 @@ describe("projectStatus utilities", () => {
   });
 
   describe("hasSublineageFailed", () => {
-    test('returns true when sublineage_assign is "failed"', () => {
-      const status: any = { sublineage_assign: "failed", assign: "waiting" };
+    test('returns true when sublineageAssign is "failed"', () => {
+      const status: any = { sublineageAssign: "failed", assign: "waiting" };
       expect(hasSublineageFailed(status, "someCluster")).toBeTruthy();
       expect(hasSublineageFailed(status, undefined)).toBeTruthy();
     });
 
     test('returns true when assign is "finished" and cluster is undefined', () => {
-      const status: any = { sublineage_assign: "waiting", assign: "finished" };
+      const status: any = { sublineageAssign: "waiting", assign: "finished" };
       expect(hasSublineageFailed(status, undefined)).toBeTruthy();
     });
 
     test('returns false when assign is "finished" and cluster is defined', () => {
-      const status: any = { sublineage_assign: "waiting", assign: "finished" };
+      const status: any = { sublineageAssign: "waiting", assign: "finished" };
       expect(hasSublineageFailed(status, "someCluster")).toBeFalsy();
     });
 
-    test('returns false when sublineage_assign is not "failed" and assign is not "finished"', () => {
-      const status: any = { sublineage_assign: "waiting", assign: "waiting" };
+    test('returns false when sublineageAssign is not "failed" and assign is not "finished"', () => {
+      const status: any = { sublineageAssign: "waiting", assign: "waiting" };
       expect(hasSublineageFailed(status, "someCluster")).toBeFalsy();
       expect(hasSublineageFailed(status, undefined)).toBeFalsy();
     });

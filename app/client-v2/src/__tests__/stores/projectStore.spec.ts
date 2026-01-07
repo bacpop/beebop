@@ -161,7 +161,7 @@ describe("projectStore", () => {
         const store = useProjectStore();
         store.project.status = {
           assign: "started",
-          sublineage_assign: "started",
+          sublineageAssign: "started",
           microreact: "started",
           network: "started",
           visualiseClusters: {
@@ -176,7 +176,7 @@ describe("projectStore", () => {
         const store = useProjectStore();
         store.project.status = {
           assign: "finished",
-          sublineage_assign: "finished",
+          sublineageAssign: "finished",
           visualise: "started"
         } as any;
         expect(store.analysisProgressPercentage).toBe(Math.round(((1 + 1) / 3) * 100));
@@ -665,7 +665,7 @@ describe("projectStore", () => {
         assign: "failed",
         visualise: "failed",
         visualiseClusters: {},
-        sublineage_assign: "failed"
+        sublineageAssign: "failed"
       });
       expect(store.stopPollingStatus).toHaveBeenCalled();
     });
@@ -686,7 +686,7 @@ describe("projectStore", () => {
         assign: "submitted",
         visualise: "submitted",
         visualiseClusters: {},
-        sublineage_assign: "submitted"
+        sublineageAssign: "submitted"
       });
       samples.forEach((sample) => {
         expect(sample.hasRun).toBe(true);
@@ -861,7 +861,7 @@ describe("projectStore", () => {
         assign: "failed",
         visualise: "failed",
         visualiseClusters: {},
-        sublineage_assign: "failed"
+        sublineageAssign: "failed"
       });
     });
     it("should call getClusterAssignResult if assign is failed when processStatusAndGetPolling called", async () => {
@@ -873,17 +873,17 @@ describe("projectStore", () => {
 
       expect(store.getClusterAssignResult).toHaveBeenCalled();
     });
-    it("should call getSublineageAssignResult if sublineage_assign finished and was previously not finished", async () => {
+    it("should call getSublineageAssignResult if sublineageAssign finished and was previously not finished", async () => {
       const analysisStatus: AnalysisStatus = {
         assign: "finished",
-        sublineage_assign: "finished",
+        sublineageAssign: "finished",
         visualise: "waiting",
         visualiseClusters: {}
       };
       const store = useProjectStore();
       store.getSublineageAssignResult = vitest.fn();
 
-      await store.processStatusAndGetStopPolling(analysisStatus, { ...analysisStatus, sublineage_assign: "started" });
+      await store.processStatusAndGetStopPolling(analysisStatus, { ...analysisStatus, sublineageAssign: "started" });
 
       expect(store.getSublineageAssignResult).toHaveBeenCalled();
     });

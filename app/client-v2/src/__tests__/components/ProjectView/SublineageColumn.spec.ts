@@ -11,7 +11,7 @@ const renderComponent = (
   sublineage = MOCK_PROJECT_SAMPLES[0].sublineage,
   hasRun = true,
   cluster = MOCK_PROJECT_SAMPLES[0].cluster,
-  status = { assign: "finished", sublineage_assign: "finished" }
+  status = { assign: "finished", sublineageAssign: "finished" }
 ) =>
   render(SublineageColumnVue, {
     props: {
@@ -51,25 +51,25 @@ describe("Sublineage column", () => {
   });
 
   it("should render failed if sublineage assignment failed", () => {
-    renderComponent(undefined, true, undefined, { assign: "finished", sublineage_assign: "failed" });
+    renderComponent(undefined, true, undefined, { assign: "finished", sublineageAssign: "failed" });
 
     expect(screen.getByText(/failed/i)).toBeVisible();
   });
 
   it("should render failed if cluster assignment finished and no cluster assigned", () => {
-    renderComponent(undefined, true, null as any, { assign: "finished", sublineage_assign: "waiting" });
+    renderComponent(undefined, true, null as any, { assign: "finished", sublineageAssign: "waiting" });
 
     expect(screen.getByText(/failed/i)).toBeVisible();
   });
 
   it("should render unavailable if sublineage is unavailable", () => {
-    renderComponent(null as any, true, undefined, { assign: "finished", sublineage_assign: "finished" });
+    renderComponent(null as any, true, undefined, { assign: "finished", sublineageAssign: "finished" });
 
     expect(screen.getByText(/unavailable/i)).toBeVisible();
   });
 
   it("should render status if not caught by other conditions", () => {
-    renderComponent(null as any, true, undefined, { assign: "finished", sublineage_assign: "pending" });
+    renderComponent(null as any, true, undefined, { assign: "finished", sublineageAssign: "pending" });
 
     expect(screen.getByText(/pending/i)).toBeVisible();
   });

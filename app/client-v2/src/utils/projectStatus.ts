@@ -63,11 +63,11 @@ export const isAllVisualiseFinished = (visualiseClusterStatuses: Record<string, 
 export const isSublineageUnavailable = (
   status: AnalysisStatus | undefined,
   sublineage: Sublineage | undefined
-): boolean => status?.sublineage_assign === "finished" && !sublineage;
+): boolean => status?.sublineageAssign === "finished" && !sublineage;
 
 export const hasSublineagePassed = (status: StatusTypes | undefined, sublineage: Sublineage | undefined): boolean =>
   status === "finished" && Boolean(sublineage);
 
-// Considered failed if sublineage_assign is failed or if cluster assign is finished but no cluster was assigned
+// Considered failed if sublineageAssign is failed or if cluster assign is finished but no cluster was assigned
 export const hasSublineageFailed = (status: AnalysisStatus | undefined, cluster: string | undefined): boolean =>
-  status?.sublineage_assign === "failed" || (status?.assign === "finished" && !cluster);
+  status?.sublineageAssign === "failed" || (status?.assign === "finished" && !cluster);

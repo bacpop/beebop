@@ -15,7 +15,7 @@ const projectStore = useProjectStore();
   </div>
 
   <div
-    v-else-if="data.sublineage && hasSublineagePassed(projectStore.project.status?.sublineage_assign, data.sublineage)"
+    v-else-if="data.sublineage && hasSublineagePassed(projectStore.project.status?.sublineageAssign, data.sublineage)"
   >
     {{ data.sublineage.Rank_50_Lineage }} • {{ data.sublineage.Rank_25_Lineage }} •
     {{ data.sublineage.Rank_10_Lineage }} •
@@ -29,7 +29,8 @@ const projectStore = useProjectStore();
     value="unavailable"
     severity="secondary"
     icon="pi pi-minus-circle"
+    v-tooltip.top="'Cluster too small for sublineage assignment.'"
   />
 
-  <Tag v-else :value="projectStore.project.status?.sublineage_assign" severity="warning" />
+  <Tag v-else :value="projectStore.project.status?.sublineageAssign" severity="warning" />
 </template>
