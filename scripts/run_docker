@@ -21,4 +21,4 @@ docker cp proxy/ssl/dhparam.pem beebop-proxy-1:/run/proxy/
 docker cp proxy/$SSL_PATH/certificate.pem beebop-proxy-1:/run/proxy/
 docker cp proxy/$SSL_PATH/key.pem beebop-proxy-1:/run/proxy/
 docker run --rm -v beebop_beebop-storage:/beebop/storage ghcr.io/bacpop/beebop-py:$API_IMAGE \
-       ./scripts/download_databases
+       ./scripts/download_databases --refs
