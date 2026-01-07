@@ -77,7 +77,7 @@ jobs:
             dbs-cache-
       - name: run all components
         working-directory: .
-        run: ./scripts/run_test server-only -mount ${{ env.STORAGE_PATH }}
+        run: ./scripts/run_test server-only -mount ${{ env.STORAGE_PATH }} --ci
       - name: Run unit and integration tests
         run: npm run test
       - name: stop all components
