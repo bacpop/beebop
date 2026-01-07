@@ -4,7 +4,15 @@ HERE=$(realpath "$(dirname $0)")
 
 . $HERE/parse_mount_arg
 MOUNT=$(parse_mount_arg "$@")
-. $HERE/run_dependencies -mount $MOUNT
+
+CI_ARG=""
+for arg in "$@"; do
+    if [ "$arg" = "--ci" ]; then
+        CI_ARG="--ci"
+    fi
+done
+
+. $HERE/run_dependencies -mount $MOUNT $CI_ARG
 
 
 
