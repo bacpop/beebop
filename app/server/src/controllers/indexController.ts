@@ -55,7 +55,7 @@ export default (config) => {
                 });
         },
         async getSublineageAssignResult(request, response) {
-            await axios.post(`${config.api_url}/results/sublineage_assign`,
+            await axios.post(`${config.api_url}/results/sublineageAssign`,
                 request.body,
                 {
                     headers: {
