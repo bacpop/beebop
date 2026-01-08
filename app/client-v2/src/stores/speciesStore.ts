@@ -9,9 +9,15 @@ export interface SketchKmerArguments {
   kmerMax: number;
   kmerStep: number;
 }
+export interface LocationMetadata {
+  Latitude: number;
+  Longitude: number;
+  SampleCount: number;
+}
 export interface SpeciesConfig {
   hasSublineages: boolean;
   kmerInfo: SketchKmerArguments;
+  locationMetadata: LocationMetadata[] | null;
 }
 
 const baseApi = mande(getApiUrl(), { credentials: "include" });
@@ -25,7 +31,8 @@ export const useSpeciesStore = defineStore("species", {
   getters: {
     getSketchKmerArguments: (state) => (species: string) => state.speciesConfig[species]?.kmerInfo,
     getSpeciesConfig: (state) => (species: string) => state.speciesConfig[species],
-    canAssignSublineages: (state) => (species: string) => state.speciesConfig[species]?.hasSublineages
+    canAssignSublineages: (state) => (species: string) => state.speciesConfig[species]?.hasSublineages,
+    getLocationMetadata: (state) => (species: string) => state.speciesConfig[species]?.locationMetadata
   },
   actions: {
     async setSpeciesConfig() {
