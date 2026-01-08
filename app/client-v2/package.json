@@ -29,6 +29,7 @@
     "cytoscape": "^3.28.1",
     "cytoscape-graphml": "^1.0.6",
     "jquery": "^3.7.1",
+    "leaflet": "^1.9.4",
     "mande": "^2.0.8",
     "pinia": "^2.1.7",
     "primeflex": "^3.3.1",
