@@ -7,15 +7,15 @@ import "leaflet/dist/leaflet.css";
 // TODO: move map component to its own file so it can read different sample metadata files
 const map = ref<L.Map | null>(null);
 onMounted(() => {
-  map.value = L.map("map").setView([0, 0], 2);
+  map.value = L.map("map", { zoomSnap: 0.1 });
 
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     minZoom: 2,
-    maxZoom: 12
+    maxZoom: 14
   }).addTo(map.value);
 
-  const bounds: L.LatLngExpression[] = [];
+  const bounds: [number, number][] = [];
   locationMetadata.forEach((location) => {
     L.circleMarker([location.Latitude, location.Longitude], {
       radius: 6,
@@ -32,7 +32,7 @@ onMounted(() => {
       `);
     bounds.push([location.Latitude, location.Longitude]);
   });
-  map.value.fitBounds(bounds as L.LatLngExpression[], { padding: [50, 50], maxZoom: 10 });
+  map.value.fitBounds(bounds);
 });
 
 onUnmounted(() => {
