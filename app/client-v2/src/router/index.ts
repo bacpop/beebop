@@ -38,8 +38,7 @@ const router = createRouter({
     {
       path: "/metadata",
       name: "metadata",
-      component: () => import("../views/MetadataView.vue"),
-      meta: { requiresAuth: true }
+      component: () => import("../views/MetadataView.vue")
     }
   ]
 });
