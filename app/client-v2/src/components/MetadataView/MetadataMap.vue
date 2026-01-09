@@ -11,11 +11,12 @@ const { locationMetadata } = defineProps<{
 }>();
 const { themeState } = useTheme();
 const map = ref<L.Map | null>(null);
+const tileLayer = ref<L.TileLayer | null>(null);
 
 onMounted(() => {
   map.value = L.map("map", { zoomSnap: 0.1 });
 
-  setTileLayer(themeState.value === DARK_THEME, map as Ref<L.Map>);
+  tileLayer.value = setTileLayer(themeState.value === DARK_THEME, map as Ref<L.Map>);
   displayLocationSamples(map as Ref<L.Map>, locationMetadata);
 });
 
@@ -27,7 +28,10 @@ onUnmounted(() => {
 });
 
 watch(themeState, async (newTheme) => {
-  setTileLayer(newTheme === DARK_THEME, map as Ref<L.Map | null>);
+  if (map.value && tileLayer.value) {
+    map.value.removeLayer(tileLayer.value as L.TileLayer);
+    tileLayer.value = setTileLayer(newTheme === DARK_THEME, map as Ref<L.Map>);
+  }
 });
 </script>
 

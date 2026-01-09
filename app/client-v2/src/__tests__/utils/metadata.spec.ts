@@ -20,7 +20,7 @@ describe("Metadata Utils", () => {
       };
       vi.mocked(L.tileLayer).mockReturnValue(mockTileLayer as any);
 
-      setTileLayer(mode === "dark", mapRef as Ref<L.Map>);
+      const tileLayer = setTileLayer(mode === "dark", mapRef as Ref<L.Map>);
 
       expect(L.tileLayer).toHaveBeenCalledWith(
         `https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_${modeCapitalized}_Gray_Base/MapServer/tile/{z}/{y}/{x}`,
@@ -31,6 +31,7 @@ describe("Metadata Utils", () => {
         }
       );
       expect(mockTileLayer.addTo).toHaveBeenCalledWith(mockMap);
+      expect(tileLayer).toBe(mockTileLayer);
     });
   });
 
