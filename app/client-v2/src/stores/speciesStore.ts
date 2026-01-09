@@ -10,9 +10,9 @@ export interface SketchKmerArguments {
   kmerStep: number;
 }
 export interface LocationMetadata {
-  Latitude: number;
-  Longitude: number;
-  SampleCount: number;
+  latitude: number;
+  longitude: number;
+  sampleCount: number;
 }
 export interface SpeciesConfig {
   hasSublineages: boolean;

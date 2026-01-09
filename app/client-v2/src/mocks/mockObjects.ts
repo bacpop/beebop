@@ -9,19 +9,19 @@ export const MOCK_USER = {
 };
 export const MOCK_LOCATION_METADATA: LocationMetadata[] = [
   {
-    Latitude: 34.0522,
-    Longitude: -118.2437,
-    SampleCount: 5
+    latitude: 34.0522,
+    longitude: -118.2437,
+    sampleCount: 5
   },
   {
-    Latitude: 51.5074,
-    Longitude: -0.1278,
-    SampleCount: 20
+    latitude: 51.5074,
+    longitude: -0.1278,
+    sampleCount: 20
   },
   {
-    Latitude: -33.8688,
-    Longitude: 151.2093,
-    SampleCount: 30
+    latitude: -33.8688,
+    longitude: 151.2093,
+    sampleCount: 30
   }
 ];
 

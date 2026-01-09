@@ -6,32 +6,37 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { onMounted, onUnmounted, ref, watch } from "vue";
 
-const map = ref<L.Map | null>(null);
-const { themeState } = useTheme();
 const { locationMetadata } = defineProps<{
   locationMetadata: LocationMetadata[];
 }>();
+const { themeState } = useTheme();
+const map = ref<L.Map | null>(null);
+
 onMounted(() => {
   map.value = L.map("map", { zoomSnap: 0.1 });
 
   getTileLayer(themeState.value === DARK_THEME).addTo(map.value as L.Map);
 
+  const baseRadius = 4;
+  const scalingFactor = 6;
   const bounds: L.LatLngTuple[] = locationMetadata.map((location) => {
-    L.circleMarker([location.Latitude, location.Longitude], {
-      radius: 6,
+    const radius = baseRadius + Math.log10(location.sampleCount) * scalingFactor;
+
+    L.circleMarker([location.latitude, location.longitude], {
+      radius: radius,
       color: "#059669",
       weight: 2,
       fillOpacity: 0.6
     }).addTo(map.value as L.Map).bindTooltip(`
       <div style="font-size: 13px; color: #4b5563; font-family: system-ui, -apple-system, sans-serif;">
       <div><span style="font-weight: 500;">Sample Count:</span>
-      <span style="color: #059669; font-weight: 600;">${location.SampleCount}</span></div>
-      <div><span style="font-weight: 500;">Latitude:</span> ${location.Latitude.toFixed(2)}</div>
-      <div><span style="font-weight: 500;">Longitude:</span> ${location.Longitude.toFixed(2)}</div>
+      <span style="color: #059669; font-weight: 600;">${location.sampleCount}</span></div>
+      <div><span style="font-weight: 500;">latitude:</span> ${location.latitude.toFixed(2)}</div>
+      <div><span style="font-weight: 500;">longitude:</span> ${location.longitude.toFixed(2)}</div>
       </div>
       `);
 
-    return [location.Latitude, location.Longitude];
+    return [location.latitude, location.longitude];
   });
 
   map.value.fitBounds(bounds);
