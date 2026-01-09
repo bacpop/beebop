@@ -39,7 +39,7 @@ describe("Router", () => {
   });
   it("should be created with correct configuration", () => {
     expect(router).toBeDefined();
-    expect(router.getRoutes()).toHaveLength(5);
+    expect(router.getRoutes()).toHaveLength(6);
   });
 
   it("should define a NotFound route", () => {
@@ -75,5 +75,12 @@ describe("Router", () => {
 
     expect(route?.meta.requiresAuth).toBeUndefined();
     expect(route).toBeDefined();
+  });
+
+  it("should render a metadata route", () => {
+    const route = router.getRoutes().find((route) => route?.name === "metadata");
+
+    expect(route).toBeDefined();
+    expect(route?.meta.requiresAuth).toBe(true);
   });
 });
