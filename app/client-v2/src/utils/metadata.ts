@@ -40,13 +40,13 @@ const addCircleMarker = (mapRef: Ref<L.Map>, location: LocationMetadata, baseRad
 
 const createTooltipContent = (location: LocationMetadata): string => {
   return `
-    <div style="font-size: 13px; color: #4b5563; font-family: system-ui, -apple-system, sans-serif;">
-      <div>
-        <span style="font-weight: 500;">Sample Count:</span>
-        <span style="color: #059669; font-weight: 600;">${location.sampleCount}</span>
+    <div style="font-family: system-ui, sans-serif; padding: 4px;">
+      <div style="color: #374151; font-weight: 500; margin-bottom: 4px;">
+        📍 ${location.country}
       </div>
-      <div><span style="font-weight: 500;">Latitude:</span> ${location.latitude.toFixed(2)}</div>
-      <div><span style="font-weight: 500;">Longitude:</span> ${location.longitude.toFixed(2)}</div>
+      <div style="color: #6b7280; font-size: 13px;">
+        ${location.sampleCount} samples
+      </div>
     </div>
   `;
 };

@@ -11,17 +11,20 @@ export const MOCK_LOCATION_METADATA: LocationMetadata[] = [
   {
     latitude: 34.0522,
     longitude: -118.2437,
-    sampleCount: 5
+    sampleCount: 5,
+    country: "USA"
   },
   {
     latitude: 51.5074,
     longitude: -0.1278,
-    sampleCount: 20
+    sampleCount: 20,
+    country: "UK"
   },
   {
     latitude: -33.8688,
     longitude: 151.2093,
-    sampleCount: 30
+    sampleCount: 30,
+    country: "Australia"
   }
 ];
 

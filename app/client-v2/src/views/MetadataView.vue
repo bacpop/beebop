@@ -4,7 +4,7 @@ import { useSpeciesStore } from "@/stores/speciesStore";
 import { computed, ref } from "vue";
 
 const speciesStore = useSpeciesStore();
-const selectedSpecies = ref("");
+const selectedSpecies = ref();
 const locationMetadata = computed(() => speciesStore.getLocationMetadata(selectedSpecies.value));
 </script>
 
@@ -27,8 +27,12 @@ const locationMetadata = computed(() => speciesStore.getLocationMetadata(selecte
       </div>
     </div>
     <MetadataMap v-if="locationMetadata" :locationMetadata="locationMetadata" />
+
     <div v-else class="mt-2 p-6 text-center surface-border border-top-1">
-      <span class="text-yellow-600">No location metadata available for the selected species.</span>
+      <span v-if="!selectedSpecies" class="text-color-secondary"
+        >Please select a species to view location metadata.</span
+      >
+      <span v-else class="text-yellow-600">No location metadata available for the selected species.</span>
     </div>
   </div>
 </template>

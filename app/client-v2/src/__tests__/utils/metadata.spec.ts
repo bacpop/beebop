@@ -1,5 +1,5 @@
 import { MOCK_LOCATION_METADATA } from "@/mocks/mockObjects";
-import { createTooltipContent, displayLocationSamples, setTileLayer } from "@/utils/metadata";
+import { displayLocationSamples, setTileLayer } from "@/utils/metadata";
 import L from "leaflet";
 import { ref, type Ref } from "vue";
 
@@ -100,8 +100,7 @@ describe("Metadata Utils", () => {
       expect(mockCircleMarker.bindTooltip).toHaveBeenCalledWith(
         expect.stringContaining(location.sampleCount.toString())
       );
-      expect(mockCircleMarker.bindTooltip).toHaveBeenCalledWith(expect.stringContaining(location.latitude.toFixed(2)));
-      expect(mockCircleMarker.bindTooltip).toHaveBeenCalledWith(expect.stringContaining(location.longitude.toFixed(2)));
+      expect(mockCircleMarker.bindTooltip).toHaveBeenCalledWith(expect.stringContaining(location.country));
     });
   });
 });

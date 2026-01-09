@@ -13,6 +13,7 @@ export interface LocationMetadata {
   latitude: number;
   longitude: number;
   sampleCount: number;
+  country: string;
 }
 export interface SpeciesConfig {
   hasSublineages: boolean;

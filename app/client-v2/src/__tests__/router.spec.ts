@@ -81,6 +81,6 @@ describe("Router", () => {
     const route = router.getRoutes().find((route) => route?.name === "metadata");
 
     expect(route).toBeDefined();
-    expect(route?.meta.requiresAuth).toBe(false);
+    expect(route?.meta.requiresAuth).toBeUndefined();
   });
 });
