@@ -14,8 +14,9 @@ const locationMetadata = computed(() => speciesStore.getLocationMetadata(selecte
       <h2 class="text-2xl font-bold mb-2">Geographical Distribution of Samples</h2>
       <div class="flex mb-2 align-items-start justify-content-between gap-5">
         <span class="text-base text-color-secondary">
-          This map visualizes the geographical distribution of sampled from a given species. Each marker represents a
-          location where samples were collected, with a popup displaying the sample count for that location.
+          This map visualizes the geographical distribution of samples from a given species. Each marker represents a
+          location where samples were collected, with a tooltip displaying the sample count and country for that
+          location.
         </span>
 
         <Dropdown
@@ -23,6 +24,7 @@ const locationMetadata = computed(() => speciesStore.getLocationMetadata(selecte
           :options="speciesStore.species"
           placeholder="Select a species"
           class="w-22rem"
+          aria-label="Select species to view location metadata"
         />
       </div>
     </div>

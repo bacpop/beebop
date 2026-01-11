@@ -4,7 +4,7 @@ import type { LocationMetadata } from "@/stores/speciesStore";
 import { clearMapMarkers, displayLocationSamples, setTileLayer } from "@/utils/metadata";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { onMounted, onUnmounted, ref, watch, watchEffect, type Ref } from "vue";
+import { onMounted, onUnmounted, ref, watch, type Ref } from "vue";
 
 const props = defineProps<{
   locationMetadata: LocationMetadata[];
@@ -44,7 +44,7 @@ watch(props, (newProps) => {
 
 <template>
   <div class="map-container">
-    <div id="map"></div>
+    <div id="map" role="application" aria-label="Interactive map displaying location metadata" aria-live="polite"></div>
   </div>
 </template>
 

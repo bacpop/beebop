@@ -32,6 +32,7 @@ export const displayLocationSamples = (mapRef: Ref<L.Map>, locationMetadata: Loc
 };
 
 const addCircleMarker = (mapRef: Ref<L.Map>, location: LocationMetadata, baseRadius = 4, scalingFactor = 6) => {
+  if (location.sampleCount <= 0) return;
   const radius = baseRadius + Math.log10(location.sampleCount) * scalingFactor;
   const tooltipContent = createTooltipContent(location);
 

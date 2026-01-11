@@ -80,7 +80,7 @@ describe("Metadata Utils", () => {
       expect(mockMap.fitBounds).toHaveBeenCalledWith(expectBounds);
     });
 
-    it("should calculate radius based on sample count with logarithmic scaling", () => {
+    it("should calculate radius based on sample count with logarithmic scaling and skip locations with zero samples", () => {
       const mockMap = {
         fitBounds: vi.fn()
       } as any;
@@ -97,8 +97,9 @@ describe("Metadata Utils", () => {
       const scalingFactor = 6;
       const expectedRadius = baseRadius + Math.log10(100) * scalingFactor;
 
-      displayLocationSamples(mapRef as any, [location]);
+      displayLocationSamples(mapRef as any, [location, { ...MOCK_LOCATION_METADATA[1], sampleCount: 0 }]);
 
+      expect(L.circleMarker).toHaveBeenCalledTimes(1); // Only one marker since sampleCount is 0 for the other
       expect(L.circleMarker).toHaveBeenCalledWith([location.latitude, location.longitude], {
         radius: expectedRadius,
         color: "#059669",
