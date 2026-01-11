@@ -1,5 +1,5 @@
 import { MOCK_LOCATION_METADATA } from "@/mocks/mockObjects";
-import { displayLocationSamples, setTileLayer } from "@/utils/metadata";
+import { clearMapMarkers, displayLocationSamples, setTileLayer } from "@/utils/metadata";
 import L from "leaflet";
 import { ref, type Ref } from "vue";
 
@@ -32,6 +32,29 @@ describe("Metadata Utils", () => {
       );
       expect(mockTileLayer.addTo).toHaveBeenCalledWith(mockMap);
       expect(tileLayer).toBe(mockTileLayer);
+    });
+  });
+
+  describe("clearMapMarkers", () => {
+    it("should remove all circle markers from the map", () => {
+      const mockRemoveLayer = vi.fn();
+      const mockMap = {
+        eachLayer: (callback: (layer: any) => void) => {
+          const mockLayers = [
+            new L.CircleMarker([0, 0], {}),
+            {} // Non-circle marker layer
+          ];
+          mockLayers.forEach(callback);
+        },
+        removeLayer: mockRemoveLayer
+      } as any;
+
+      const mapRef = ref<L.Map>(mockMap);
+
+      clearMapMarkers(mapRef as Ref<L.Map>);
+
+      expect(mockRemoveLayer).toHaveBeenCalledTimes(1);
+      expect(mockRemoveLayer).toHaveBeenCalledWith(expect.any(L.CircleMarker));
     });
   });
 

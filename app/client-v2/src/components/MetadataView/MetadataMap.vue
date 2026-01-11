@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { DARK_THEME, useTheme } from "@/composables/useTheme";
 import type { LocationMetadata } from "@/stores/speciesStore";
-import { displayLocationSamples, setTileLayer } from "@/utils/metadata";
+import { clearMapMarkers, displayLocationSamples, setTileLayer } from "@/utils/metadata";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { onMounted, onUnmounted, ref, watch, type Ref } from "vue";
+import { onMounted, onUnmounted, ref, watch, watchEffect, type Ref } from "vue";
 
-const { locationMetadata } = defineProps<{
+const props = defineProps<{
   locationMetadata: LocationMetadata[];
 }>();
 const { themeState } = useTheme();
@@ -17,7 +17,7 @@ onMounted(() => {
   map.value = L.map("map", { zoomSnap: 0.1 });
 
   tileLayer.value = setTileLayer(themeState.value === DARK_THEME, map as Ref<L.Map>);
-  displayLocationSamples(map as Ref<L.Map>, locationMetadata);
+  displayLocationSamples(map as Ref<L.Map>, props.locationMetadata);
 });
 
 onUnmounted(() => {
@@ -31,6 +31,13 @@ watch(themeState, async (newTheme) => {
   if (map.value && tileLayer.value) {
     map.value.removeLayer(tileLayer.value as L.TileLayer);
     tileLayer.value = setTileLayer(newTheme === DARK_THEME, map as Ref<L.Map>);
+  }
+});
+
+watch(props, (newProps) => {
+  if (map.value) {
+    clearMapMarkers(map as Ref<L.Map>);
+    displayLocationSamples(map as Ref<L.Map>, newProps.locationMetadata);
   }
 });
 </script>

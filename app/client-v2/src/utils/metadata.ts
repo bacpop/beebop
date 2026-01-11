@@ -15,6 +15,13 @@ export const setTileLayer = (isDarkMode: boolean, mapRef: Ref<L.Map>): L.TileLay
   return tileLayer;
 };
 
+export const clearMapMarkers = (mapRef: Ref<L.Map>) => {
+  mapRef.value.eachLayer((layer) => {
+    if (layer instanceof L.CircleMarker) {
+      mapRef.value.removeLayer(layer);
+    }
+  });
+};
 export const displayLocationSamples = (mapRef: Ref<L.Map>, locationMetadata: LocationMetadata[]) => {
   const bounds: L.LatLngTuple[] = locationMetadata.map((location) => {
     addCircleMarker(mapRef, location);
