@@ -5,7 +5,7 @@ import { MOCK_LOCATION_METADATA } from "@/mocks/mockObjects";
 import * as metadataUtils from "@/utils/metadata";
 
 const mockDisplayLocationSamples = vi.spyOn(metadataUtils, "displayLocationSamples").mockImplementation(() => {});
-const mockSetTileLayer = vi.spyOn(metadataUtils, "setTileLayer").mockImplementation(() => {});
+const mockSetTileLayer = vi.spyOn(metadataUtils, "setTileLayer").mockReturnValue({} as any);
 
 const renderComponent = () =>
   render(MetadataMap, {
