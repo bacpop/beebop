@@ -22,6 +22,7 @@ declare module 'vue' {
     InputText: typeof import('primevue/inputtext')['default']
     Menu: typeof import('primevue/menu')['default']
     Menubar: typeof import('primevue/menubar')['default']
+    MetadataMap: typeof import('./src/components/MetadataView/MetadataMap.vue')['default']
     MicroReactColumn: typeof import('./src/components/ProjectView/MicroReactColumn.vue')['default']
     MicroReactTokenDialog: typeof import('./src/components/ProjectView/MicroReactTokenDialog.vue')['default']
     NetworkGraph: typeof import('./src/components/ProjectView/NetworkGraph.vue')['default']

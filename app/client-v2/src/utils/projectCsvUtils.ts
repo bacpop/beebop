@@ -1,16 +1,24 @@
-import type { AMR, AMRForCsv, ProjectSample } from "@/types/projectTypes";
+import type { AMR, AMRForCsv, ProjectSample, Sublineage } from "@/types/projectTypes";
 import { convertProbabilityToWord } from "./amrDisplayUtils";
 
 export const downloadCsv = (samples: ProjectSample[], filename: string) => {
   const csvData = samples.map((sample) => ({
     Filename: sample.filename,
     ...(sample.amr && convertAmrForCsv(sample.amr)),
-    Cluster: sample.cluster || ""
+    ...(sample.cluster && { Cluster: sample.cluster }),
+    ...(sample.sublineage && constructSublineageForCsv(sample.sublineage))
   }));
 
   const csvContent = generateCsvContent(csvData);
   triggerCsvDownload(csvContent, `${filename}.csv`);
 };
+
+export const constructSublineageForCsv = (sublineage: Sublineage) => ({
+  "Rank 50 Sublineage": sublineage.Rank_50_Lineage.toString(),
+  "Rank 25 Sublineage": sublineage.Rank_25_Lineage.toString(),
+  "Rank 10 Sublineage": sublineage.Rank_10_Lineage.toString(),
+  "Rank 5 Sublineage": sublineage.Rank_5_Lineage.toString()
+});
 
 export const convertAmrForCsv = (amr: AMR): AMRForCsv => ({
   "Penicillin Resistance": convertProbabilityToWord(amr.Penicillin, "Penicillin"),
