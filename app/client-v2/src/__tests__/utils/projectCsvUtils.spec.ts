@@ -1,5 +1,11 @@
 import type { AMR, ProjectSample } from "@/types/projectTypes";
-import { downloadCsv, convertAmrForCsv, generateCsvContent, triggerCsvDownload } from "@/utils/projectCsvUtils";
+import {
+  downloadCsv,
+  convertAmrForCsv,
+  generateCsvContent,
+  triggerCsvDownload,
+  constructSublineageForCsv
+} from "@/utils/projectCsvUtils";
 import type { Mock } from "vitest";
 
 const mockConvertProbabilityToWord = vitest.fn();
@@ -97,6 +103,26 @@ describe("projectCsvUtils", () => {
       expect(anchor.download).toBe("test.csv");
       expect(anchor.click).toHaveBeenCalled();
       expect(anchor.remove).toHaveBeenCalled();
+    });
+  });
+
+  describe("constructSublineageForCsv", () => {
+    it("should construct sublineage CSV object from Sublineage", () => {
+      const sublineage = {
+        Rank_5_Lineage: 1,
+        Rank_10_Lineage: 2,
+        Rank_25_Lineage: 3,
+        Rank_50_Lineage: 4
+      };
+
+      const result = constructSublineageForCsv(sublineage);
+
+      expect(result).toEqual({
+        "Rank 50 Sublineage": "4",
+        "Rank 25 Sublineage": "3",
+        "Rank 10 Sublineage": "2",
+        "Rank 5 Sublineage": "1"
+      });
     });
   });
 });
