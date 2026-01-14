@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-export API_IMAGE="main"
+export API_IMAGE="metadata-map-pneumo-view" # TODO: revert to main before merge
 
 NETWORK=beebop_nw
 VOLUME=beebop-storage

@@ -29,6 +29,7 @@ const renderComponent = (testPinia: ReturnType<typeof createTestingPinia>) =>
       plugins: [PrimeVue, testPinia]
     }
   });
+
 describe("Metadata Map", () => {
   it("should show error message if no location metadata", async () => {
     const testPinia = createTestingPinia();
