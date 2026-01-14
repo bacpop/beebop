@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import MetadataMap from "@/components/MetadataView/MetadataMap.vue";
 import { useSpeciesStore } from "@/stores/speciesStore";
-import { computed, ref } from "vue";
+import { ref } from "vue";
 
 const speciesStore = useSpeciesStore();
 const selectedSpecies = ref();
-const locationMetadata = computed(() => speciesStore.getLocationMetadata(selectedSpecies.value));
 </script>
 
 <template>
@@ -21,20 +20,25 @@ const locationMetadata = computed(() => speciesStore.getLocationMetadata(selecte
 
         <Dropdown
           v-model="selectedSpecies"
-          :options="speciesStore.species"
+          :options="speciesStore.speciesWithLocationMetadata"
           placeholder="Select a species"
           class="w-22rem"
           aria-label="Select species to view location metadata"
         />
       </div>
     </div>
-    <MetadataMap v-if="locationMetadata" :locationMetadata="locationMetadata" />
+    <Suspense v-if="selectedSpecies">
+      <MetadataMap :species="selectedSpecies" />
+
+      <template #fallback>
+        <div class="flex align-items-center">
+          <ProgressSpinner strokeWidth="8" class="w-8rem h-8rem" animationDuration=".5s" />
+        </div>
+      </template>
+    </Suspense>
 
     <div v-else class="mt-2 p-6 text-center surface-border border-top-1">
-      <span v-if="!selectedSpecies" class="text-color-secondary"
-        >Please select a species to view location metadata.</span
-      >
-      <span v-else class="text-yellow-600">No location metadata available for the selected species.</span>
+      <span class="text-color-secondary">Please select a species to view location metadata.</span>
     </div>
   </div>
 </template>

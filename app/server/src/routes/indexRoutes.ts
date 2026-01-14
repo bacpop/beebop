@@ -38,5 +38,7 @@ export default {
             controller.downloadGraphml);
         app.get("/speciesConfig", 
             controller.getSpeciesConfig);
+        app.get("/locationMetadata/:species", 
+            controller.getLocationMetadata);
     }
 } as BeebopRoutes;

@@ -18,7 +18,7 @@ export interface LocationMetadata {
 export interface SpeciesConfig {
   hasSublineages: boolean;
   kmerInfo: SketchKmerArguments;
-  locationMetadata: LocationMetadata[] | null;
+  hasLocationMetadata: boolean;
 }
 
 const baseApi = mande(getApiUrl(), { credentials: "include" });
@@ -33,7 +33,11 @@ export const useSpeciesStore = defineStore("species", {
     getSketchKmerArguments: (state) => (species: string) => state.speciesConfig[species]?.kmerInfo,
     getSpeciesConfig: (state) => (species: string) => state.speciesConfig[species],
     canAssignSublineages: (state) => (species: string) => state.speciesConfig[species]?.hasSublineages,
-    getLocationMetadata: (state) => (species: string) => state.speciesConfig[species]?.locationMetadata
+    hasLocationMetadata: (state) => (species: string) => state.speciesConfig[species]?.hasLocationMetadata,
+    speciesWithLocationMetadata: (state) =>
+      Object.entries(state.speciesConfig)
+        .filter(([_, config]) => config.hasLocationMetadata)
+        .map(([species, _]) => species)
   },
   actions: {
     async setSpeciesConfig() {
@@ -44,6 +48,16 @@ export const useSpeciesStore = defineStore("species", {
       } catch (error) {
         console.error(error);
         this.toast.showErrorToast("Failed to fetch sketch kmer arguments, please try again later");
+      }
+    },
+    async getLocationMetadata(species: string): Promise<LocationMetadata[]> {
+      try {
+        const res = await baseApi.get<ApiResponse<LocationMetadata[]>>(`/locationMetadata/${species}`);
+        return res.data;
+      } catch (error) {
+        console.error(error);
+        this.toast.showErrorToast("Failed to fetch location metadata, please try again later");
+        return [];
       }
     }
   }
