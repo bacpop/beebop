@@ -33,7 +33,6 @@ export const useSpeciesStore = defineStore("species", {
     getSketchKmerArguments: (state) => (species: string) => state.speciesConfig[species]?.kmerInfo,
     getSpeciesConfig: (state) => (species: string) => state.speciesConfig[species],
     canAssignSublineages: (state) => (species: string) => state.speciesConfig[species]?.hasSublineages,
-    hasLocationMetadata: (state) => (species: string) => state.speciesConfig[species]?.hasLocationMetadata,
     speciesWithLocationMetadata: (state) =>
       Object.entries(state.speciesConfig)
         .filter(([_, config]) => config.hasLocationMetadata)

@@ -18,7 +18,8 @@ const tileLayer = ref<L.TileLayer | null>(null);
 const locationMetadata = await speciesStore.getLocationMetadata(props.species);
 
 onMounted(() => {
-  if (locationMetadata.length === 0) return;
+  if (!locationMetadata?.length) return;
+
   map.value = L.map("map", { zoomSnap: 0.1 });
 
   tileLayer.value = setTileLayer(themeState.value === DARK_THEME, map as Ref<L.Map>);
@@ -32,7 +33,7 @@ onUnmounted(() => {
   }
 });
 
-watch(themeState, async (newTheme) => {
+watch(themeState, (newTheme) => {
   if (map.value && tileLayer.value) {
     map.value.removeLayer(tileLayer.value as L.TileLayer);
     tileLayer.value = setTileLayer(newTheme === DARK_THEME, map as Ref<L.Map>);
@@ -50,7 +51,7 @@ watch(props, async (newProps) => {
 
 <template>
   <Toast />
-  <div class="map-container" v-if="locationMetadata.length > 0">
+  <div class="map-container" v-if="locationMetadata?.length">
     <div id="map" role="application" aria-label="Interactive map displaying location metadata" aria-live="polite"></div>
   </div>
   <div v-else class="mt-2 p-6 text-center surface-border border-top-1">

@@ -1,4 +1,5 @@
 import { getApiUrl } from "@/config";
+import type { ClusterInfo } from "@/types/projectTypes";
 import { HttpHandler, HttpResponse, http } from "msw";
 import {
   MOCK_CLUSTER_GRAPH_DICT,
@@ -7,7 +8,6 @@ import {
   MOCK_PROJECTS,
   MOCK_PROJECT_SAMPLES
 } from "../mockObjects";
-import type { ClusterInfo, Sublineage } from "@/types/projectTypes";
 
 export const projectIndexUri = `${getApiUrl()}/project`;
 export const assignResultUri = `${getApiUrl()}/assignResult`;

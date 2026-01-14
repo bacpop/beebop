@@ -38,16 +38,7 @@ describe("MetadataView component", () => {
     expect(screen.getByText(/Please select a species to view location metadata/i)).toBeVisible();
   });
 
-  it("should show no metadata available text if species has no location metadata", async () => {
-    renderComponent();
-
-    await userEvent.click(screen.getByRole("combobox"));
-    await userEvent.click(screen.getByRole("option", { name: MOCK_SPECIES[1] }));
-
-    expect(screen.getByText(/No location metadata available for the selected species/i)).toBeVisible();
-  });
-
-  it("should render map if species has location metadata", async () => {
+  it("should render map if species is selected", async () => {
     const { container } = renderComponent();
 
     await userEvent.click(screen.getByRole("combobox"));

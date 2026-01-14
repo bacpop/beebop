@@ -36,7 +36,7 @@ export const MOCK_SPECIES_CONFIG: Record<string, SpeciesConfig> = {
       kmerMin: 3,
       kmerStep: 3
     },
-    locationMetadata: MOCK_LOCATION_METADATA
+    hasLocationMetadata: true
   },
   "test species2": {
     hasSublineages: false,
@@ -45,7 +45,7 @@ export const MOCK_SPECIES_CONFIG: Record<string, SpeciesConfig> = {
       kmerMin: 5,
       kmerStep: 4
     },
-    locationMetadata: null
+    hasLocationMetadata: false
   }
 };
 export const MOCK_SPECIES = ["test species1", "test species2"];
