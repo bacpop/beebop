@@ -20,7 +20,7 @@ describe("SpeciesStore", () => {
   describe("getters", () => {
     it("should return correct SketchArguments when getSketchKmerArguments is called", () => {
       const store = useSpeciesStore();
-      store.sketchKmerArguments = MOCK_SPECIES_CONFIG;
+      store.speciesConfig = MOCK_SPECIES_CONFIG;
 
       const result = store.getSketchKmerArguments("Streptococcus pneumoniae");
 
@@ -29,7 +29,7 @@ describe("SpeciesStore", () => {
 
     it("should return undefined when getSketchKmerArguments is called with an invalid species", () => {
       const store = useSpeciesStore();
-      store.sketchKmerArguments = {
+      store.speciesConfig = {
         "Streptococcus pneumoniae": {
           kmerMax: 14,
           kmerMin: 3,
@@ -41,6 +41,33 @@ describe("SpeciesStore", () => {
 
       expect(result).toBeUndefined();
     });
+
+    it("should return correct SpeciesConfig when getSpeciesConfig is called", () => {
+      const store = useSpeciesStore();
+      store.speciesConfig = MOCK_SPECIES_CONFIG;
+
+      const result = store.getSpeciesConfig("Streptococcus pneumoniae");
+
+      expect(result).toEqual(MOCK_SPECIES_CONFIG["Streptococcus pneumoniae"]);
+    });
+
+    it("should return false when canAssignSublineages is called with a species that has no sublineages", () => {
+      const store = useSpeciesStore();
+      store.speciesConfig = MOCK_SPECIES_CONFIG;
+
+      const result = store.canAssignSublineages("test species2");
+
+      expect(result).toBe(false);
+    });
+
+    it("should return true when canAssignSublineages is called with a species that has sublineages", () => {
+      const store = useSpeciesStore();
+      store.speciesConfig = MOCK_SPECIES_CONFIG;
+
+      const result = store.canAssignSublineages("test species1");
+
+      expect(result).toBe(true);
+    });
   });
   describe("actions", () => {
     it("should set speciesConfig from api when setSpeciesConfig is called", async () => {
@@ -48,7 +75,7 @@ describe("SpeciesStore", () => {
 
       await store.setSpeciesConfig();
 
-      expect(store.sketchKmerArguments).toEqual(MOCK_SPECIES_CONFIG);
+      expect(store.speciesConfig).toEqual(MOCK_SPECIES_CONFIG);
       expect(store.species).toEqual(Object.keys(MOCK_SPECIES_CONFIG));
     });
 

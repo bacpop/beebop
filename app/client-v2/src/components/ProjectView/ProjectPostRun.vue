@@ -2,6 +2,7 @@
 import ProjectDataTable from "@/components/ProjectView/ProjectDataTable.vue";
 import { useMicroreact } from "@/composables/useMicroreact";
 import { useProjectStore } from "@/stores/projectStore";
+import { useSpeciesStore } from "@/stores/speciesStore";
 import { useUserStore } from "@/stores/userStore";
 import { AnalysisType } from "@/types/projectTypes";
 import {
@@ -22,7 +23,7 @@ const hasVisitedNetworkTab = ref(false);
 const shouldRenderNetwork = computed(() => isAllVisualiseFinished(projectStore.project.status?.visualiseClusters));
 const { closeDialog, hasMicroReactError, isMicroReactDialogVisible, saveMicroreactToken, isFetchingMicroreactUrl } =
   useMicroreact();
-
+const speciesStore = useSpeciesStore();
 // cache network graphs render after visiting it once
 const tabChange = (num: number) => {
   if (num == 1 && !hasVisitedNetworkTab.value) {
@@ -91,6 +92,17 @@ const getMicroreactSettingsTooltip = () => {
                 />
 
                 <Tag v-else value="pending" severity="warning" />
+              </template>
+            </Column>
+            <Column v-if="speciesStore.canAssignSublineages(projectStore.project.species)">
+              <template #header>
+                <div class="flex flex-column gap-1">
+                  <span>Sublineage</span>
+                  <small class="text-xs text-color-secondary font-medium">Rank 50 • 25 • 10 • 5</small>
+                </div>
+              </template>
+              <template #body="{ data }">
+                <SublineageColumn :data="data" />
               </template>
             </Column>
             <Column header="Network">

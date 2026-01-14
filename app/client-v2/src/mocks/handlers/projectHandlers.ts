@@ -7,10 +7,11 @@ import {
   MOCK_PROJECTS,
   MOCK_PROJECT_SAMPLES
 } from "../mockObjects";
-import type { ClusterInfo } from "@/types/projectTypes";
+import type { ClusterInfo, Sublineage } from "@/types/projectTypes";
 
 export const projectIndexUri = `${getApiUrl()}/project`;
 export const assignResultUri = `${getApiUrl()}/assignResult`;
+export const assignSublineageResultUri = `${getApiUrl()}/sublineageAssignResult`;
 export const statusUri = `${getApiUrl()}/status`;
 export const networkGraphsUri = `${getApiUrl()}/networkGraphs`;
 export const microreactUri = `${getApiUrl()}/microreactURL`;
@@ -66,6 +67,17 @@ export const projectHandlers: HttpHandler[] = [
   http.post(microreactUri, () =>
     HttpResponse.json({
       data: MOCK_MICROREACT_DICT,
+      errors: [],
+      status: "success"
+    })
+  ),
+  http.post(assignSublineageResultUri, () =>
+    HttpResponse.json({
+      data: {
+        [MOCK_PROJECT_SAMPLES[0].hash]: MOCK_PROJECT_SAMPLES[0].sublineage,
+        [MOCK_PROJECT_SAMPLES[1].hash]: MOCK_PROJECT_SAMPLES[1].sublineage,
+        [MOCK_PROJECT_SAMPLES[2].hash]: MOCK_PROJECT_SAMPLES[2].sublineage
+      },
       errors: [],
       status: "success"
     })

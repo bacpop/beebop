@@ -1,5 +1,10 @@
 import { getApiUrl } from "@/config";
-import { assignResultUri, projectIndexUri, statusUri } from "@/mocks/handlers/projectHandlers";
+import {
+  assignResultUri,
+  assignSublineageResultUri,
+  projectIndexUri,
+  statusUri
+} from "@/mocks/handlers/projectHandlers";
 import {
   MOCK_PROJECT,
   MOCK_PROJECT_SAMPLES,
@@ -10,7 +15,13 @@ import {
 import { server } from "@/mocks/server";
 import { useProjectStore } from "@/stores/projectStore";
 import { useSpeciesStore } from "@/stores/speciesStore";
-import { AnalysisType, type HashedFile, type ProjectSample, type WorkerResponse } from "@/types/projectTypes";
+import {
+  AnalysisType,
+  type AnalysisStatus,
+  type HashedFile,
+  type ProjectSample,
+  type WorkerResponse
+} from "@/types/projectTypes";
 import { flushPromises } from "@vue/test-utils";
 import { HttpResponse, http } from "msw";
 import { createPinia, setActivePinia } from "pinia";
@@ -150,6 +161,7 @@ describe("projectStore", () => {
         const store = useProjectStore();
         store.project.status = {
           assign: "started",
+          sublineageAssign: "started",
           microreact: "started",
           network: "started",
           visualiseClusters: {
@@ -164,9 +176,10 @@ describe("projectStore", () => {
         const store = useProjectStore();
         store.project.status = {
           assign: "finished",
+          sublineageAssign: "finished",
           visualise: "started"
         } as any;
-        expect(store.analysisProgressPercentage).toBe(Math.round((1 / 2) * 100));
+        expect(store.analysisProgressPercentage).toBe(Math.round(((1 + 1) / 3) * 100));
       });
     });
 
@@ -496,6 +509,28 @@ describe("projectStore", () => {
 
       expect(store.pollingIntervalId).toBeNull();
     });
+    it("should set sublineages correctly when getSublineageAssignResult is called", async () => {
+      const store = useProjectStore();
+      store.project.samples = structuredClone(MOCK_PROJECT_SAMPLES_BEFORE_RUN);
+
+      await store.getSublineageAssignResult();
+
+      store.project.samples.forEach((sample, index) => {
+        expect(sample.sublineage).toEqual(MOCK_PROJECT_SAMPLES[index].sublineage);
+      });
+    });
+    it("should not set sublineages when getSublineageAssignResult fails", async () => {
+      const store = useProjectStore();
+      store.project.samples = structuredClone(MOCK_PROJECT_SAMPLES_BEFORE_RUN);
+
+      server.use(http.post(assignSublineageResultUri, () => HttpResponse.error()));
+
+      await store.getSublineageAssignResult();
+
+      store.project.samples.forEach((sample) => {
+        expect(sample.sublineage).toBeUndefined();
+      });
+    });
     it("should set cluster values correctly when getClusterAssignResult is called", async () => {
       const store = useProjectStore();
       store.project.samples = structuredClone(MOCK_PROJECT_SAMPLES_BEFORE_RUN);
@@ -629,7 +664,8 @@ describe("projectStore", () => {
       expect(store.project.status).toEqual({
         assign: "failed",
         visualise: "failed",
-        visualiseClusters: {}
+        visualiseClusters: {},
+        sublineageAssign: "failed"
       });
       expect(store.stopPollingStatus).toHaveBeenCalled();
     });
@@ -649,7 +685,8 @@ describe("projectStore", () => {
       expect(store.project.status).toEqual({
         assign: "submitted",
         visualise: "submitted",
-        visualiseClusters: {}
+        visualiseClusters: {},
+        sublineageAssign: "submitted"
       });
       samples.forEach((sample) => {
         expect(sample.hasRun).toBe(true);
@@ -814,13 +851,17 @@ describe("projectStore", () => {
       const analysisStatus = { assign: "failed", visualise: "deferred" } as any;
       const store = useProjectStore();
 
-      const stopPolling = await store.processStatusAndGetStopPolling(analysisStatus, "waiting");
+      const stopPolling = await store.processStatusAndGetStopPolling(analysisStatus, {
+        ...analysisStatus,
+        assign: "waiting"
+      });
 
       expect(stopPolling).toBe(true);
       expect(store.project.status).toStrictEqual({
         assign: "failed",
         visualise: "failed",
-        visualiseClusters: {}
+        visualiseClusters: {},
+        sublineageAssign: "failed"
       });
     });
     it("should call getClusterAssignResult if assign is failed when processStatusAndGetPolling called", async () => {
@@ -828,9 +869,23 @@ describe("projectStore", () => {
       const store = useProjectStore();
       store.getClusterAssignResult = vitest.fn();
 
-      await store.processStatusAndGetStopPolling(analysisStatus, "waiting");
+      await store.processStatusAndGetStopPolling(analysisStatus, { ...analysisStatus, assign: "waiting" });
 
       expect(store.getClusterAssignResult).toHaveBeenCalled();
+    });
+    it("should call getSublineageAssignResult if sublineageAssign finished and was previously not finished", async () => {
+      const analysisStatus: AnalysisStatus = {
+        assign: "finished",
+        sublineageAssign: "finished",
+        visualise: "waiting",
+        visualiseClusters: {}
+      };
+      const store = useProjectStore();
+      store.getSublineageAssignResult = vitest.fn();
+
+      await store.processStatusAndGetStopPolling(analysisStatus, { ...analysisStatus, sublineageAssign: "started" });
+
+      expect(store.getSublineageAssignResult).toHaveBeenCalled();
     });
     it("should return 10 when navigator.hardwareConcurrency is 20 when getOptimalWorkerCount is called", () => {
       Object.defineProperty(navigator, "hardwareConcurrency", { value: 20, writable: true });
@@ -864,7 +919,7 @@ describe("projectStore", () => {
         text: () => Promise.resolve(`sample${index + 1}`)
       })) as unknown as File[];
       const speciesStore = useSpeciesStore();
-      speciesStore.sketchKmerArguments = MOCK_SPECIES_CONFIG;
+      speciesStore.speciesConfig = MOCK_SPECIES_CONFIG;
 
       const projectStore = useProjectStore();
       projectStore.project.species = MOCK_SPECIES[0];
@@ -878,7 +933,7 @@ describe("projectStore", () => {
 
       expect(projectStore.uploadingPercentage).toEqual(100);
       hashedFileBatches.forEach((batch) => {
-        expect(batchPromise).toHaveBeenCalledWith(batch, MOCK_SPECIES_CONFIG[MOCK_SPECIES[0]]);
+        expect(batchPromise).toHaveBeenCalledWith(batch, MOCK_SPECIES_CONFIG[MOCK_SPECIES[0]].kmerInfo);
       });
     });
   });

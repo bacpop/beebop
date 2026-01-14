@@ -14,12 +14,20 @@ if [ -z "$MOUNT" ]; then
        docker volume create $VOLUME
 fi
 
+# Check for --ci flag to download only reference databases
+REFS_FLAG=""
+for arg in "$@"; do
+    if [ "$arg" = "--ci" ]; then
+       REFS_FLAG="--refs"
+    fi
+done
+
 docker network create $NETWORK > /dev/null || /bin/true
 
 docker run --rm -v $MOUNT:/beebop/storage \
        --pull always \
        ghcr.io/bacpop/beebop-py:$API_IMAGE \
-       ./scripts/download_databases --refs # remove --refs to download all databases
+       ./scripts/download_databases $REFS_FLAG
 
 docker run -d --rm --name $NAME_REDIS --network=$NETWORK -p 6379:6379 redis:5.0
 docker run -d --rm --name $NAME_WORKER --network=$NETWORK \

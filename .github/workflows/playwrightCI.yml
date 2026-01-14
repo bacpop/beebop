@@ -47,7 +47,7 @@ jobs:
           cp ./app/server/src/resources/config.json.in.development ./app/server/src/resources/config.json
       - name: Run all components
         working-directory: .
-        run: ./scripts/run_test -mount ${{ env.STORAGE_PATH }}
+        run: ./scripts/run_test -mount ${{ env.STORAGE_PATH }} --ci
       - name: Install playwright
         working-directory: ./app/client-v2
         run: npx playwright install --with-deps

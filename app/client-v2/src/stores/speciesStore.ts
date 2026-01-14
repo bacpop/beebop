@@ -9,23 +9,29 @@ export interface SketchKmerArguments {
   kmerMax: number;
   kmerStep: number;
 }
+export interface SpeciesConfig {
+  hasSublineages: boolean;
+  kmerInfo: SketchKmerArguments;
+}
 
 const baseApi = mande(getApiUrl(), { credentials: "include" });
 
 export const useSpeciesStore = defineStore("species", {
   state: () => ({
-    sketchKmerArguments: {} as Record<string, SketchKmerArguments>,
+    speciesConfig: {} as Record<string, SpeciesConfig>,
     species: [] as string[],
     toast: useToastService() as ReturnType<typeof useToastService>
   }),
   getters: {
-    getSketchKmerArguments: (state) => (species: string) => state.sketchKmerArguments[species]
+    getSketchKmerArguments: (state) => (species: string) => state.speciesConfig[species]?.kmerInfo,
+    getSpeciesConfig: (state) => (species: string) => state.speciesConfig[species],
+    canAssignSublineages: (state) => (species: string) => state.speciesConfig[species]?.hasSublineages
   },
   actions: {
     async setSpeciesConfig() {
       try {
-        const res = await baseApi.get<ApiResponse<Record<string, SketchKmerArguments>>>("/speciesConfig");
-        this.sketchKmerArguments = res.data;
+        const res = await baseApi.get<ApiResponse<Record<string, SpeciesConfig>>>("/speciesConfig");
+        this.speciesConfig = res.data;
         this.species = Object.keys(res.data);
       } catch (error) {
         console.error(error);
