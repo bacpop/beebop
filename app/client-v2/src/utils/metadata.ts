@@ -29,6 +29,7 @@ export const displayLocationSamples = (mapRef: Ref<L.Map>, locationMetadata: Loc
   });
 
   mapRef.value.fitBounds(bounds);
+  mapRef.value.setMaxBounds(bounds);
 };
 
 const addCircleMarker = (mapRef: Ref<L.Map>, location: LocationMetadata, baseRadius = 4, scalingFactor = 6) => {

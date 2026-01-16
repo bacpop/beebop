@@ -61,7 +61,8 @@ describe("Metadata Utils", () => {
   describe("displayLocationSamples", () => {
     it("should create circle markers for each location and fit bounds", () => {
       const mockMap = {
-        fitBounds: vi.fn()
+        fitBounds: vi.fn(),
+        setMaxBounds: vi.fn()
       } as any;
       const mapRef = ref<L.Map>(mockMap);
       const mockCircleMarker = {
@@ -78,11 +79,13 @@ describe("Metadata Utils", () => {
 
       const expectBounds = MOCK_LOCATION_METADATA.map((loc) => [loc.latitude, loc.longitude]);
       expect(mockMap.fitBounds).toHaveBeenCalledWith(expectBounds);
+      expect(mockMap.setMaxBounds).toHaveBeenCalledWith(expectBounds);
     });
 
     it("should calculate radius based on sample count with logarithmic scaling and skip locations with zero samples", () => {
       const mockMap = {
-        fitBounds: vi.fn()
+        fitBounds: vi.fn(),
+        setMaxBounds: vi.fn()
       } as any;
       const mapRef = ref<L.Map>(mockMap);
 
@@ -109,7 +112,8 @@ describe("Metadata Utils", () => {
     });
     it("should bind tooltip with correct content to each marker", () => {
       const mockMap = {
-        fitBounds: vi.fn()
+        fitBounds: vi.fn(),
+        setMaxBounds: vi.fn()
       } as any;
       const mapRef = ref<L.Map>(mockMap);
 
