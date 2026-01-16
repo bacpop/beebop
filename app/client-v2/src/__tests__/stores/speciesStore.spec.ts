@@ -1,5 +1,5 @@
 import { speciesConfigIndexUri } from "@/mocks/handlers/configHandlers";
-import { MOCK_SPECIES_CONFIG } from "@/mocks/mockObjects";
+import { MOCK_LOCATION_METADATA, MOCK_SPECIES_CONFIG } from "@/mocks/mockObjects";
 import { server } from "@/mocks/server";
 import { useSpeciesStore } from "@/stores/speciesStore";
 import { http, HttpResponse } from "msw";
@@ -68,6 +68,15 @@ describe("SpeciesStore", () => {
 
       expect(result).toBe(true);
     });
+
+    it("should return species with location metadata when speciesWithLocationMetadata is called", () => {
+      const store = useSpeciesStore();
+      store.speciesConfig = MOCK_SPECIES_CONFIG;
+
+      const result = store.speciesWithLocationMetadata;
+
+      expect(result).toEqual(["test species1"]);
+    });
   });
   describe("actions", () => {
     it("should set speciesConfig from api when setSpeciesConfig is called", async () => {
@@ -91,6 +100,29 @@ describe("SpeciesStore", () => {
         life: 5000,
         summary: "Error"
       });
+    });
+
+    it("should return location metadata from api when getLocationMetadata is called", async () => {
+      const store = useSpeciesStore();
+
+      const result = await store.getLocationMetadata("test species1");
+
+      expect(result).toEqual(MOCK_LOCATION_METADATA);
+    });
+
+    it("should show error toast when getLocationMetadata fails", async () => {
+      server.use(http.get("/locationMetadata/:species", () => HttpResponse.error()));
+      const store = useSpeciesStore();
+
+      const result = await store.getLocationMetadata("test species1");
+
+      expect(mockToastAdd).toHaveBeenCalledWith({
+        severity: "error",
+        detail: "Failed to fetch location metadata, please try again later",
+        life: 5000,
+        summary: "Error"
+      });
+      expect(result).toEqual([]);
     });
   });
 });

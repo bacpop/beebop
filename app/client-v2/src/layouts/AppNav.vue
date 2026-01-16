@@ -26,6 +26,11 @@ const items = ref([
     label: "About",
     route: "/about",
     icon: "pi pi-fw pi-info-circle"
+  },
+  {
+    label: "Species Metadata",
+    route: "/metadata",
+    icon: "pi pi-fw pi-map"
   }
 ]);
 

@@ -128,6 +128,14 @@ export default (config) => {
             } catch (error) {
                 handleAPIError(request, response, error);
             }
+        },
+        async getLocationMetadata(request, response) {
+            try {
+                const res = await axios.get(`${config.api_url}/locationMetadata/${request.params.species}`);
+                response.send(res.data);
+            } catch (error) {
+                handleAPIError(request, response, error);
+            }
         }
     }
 }
