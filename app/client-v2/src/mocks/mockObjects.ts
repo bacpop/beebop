@@ -1,4 +1,4 @@
-import type { SpeciesConfig } from "@/stores/speciesStore";
+import type { LocationMetadata, SpeciesConfig } from "@/stores/speciesStore";
 import type { Project, ProjectOverview, ProjectSample } from "@/types/projectTypes";
 import type { GraphMLKeys } from "@/utils/graph";
 
@@ -7,6 +7,27 @@ export const MOCK_USER = {
   name: "Test User",
   provider: "test"
 };
+export const MOCK_LOCATION_METADATA: LocationMetadata[] = [
+  {
+    latitude: 34.0522,
+    longitude: -118.2437,
+    sampleCount: 5,
+    country: "USA"
+  },
+  {
+    latitude: 51.5074,
+    longitude: -0.1278,
+    sampleCount: 20,
+    country: "UK"
+  },
+  {
+    latitude: -33.8688,
+    longitude: 151.2093,
+    sampleCount: 30,
+    country: "Australia"
+  }
+];
+
 export const MOCK_SPECIES_CONFIG: Record<string, SpeciesConfig> = {
   "test species1": {
     hasSublineages: true,
@@ -14,7 +35,8 @@ export const MOCK_SPECIES_CONFIG: Record<string, SpeciesConfig> = {
       kmerMax: 14,
       kmerMin: 3,
       kmerStep: 3
-    }
+    },
+    hasLocationMetadata: true
   },
   "test species2": {
     hasSublineages: false,
@@ -22,7 +44,8 @@ export const MOCK_SPECIES_CONFIG: Record<string, SpeciesConfig> = {
       kmerMax: 17,
       kmerMin: 5,
       kmerStep: 4
-    }
+    },
+    hasLocationMetadata: false
   }
 };
 export const MOCK_SPECIES = ["test species1", "test species2"];
