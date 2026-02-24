@@ -31,8 +31,8 @@ export const convertAmrForCsv = (amr: AMR): AMRForCsv => ({
 export const generateCsvContent = (data: Record<string, string>[]) => {
   if (data.length === 0) return "";
 
-  const headers = Object.keys(data[0]);
-  const rows = data.map((row) => headers.map((header) => `"${row[header]}"`).join(","));
+  const headers = Array.from(new Set(data.flatMap((row) => Object.keys(row))));
+  const rows = data.map((row) => headers.map((header) => `"${row[header] ?? ""}"`).join(","));
   return [headers.join(","), ...rows].join("\n");
 };
 

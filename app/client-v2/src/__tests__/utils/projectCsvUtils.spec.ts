@@ -87,6 +87,32 @@ describe("projectCsvUtils", () => {
 
       expect(result).toBe("");
     });
+
+    it("should handle data with missing fields gracefully", () => {
+      const data = [
+        { filename: "sample1", Penicillin: "Penicillin-0.9", cluster: "cluster1" },
+        { filename: "sample2", cluster: "cluster2" } // Missing Penicillin field
+      ];
+
+      const result = generateCsvContent(data as Record<string, string>[]);
+
+      expect(result).toBe(
+        'filename,Penicillin,cluster\n"sample1","Penicillin-0.9","cluster1"\n"sample2","","cluster2"'
+      );
+    });
+
+    it("should handle data with varying fields and maintain consistent headers", () => {
+      const data = [
+        { filename: "sample1", Penicillin: "Penicillin-0.9", cluster: "cluster1" },
+        { filename: "sample2", Chloramphenicol: "Chloramphenicol-0.8" } // Different field
+      ];
+
+      const result = generateCsvContent(data as any);
+
+      expect(result).toBe(
+        'filename,Penicillin,cluster,Chloramphenicol\n"sample1","Penicillin-0.9","cluster1",""\n"sample2","","","Chloramphenicol-0.8"'
+      );
+    });
   });
 
   describe("triggerCsvDownload", () => {
