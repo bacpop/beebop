@@ -12,7 +12,7 @@ on:
 jobs:
   playwright-tests:
     timeout-minutes: 60
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     env:
       STORAGE_PATH: ${{ github.workspace }}/storage/dbs
     strategy:
@@ -21,9 +21,9 @@ jobs:
         browser: [chromium, firefox, webkit]
         node-version: [20.x]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Login to GHCR (GitHub Packages)
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -75,9 +75,9 @@ jobs:
     if: ${{ !cancelled() }}
     needs: [playwright-tests]
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with:
           node-version: 20

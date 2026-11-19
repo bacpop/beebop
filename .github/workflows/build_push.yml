@@ -1,5 +1,6 @@
 name: build and push docker images
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -12,9 +13,9 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Login to GHCR (GitHub Packages)
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
